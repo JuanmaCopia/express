@@ -12,4 +12,10 @@ public class Node {
             return false;
         return true;
     }
+
+    public boolean m() {
+
+        Node current = this;
+        return true;
+    }
 }

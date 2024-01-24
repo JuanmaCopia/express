@@ -100,6 +100,10 @@ public class SpoonFactory {
         return createReturnStatement(codeFactory.createLiteral(true));
     }
 
+    public static CtTypeReference<?> createReference(Class<?> type) {
+        return typeFactory.createReference(type);
+    }
+
     public static CtIf createIfThenStatement(CtExpression<Boolean> condition, CtStatement thenStatement) {
         if (!(thenStatement instanceof CtBlock<?>))
             thenStatement = encapsulateStatement(thenStatement);
@@ -144,7 +148,7 @@ public class SpoonFactory {
         return block;
     }
 
-    public static CtLiteral<?> createLiteral(Object value) {
+    public static CtExpression<?> createLiteral(Object value) {
         if (value == null)
             return codeFactory.createLiteral(null);
         if (!ClassUtils.isPrimitiveOrWrapper(value.getClass()))

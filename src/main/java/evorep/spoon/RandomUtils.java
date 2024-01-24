@@ -3,12 +3,28 @@ package evorep.spoon;
 import java.util.List;
 import java.util.Random;
 
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
 public class RandomUtils {
 
     private static Random r = new Random();
+
+    public static int nextInt(int bound) {
+        return r.nextInt(bound);
+    }
+
+    public static boolean getTrueWithProbability(int probability) {
+        return r.nextInt(100) < probability;
+    }
+
+    public static CtExpression<Boolean> negateOrNot(CtExpression<Boolean> expression) {
+        if (r.nextBoolean())
+            return expression;
+        return (CtExpression<Boolean>) SpoonFactory.createUnaryExpression(expression, UnaryOperatorKind.NOT);
+    }
 
     public static CtVariable<?> getRandomElementOfType(List<CtVariable<?>> list, Class<?> type) {
         List<CtVariable<?>> newList = SpoonQueries.getVariablesOfType(list, type);

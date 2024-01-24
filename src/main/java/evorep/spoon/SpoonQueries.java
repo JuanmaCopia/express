@@ -1,5 +1,6 @@
 package evorep.spoon;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,12 +24,11 @@ public class SpoonQueries {
 
     public static List<CtVariable<?>> getFields(CtType<?> clazz) {
         List<CtVariable<?>> result = new LinkedList<>();
-        for (CtField<?> field : clazz.getFields())
-            result.add(field);
+        result.addAll(clazz.getFields());
         return result;
     }
 
-    public static List<CtElement> getLocalVariables(CtElement element) {
+    public static List<CtVariable<?>> getLocalVariables(CtElement element) {
         return element.getElements(e -> e instanceof CtLocalVariable);
     }
 
@@ -89,6 +89,14 @@ public class SpoonQueries {
 
     public static boolean isReferenceType(CtVariable var) {
         return var.getType().isSubtypeOf(SpoonFactory.getTypeFactory().OBJECT);
+    }
+
+    public static boolean containsVariableOfType(Collection<CtVariable<?>> vars, Class<?> type) {
+        for (CtVariable<?> var : vars) {
+            if (var.getType().isSubtypeOf(SpoonFactory.createReference(type)))
+                return true;
+        }
+        return false;
     }
 
     public static boolean isPrimitiveType(CtVariable var) {

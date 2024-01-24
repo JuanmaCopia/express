@@ -13,12 +13,12 @@ import spoon.reflect.reference.CtTypeReference;
 
 public class ReferenceExpressionGenerator {
 
-    public static CtExpression<?> generateRandomVariableAccessRefType(List<CtVariable<?>> variables) {
+/*    public static CtExpression<?> generateRandomVariableAccessRefType(List<CtVariable<?>> variables) {
         CtVariable<?> chosenVariable = RandomUtils.getRandomElementOfType(variables, Object.class);
         if (chosenVariable == null)
             return null;
         return generateRandomVariableAccessRefType(RandomUtils.getRandomElementOfType(variables, Object.class));
-    }
+    }*/
 
     public static CtExpression<?> generateRandomVariableAccessRefType(CtVariable<?> var) {
         if (var == null)
@@ -30,12 +30,14 @@ public class ReferenceExpressionGenerator {
             return SpoonFactory.createVariableRead(var);
         }
 
-        List<CtVariable<?>> referenceTypeVars = SpoonQueries.getVariablesOfReferenceType(SpoonQueries.getFields(type));
-        referenceTypeVars.add(var);
+        List<CtVariable<?>> referenceFields = SpoonQueries.getVariablesOfReferenceType(SpoonQueries.getFields(type));
 
-        CtVariable<?> chosenField = RandomUtils.getRandomElement(referenceTypeVars);
-        if (chosenField == var)
-            return SpoonFactory.createVariableRead(chosenField);
+        int probability = 100 / (referenceFields.size() + 1);
+        if (RandomUtils.getTrueWithProbability(probability)) {
+            return SpoonFactory.createVariableRead(var);
+        }
+
+        CtVariable<?> chosenField = RandomUtils.getRandomElement(referenceFields);
         return SpoonFactory.createFieldRead(var, chosenField);
     }
 
