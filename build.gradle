@@ -12,8 +12,7 @@ plugins {
 }
 
 application {
-    //mainClass = 'helloworld.HelloWorld'
-    mainClass = 'repokgen.Main'
+    mainClass = 'evorep.Main'
 }
 
 repositories {

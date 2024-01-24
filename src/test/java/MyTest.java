@@ -7,9 +7,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import repokgen.ga.mutators.processors.NullCheckProcessor;
-import repokgen.spoon.SpoonManager;
-import repokgen.spoon.SpoonQueries;
+import evorep.ga.mutators.processors.NullCheckProcessor;
+import evorep.spoon.SpoonManager;
+import evorep.spoon.SpoonQueries;
 import spoon.pattern.Match;
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
