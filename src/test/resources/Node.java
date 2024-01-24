@@ -8,9 +8,8 @@ public class Node {
     }
 
     public boolean expected1() {
-        if (next == null) {
+        if (next == null)
             return false;
-        }
         return true;
     }
 }

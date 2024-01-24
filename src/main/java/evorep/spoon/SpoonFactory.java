@@ -36,12 +36,14 @@ import spoon.reflect.reference.CtTypeReference;
 
 public class SpoonFactory {
 
+    private static SpoonAPI launcher;
     private static Factory factory;
     private static CodeFactory codeFactory;
     private static CoreFactory coreFactory;
     private static TypeFactory typeFactory;
 
-    public static void initialize(SpoonAPI launcher) {
+    public static void initialize(SpoonAPI spoonLauncher) {
+        launcher = spoonLauncher;
         factory = launcher.getFactory();
         codeFactory = launcher.getFactory().Code();
         coreFactory = launcher.getFactory().Core();
@@ -49,6 +51,10 @@ public class SpoonFactory {
     }
 
     // ==================== Getters ====================
+
+    public static SpoonAPI getLauncher() {
+        return launcher;
+    }
 
     public static Factory getFactory() {
         return factory;
@@ -95,6 +101,8 @@ public class SpoonFactory {
     }
 
     public static CtIf createIfThenStatement(CtExpression<Boolean> condition, CtStatement thenStatement) {
+        if (!(thenStatement instanceof CtBlock<?>))
+            thenStatement = encapsulateStatement(thenStatement);
         CtIf ifStatement = coreFactory.createIf();
         ifStatement.setCondition(condition);
         ifStatement.setThenStatement(thenStatement);
@@ -103,6 +111,10 @@ public class SpoonFactory {
 
     public static CtIf createIfThenElseStatement(CtExpression<Boolean> condition, CtStatement thenStatement,
             CtStatement elseStatement) {
+        if (!(thenStatement instanceof CtBlock<?>))
+            thenStatement = encapsulateStatement(thenStatement);
+        if (!(elseStatement instanceof CtBlock<?>))
+            elseStatement = encapsulateStatement(elseStatement);
         CtIf ifStatement = coreFactory.createIf();
         ifStatement.setCondition(condition);
         ifStatement.setThenStatement(thenStatement);
@@ -111,13 +123,21 @@ public class SpoonFactory {
     }
 
     public static CtWhile createWhileStatement(CtExpression<Boolean> condition, CtStatement body) {
+        if (!(body instanceof CtBlock<?>))
+            body = encapsulateStatement(body);
         CtWhile whileStatement = coreFactory.createWhile();
         whileStatement.setLoopingExpression(condition);
         whileStatement.setBody(body);
         return whileStatement;
     }
 
-    public static CtBlock createStatementBlock(List<CtStatement> statements) {
+    public static CtBlock<?> encapsulateStatement(CtStatement statement) {
+        CtBlock<?> block = coreFactory.createBlock();
+        block.addStatement(statement);
+        return block;
+    }
+
+    public static CtBlock<?> createStatementBlock(List<CtStatement> statements) {
         CtBlock<?> block = coreFactory.createBlock();
         for (CtStatement statement : statements)
             block.addStatement(statement.clone());

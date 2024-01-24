@@ -38,7 +38,7 @@ public class ProcessorsUseExamples {
     public static void nullCheckProcessorExample() {
         SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
         CtClass<?> cls = SpoonManager.getTargetClass();
-        CtMethod<?> method = SpoonQueries.findMethodByName(cls, "mymethod2");
+        CtMethod<?> method = cls.getMethodsByName("mymethod2").get(0);
 
         Processor<CtMethod<?>> p = new NullCheckAllFieldsProcessor();
 
@@ -51,12 +51,12 @@ public class ProcessorsUseExamples {
     public static void referenceTraversalExample() {
         SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
         CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
-        CtMethod<?> method = SpoonQueries.findMethodByName(sllClass, "mymethod2");
+        CtMethod<?> method = sllClass.getMethodsByName("mymethod2").get(0);
 
         CtClass<?> nodeClass = SpoonQueries.getClass("examples.SLL$Node");
 
-        CtField<?> headField = SpoonQueries.findFieldByName(sllClass, "head");
-        CtField<?> nextField = SpoonQueries.findFieldByName(nodeClass, "next");
+        CtField<?> headField = sllClass.getField("head");
+        CtField<?> nextField = sllClass.getField("next");
 
         // System.err.println(headField.toString());
         // System.err.println(nextField.toString());
@@ -74,7 +74,7 @@ public class ProcessorsUseExamples {
         CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
         CtClass<?> nodeClass = SpoonQueries.getClass("examples.SLL$Node");
 
-        CtMethod<?> method = SpoonQueries.findMethodByName(sllClass, "mymethod2");
+        CtMethod<?> method = sllClass.getMethodsByName("mymethod2").get(0);
 
         CtTypeReference<?> nodeType = nodeClass.getReference();
 
@@ -86,7 +86,7 @@ public class ProcessorsUseExamples {
 
         System.err.println("\n--------------------------------------------------------------------\n");
 
-        CtVariable<?> headField = SpoonQueries.findFieldByName(sllClass, "head");
+        CtVariable<?> headField = sllClass.getField("head");
 
         CtVariableRead<?> exp = SpoonFactory.createVariableRead(headField);
 
@@ -102,7 +102,7 @@ public class ProcessorsUseExamples {
         SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
         CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
 
-        CtMethod<?> method = SpoonQueries.findMethodByName(sllClass, "mymethod3");
+        CtMethod<?> method = sllClass.getMethodsByName("mymethod3").get(0);
 
         // System.err.println(SpoonQueries.getAllRecheableVariables(method.getBody()).toString();
 
@@ -162,7 +162,7 @@ public class ProcessorsUseExamples {
     public static void obtainLocalVariablesExample() {
         SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
         CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
-        CtMethod<?> method = SpoonQueries.findMethodByName(sllClass, "mymethod4");
+        CtMethod<?> method = sllClass.getMethodsByName("mymethod4").get(0);
 
         System.err.println(method.toString());
 

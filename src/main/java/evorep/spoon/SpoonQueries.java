@@ -17,24 +17,6 @@ import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 
 public class SpoonQueries {
 
-    public static CtMethod<?> findMethodByName(CtClass<?> ctClass, String methodName) {
-        for (CtMethod<?> ctMethod : ctClass.getMethods()) {
-            if (ctMethod.getSimpleName().equals(methodName)) {
-                return ctMethod;
-            }
-        }
-        return null; // Method not found
-    }
-
-    public static CtField<?> findFieldByName(CtClass<?> ctClass, String fieldName) {
-        for (CtField<?> field : ctClass.getFields()) {
-            if (field.getSimpleName().equals(fieldName)) {
-                return field;
-            }
-        }
-        return null; // Field not found
-    }
-
     public static CtClass<?> getClass(String qualifiedClassName) {
         return SpoonFactory.getFactory().Class().get(qualifiedClassName);
     }
@@ -132,7 +114,7 @@ public class SpoonQueries {
 
     public static String getFalseFitnessString() {
         CtClass<?> clazz = SpoonManager.getTargetClass();
-        CtMethod<?> method = SpoonQueries.findMethodByName(clazz, "structureRepOK");
+        CtMethod<?> method = clazz.getMethodsByName("structureRepOK").get(0);
 
         StringBuilder stringBuilder = new StringBuilder();
         for (CtStatement statement : method.getBody().getStatements()) {
