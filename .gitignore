@@ -32,6 +32,9 @@ build
 # Ignore Visual Studio Code files
 .vscode/
 
+# Ignore IntelliJ IDEA files
+.idea/
+
 # Ignore Spoon files
 spooned/
 spooned-classes/
