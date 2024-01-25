@@ -6,7 +6,9 @@ import evorep.spoon.SpoonQueries;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import spoon.SpoonAPI;
+import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
@@ -140,5 +142,20 @@ public class BooleanExpressionGeneratorTests {
         assertTrue(variableReads.containsAll(possibleIntVarReads));
     }
 
+    @Test
+    void choicesTest() {
+        List<Integer> choices = BooleanExpressionGenerator.getChoices(fields, localVars);
+        assertEquals(2, choices.size());
+        assertTrue(choices.contains(0));
+        assertTrue(choices.contains(1));
+        assertTrue(!choices.contains(-1));
+    }
+
+    @Test
+    void negateTest() {
+        CtExpression<Boolean> expression = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(localVars.get(0), null, BinaryOperatorKind.EQ);
+        expression = (CtExpression<Boolean>) SpoonFactory.createUnaryExpression(expression, UnaryOperatorKind.NOT);
+        assertEquals("!(current == null)", expression.toString());
+    }
 
 }

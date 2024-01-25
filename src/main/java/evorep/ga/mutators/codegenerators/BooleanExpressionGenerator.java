@@ -28,19 +28,20 @@ public class BooleanExpressionGenerator {
         return RandomUtils.negateOrNot(expression);
     }
 
-    public static int getChoice(List<CtVariable<?>> fields,
-                                List<CtVariable<?>> localVars) {
+    public static int getChoice(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
+        List<Integer> filteredChoices = getChoices(fields, localVars);
+        return filteredChoices.get(RandomUtils.nextInt(filteredChoices.size()));
+    }
+
+    public static List<Integer> getChoices(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
         List<Integer> filteredChoices = new ArrayList<>();
-
-
         if (SpoonQueries.containsVariableOfType(fields, Object.class))
             filteredChoices.add(0);
         if (SpoonQueries.containsVariableOfType(localVars, Object.class))
             filteredChoices.add(1);
-
         if (filteredChoices.isEmpty())
-            return -1;
-        return filteredChoices.get(RandomUtils.nextInt(filteredChoices.size()));
+            filteredChoices.add(-1);
+        return filteredChoices;
     }
 
     public static CtExpression<Boolean> generateNullComparison(List<CtVariable<?>> fields,
