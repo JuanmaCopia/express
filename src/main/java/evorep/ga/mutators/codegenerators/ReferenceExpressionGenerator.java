@@ -32,8 +32,7 @@ public class ReferenceExpressionGenerator {
 
         List<CtVariable<?>> referenceFields = SpoonQueries.getVariablesOfReferenceType(SpoonQueries.getFields(type));
 
-        int probability = 100 / (referenceFields.size() + 1);
-        if (RandomUtils.getTrueWithProbability(probability)) {
+        if (RandomUtils.chooseWithProbability(referenceFields.size() + 1)) {
             return SpoonFactory.createVariableRead(var);
         }
 

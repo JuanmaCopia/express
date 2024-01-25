@@ -1,4 +1,5 @@
 import evorep.ga.mutators.codegenerators.BooleanExpressionGenerator;
+import evorep.ga.mutators.codegenerators.ReferenceExpressionGenerator;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
@@ -22,6 +23,7 @@ public class BooleanExpressionGeneratorTests {
     SpoonAPI launcher;
 
     Set<String> possibleExpressions;
+    Set<String> possibleVarReads;
 
     private void initializeExpressions() {
         if (possibleExpressions == null){
@@ -33,11 +35,22 @@ public class BooleanExpressionGeneratorTests {
         }
     }
 
+    private void initializeVarReads() {
+        if (possibleVarReads == null){
+            possibleVarReads = new HashSet<>();
+            possibleVarReads.add("next");
+            possibleVarReads.add("next.next");
+            possibleVarReads.add("current");
+            possibleVarReads.add("current.next");
+        }
+    }
+
     @BeforeEach
     void setUp() {
         SpoonManager.initialize("./src/test/resources", "./target/class-test", "Node");
         launcher = SpoonFactory.getLauncher();
         initializeExpressions();
+        initializeVarReads();
     }
 
     @Test
@@ -54,9 +67,28 @@ public class BooleanExpressionGeneratorTests {
 
         CtExpression<Boolean> expression = BooleanExpressionGenerator.generateNullComparison(fields, localVars);
 
-        System.out.println(expression.toString());
-
         assertTrue(possibleExpressions.contains(expression.toString()));
+    }
+
+    @Test
+    void ensureAllVariableReadsAreGeneratedTest() {
+        CtClass<?> nodeClass = SpoonQueries.getClass("Node");
+
+        CtMethod<?> m = nodeClass.getMethodsByName("m").get(0);
+        List<CtVariable<?>> localVars = SpoonQueries.getLocalVariables(m);
+        assertEquals(1, localVars.size());
+
+        Set<String> variableReads = new HashSet<>();
+
+        CtVariable<?> nextField = nodeClass.getField("next");
+        while (variableReads.size() < 2)
+            variableReads.add(ReferenceExpressionGenerator.generateRandomVariableAccessRefType(nextField).toString());
+
+        CtVariable<?> currentVar = localVars.get(0);
+        while (variableReads.size() < 4)
+            variableReads.add(ReferenceExpressionGenerator.generateRandomVariableAccessRefType(currentVar).toString());
+
+        assertTrue(variableReads.containsAll(possibleVarReads));
     }
 
     @Test
@@ -72,16 +104,10 @@ public class BooleanExpressionGeneratorTests {
         assertEquals(1, localVars.size());
 
         Set<String> expressionsGenerated = new HashSet<>();
-        for (int i = 0; i < 200; i++) {
-            CtExpression<Boolean> expression = BooleanExpressionGenerator.generateNullComparison(fields, localVars);
-            expressionsGenerated.add(expression.toString());
-        }
-
-        System.out.println(expressionsGenerated.toString());
+        while (expressionsGenerated.size() < 4)
+            expressionsGenerated.add(BooleanExpressionGenerator.generateNullComparison(fields, localVars).toString());
 
         assertTrue(expressionsGenerated.containsAll(possibleExpressions));
-
-
     }
 
 }
