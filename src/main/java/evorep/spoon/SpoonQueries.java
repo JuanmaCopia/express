@@ -1,20 +1,15 @@
 package evorep.spoon;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 public class SpoonQueries {
 
@@ -26,6 +21,10 @@ public class SpoonQueries {
         List<CtVariable<?>> result = new LinkedList<>();
         result.addAll(clazz.getFields());
         return result;
+    }
+
+    public static List<CtVariable<?>> getFieldsOfType(CtVariable<?> var, CtTypeReference<?> type) {
+        return getVariablesOfType(getFields(var.getType().getDeclaration()), type);
     }
 
     public static List<CtVariable<?>> getLocalVariables(CtElement element) {
@@ -76,14 +75,14 @@ public class SpoonQueries {
     }
 
     public static List<CtVariable<?>> getAllRecheableLocalVariablesOfType(CtStatement statement,
-            CtTypeReference<?> type) {
+                                                                          CtTypeReference<?> type) {
         return statement.map(new PotentialVariableDeclarationFunction())
                 .map(e -> e instanceof CtLocalVariable && ((CtVariable<?>) e).getType().isSubtypeOf(type))
                 .list();
     }
 
     public static List<CtVariable<?>> getAllRecheableLocalVariablesOfType(CtStatement statement,
-            Class<?> type) {
+                                                                          Class<?> type) {
         return getAllRecheableLocalVariablesOfType(statement, SpoonFactory.getTypeFactory().createReference(type));
     }
 

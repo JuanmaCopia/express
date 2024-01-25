@@ -1,8 +1,5 @@
 package evorep.ga.mutators.codegenerators;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
@@ -11,81 +8,54 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
-public class ReferenceExpressionGenerator {
+import java.util.ArrayList;
+import java.util.List;
 
-/*    public static CtExpression<?> generateRandomVariableAccessRefType(List<CtVariable<?>> variables) {
-        CtVariable<?> chosenVariable = RandomUtils.getRandomElementOfType(variables, Object.class);
-        if (chosenVariable == null)
-            return null;
-        return generateRandomVariableAccessRefType(RandomUtils.getRandomElementOfType(variables, Object.class));
-    }*/
+public class ReferenceExpressionGenerator {
 
     public static CtExpression<?> generateRandomVariableAccessRefType(CtVariable<?> var) {
         if (var == null)
             throw new IllegalArgumentException();
 
-        CtType<?> type = var.getType().getDeclaration();
-        if (type == null) {
-            // if type is null, the type is not in src files (might be a from a library)
+        CtType<?> varType = var.getType().getDeclaration();
+        if (varType == null)
+            // if varType is null, the varType is not in src files (might be a from a library)
             return SpoonFactory.createVariableRead(var);
-        }
 
-        List<CtVariable<?>> referenceFields = SpoonQueries.getVariablesOfReferenceType(SpoonQueries.getFields(type));
+        List<CtVariable<?>> referenceFields = SpoonQueries.getVariablesOfReferenceType(SpoonQueries.getFields(varType));
 
-        if (RandomUtils.chooseWithProbability(referenceFields.size() + 1)) {
+        if (RandomUtils.chooseWithProbability(referenceFields.size() + 1))
             return SpoonFactory.createVariableRead(var);
-        }
 
         CtVariable<?> chosenField = RandomUtils.getRandomElement(referenceFields);
         return SpoonFactory.createFieldRead(var, chosenField);
     }
 
-    public static CtExpression<?> generateRandomVariableAccessOfType(List<CtVariable<?>> variables,
-            CtTypeReference<?> typeRef) {
-        LinkedList<CtVariable<?>> filteredVariables = new LinkedList<>();
-        for (CtVariable<?> var : variables) {
-            if (var.getType().isSubtypeOf(typeRef))
-                filteredVariables.add(var);
-            else if (SpoonQueries.isReferenceType(var)) {
-                CtType<?> type = var.getType().getTypeDeclaration();
-                if (type == null)
-                    continue;
-
-                List<CtVariable<?>> fields = SpoonQueries.getFields(type);
-
-                for (CtVariable<?> field : fields) {
-                    if (field.getType().isSubtypeOf(typeRef)) {
-                        filteredVariables.add(var);
-                        break;
-                    }
-                }
-
-            }
-        }
-        if (filteredVariables.isEmpty())
-            return null;
-
-        CtVariable<?> chosenVar = RandomUtils.getRandomElement(filteredVariables);
-        if (!SpoonQueries.isReferenceType(chosenVar))
-            return SpoonFactory.createVariableRead(chosenVar);
-        return generateRandomVariableAccessOfType(chosenVar, typeRef);
+    public static CtExpression<?> generateRandomVarReadOfType(List<CtVariable<?>> variables, CtTypeReference<?> typeRef) {
+        List<CtExpression<?>> varReads = generateAllVarReadsOfType(variables, typeRef);
+        return varReads.get(RandomUtils.nextInt(varReads.size()));
     }
 
-    public static CtExpression<?> generateRandomVariableAccessOfType(CtVariable<?> var, CtTypeReference<?> typeRef) {
-        if (var == null)
-            throw new IllegalArgumentException();
+    public static List<CtExpression<?>> generateAllVarReadsOfType(List<CtVariable<?>> vars, CtTypeReference<?> typeRef) {
+        List<CtExpression<?>> varReads = new ArrayList<>();
 
-        CtType<?> type = var.getType().getDeclaration();
+        varReads.addAll(
+                SpoonQueries.getVariablesOfType(vars, typeRef).stream().map(
+                        var -> SpoonFactory.createVariableRead(var)
+                ).toList()
+        );
 
-        List<CtVariable<?>> variables = SpoonQueries.getVariablesOfType(SpoonQueries.getFields(type), typeRef);
-        if (var.getType().isSubtypeOf(typeRef))
-            variables.add(var);
+        List<CtVariable<?>> refTypedVars = SpoonQueries.getVariablesOfReferenceType(vars);
+        for (CtVariable<?> var : refTypedVars) {
+            List<CtVariable<?>> fields = SpoonQueries.getFieldsOfType(var, typeRef);
+            varReads.addAll(
+                    fields.stream().map(
+                            field -> SpoonFactory.createFieldRead(var, field)
+                    ).toList()
+            );
+        }
 
-        CtVariable<?> chosenField = RandomUtils.getRandomElement(variables);
-        if (chosenField == var)
-            return SpoonFactory.createVariableRead(var);
-
-        return SpoonFactory.createFieldRead(var, chosenField);
+        return varReads;
     }
 
 }

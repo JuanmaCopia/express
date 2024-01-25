@@ -3,7 +3,7 @@ import evorep.ga.mutators.codegenerators.ReferenceExpressionGenerator;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import spoon.SpoonAPI;
 import spoon.reflect.code.CtExpression;
@@ -20,13 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BooleanExpressionGeneratorTests {
 
-    SpoonAPI launcher;
+    static SpoonAPI launcher;
 
-    Set<String> possibleExpressions;
-    Set<String> possibleVarReads;
+    static Set<String> possibleExpressions;
+    static Set<String> possibleNodeVarReads;
+    static Set<String> possibleIntVarReads;
 
-    private void initializeExpressions() {
-        if (possibleExpressions == null){
+    private static void initializeExpressions() {
+        if (possibleExpressions == null) {
             possibleExpressions = new HashSet<>();
             possibleExpressions.add("next == null");
             possibleExpressions.add("next.next == null");
@@ -35,18 +36,24 @@ public class BooleanExpressionGeneratorTests {
         }
     }
 
-    private void initializeVarReads() {
-        if (possibleVarReads == null){
-            possibleVarReads = new HashSet<>();
-            possibleVarReads.add("next");
-            possibleVarReads.add("next.next");
-            possibleVarReads.add("current");
-            possibleVarReads.add("current.next");
+    private static void initializeVarReads() {
+        if (possibleNodeVarReads == null) {
+            possibleNodeVarReads = new HashSet<>();
+            possibleNodeVarReads.add("next");
+            possibleNodeVarReads.add("next.next");
+            possibleNodeVarReads.add("current");
+            possibleNodeVarReads.add("current.next");
+        }
+        if (possibleIntVarReads == null) {
+            possibleIntVarReads = new HashSet<>();
+            possibleIntVarReads.add("data");
+            possibleIntVarReads.add("next.data");
+            possibleIntVarReads.add("current.data");
         }
     }
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void setUp() {
         SpoonManager.initialize("./src/test/resources", "./target/class-test", "Node");
         launcher = SpoonFactory.getLauncher();
         initializeExpressions();
@@ -88,7 +95,7 @@ public class BooleanExpressionGeneratorTests {
         while (variableReads.size() < 4)
             variableReads.add(ReferenceExpressionGenerator.generateRandomVariableAccessRefType(currentVar).toString());
 
-        assertTrue(variableReads.containsAll(possibleVarReads));
+        assertTrue(variableReads.containsAll(possibleNodeVarReads));
     }
 
     @Test
@@ -109,5 +116,48 @@ public class BooleanExpressionGeneratorTests {
 
         assertTrue(expressionsGenerated.containsAll(possibleExpressions));
     }
+
+    @Test
+    void generateAllVarReadsOfNodeTest() {
+        CtClass<?> nodeClass = SpoonQueries.getClass("Node");
+
+        CtMethod<?> m = nodeClass.getMethodsByName("m").get(0);
+
+        List<CtVariable<?>> allVars = SpoonQueries.getFields(nodeClass);
+        allVars.addAll(SpoonQueries.getLocalVariables(m));
+
+        assertEquals(3, allVars.size());
+
+        Set<String> variableReads = new HashSet<>();
+
+        ReferenceExpressionGenerator.generateAllVarReadsOfType(allVars, nodeClass.getReference()).forEach(
+                varRead -> variableReads.add(varRead.toString())
+        );
+
+        assertTrue(variableReads.containsAll(possibleNodeVarReads));
+    }
+
+    @Test
+    void generateAllVarReadsOfIntTest() {
+        CtClass<?> nodeClass = SpoonQueries.getClass("Node");
+
+        CtMethod<?> m = nodeClass.getMethodsByName("m").get(0);
+
+        List<CtVariable<?>> allVars = SpoonQueries.getFields(nodeClass);
+        allVars.addAll(SpoonQueries.getLocalVariables(m));
+
+        assertEquals(3, allVars.size());
+
+        Set<String> variableReads = new HashSet<>();
+
+        ReferenceExpressionGenerator.generateAllVarReadsOfType(allVars, SpoonFactory.createReference(int.class)).forEach(
+                varRead -> variableReads.add(varRead.toString())
+        );
+
+        //System.out.println(variableReads.toString());
+        assertEquals(3, variableReads.size());
+        assertTrue(variableReads.containsAll(possibleIntVarReads));
+    }
+
 
 }
