@@ -18,13 +18,18 @@ public class SpoonQueries {
     }
 
     public static List<CtVariable<?>> getFields(CtType<?> clazz) {
+        if (clazz == null)
+            throw new IllegalArgumentException("Class cannot be null");
         List<CtVariable<?>> result = new LinkedList<>();
         result.addAll(clazz.getFields());
         return result;
     }
 
     public static List<CtVariable<?>> getFieldsOfType(CtVariable<?> var, CtTypeReference<?> type) {
-        return getVariablesOfType(getFields(var.getType().getDeclaration()), type);
+        CtType<?> varType = var.getType().getDeclaration();
+        if (varType == null)
+            return new LinkedList<>();
+        return getVariablesOfType(getFields(varType), type);
     }
 
     public static List<CtVariable<?>> getLocalVariables(CtElement element) {

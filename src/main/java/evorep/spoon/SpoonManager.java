@@ -1,12 +1,14 @@
 package evorep.spoon;
 
-import java.io.File;
-
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.reflect.declaration.CtClass;
 
+import java.io.File;
+
 public class SpoonManager {
+
+    private final static String DEFAULT_BIN_PATH = "./target";
 
     private static SpoonAPI launcher;
     private static CtClass<?> targetClass;
@@ -37,6 +39,8 @@ public class SpoonManager {
     }
 
     private static File createBinDirectory(String binPath) {
+        if (binPath == null)
+            binPath = DEFAULT_BIN_PATH;
         File binDir = new File(binPath);
         if (!binDir.exists()) {
             binDir.mkdirs();

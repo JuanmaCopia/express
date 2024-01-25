@@ -1,12 +1,12 @@
 package evorep.spoon;
 
-import java.util.List;
-import java.util.Random;
-
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.List;
+import java.util.Random;
 
 public class RandomUtils {
 
@@ -31,7 +31,8 @@ public class RandomUtils {
         List<CtVariable<?>> newList = SpoonQueries.getVariablesOfType(list, type);
         if (newList.isEmpty())
             return null;
-        return newList.get(r.nextInt(list.size()));
+        int choice = r.nextInt(newList.size());
+        return newList.get(choice);
     }
 
     public static CtVariable<?> getRandomElementOfType(List<CtVariable<?>> list, CtTypeReference<?> type) {

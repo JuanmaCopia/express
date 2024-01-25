@@ -11,6 +11,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +21,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BooleanExpressionGeneratorTests {
 
+    final static String SOURCE_PATH = "./src/test/resources";
+    final static String CLASS_NAME = "Node";
+    final static String METHOD_NAME = "m";
+
     static SpoonAPI launcher;
+
+    static CtClass<?> nodeClass;
+    static CtMethod<?> method;
+    static List<CtVariable<?>> fields;
+    static List<CtVariable<?>> localVars;
+    static List<CtVariable<?>> allVars;
 
     static Set<String> possibleExpressions;
     static Set<String> possibleNodeVarReads;
@@ -52,39 +63,38 @@ public class BooleanExpressionGeneratorTests {
         }
     }
 
+    private static void initializeASTElements() {
+        launcher = SpoonFactory.getLauncher();
+        nodeClass = SpoonQueries.getClass(CLASS_NAME);
+        method = nodeClass.getMethodsByName(METHOD_NAME).get(0);
+        fields = SpoonQueries.getFields(nodeClass);
+        localVars = SpoonQueries.getLocalVariables(method);
+        allVars = new ArrayList<>();
+        allVars.addAll(fields);
+        allVars.addAll(localVars);
+    }
+
+    private static void initializeSpoon() {
+        SpoonManager.initialize(SOURCE_PATH, null, CLASS_NAME);
+        launcher = SpoonFactory.getLauncher();
+    }
+
     @BeforeAll
     static void setUp() {
-        SpoonManager.initialize("./src/test/resources", "./target/class-test", "Node");
-        launcher = SpoonFactory.getLauncher();
+        initializeSpoon();
+        initializeASTElements();
         initializeExpressions();
         initializeVarReads();
     }
 
     @Test
     void nullEqualityGenerationTest() {
-        CtClass<?> nodeClass = SpoonQueries.getClass("Node");
-
-        CtMethod<?> m = nodeClass.getMethodsByName("m").get(0);
-
-        List<CtVariable<?>> fields = SpoonQueries.getFields(nodeClass);
-        List<CtVariable<?>> localVars = SpoonQueries.getLocalVariables(m);
-
-        assertEquals(2, fields.size());
-        assertEquals(1, localVars.size());
-
         CtExpression<Boolean> expression = BooleanExpressionGenerator.generateNullComparison(fields, localVars);
-
         assertTrue(possibleExpressions.contains(expression.toString()));
     }
 
     @Test
     void ensureAllVariableReadsAreGeneratedTest() {
-        CtClass<?> nodeClass = SpoonQueries.getClass("Node");
-
-        CtMethod<?> m = nodeClass.getMethodsByName("m").get(0);
-        List<CtVariable<?>> localVars = SpoonQueries.getLocalVariables(m);
-        assertEquals(1, localVars.size());
-
         Set<String> variableReads = new HashSet<>();
 
         CtVariable<?> nextField = nodeClass.getField("next");
@@ -100,16 +110,6 @@ public class BooleanExpressionGeneratorTests {
 
     @Test
     void ensureAllNullExpressionsAreGeneratedTest() {
-        CtClass<?> nodeClass = SpoonQueries.getClass("Node");
-
-        CtMethod<?> m = nodeClass.getMethodsByName("m").get(0);
-
-        List<CtVariable<?>> fields = SpoonQueries.getFields(nodeClass);
-        List<CtVariable<?>> localVars = SpoonQueries.getLocalVariables(m);
-
-        assertEquals(2, fields.size());
-        assertEquals(1, localVars.size());
-
         Set<String> expressionsGenerated = new HashSet<>();
         while (expressionsGenerated.size() < 4)
             expressionsGenerated.add(BooleanExpressionGenerator.generateNullComparison(fields, localVars).toString());
@@ -119,42 +119,23 @@ public class BooleanExpressionGeneratorTests {
 
     @Test
     void generateAllVarReadsOfNodeTest() {
-        CtClass<?> nodeClass = SpoonQueries.getClass("Node");
-
-        CtMethod<?> m = nodeClass.getMethodsByName("m").get(0);
-
-        List<CtVariable<?>> allVars = SpoonQueries.getFields(nodeClass);
-        allVars.addAll(SpoonQueries.getLocalVariables(m));
-
-        assertEquals(3, allVars.size());
-
         Set<String> variableReads = new HashSet<>();
-
         ReferenceExpressionGenerator.generateAllVarReadsOfType(allVars, nodeClass.getReference()).forEach(
                 varRead -> variableReads.add(varRead.toString())
         );
 
+        assertEquals(4, variableReads.size());
         assertTrue(variableReads.containsAll(possibleNodeVarReads));
     }
 
     @Test
     void generateAllVarReadsOfIntTest() {
-        CtClass<?> nodeClass = SpoonQueries.getClass("Node");
-
-        CtMethod<?> m = nodeClass.getMethodsByName("m").get(0);
-
-        List<CtVariable<?>> allVars = SpoonQueries.getFields(nodeClass);
-        allVars.addAll(SpoonQueries.getLocalVariables(m));
-
-        assertEquals(3, allVars.size());
-
         Set<String> variableReads = new HashSet<>();
 
         ReferenceExpressionGenerator.generateAllVarReadsOfType(allVars, SpoonFactory.createReference(int.class)).forEach(
                 varRead -> variableReads.add(varRead.toString())
         );
 
-        //System.out.println(variableReads.toString());
         assertEquals(3, variableReads.size());
         assertTrue(variableReads.containsAll(possibleIntVarReads));
     }

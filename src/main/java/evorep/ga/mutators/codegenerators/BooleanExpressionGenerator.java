@@ -20,7 +20,7 @@ public class BooleanExpressionGenerator {
         CtExpression<Boolean> expression;
         switch (getChoice(fields, localVars)) {
             case 0 -> expression = generateNullComparison(fields, localVars);
-            case 1 -> expression = generateCollectionMethodCallExpression(fields, localVars);
+            case 1 -> expression = generateRandomCollectionMethodCallExpression(fields, localVars);
             case -1 -> expression = SpoonFactory.getCodeFactory().createLiteral(false);
             default -> throw new RuntimeException("Invalid choice");
         }
@@ -56,26 +56,31 @@ public class BooleanExpressionGenerator {
         return (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(fieldRead, nullExpression, BinaryOperatorKind.EQ);
     }
 
-    public static CtExpression<Boolean> generateCollectionMethodCallExpression(List<CtVariable<?>> fields,
-                                                                               List<CtVariable<?>> localVars) {
-        CtVariable<?> chosenVar = RandomUtils.getRandomElementOfType(localVars, Collection.class);
-        assert chosenVar != null;
+    public static CtExpression<Boolean> generateRandomCollectionMethodCallExpression(
+            List<CtVariable<?>> fields,
+            List<CtVariable<?>> localVars
+    ) {
 
-        List<CtVariable<?>> allVars = SpoonQueries.getVariablesOfReferenceType(fields);
-        allVars.addAll(SpoonQueries.getVariablesOfReferenceType(localVars));
+        CtVariable<?> collection = RandomUtils.getRandomElementOfType(localVars, Collection.class);
 
-        return (CtExpression<Boolean>) generateCollectionMethodCallSingleArg(chosenVar, "add", allVars);
+        List<CtVariable<?>> scopeVariables = new ArrayList<>();
+        scopeVariables.addAll(fields);
+        scopeVariables.addAll(localVars);
+        return generateCollectionMethodCallExpression(collection, "add", scopeVariables);
     }
 
-    public static CtExpression<Boolean> generateCollectionMethodCallSingleArg(CtVariable<?> collection, String methodName,
-                                                                              List<CtVariable<?>> scopeVariables) {
-        // Get the element type of the set
-        CtTypeReference<?> elemType = collection.getReference().getType().getActualTypeArguments().get(0);
+    public static CtExpression<Boolean> generateCollectionMethodCallExpression(
+            CtVariable<?> collection,
+            String methodName,
+            List<CtVariable<?>> scopeVariables
+    ) {
+        // The type of the argument of the method call is the type of the elements of the collection
+        CtTypeReference<?> argType = collection.getReference().getType().getActualTypeArguments().get(0);
 
         CtExpression<?> argument = ReferenceExpressionGenerator.generateRandomVarReadOfType(
-                scopeVariables, elemType);
+                scopeVariables, argType);
+        return (CtExpression<Boolean>) SpoonFactory.createInvocation(collection, methodName, argType, argument);
 
-        return (CtExpression<Boolean>) SpoonFactory.createInvocation(collection, methodName, elemType, argument);
     }
 
 
