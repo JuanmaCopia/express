@@ -44,8 +44,7 @@ public class BooleanExpressionGenerator {
         return filteredChoices;
     }
 
-    public static CtExpression<Boolean> generateNullComparison(List<CtVariable<?>> fields,
-                                                               List<CtVariable<?>> localVars) {
+    public static CtExpression<Boolean> generateNullComparison(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
         List<CtVariable<?>> referenceFields = SpoonQueries.getVariablesOfReferenceType(fields);
         List<CtVariable<?>> referenceLocalVars = SpoonQueries.getVariablesOfReferenceType(localVars);
         CtVariable<?> chosenVariable = RandomUtils.getRandomElement(referenceFields, referenceLocalVars);

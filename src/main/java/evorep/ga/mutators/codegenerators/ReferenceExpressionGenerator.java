@@ -36,6 +36,10 @@ public class ReferenceExpressionGenerator {
         return varReads.get(RandomUtils.nextInt(varReads.size()));
     }
 
+    public static List<CtExpression<?>> generateAllUserDefVarReadsOfReferenceType(List<CtVariable<?>> vars) {
+        return generateAllUserDefVarReadsOfType(vars, SpoonFactory.getTypeFactory().OBJECT);
+    }
+
     public static List<CtExpression<?>> generateAllVarReadsOfType(List<CtVariable<?>> vars, CtTypeReference<?> typeRef) {
         List<CtExpression<?>> varReads = new ArrayList<>();
 
@@ -47,7 +51,53 @@ public class ReferenceExpressionGenerator {
 
         List<CtVariable<?>> refTypedVars = SpoonQueries.getVariablesOfReferenceType(vars);
         for (CtVariable<?> var : refTypedVars) {
-            List<CtVariable<?>> fields = SpoonQueries.getFieldsOfType(var, typeRef);
+            varReads.addAll(
+                    SpoonQueries.getFieldsOfType(var, typeRef).stream().filter(
+                            field -> SpoonQueries.isAccessibleField(field)
+                    ).map(
+                            field -> SpoonFactory.createFieldRead(var, field)
+                    ).toList()
+            );
+        }
+
+        return varReads;
+    }
+
+    public static List<CtExpression<?>> generateAllUserDefVarReadsOfType(List<CtVariable<?>> vars, CtTypeReference<?> typeRef) {
+        List<CtExpression<?>> varReads = new ArrayList<>();
+
+        varReads.addAll(
+                SpoonQueries.getVariablesOfType(vars, typeRef).stream().filter(
+                        var -> SpoonQueries.isUserDefined(var)
+                ).map(
+                        var -> SpoonFactory.createVariableRead(var)
+                ).toList()
+        );
+
+        List<CtVariable<?>> refTypedVars = SpoonQueries.getVariablesOfReferenceType(vars);
+        for (CtVariable<?> var : refTypedVars) {
+            varReads.addAll(
+                    SpoonQueries.getFieldsOfType(var, typeRef).stream().filter(
+                            field -> SpoonQueries.isAccessibleField(field) && SpoonQueries.isUserDefined(var)
+                    ).map(
+                            field -> SpoonFactory.createFieldRead(var, field)
+                    ).toList()
+            );
+        }
+
+        return varReads;
+    }
+
+    public static List<CtExpression<?>> generateAllVarReads(List<CtVariable<?>> vars) {
+        List<CtExpression<?>> varReads = new ArrayList<>();
+
+        varReads.addAll(
+                vars.stream().map(var -> SpoonFactory.createVariableRead(var)).toList()
+        );
+
+        List<CtVariable<?>> refTypedVars = SpoonQueries.getVariablesOfReferenceType(vars);
+        for (CtVariable<?> var : refTypedVars) {
+            List<CtVariable<?>> fields = SpoonQueries.getAccessibleFields(var);
             varReads.addAll(
                     fields.stream().map(
                             field -> SpoonFactory.createFieldRead(var, field)
@@ -57,5 +107,6 @@ public class ReferenceExpressionGenerator {
 
         return varReads;
     }
+
 
 }

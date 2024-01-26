@@ -32,6 +32,18 @@ public class SpoonQueries {
         return getVariablesOfType(getFields(varType), type);
     }
 
+    public static List<CtVariable<?>> getAccessibleFields(CtVariable<?> var) {
+        return getAccessibleFields(var.getType());
+    }
+
+    public static List<CtVariable<?>> getAccessibleFields(CtTypeReference<?> typeRef) {
+        if (typeRef.getDeclaration() == null)
+            throw new IllegalArgumentException("the type is not in source files");
+        return getFields(typeRef.getDeclaration()).stream().filter(
+                field -> !field.isPrivate()
+        ).toList();
+    }
+
     public static List<CtVariable<?>> getLocalVariables(CtElement element) {
         return element.getElements(e -> e instanceof CtLocalVariable);
     }
@@ -39,18 +51,28 @@ public class SpoonQueries {
     public static List<CtVariable<?>> getVariablesOfReferenceType(List<CtVariable<?>> list) {
         if (list == null)
             throw new IllegalArgumentException("List cannot be null");
-        return getVariablesOfType(list, SpoonFactory.getTypeFactory().OBJECT);
+        return list.stream().filter(var -> isReferenceType(var)).toList();
+    }
+
+    public static List<CtVariable<?>> getUserDefinedVariables(List<CtVariable<?>> list) {
+        if (list == null)
+            throw new IllegalArgumentException("List cannot be null");
+
+        return list.stream().filter(var -> isUserDefined(var)).toList();
+    }
+
+    public static boolean isUserDefined(CtVariable<?> var) {
+        return isReferenceType(var) && var.getType().getDeclaration() != null;
+    }
+
+    public static boolean isAccessibleField(CtVariable<?> var) {
+        return !var.isPrivate();
     }
 
     public static List<CtVariable<?>> getVariablesOfType(List<CtVariable<?>> list, CtTypeReference<?> type) {
         if (list == null)
             throw new IllegalArgumentException("List cannot be null");
-        List<CtVariable<?>> newList = new LinkedList<>();
-        for (CtVariable<?> var : list) {
-            if (var.getType().isSubtypeOf(type))
-                newList.add(var);
-        }
-        return newList;
+        return list.stream().filter(var -> var.getType().isSubtypeOf(type)).toList();
     }
 
     public static List<CtVariable<?>> getVariablesOfType(List<CtVariable<?>> list, Class<?> type) {
