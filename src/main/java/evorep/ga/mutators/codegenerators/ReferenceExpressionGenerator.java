@@ -63,6 +63,11 @@ public class ReferenceExpressionGenerator {
         return varReads;
     }
 
+    public static CtExpression<?> generateRandomUserDefVarReadOfType(List<CtVariable<?>> variables, CtTypeReference<?> typeRef) {
+        List<CtExpression<?>> varReads = generateAllUserDefVarReadsOfType(variables, typeRef);
+        return varReads.get(RandomUtils.nextInt(varReads.size()));
+    }
+
     public static List<CtExpression<?>> generateAllUserDefVarReadsOfType(List<CtVariable<?>> vars, CtTypeReference<?> typeRef) {
         List<CtExpression<?>> varReads = new ArrayList<>();
 
