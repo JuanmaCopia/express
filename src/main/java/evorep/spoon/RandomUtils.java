@@ -16,6 +16,10 @@ public class RandomUtils {
         return r.nextInt(bound);
     }
 
+    public static boolean nextBoolean() {
+        return r.nextBoolean();
+    }
+
     public static boolean chooseWithProbability(int numberOfElements) {
         int probability = 100 / numberOfElements;
         return r.nextInt(100) < probability;

@@ -1,29 +1,8 @@
 package evorep.spoon;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.lang3.ClassUtils;
-
 import spoon.SpoonAPI;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldRead;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.code.CtWhile;
-import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
@@ -33,6 +12,9 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.Collections;
+import java.util.List;
 
 public class SpoonFactory {
 
@@ -84,7 +66,7 @@ public class SpoonFactory {
     }
 
     public static CtMethod<Boolean> createMethod(ModifierKind modifier, CtTypeReference<?> returnType,
-            String name) {
+                                                 String name) {
         CtMethod<Boolean> newMethod = coreFactory.createMethod();
         newMethod.addModifier(modifier);
         newMethod.setType(returnType);
@@ -114,7 +96,7 @@ public class SpoonFactory {
     }
 
     public static CtIf createIfThenElseStatement(CtExpression<Boolean> condition, CtStatement thenStatement,
-            CtStatement elseStatement) {
+                                                 CtStatement elseStatement) {
         if (!(thenStatement instanceof CtBlock<?>))
             thenStatement = encapsulateStatement(thenStatement);
         if (!(elseStatement instanceof CtBlock<?>))
@@ -157,7 +139,7 @@ public class SpoonFactory {
     }
 
     public static CtLocalVariable<?> createLocalVariable(String varName, CtTypeReference<?> type,
-            Object assignment) {
+                                                         Object assignment) {
         CtLocalVariable localVariable = coreFactory.createLocalVariable();
 
         localVariable.setSimpleName(varName);
@@ -213,24 +195,28 @@ public class SpoonFactory {
         return codeFactory.createConstructorCall(type);
     }
 
+/*    public static CtConstructorCall<?> createConstructorCall(CtTypeReference<?> type, CtTypeReference<?> subtype) {
+        CtConstructorCall<?> constructorCall = codeFactory.createConstructorCall(type);
+    }*/
+
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName,
-            CtTypeReference<?> argsTypes,
-            CtExpression<?> args) {
+                                                CtTypeReference<?> argsTypes,
+                                                CtExpression<?> args) {
 
         return createInvocation(target, methodName, Collections.singletonList(argsTypes),
                 Collections.singletonList(args));
     }
 
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName,
-            List<CtTypeReference<?>> argsTypes,
-            List<CtExpression<?>> args) {
+                                                List<CtTypeReference<?>> argsTypes,
+                                                List<CtExpression<?>> args) {
 
         CtExecutableReference<?> method = createExecutableReference(target.getType(), methodName, argsTypes);
         return createMethodCall(target, method, args);
     }
 
     public static CtExecutableReference createExecutableReference(CtTypeReference<?> targetType, String methodName,
-            List<CtTypeReference<?>> args) {
+                                                                  List<CtTypeReference<?>> args) {
         CtExecutableReference method = coreFactory.createExecutableReference();
         method.setDeclaringType(targetType);
         method.setSimpleName(methodName);
@@ -239,7 +225,7 @@ public class SpoonFactory {
     }
 
     public static CtInvocation createMethodCall(CtVariable<?> target, CtExecutableReference<?> method,
-            List<CtExpression<?>> args) {
+                                                List<CtExpression<?>> args) {
         CtInvocation invocation = coreFactory.createInvocation();
         invocation.setTarget(createVariableRead(target));
         invocation.setExecutable(method);
@@ -269,7 +255,7 @@ public class SpoonFactory {
     }
 
     private static CtExpression<?> createBinaryExpression(CtExpression<?> left, CtExpression<?> right,
-            BinaryOperatorKind op) {
+                                                          BinaryOperatorKind op) {
         CtBinaryOperator<?> expression = coreFactory.createBinaryOperator();
         expression.setLeftHandOperand(left);
         expression.setRightHandOperand(right);

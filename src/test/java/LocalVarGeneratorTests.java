@@ -33,11 +33,18 @@ public class LocalVarGeneratorTests {
 
     static Set<String> possibleVarDeclarations;
 
+    static Set<String> possibleColVarDecl;
+
     private static void initializeVarDeclarations() {
         if (possibleVarDeclarations == null) {
             possibleVarDeclarations = new HashSet<>();
             possibleVarDeclarations.add("Node myVar = next");
             possibleVarDeclarations.add("Node myVar = next.next");
+        }
+        if (possibleColVarDecl == null) {
+            possibleColVarDecl = new HashSet<>();
+            possibleColVarDecl.add("HashSet<Node> visited = new HashSet<Node>()");
+            possibleColVarDecl.add("LinkedList<Node> worklist = new LinkedList<Node>()");
         }
     }
 
@@ -73,6 +80,16 @@ public class LocalVarGeneratorTests {
             varDeclarations.add(varDecl.toString());
         }
         assertTrue(varDeclarations.containsAll(possibleVarDeclarations));
+    }
+
+    @Test
+    void collectionVarDeclarationGeneratorTest() {
+        Set<String> varDeclarations = new HashSet<>();
+        while (varDeclarations.size() < 2) {
+            CtStatement varDecl = LocalVarDeclarationGenerator.generateCollectionLocalVarDeclaration(fields);
+            varDeclarations.add(varDecl.toString());
+        }
+        assertTrue(varDeclarations.containsAll(possibleColVarDecl));
     }
 
 }
