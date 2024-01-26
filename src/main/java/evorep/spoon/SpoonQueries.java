@@ -158,4 +158,7 @@ public class SpoonQueries {
         return stringBuilder.toString();
     }
 
+    public static CtVariable<?> getVariableByName(List<CtVariable<?>> localVars, String varName) {
+        return localVars.stream().filter(var -> var.getSimpleName().equals(varName)).findFirst().orElse(null);
+    }
 }

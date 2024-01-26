@@ -38,6 +38,8 @@ public class AssignmentGeneratorTests {
         if (possibleAssignments == null) {
             possibleAssignments = new HashSet<>();
             possibleAssignments.add("current = next");
+            possibleAssignments.add("current = current");
+            possibleAssignments.add("current = current.next");
             possibleAssignments.add("current = next.next");
         }
     }
@@ -69,11 +71,10 @@ public class AssignmentGeneratorTests {
     @Test
     void varDeclarationGeneratorTest() {
         Set<String> assignments = new HashSet<>();
-        while (assignments.size() < 2) {
+        while (assignments.size() < 4) {
             CtStatement varDecl = AssignmentGenerator.generateAssignment(fields, localVars);
             assignments.add(varDecl.toString());
         }
-        System.err.println(assignments.toString());
         assertTrue(assignments.containsAll(possibleAssignments));
     }
 

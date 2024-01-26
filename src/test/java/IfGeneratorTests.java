@@ -1,13 +1,14 @@
-import evorep.ga.mutators.codegenerators.BooleanExpressionGenerator;
+import evorep.ga.mutators.codegenerators.IfGenerator;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import spoon.SpoonAPI;
-import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
@@ -20,7 +21,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BooleanExpressionGeneratorTests {
+public class IfGeneratorTests {
 
     final static String SOURCE_PATH = "./src/test/resources";
     final static String CLASS_NAME = "Node";
@@ -33,6 +34,7 @@ public class BooleanExpressionGeneratorTests {
     static List<CtVariable<?>> fields;
     static List<CtVariable<?>> localVars;
     static List<CtVariable<?>> allVars;
+
 
     static Set<String> possibleNullCompExpressions;
     static Set<String> allPossibleExpression;
@@ -87,44 +89,30 @@ public class BooleanExpressionGeneratorTests {
     }
 
     @Test
-    void nullEqualityGenerationTest() {
-        CtExpression<Boolean> expression = BooleanExpressionGenerator.generateNullComparison(fields, localVars);
-        assertTrue(possibleNullCompExpressions.contains(expression.toString()));
-    }
+    void ifExpressionReturnFalseTest() {
+        CtIf ifAssignment = (CtIf) IfGenerator.generateIfExprReturnFalse(fields, localVars);
 
+        CtBlock thenBlock = ifAssignment.getThenStatement();
+        CtStatement thenStatement = thenBlock.getStatement(0);
+        assertTrue(thenStatement != null);
+        assertTrue(thenStatement.toString().equals("return false"));
 
-    @Test
-    void ensureAllNullExpressionsAreGeneratedTest() {
-        Set<String> expressionsGenerated = new HashSet<>();
-        while (expressionsGenerated.size() < 5)
-            expressionsGenerated.add(BooleanExpressionGenerator.generateNullComparison(fields, localVars).toString());
-
-        assertTrue(expressionsGenerated.containsAll(possibleNullCompExpressions));
+        CtExpression<?> condition = ifAssignment.getCondition();
+        assertTrue(allPossibleExpression.contains(condition.toString()));
     }
 
     @Test
-    void ensureAllExpressionsAreGeneratedTest() {
-        Set<String> expressionsGenerated = new HashSet<>();
-        while (expressionsGenerated.size() < 18)
-            expressionsGenerated.add(BooleanExpressionGenerator.generateRandomExpression(fields, localVars).toString());
-        assertTrue(expressionsGenerated.containsAll(allPossibleExpression));
+    void ifFalseReturnFalseTest() {
+        CtIf ifAssignment = (CtIf) IfGenerator.generateIfFalseReturnFalse(fields, localVars);
+
+        CtBlock thenBlock = ifAssignment.getThenStatement();
+        CtStatement thenStatement = thenBlock.getStatement(0);
+        assertTrue(thenStatement != null);
+        assertTrue(thenStatement.toString().equals("return false"));
+
+        CtExpression<?> condition = ifAssignment.getCondition();
+        assertEquals("false", condition.toString());
     }
 
-    @Test
-    void choicesTest() {
-        List<Integer> choices = BooleanExpressionGenerator.getChoices(fields, localVars);
-        assertEquals(2, choices.size());
-        assertTrue(choices.contains(0));
-        assertTrue(choices.contains(1));
-        assertTrue(!choices.contains(-1));
-    }
-
-    @Test
-    void negateTest() {
-        CtVariable<?> variable = SpoonQueries.getVariableByName(localVars, "current");
-        CtExpression<Boolean> expression = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(variable, null, BinaryOperatorKind.EQ);
-        expression = (CtExpression<Boolean>) SpoonFactory.createUnaryExpression(expression, UnaryOperatorKind.NOT);
-        assertEquals("!(current == null)", expression.toString());
-    }
 
 }
