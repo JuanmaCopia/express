@@ -9,11 +9,11 @@ import java.util.List;
 public class ReturnGenerator {
 
     public static CtStatement chooseReturnGenerator(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
-        int random = evorep.spoon.RandomUtils.nextInt(3);
+        int random = evorep.spoon.RandomUtils.nextInt(2);
         return switch (random) {
             case 0 -> generateReturnFalse();
             case 1 -> generateReturnTrue();
-            case 2 -> generateReturnRandomExpression(fields, localVars);
+            //case 2 -> generateReturnRandomExpression(fields, localVars);
             default -> throw new RuntimeException("Invalid random number: " + random);
         };
     }

@@ -2,6 +2,7 @@ package evorep.spoon;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
@@ -52,6 +53,10 @@ public class SpoonQueries {
         return element.getElements(e -> e instanceof CtStatement);
     }
 
+    public static List<CtStatement> getNonBlockStatements(CtElement element) {
+        return element.getElements(e -> e instanceof CtStatement && !(e instanceof CtBlock));
+    }
+
     public static List<CtVariable<?>> getVariablesOfReferenceType(List<CtVariable<?>> list) {
         if (list == null)
             throw new IllegalArgumentException("List cannot be null");
@@ -87,34 +92,34 @@ public class SpoonQueries {
         return getVariablesOfType(list, type.getReference());
     }
 
-    public static List<CtVariable<?>> getAllRecheableVariablesOfType(CtBlock<?> block, Class<?> type) {
-        List<CtVariable<?>> list = getAllRecheableVariables(block.getLastStatement());
+    public static List<CtVariable<?>> getAllReachableVariablesOfType(CtBlock<?> block, Class<?> type) {
+        List<CtVariable<?>> list = getAllReachableVariables(block.getLastStatement());
         return getVariablesOfType(list, SpoonFactory.getTypeFactory().createReference(type));
     }
 
-    public static List<CtVariable<?>> getAllRecheableVariablesOfType(CtBlock<?> block, CtTypeReference<?> type) {
-        List<CtVariable<?>> list = getAllRecheableVariables(block.getLastStatement());
+    public static List<CtVariable<?>> getAllReachableVariablesOfType(CtBlock<?> block, CtTypeReference<?> type) {
+        List<CtVariable<?>> list = getAllReachableVariables(block.getLastStatement());
         return getVariablesOfType(list, type);
     }
 
-    public static List<CtVariable<?>> getAllRecheableVariables(CtStatement statement) {
+    public static List<CtVariable<?>> getAllReachableVariables(CtStatement statement) {
         return statement.map(new PotentialVariableDeclarationFunction()).list();
     }
 
-    public static List<CtVariable<?>> getAllRecheableLocalVariables(CtStatement statement) {
+    public static List<CtVariable<?>> getAllReachableLocalVariables(CtStatement statement) {
         return statement.map(new PotentialVariableDeclarationFunction()).map(e -> e instanceof CtLocalVariable).list();
     }
 
-    public static List<CtVariable<?>> getAllRecheableLocalVariablesOfType(CtStatement statement,
+    public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
                                                                           CtTypeReference<?> type) {
         return statement.map(new PotentialVariableDeclarationFunction())
                 .map(e -> e instanceof CtLocalVariable && ((CtVariable<?>) e).getType().isSubtypeOf(type))
                 .list();
     }
 
-    public static List<CtVariable<?>> getAllRecheableLocalVariablesOfType(CtStatement statement,
+    public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
                                                                           Class<?> type) {
-        return getAllRecheableLocalVariablesOfType(statement, SpoonFactory.getTypeFactory().createReference(type));
+        return getAllReachableLocalVariablesOfType(statement, SpoonFactory.getTypeFactory().createReference(type));
     }
 
     public static boolean isReferenceType(CtVariable var) {
@@ -152,7 +157,7 @@ public class SpoonQueries {
 
     public static String getFalseFitnessString() {
         CtClass<?> clazz = SpoonManager.getTargetClass();
-        CtMethod<?> method = clazz.getMethodsByName("structureRepOK").get(0);
+        CtMethod<?> method = clazz.getMethodsByName("structureRepOK2").get(0);
 
         StringBuilder stringBuilder = new StringBuilder();
         for (CtStatement statement : method.getBody().getStatements()) {
@@ -164,5 +169,19 @@ public class SpoonQueries {
 
     public static CtVariable<?> getVariableByName(List<CtVariable<?>> localVars, String varName) {
         return localVars.stream().filter(var -> var.getSimpleName().equals(varName)).findFirst().orElse(null);
+    }
+
+
+    public static CtVariable<?> getRandomUserDefLocalVar(List<CtVariable<?>> localVars) {
+        List<CtVariable<?>> userDefLocalVars = SpoonQueries.getUserDefinedVariables(localVars).stream().filter(
+                var -> var instanceof CtLocalVariable<?>
+        ).toList();
+        if (userDefLocalVars.isEmpty())
+            return null;
+        return userDefLocalVars.get(RandomUtils.nextInt(userDefLocalVars.size()));
+    }
+
+    public static boolean containsReturnStatement(CtBlock<?> block) {
+        return !block.getElements(e -> e instanceof CtReturn).isEmpty();
     }
 }

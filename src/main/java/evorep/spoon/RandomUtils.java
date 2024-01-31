@@ -1,6 +1,8 @@
 package evorep.spoon;
 
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
@@ -61,6 +63,17 @@ public class RandomUtils {
             throw new IllegalArgumentException("Lists cannot be null");
 
         return list.get(r.nextInt(list.size()));
+    }
+
+    public static CtStatement getRandomStatementNonBlockNonExpression(CtBlock<?> block) {
+        List<CtStatement> statements = block.getElements(e ->
+                e instanceof CtStatement
+                        && !(e instanceof CtBlock)
+                        && !(e instanceof CtExpression)
+        );
+        if (statements.isEmpty())
+            return null;
+        return statements.get(r.nextInt(statements.size()));
     }
 
 }

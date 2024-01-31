@@ -83,5 +83,9 @@ public class BooleanExpressionGenerator {
 
     }
 
+    public static CtExpression<Boolean> generateRandomBooleanLiteral() {
+        return (CtExpression<Boolean>) SpoonFactory.createLiteral(RandomUtils.nextBoolean());
+    }
+
 
 }

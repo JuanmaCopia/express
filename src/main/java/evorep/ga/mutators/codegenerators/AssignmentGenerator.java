@@ -1,6 +1,5 @@
 package evorep.ga.mutators.codegenerators;
 
-import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.CtExpression;
@@ -14,8 +13,7 @@ import java.util.List;
 public class AssignmentGenerator {
 
     public static CtStatement generateRandomAssignment(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
-        List<CtVariable<?>> userDefVars = SpoonQueries.getUserDefinedVariables(localVars);
-        CtVariable<?> chosenVar = userDefVars.get(RandomUtils.nextInt(userDefVars.size()));
+        CtVariable<?> chosenVar = SpoonQueries.getRandomUserDefLocalVar(localVars);
         CtTypeReference<?> varType = chosenVar.getType();
 
         List<CtVariable<?>> allVars = new ArrayList<>();

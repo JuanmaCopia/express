@@ -21,7 +21,6 @@ public class SpoonManager {
             initializeLauncher(srcPath, binPath);
             initializeFactories();
             initializeClass(fullClassName);
-            initializeRepOKMethod();
             initializeCompiler();
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,10 +53,6 @@ public class SpoonManager {
 
     private static void initializeClass(String fullClassName) {
         targetClass = launcher.getFactory().Class().get(fullClassName);
-    }
-
-    private static void initializeRepOKMethod() {
-        targetClass.addMethod(SpoonFactory.createRepOK("repOK"));
     }
 
     private static void initializeCompiler() {

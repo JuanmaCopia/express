@@ -2,28 +2,38 @@ package evorep;
 
 import evorep.config.ToolConfig;
 import evorep.ga.GeneticAlgorithm;
+import evorep.ga.Individual;
 import evorep.ga.Population;
-import evorep.spoon.ProcessorsUseExamples;
+import evorep.spoon.SpoonFactory;
+import evorep.spoon.SpoonManager;
+import spoon.reflect.declaration.CtMethod;
 
 public class Main {
 
+    private static void initializeRepOKMethod() {
+        SpoonManager.getTargetClass().addMethod(SpoonFactory.createRepOK("repOK"));
+    }
+
+    private static CtMethod getRepOKMethod() {
+        return SpoonManager.getTargetClass().getMethod("repOK");
+    }
+
     public static void main(String[] args) {
         ToolConfig.parseConfigurationFile();
-        // startSearch();
-        ProcessorsUseExamples.printStatements();
-
+        initializeRepOKMethod();
+        startSearch();
     }
 
     public static void startSearch() {
-        GeneticAlgorithm ga = new GeneticAlgorithm(100, 0.001, 0.95, 2);
-        Population population = ga.initPopulation();
+        GeneticAlgorithm ga = new GeneticAlgorithm(200, 0.4, 0.95, 0);
+        Population population = ga.initPopulation(getRepOKMethod());
 
         // Evaluate population
         ga.evalPopulation(population);
 
         // Keep track of current generation
         int generation = 1;
-        int MAX_GENERATIONS = 100;
+        int MAX_GENERATIONS = 300;
 
         /**
          * Start the evolution loop
@@ -36,7 +46,9 @@ public class Main {
          */
         while (!ga.isTerminationConditionMet(population) && generation <= MAX_GENERATIONS) {
             // Print fittest individual from population
-            System.out.println("Best solution: " + population.getFittest(0).toString());
+            Individual fittest = population.getFittest(0);
+            System.out.println("\nFitness value: " + fittest.getFitness());
+            System.out.println("Individual:\n" + population.getFittest(0).toString());
 
             // Apply crossover
             population = ga.crossoverPopulation(population);

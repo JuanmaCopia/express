@@ -74,6 +74,10 @@ public class SpoonFactory {
         return newMethod;
     }
 
+    public static CtBlock<?> createBlock() {
+        return coreFactory.createBlock();
+    }
+
     public static CtReturn createReturnStatement(CtExpression returnExpression) {
         return coreFactory.createReturn().setReturnedExpression(returnExpression);
     }

@@ -98,14 +98,14 @@ public class ProcessorsUseExamples {
         // System.err.println(SpoonQueries.getAllRecheableVariables(method.getBody()).toString();
 
         List<CtVariable<?>> localAndParamVars = SpoonQueries
-                .getAllRecheableLocalVariablesOfType(method.getBody().getLastStatement(), Set.class);
+                .getAllReachableLocalVariablesOfType(method.getBody().getLastStatement(), Set.class);
         assert (!localAndParamVars.isEmpty());
 
         CtVariable<?> setVariable = localAndParamVars.get(0);
 
         CtTypeReference<?> typeOfElementsInSet = setVariable.getReference().getType().getActualTypeArguments().get(0);
 
-        List<CtVariable<?>> localVarsOfSetType = SpoonQueries.getAllRecheableLocalVariablesOfType(
+        List<CtVariable<?>> localVarsOfSetType = SpoonQueries.getAllReachableLocalVariablesOfType(
                 method.getBody().getLastStatement(),
                 typeOfElementsInSet);
 
@@ -159,7 +159,7 @@ public class ProcessorsUseExamples {
 
         CtStatement last = method.getBody().getLastStatement();
 
-        List<CtVariable<?>> query = SpoonQueries.getAllRecheableLocalVariables(last);
+        List<CtVariable<?>> query = SpoonQueries.getAllReachableLocalVariables(last);
 
         System.err.println("\n\nPotentialVariableDeclarationFunction:\n");
         for (CtElement e : query) {
@@ -173,9 +173,15 @@ public class ProcessorsUseExamples {
         CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
         CtMethod<?> method = sllClass.getMethodsByName("structureRepOK").get(0);
 
-        SpoonQueries.getStatements(method.getBody()).forEach(
+        SpoonQueries.getStatements(method).forEach(
                 s -> System.err.println("Statement:\n" + s.toString() + "\n")
         );
+
+        /*method.getBody().getStatements().forEach(
+                s -> System.err.println("Statement:\n" + s.toString() + "\n")
+        );*/
+
+
     }
 
 }
