@@ -117,6 +117,15 @@ public class SpoonFactory {
         return whileStatement;
     }
 
+    public static CtWhile createWhileStatement(CtExpression<Boolean> condition) {
+        CtBlock<?> emptyBlock = coreFactory.createBlock();
+        CtWhile whileStatement = coreFactory.createWhile();
+        whileStatement.setLoopingExpression(condition);
+        whileStatement.setBody(emptyBlock);
+        return whileStatement;
+    }
+
+
     public static CtBlock<?> encapsulateStatement(CtStatement statement) {
         CtBlock<?> block = coreFactory.createBlock();
         block.addStatement(statement);
