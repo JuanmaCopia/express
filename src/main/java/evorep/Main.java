@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
         ToolConfig.parseConfigurationFile();
         // startSearch();
-        ProcessorsUseExamples.alreadyVisitedCheckProcessorExample();
+        ProcessorsUseExamples.printStatements();
 
     }
 

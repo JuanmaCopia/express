@@ -1,8 +1,9 @@
 package examples;
 
-import java.util.*;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class SLL {
 
@@ -34,6 +35,21 @@ public class SLL {
         while (curr != null) {
             if (curr.next != null && !visited.add(curr.next)) {
                 return false;
+            }
+            curr = curr.next;
+        }
+        return true;
+    }
+
+    public boolean structureRepOK2() {
+        Set<Node> visited = new HashSet<>();
+        visited.add(head);
+        Node curr = head;
+        while (curr != null) {
+            if (curr.next != null) {
+                if (!visited.add(curr.next)) {
+                    return false;
+                }
             }
             curr = curr.next;
         }

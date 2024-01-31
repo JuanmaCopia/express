@@ -48,6 +48,10 @@ public class SpoonQueries {
         return element.getElements(e -> e instanceof CtLocalVariable);
     }
 
+    public static List<CtStatement> getStatements(CtElement element) {
+        return element.getElements(e -> e instanceof CtStatement);
+    }
+
     public static List<CtVariable<?>> getVariablesOfReferenceType(List<CtVariable<?>> list) {
         if (list == null)
             throw new IllegalArgumentException("List cannot be null");

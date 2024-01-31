@@ -1,25 +1,16 @@
 package evorep.spoon;
 
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-
-import evorep.ga.mutators.processors.AddMethodCallProcessor;
-import evorep.ga.mutators.processors.AlreadyVisitedCheckProcessor;
-import evorep.ga.mutators.processors.DeclareVisitedSetProcessor;
-import evorep.ga.mutators.processors.ExampleClassProcessor;
-import evorep.ga.mutators.processors.NullCheckAllFieldsProcessor;
-import evorep.ga.mutators.processors.ReferenceTraversalProcessor;
+import evorep.ga.mutators.processors.*;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 public class ProcessorsUseExamples {
 
@@ -175,6 +166,16 @@ public class ProcessorsUseExamples {
             System.err.println(e.toString());
         }
 
+    }
+
+    public static void printStatements() {
+        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
+        CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
+        CtMethod<?> method = sllClass.getMethodsByName("structureRepOK").get(0);
+
+        SpoonQueries.getStatements(method.getBody()).forEach(
+                s -> System.err.println("Statement:\n" + s.toString() + "\n")
+        );
     }
 
 }
