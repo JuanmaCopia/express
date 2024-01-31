@@ -13,7 +13,7 @@ import java.util.List;
 
 public class AssignmentGenerator {
 
-    public static CtStatement generateAssignment(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
+    public static CtStatement generateRandomAssignment(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
         List<CtVariable<?>> userDefVars = SpoonQueries.getUserDefinedVariables(localVars);
         CtVariable<?> chosenVar = userDefVars.get(RandomUtils.nextInt(userDefVars.size()));
         CtTypeReference<?> varType = chosenVar.getType();

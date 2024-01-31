@@ -72,7 +72,7 @@ public class AssignmentGeneratorTests {
     void varDeclarationGeneratorTest() {
         Set<String> assignments = new HashSet<>();
         while (assignments.size() < 4) {
-            CtStatement varDecl = AssignmentGenerator.generateAssignment(fields, localVars);
+            CtStatement varDecl = AssignmentGenerator.generateRandomAssignment(fields, localVars);
             assignments.add(varDecl.toString());
         }
         assertTrue(assignments.containsAll(possibleAssignments));

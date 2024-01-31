@@ -22,13 +22,13 @@ public class LocalVarDeclarationGenerator {
         return "var" + varCount++;
     }
 
-    public static CtStatement generateRandomLocalVarDeclaration(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
+    public static CtStatement chooseLocalVarDeclaration(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
         if (RandomUtils.nextBoolean())
             return generateUserDefinedLocalVarDeclaration(fields, getVarName());
         return generateCollectionLocalVarDeclaration(fields);
     }
 
-    public static CtStatement generateUserDefinedLocalVarDeclaration(List<CtVariable<?>> fields) {
+    public static CtStatement chooseLocalVarDeclaration(List<CtVariable<?>> fields) {
         return generateUserDefinedLocalVarDeclaration(fields, "var");
     }
 
