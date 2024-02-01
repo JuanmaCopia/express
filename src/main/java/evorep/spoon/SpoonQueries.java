@@ -40,9 +40,7 @@ public class SpoonQueries {
     public static List<CtVariable<?>> getAccessibleFields(CtTypeReference<?> typeRef) {
         if (typeRef.getDeclaration() == null)
             throw new IllegalArgumentException("the type is not in source files");
-        return getFields(typeRef.getDeclaration()).stream().filter(
-                field -> !field.isPrivate()
-        ).toList();
+        return getFields(typeRef.getDeclaration());
     }
 
     public static List<CtVariable<?>> getLocalVariables(CtElement element) {

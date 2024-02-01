@@ -1,4 +1,4 @@
-import evorep.ga.mutators.codegenerators.BooleanExpressionGenerator;
+import evorep.ga.randomgen.BooleanExpressionGenerator;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;

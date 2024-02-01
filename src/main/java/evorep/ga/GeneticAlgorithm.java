@@ -1,6 +1,6 @@
 package evorep.ga;
 
-import evorep.ga.mutators.transformers.Mutator;
+import evorep.ga.mutators.Mutator;
 import evorep.spoon.SpoonQueries;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import spoon.reflect.declaration.CtMethod;

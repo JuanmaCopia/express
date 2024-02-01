@@ -1,6 +1,6 @@
-package evorep.ga.mutators.transformers;
+package evorep.ga.mutators;
 
-import evorep.ga.mutators.codegenerators.BooleanExpressionGenerator;
+import evorep.ga.randomgen.BooleanExpressionGenerator;
 import evorep.spoon.RandomUtils;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtReturn;

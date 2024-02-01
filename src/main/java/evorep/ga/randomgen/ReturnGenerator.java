@@ -1,4 +1,4 @@
-package evorep.ga.mutators.codegenerators;
+package evorep.ga.randomgen;
 
 import evorep.spoon.SpoonFactory;
 import spoon.reflect.code.CtStatement;

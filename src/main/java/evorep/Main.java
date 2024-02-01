@@ -25,7 +25,7 @@ public class Main {
     }
 
     public static void startSearch() {
-        GeneticAlgorithm ga = new GeneticAlgorithm(200, 0.4, 0.95, 0);
+        GeneticAlgorithm ga = new GeneticAlgorithm(200, 0.4, 0.95, 3);
         Population population = ga.initPopulation(getRepOKMethod());
 
         // Evaluate population

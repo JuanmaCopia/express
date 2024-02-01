@@ -1,6 +1,6 @@
-package evorep.ga.mutators.transformers;
+package evorep.ga.mutators;
 
-import evorep.ga.mutators.codegenerators.StatementGenerator;
+import evorep.ga.randomgen.StatementGenerator;
 import evorep.spoon.RandomUtils;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;

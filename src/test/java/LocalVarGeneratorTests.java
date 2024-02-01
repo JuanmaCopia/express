@@ -1,4 +1,4 @@
-import evorep.ga.mutators.codegenerators.LocalVarDeclarationGenerator;
+import evorep.ga.randomgen.LocalVarDeclarationGenerator;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;

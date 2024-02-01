@@ -1,4 +1,4 @@
-package evorep.ga.mutators.transformers;
+package evorep.ga.mutators;
 
 import evorep.ga.Individual;
 import evorep.spoon.RandomUtils;

@@ -1,4 +1,4 @@
-package evorep.ga.mutators.codegenerators;
+package evorep.ga.randomgen;
 
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
@@ -23,9 +23,13 @@ public class LocalVarDeclarationGenerator {
     }
 
     public static CtStatement chooseLocalVarDeclaration(List<CtVariable<?>> fields) {
+        CtStatement varDeclaration;
         if (RandomUtils.nextBoolean())
-            return generateUserDefinedLocalVarDeclaration(fields, getVarName());
-        return generateCollectionLocalVarDeclaration(fields);
+            varDeclaration = generateUserDefinedLocalVarDeclaration(fields, getVarName());
+        else
+            varDeclaration = generateCollectionLocalVarDeclaration(fields);
+        //System.err.println("\nvarDeclaration generated: " + varDeclaration.toString());
+        return varDeclaration;
     }
 
     public static CtStatement generateUserDefinedLocalVarDeclaration(List<CtVariable<?>> fields, String varName) {

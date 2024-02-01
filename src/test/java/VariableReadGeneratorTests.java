@@ -1,4 +1,4 @@
-import evorep.ga.mutators.codegenerators.ReferenceExpressionGenerator;
+import evorep.ga.randomgen.ReferenceExpressionGenerator;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
