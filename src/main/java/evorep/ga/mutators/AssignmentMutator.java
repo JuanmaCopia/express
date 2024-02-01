@@ -1,51 +1,48 @@
 package evorep.ga.mutators;
 
-import evorep.ga.randomgen.ReferenceExpressionGenerator;
-import evorep.spoon.RandomUtils;
-import evorep.spoon.SpoonFactory;
-import evorep.spoon.SpoonQueries;
+import evorep.scope.Scope;
 import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.CtElement;
 
-import java.util.ArrayList;
-import java.util.List;
+public class AssignmentMutator implements Mutator {
 
-public class AssignmentMutator {
-
-    public static void mutate(CtAssignment assignment, List<CtVariable<?>> fields, List<CtVariable<?>> localVariables) {
-        List<CtVariable<?>> allVars = new ArrayList<>();
-        allVars.addAll(fields);
-        allVars.addAll(localVariables);
-
-        int random = RandomUtils.nextInt(2);
-        switch (random) {
-            case 0 -> mutateRightOfAssignment(assignment, allVars);
-            case 1 -> mutateLeftOfAssignment(assignment, allVars);
-            default -> throw new RuntimeException("Invalid random number: " + random);
-        }
+    public boolean isApplicable(CtElement element) {
+        return element instanceof CtAssignment;
     }
 
-    private static void mutateRightOfAssignment(CtAssignment assignment, List<CtVariable<?>> allVars) {
+    @Override
+    public void mutate(CtElement elementToMutate, Scope scope) {
+        /*if (!isApplicable(elementToMutate))
+            throw new RuntimeException("AssignmentMutator is not applicable to " + elementToMutate);
+        CtAssignment assignmentToMutate = (CtAssignment) elementToMutate;
+        int random = RandomUtils.nextInt(2);
+        switch (random) {
+            case 0 -> mutateRightOfAssignment(assignmentToMutate, scope);
+            case 1 -> mutateLeftOfAssignment(assignmentToMutate, scope);
+            default -> throw new RuntimeException("Invalid random number: " + random);
+        }*/
+    }
+
+/*
+    private void mutateRightOfAssignment(CtAssignment assignment, Scope scope) {
         if (assignment.getAssignment() instanceof CtVariableRead<?>) {
             CtVariable<?> var = ((CtVariableRead<?>) assignment.getAssignment()).getVariable().getDeclaration();
             if (SpoonQueries.isUserDefined(var)) {
-                CtExpression<?> newAssignment = ReferenceExpressionGenerator.generateRandomUserDefVarReadOfType(allVars, var.getType());
+                CtExpression<?> newAssignment = ReferenceExpressionGenerator.generateRandomUserDefVarReadOfType(scope.getAllVariables(), var.getType());
                 assignment.setAssignment(newAssignment);
             }
         }
     }
 
-    private static void mutateLeftOfAssignment(CtAssignment assignment, List<CtVariable<?>> allVars) {
+    private void mutateLeftOfAssignment(CtAssignment assignment, Scope scope) {
         if (assignment.getAssigned() instanceof CtVariableWrite<?>) {
             CtVariable<?> var = ((CtVariableWrite<?>) assignment.getAssigned()).getVariable().getDeclaration();
             if (SpoonQueries.isUserDefined(var)) {
-                CtVariable<?> newAssigned = SpoonQueries.getRandomUserDefLocalVar(allVars);
+                CtVariable<?> newAssigned = SpoonQueries.getRandomUserDefLocalVar(scope.getAllVariables());
                 assignment.setAssigned(SpoonFactory.createVariableWrite(newAssigned));
             }
         }
     }
+*/
 
 }

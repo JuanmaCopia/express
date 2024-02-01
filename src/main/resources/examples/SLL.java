@@ -12,8 +12,8 @@ public class SLL {
     public int size;
 
     private class Node {
-        private int data;
-        private Node next;
+        int data;
+        Node next;
 
         public Node(int data) {
             this.data = data;

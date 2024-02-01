@@ -1,22 +1,34 @@
 package evorep.ga.mutators;
 
-import evorep.ga.randomgen.StatementGenerator;
-import evorep.spoon.RandomUtils;
+import evorep.scope.Scope;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.CtElement;
 
-import java.util.List;
+public class BlockMutator implements Mutator {
 
-public class BlockMutator {
-
-    public static void mutate(CtBlock<?> block, List<CtVariable<?>> fields, List<CtVariable<?>> localVariables) {
-        CtStatement newStatement = StatementGenerator.chooseRandomStatement(block, fields, localVariables);
-        CtStatement randomStatement = RandomUtils.getRandomStatementNonBlockNonExpression(block);
-        if (randomStatement != null)
-            randomStatement.insertBefore(newStatement);
-        else {
-            block.addStatement(newStatement);
-        }
+    public boolean isApplicable(CtElement element) {
+        return element instanceof CtBlock;
     }
+
+    @Override
+    public void mutate(CtElement elementToMutate, Scope scope) {
+
+    }
+
+/*    public void mutate(CtBlock<?> block, List<CtVariable<?>> fields, List<CtVariable<?>> localVariables) {
+        CtStatement newStatement = StatementGenerator.chooseRandomStatement(block, fields, localVariables);
+        insertStatement(block, newStatement);
+    }
+
+    private void insertStatement(CtBlock<?> block, CtStatement statement) {
+        CtStatement randomStatement = RandomUtils.getRandomStatementNonBlockNonExpression(block);
+        if (randomStatement != null) {
+            if (RandomUtils.nextBoolean())
+                randomStatement.insertAfter(statement);
+            else
+                randomStatement.insertBefore(statement);
+        } else {
+            block.addStatement(statement);
+        }
+    }*/
 }

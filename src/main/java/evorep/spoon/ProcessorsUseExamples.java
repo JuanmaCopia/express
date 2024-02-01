@@ -5,7 +5,10 @@ import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
@@ -150,7 +153,7 @@ public class ProcessorsUseExamples {
         System.err.println("\n\n ==== AFTER ==== \n\n" + method.toString());
     }
 
-    public static void obtainLocalVariablesExample() {
+/*    public static void obtainLocalVariablesExample() {
         SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
         CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
         CtMethod<?> method = sllClass.getMethodsByName("mymethod4").get(0);
@@ -166,7 +169,7 @@ public class ProcessorsUseExamples {
             System.err.println(e.toString());
         }
 
-    }
+    }*/
 
     public static void printStatements() {
         SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");

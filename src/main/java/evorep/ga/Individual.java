@@ -111,4 +111,8 @@ public class Individual {
         return chromosome.toString();
     }
 
+    public Individual clone() {
+        return new Individual(chromosome);
+    }
+
 }

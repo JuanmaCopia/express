@@ -1,6 +1,6 @@
 package evorep.ga;
 
-import evorep.ga.mutators.Mutator;
+import evorep.ga.mutators.MutatorManager;
 import evorep.spoon.SpoonQueries;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import spoon.reflect.declaration.CtMethod;
@@ -229,7 +229,7 @@ public class GeneticAlgorithm {
 
             if (populationIndex > this.elitismCount) {
                 // Mutate individual
-                Mutator.mutate(individual);
+                MutatorManager.mutate(individual);
             }
         }
 

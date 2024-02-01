@@ -1,16 +1,22 @@
 package evorep.ga.mutators;
 
-import evorep.ga.randomgen.BooleanExpressionGenerator;
-import spoon.reflect.code.CtExpression;
+import evorep.scope.Scope;
 import spoon.reflect.code.CtIf;
-import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.CtElement;
 
-import java.util.List;
+public class IfMutator implements Mutator {
 
-public class IfMutator {
+    public boolean isApplicable(CtElement element) {
+        return element instanceof CtIf;
+    }
 
-    public static void mutate(CtIf ifStatement, List<CtVariable<?>> fields, List<CtVariable<?>> localVariables) {
+    @Override
+    public void mutate(CtElement elementToMutate, Scope scope) {
+
+    }
+
+/*    public void mutate(CtIf ifStatement, List<CtVariable<?>> fields, List<CtVariable<?>> localVariables) {
         CtExpression<Boolean> newCondition = BooleanExpressionGenerator.generateRandomExpression(fields, localVariables);
         ifStatement.setCondition(newCondition);
-    }
+    }*/
 }

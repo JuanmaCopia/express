@@ -2,6 +2,7 @@ package evorep.ga.randomgen;
 
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtVariable;
@@ -21,7 +22,9 @@ public class AssignmentGenerator {
         allVars.addAll(localVars);
         CtExpression<?> chosenFieldRead = ReferenceExpressionGenerator.generateRandomUserDefVarReadOfType(allVars, varType);
 
-        return SpoonFactory.createAssignment(chosenVar, chosenFieldRead);
+        CtAssignment assignment = SpoonFactory.createAssignment(chosenVar, chosenFieldRead);
+        //System.err.println("\nassignment generated: " + assignment.toString());
+        return assignment;
     }
 
 
