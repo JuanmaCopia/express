@@ -42,7 +42,7 @@ public class SpoonQueriesTests {
 
     @Test
     void getAllVariablesTest() {
-        List<CtVariable<?>> vars = SpoonQueries.getAllReachableVariablesFromMethod(method).list();
+        List<CtVariable<?>> vars = SpoonQueries.getAllReachableVariablesFromMethod(method);
         assertEquals(3, vars.size());
     }
 }

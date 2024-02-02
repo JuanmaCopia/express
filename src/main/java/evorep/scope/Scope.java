@@ -5,31 +5,30 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.visitor.chain.CtQuery;
 
 import java.util.List;
 
 public class Scope {
 
-    CtQuery allVariables;
-    CtQuery fields;
-    CtQuery localVariables;
+    List<CtVariable<?>> allVariables;
+    List<CtVariable<?>> fields;
+    List<CtVariable<?>> localVariables;
 
     public Scope(CtCodeElement element) {
-        this.allVariables = SpoonQueries.getAllReachableVariables(element);
-        this.fields = allVariables.filterChildren(var -> var instanceof CtField<?>);
-        this.localVariables = allVariables.filterChildren(var -> var instanceof CtLocalVariable<?>);
+        allVariables = SpoonQueries.getAllReachableVariables(element);
+        fields = allVariables.stream().filter(var -> var instanceof CtField<?>).toList();
+        localVariables = allVariables.stream().filter(var -> var instanceof CtLocalVariable<?>).toList();
     }
 
     public List<CtVariable<?>> getAllVariables() {
-        return allVariables.list();
+        return allVariables;
     }
 
     public List<CtVariable<?>> getFields() {
-        return fields.list();
+        return fields;
     }
 
     public List<CtVariable<?>> getLocalVariables() {
-        return localVariables.list();
+        return localVariables;
     }
 }

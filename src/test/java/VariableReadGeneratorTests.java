@@ -1,4 +1,5 @@
 import evorep.ga.randomgen.ReferenceExpressionGenerator;
+import evorep.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
@@ -9,9 +10,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,9 +26,7 @@ public class VariableReadGeneratorTests {
 
     static CtClass<?> nodeClass;
     static CtMethod<?> method;
-    static List<CtVariable<?>> fields;
-    static List<CtVariable<?>> localVars;
-    static List<CtVariable<?>> allVars;
+    static Scope scope;
 
     static Set<String> possibleNodeVarAccess;
     static Set<String> possibleIntVarReads;
@@ -54,11 +51,7 @@ public class VariableReadGeneratorTests {
         launcher = SpoonFactory.getLauncher();
         nodeClass = SpoonQueries.getClass(CLASS_NAME);
         method = nodeClass.getMethodsByName(METHOD_NAME).get(0);
-        fields = SpoonQueries.getFields(nodeClass);
-        localVars = SpoonQueries.getLocalVariables(method);
-        allVars = new ArrayList<>();
-        allVars.addAll(fields);
-        allVars.addAll(localVars);
+        scope = new Scope(method.getBody().getLastStatement());
     }
 
     private static void initializeSpoon() {
@@ -81,7 +74,7 @@ public class VariableReadGeneratorTests {
         while (variableReads.size() < 2)
             variableReads.add(ReferenceExpressionGenerator.generateRandomVarReadRefType(nextField, true).toString());
 
-        CtVariable<?> currentVar = localVars.get(0);
+        CtVariable<?> currentVar = scope.getLocalVariables().get(0);
         while (variableReads.size() < 4)
             variableReads.add(ReferenceExpressionGenerator.generateRandomVarReadRefType(currentVar, true).toString());
 
@@ -96,7 +89,7 @@ public class VariableReadGeneratorTests {
         while (variableWrites.size() < 2)
             variableWrites.add(ReferenceExpressionGenerator.generateRandomVarWriteOfRefType(nextField, true).toString());
 
-        CtVariable<?> currentVar = localVars.get(0);
+        CtVariable<?> currentVar = scope.getLocalVariables().get(0);
         while (variableWrites.size() < 4)
             variableWrites.add(ReferenceExpressionGenerator.generateRandomVarWriteOfRefType(currentVar, true).toString());
 
@@ -107,7 +100,7 @@ public class VariableReadGeneratorTests {
     @Test
     void generateAllVarReadsOfNodeTest() {
         Set<String> variableReads = new HashSet<>();
-        ReferenceExpressionGenerator.generateAllVarReadsOfType(allVars, nodeClass.getReference()).forEach(
+        ReferenceExpressionGenerator.generateAllVarReadsOfType(scope.getAllVariables(), nodeClass.getReference()).forEach(
                 varRead -> variableReads.add(varRead.toString())
         );
 
@@ -118,7 +111,8 @@ public class VariableReadGeneratorTests {
     @Test
     void generateAllVarWritesOfNodeTest() {
         Set<String> variableWrites = new HashSet<>();
-        ReferenceExpressionGenerator.generateAllVarWritesOfType(allVars, nodeClass.getReference()).forEach(
+        System.err.println(scope.getAllVariables().toString());
+        ReferenceExpressionGenerator.generateAllVarWritesOfType(scope.getAllVariables(), nodeClass.getReference()).forEach(
                 varWrite -> variableWrites.add(varWrite.toString())
         );
 
@@ -130,7 +124,7 @@ public class VariableReadGeneratorTests {
     void generateAllVarReadsOfIntTest() {
         Set<String> variableReads = new HashSet<>();
 
-        ReferenceExpressionGenerator.generateAllVarReadsOfType(allVars, SpoonFactory.createReference(int.class)).forEach(
+        ReferenceExpressionGenerator.generateAllVarReadsOfType(scope.getAllVariables(), SpoonFactory.createReference(int.class)).forEach(
                 varRead -> variableReads.add(varRead.toString())
         );
 
@@ -142,7 +136,7 @@ public class VariableReadGeneratorTests {
     void generateAllVarWritesOfIntTest() {
         Set<String> variableWrites = new HashSet<>();
 
-        ReferenceExpressionGenerator.generateAllVarWritesOfType(allVars, SpoonFactory.createReference(int.class)).forEach(
+        ReferenceExpressionGenerator.generateAllVarWritesOfType(scope.getAllVariables(), SpoonFactory.createReference(int.class)).forEach(
                 varWrite -> variableWrites.add(varWrite.toString())
         );
 
@@ -153,7 +147,7 @@ public class VariableReadGeneratorTests {
     @Test
     void generateAllUserDefVarReadsOfNodeTest() {
         Set<String> variableReads = new HashSet<>();
-        ReferenceExpressionGenerator.generateAllVarReadsOfReferenceType(fields).forEach(
+        ReferenceExpressionGenerator.generateAllVarReadsOfReferenceType(scope.getFields()).forEach(
                 varRead -> variableReads.add(varRead.toString())
         );
 

@@ -6,7 +6,6 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 
 import java.util.Collection;
@@ -93,12 +92,12 @@ public class SpoonQueries {
         return getVariablesOfType(list, SpoonFactory.getTypeFactory().createReference(type));
     }
 
-    public static CtQuery getAllReachableVariablesFromMethod(CtMethod method) {
+    public static List<CtVariable<?>> getAllReachableVariablesFromMethod(CtMethod method) {
         return getAllReachableVariables(method.getBody().getLastStatement());
     }
 
-    public static CtQuery getAllReachableVariables(CtElement statement) {
-        return statement.map(new PotentialVariableDeclarationFunction());
+    public static List<CtVariable<?>> getAllReachableVariables(CtElement statement) {
+        return statement.map(new PotentialVariableDeclarationFunction()).list();
     }
 
     public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
