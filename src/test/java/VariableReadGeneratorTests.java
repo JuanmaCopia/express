@@ -98,6 +98,38 @@ public class VariableReadGeneratorTests {
     }
 
     @Test
+    void ensureAllVariableReadsPerTypeAreGeneratedTest() {
+        Set<String> variableWrites = new HashSet<>();
+
+        CtVariable<?> nextField = nodeClass.getField("next");
+        while (variableWrites.size() < 2)
+            variableWrites.add(ReferenceExpressionGenerator.generateRandomVarReadOfType(nextField, nextField.getType(), true).toString());
+
+        CtVariable<?> currentVar = scope.getLocalVariables().get(0);
+        while (variableWrites.size() < 4)
+            variableWrites.add(ReferenceExpressionGenerator.generateRandomVarReadOfType(currentVar, nextField.getType(), true).toString());
+
+        System.err.println(variableWrites.toString());
+        assertTrue(variableWrites.containsAll(possibleNodeVarAccess));
+    }
+
+    @Test
+    void ensureAllVariableWritesPerTypeAreGeneratedTest() {
+        Set<String> variableWrites = new HashSet<>();
+
+        CtVariable<?> nextField = nodeClass.getField("next");
+        while (variableWrites.size() < 2)
+            variableWrites.add(ReferenceExpressionGenerator.generateRandomVarWriteOfType(nextField, nextField.getType(), true).toString());
+
+        CtVariable<?> currentVar = scope.getLocalVariables().get(0);
+        while (variableWrites.size() < 4)
+            variableWrites.add(ReferenceExpressionGenerator.generateRandomVarWriteOfType(currentVar, nextField.getType(), true).toString());
+
+        System.err.println(variableWrites.toString());
+        assertTrue(variableWrites.containsAll(possibleNodeVarAccess));
+    }
+
+    @Test
     void generateAllVarReadsOfNodeTest() {
         Set<String> variableReads = new HashSet<>();
         ReferenceExpressionGenerator.generateAllVarReadsOfType(scope.getAllVariables(), nodeClass.getReference()).forEach(

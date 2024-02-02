@@ -1,6 +1,5 @@
 package evorep.ga.randomgen;
 
-import evorep.scope.Scope;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonHelper;
@@ -130,12 +129,12 @@ public class ReferenceExpressionGenerator {
     /**
      * Generates a random variable write of the given type from the possible writes from the given variables.
      *
-     * @param scope   the scope from which to consider possible reads.
-     * @param typeRef the type of the required variable read
+     * @param variables the variables from which to consider possible reads.
+     * @param typeRef   the type of the required variable read
      * @return a random variable read of the given type
      */
-    public static CtVariableAccess generateRandomVarWriteOfType(Scope scope, CtTypeReference<?> typeRef) {
-        List<CtVariableAccess> varWrites = generateAllVarWritesOfType(scope.getLocalVariables(), typeRef);
+    public static CtVariableAccess generateRandomVarWriteOfType(List<CtVariable<?>> variables, CtTypeReference<?> typeRef) {
+        List<CtVariableAccess> varWrites = generateAllVarWritesOfType(variables, typeRef);
         return varWrites.get(RandomUtils.nextInt(varWrites.size()));
     }
 
