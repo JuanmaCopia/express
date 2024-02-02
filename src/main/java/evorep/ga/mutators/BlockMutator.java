@@ -2,16 +2,16 @@ package evorep.ga.mutators;
 
 import evorep.scope.Scope;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.declaration.CtElement;
+import spoon.reflect.code.CtCodeElement;
 
 public class BlockMutator implements Mutator {
 
-    public boolean isApplicable(CtElement element) {
+    public boolean isApplicable(CtCodeElement element) {
         return element instanceof CtBlock;
     }
 
     @Override
-    public void mutate(CtElement elementToMutate, Scope scope) {
+    public void mutate(CtCodeElement elementToMutate, Scope scope) {
 
     }
 

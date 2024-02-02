@@ -1,8 +1,8 @@
 package evorep.scope;
 
 import evorep.spoon.SpoonQueries;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.chain.CtQuery;
@@ -15,7 +15,7 @@ public class Scope {
     CtQuery fields;
     CtQuery localVariables;
 
-    public Scope(CtElement element) {
+    public Scope(CtCodeElement element) {
         this.allVariables = SpoonQueries.getAllReachableVariables(element);
         this.fields = allVariables.filterChildren(var -> var instanceof CtField<?>);
         this.localVariables = allVariables.filterChildren(var -> var instanceof CtLocalVariable<?>);

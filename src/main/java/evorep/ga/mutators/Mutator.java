@@ -1,12 +1,12 @@
 package evorep.ga.mutators;
 
 import evorep.scope.Scope;
-import spoon.reflect.declaration.CtElement;
+import spoon.reflect.code.CtCodeElement;
 
 interface Mutator {
 
-    boolean isApplicable(CtElement element);
+    boolean isApplicable(CtCodeElement element);
 
-    void mutate(CtElement elementToMutate, Scope scope);
+    void mutate(CtCodeElement elementToMutate, Scope scope);
 
 }

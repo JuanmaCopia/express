@@ -87,10 +87,14 @@ public class SpoonQueries {
         return getVariablesOfType(list, SpoonFactory.getTypeFactory().createReference(type));
     }
 
+    public static CtQuery getAllReachableVariablesFromMethod(CtMethod method) {
+        return getAllReachableVariables(method.getBody().getLastStatement());
+    }
+
     public static CtQuery getAllReachableVariables(CtElement statement) {
         return statement.map(new PotentialVariableDeclarationFunction());
     }
-    
+
     public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
                                                                           CtTypeReference<?> type) {
         return statement.map(new PotentialVariableDeclarationFunction())

@@ -2,16 +2,16 @@ package evorep.ga.mutators;
 
 import evorep.scope.Scope;
 import spoon.reflect.code.CtAssignment;
-import spoon.reflect.declaration.CtElement;
+import spoon.reflect.code.CtCodeElement;
 
 public class AssignmentMutator implements Mutator {
 
-    public boolean isApplicable(CtElement element) {
+    public boolean isApplicable(CtCodeElement element) {
         return element instanceof CtAssignment;
     }
 
     @Override
-    public void mutate(CtElement elementToMutate, Scope scope) {
+    public void mutate(CtCodeElement elementToMutate, Scope scope) {
         /*if (!isApplicable(elementToMutate))
             throw new RuntimeException("AssignmentMutator is not applicable to " + elementToMutate);
         CtAssignment assignmentToMutate = (CtAssignment) elementToMutate;
