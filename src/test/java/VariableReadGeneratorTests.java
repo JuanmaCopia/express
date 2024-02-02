@@ -31,16 +31,16 @@ public class VariableReadGeneratorTests {
     static List<CtVariable<?>> localVars;
     static List<CtVariable<?>> allVars;
 
-    static Set<String> possibleNodeVarReads;
+    static Set<String> possibleNodeVarAccess;
     static Set<String> possibleIntVarReads;
 
     private static void initializeVarReads() {
-        if (possibleNodeVarReads == null) {
-            possibleNodeVarReads = new HashSet<>();
-            possibleNodeVarReads.add("next");
-            possibleNodeVarReads.add("next.next");
-            possibleNodeVarReads.add("current");
-            possibleNodeVarReads.add("current.next");
+        if (possibleNodeVarAccess == null) {
+            possibleNodeVarAccess = new HashSet<>();
+            possibleNodeVarAccess.add("next");
+            possibleNodeVarAccess.add("next.next");
+            possibleNodeVarAccess.add("current");
+            possibleNodeVarAccess.add("current.next");
         }
         if (possibleIntVarReads == null) {
             possibleIntVarReads = new HashSet<>();
@@ -79,13 +79,29 @@ public class VariableReadGeneratorTests {
 
         CtVariable<?> nextField = nodeClass.getField("next");
         while (variableReads.size() < 2)
-            variableReads.add(ReferenceExpressionGenerator.generateRandomVariableAccessRefType(nextField).toString());
+            variableReads.add(ReferenceExpressionGenerator.generateRandomVarReadRefType(nextField, true).toString());
 
         CtVariable<?> currentVar = localVars.get(0);
         while (variableReads.size() < 4)
-            variableReads.add(ReferenceExpressionGenerator.generateRandomVariableAccessRefType(currentVar).toString());
+            variableReads.add(ReferenceExpressionGenerator.generateRandomVarReadRefType(currentVar, true).toString());
 
-        assertTrue(variableReads.containsAll(possibleNodeVarReads));
+        assertTrue(variableReads.containsAll(possibleNodeVarAccess));
+    }
+
+    @Test
+    void ensureAllVariableWritesAreGeneratedTest() {
+        Set<String> variableWrites = new HashSet<>();
+
+        CtVariable<?> nextField = nodeClass.getField("next");
+        while (variableWrites.size() < 2)
+            variableWrites.add(ReferenceExpressionGenerator.generateRandomVarWriteOfRefType(nextField, true).toString());
+
+        CtVariable<?> currentVar = localVars.get(0);
+        while (variableWrites.size() < 4)
+            variableWrites.add(ReferenceExpressionGenerator.generateRandomVarWriteOfRefType(currentVar, true).toString());
+
+        System.err.println(variableWrites.toString());
+        assertTrue(variableWrites.containsAll(possibleNodeVarAccess));
     }
 
     @Test
@@ -96,7 +112,18 @@ public class VariableReadGeneratorTests {
         );
 
         assertEquals(4, variableReads.size());
-        assertTrue(variableReads.containsAll(possibleNodeVarReads));
+        assertTrue(variableReads.containsAll(possibleNodeVarAccess));
+    }
+
+    @Test
+    void generateAllVarWritesOfNodeTest() {
+        Set<String> variableWrites = new HashSet<>();
+        ReferenceExpressionGenerator.generateAllVarWritesOfType(allVars, nodeClass.getReference()).forEach(
+                varWrite -> variableWrites.add(varWrite.toString())
+        );
+
+        assertEquals(4, variableWrites.size());
+        assertTrue(variableWrites.containsAll(possibleNodeVarAccess));
     }
 
     @Test
@@ -112,9 +139,21 @@ public class VariableReadGeneratorTests {
     }
 
     @Test
+    void generateAllVarWritesOfIntTest() {
+        Set<String> variableWrites = new HashSet<>();
+
+        ReferenceExpressionGenerator.generateAllVarWritesOfType(allVars, SpoonFactory.createReference(int.class)).forEach(
+                varWrite -> variableWrites.add(varWrite.toString())
+        );
+
+        assertEquals(3, variableWrites.size());
+        assertTrue(variableWrites.containsAll(possibleIntVarReads));
+    }
+
+    @Test
     void generateAllUserDefVarReadsOfNodeTest() {
         Set<String> variableReads = new HashSet<>();
-        ReferenceExpressionGenerator.generateAllUserDefVarReadsOfReferenceType(fields).forEach(
+        ReferenceExpressionGenerator.generateAllVarReadsOfReferenceType(fields).forEach(
                 varRead -> variableReads.add(varRead.toString())
         );
 
@@ -122,4 +161,6 @@ public class VariableReadGeneratorTests {
         assertTrue(variableReads.contains("next"));
         assertTrue(variableReads.contains("next.next"));
     }
+
+
 }

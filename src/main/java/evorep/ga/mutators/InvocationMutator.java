@@ -11,8 +11,8 @@ public class InvocationMutator implements Mutator {
     }
 
     @Override
-    public void mutate(CtCodeElement elementToMutate, Scope scope) {
-
+    public CtCodeElement mutate(CtCodeElement elementToMutate, Scope scope) {
+        return null;
     }
 
 /*    public void mutate(CtInvocation<?> invocation, List<CtVariable<?>> fields, List<CtVariable<?>> localVariables) {

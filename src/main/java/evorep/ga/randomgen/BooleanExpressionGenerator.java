@@ -49,7 +49,7 @@ public class BooleanExpressionGenerator {
         List<CtVariable<?>> referenceLocalVars = SpoonQueries.getVariablesOfReferenceType(localVars);
         CtVariable<?> chosenVariable = RandomUtils.getRandomElement(referenceFields, referenceLocalVars);
 
-        CtExpression<?> fieldRead = ReferenceExpressionGenerator.generateRandomVariableAccessRefType(chosenVariable);
+        CtExpression<?> fieldRead = ReferenceExpressionGenerator.generateRandomVarReadRefType(chosenVariable, true);
 
         CtExpression<?> nullExpression = SpoonFactory.parseToExpression(null);
 

@@ -34,6 +34,12 @@ public class SpoonQueries {
         return getVariablesOfType(getFields(varType), type);
     }
 
+    public static List<CtVariable<?>> getFieldsOfType(CtType<?> varType, CtTypeReference<?> type) {
+        if (varType == null)
+            return new LinkedList<>();
+        return getVariablesOfType(getFields(varType), type);
+    }
+
     public static List<CtVariable<?>> getAccessibleFields(CtVariable<?> var) {
         return getAccessibleFields(var.getType());
     }
@@ -74,7 +80,7 @@ public class SpoonQueries {
     }
 
     public static boolean isAccessibleField(CtVariable<?> var) {
-        return !var.isPrivate();
+        return true;
     }
 
     public static List<CtVariable<?>> getVariablesOfType(List<CtVariable<?>> list, CtTypeReference<?> type) {

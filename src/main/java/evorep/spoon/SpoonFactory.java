@@ -180,8 +180,23 @@ public class SpoonFactory {
         return fieldRead;
     }
 
+    public static CtFieldWrite<?> createFieldWrite(CtExpression<?> variable, CtVariable<?> field) {
+        CtFieldWrite fieldWrite = coreFactory.createFieldWrite();
+        fieldWrite.setTarget(variable);
+        fieldWrite.setVariable(field.getReference());
+        return fieldWrite;
+    }
+
+    public static CtVariableRead<?> createFieldRead(CtVariable<?> variable) {
+        return createVariableRead(variable);
+    }
+
     public static CtFieldRead<?> createFieldRead(CtVariable<?> variable, CtVariable<?> field) {
         return createFieldRead(createVariableRead(variable), field);
+    }
+
+    public static CtFieldWrite<?> createFieldWrite(CtVariable<?> variable, CtVariable<?> field) {
+        return createFieldWrite(createVariableRead(variable), field);
     }
 
     public static CtTypeReference<?> createTypeReference(Class<?> type) {

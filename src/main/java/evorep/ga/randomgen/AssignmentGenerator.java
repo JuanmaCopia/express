@@ -20,7 +20,7 @@ public class AssignmentGenerator {
         List<CtVariable<?>> allVars = new ArrayList<>();
         allVars.addAll(fields);
         allVars.addAll(localVars);
-        CtExpression<?> chosenFieldRead = ReferenceExpressionGenerator.generateRandomUserDefVarReadOfType(allVars, varType);
+        CtExpression<?> chosenFieldRead = ReferenceExpressionGenerator.generateRandomVarReadOfType(allVars, varType);
 
         CtAssignment assignment = SpoonFactory.createAssignment(chosenVar, chosenFieldRead);
         //System.err.println("\nassignment generated: " + assignment.toString());

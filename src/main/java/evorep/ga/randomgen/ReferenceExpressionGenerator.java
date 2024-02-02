@@ -1,10 +1,10 @@
 package evorep.ga.randomgen;
 
+import evorep.scope.Scope;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
-import evorep.spoon.SpoonQueries;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.declaration.CtType;
+import evorep.spoon.SpoonHelper;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -13,104 +13,155 @@ import java.util.List;
 
 public class ReferenceExpressionGenerator {
 
-    public static CtExpression<?> generateRandomVariableAccessRefType(CtVariable<?> var) {
-        if (var == null)
-            throw new IllegalArgumentException();
-
-        CtType<?> varType = var.getType().getDeclaration();
-        if (varType == null)
-            // if varType is null, the varType is not in src files (might be a from a library)
-            return SpoonFactory.createVariableRead(var);
-
-        List<CtVariable<?>> referenceFields = SpoonQueries.getVariablesOfReferenceType(SpoonQueries.getFields(varType));
-
-        if (RandomUtils.chooseWithProbability(referenceFields.size() + 1))
-            return SpoonFactory.createVariableRead(var);
-
-        CtVariable<?> chosenField = RandomUtils.getRandomElement(referenceFields);
-        return SpoonFactory.createFieldRead(var, chosenField);
+    /**
+     * Generates a random variable read of a reference type from the possible reads from the given variable.
+     *
+     * @param var        the variable from which to consider possible reads.
+     * @param includeVar whether to include the variable itself as a possible read
+     * @return a random variable read of a reference type
+     */
+    public static CtVariableAccess generateRandomVarReadRefType(CtVariable<?> var, boolean includeVar) {
+        return generateRandomVarReadOfType(var, SpoonFactory.getTypeFactory().OBJECT, includeVar);
     }
 
-    public static CtExpression<?> generateRandomVarReadOfType(List<CtVariable<?>> variables, CtTypeReference<?> typeRef) {
-        List<CtExpression<?>> varReads = generateAllVarReadsOfType(variables, typeRef);
+    /**
+     * Generates a random variable read of the given type from the possible reads from the given variable.
+     *
+     * @param var        the variable from which to consider possible reads.
+     * @param typeRef    the type of the required variable read
+     * @param includeVar whether to include the variable itself as a possible read
+     * @return a random variable read of the given type
+     */
+    public static CtVariableAccess generateRandomVarReadOfType(CtVariable<?> var, CtTypeReference<?> typeRef, boolean includeVar) {
+        List<CtVariableAccess> varReads = SpoonHelper.createVariableReads(
+                var,
+                typeRef,
+                includeVar
+        );
+
         return varReads.get(RandomUtils.nextInt(varReads.size()));
     }
 
-    public static List<CtExpression<?>> generateAllUserDefVarReadsOfReferenceType(List<CtVariable<?>> vars) {
-        return generateAllUserDefVarReadsOfType(vars, SpoonFactory.getTypeFactory().OBJECT);
-    }
-
-    public static List<CtExpression<?>> generateAllVarReadsOfType(List<CtVariable<?>> vars, CtTypeReference<?> typeRef) {
-        List<CtExpression<?>> varReads = new ArrayList<>();
-
-        varReads.addAll(
-                SpoonQueries.getVariablesOfType(vars, typeRef).stream().map(
-                        var -> SpoonFactory.createVariableRead(var)
-                ).toList()
-        );
-
-        List<CtVariable<?>> refTypedVars = SpoonQueries.getVariablesOfReferenceType(vars);
-        for (CtVariable<?> var : refTypedVars) {
-            varReads.addAll(
-                    SpoonQueries.getFieldsOfType(var, typeRef).stream().filter(
-                            field -> SpoonQueries.isAccessibleField(field)
-                    ).map(
-                            field -> SpoonFactory.createFieldRead(var, field)
-                    ).toList()
-            );
-        }
-
-        return varReads;
-    }
-
-    public static CtExpression<?> generateRandomUserDefVarReadOfType(List<CtVariable<?>> variables, CtTypeReference<?> typeRef) {
-        List<CtExpression<?>> varReads = generateAllUserDefVarReadsOfType(variables, typeRef);
+    /**
+     * Generates a random variable read of a reference type from the possible reads from the given variables.
+     *
+     * @param variables the variables from which to consider possible reads.
+     * @param typeRef   the type of the required variable read
+     * @return a random variable read of type typeRef.
+     */
+    public static CtVariableAccess generateRandomVarReadOfType(List<CtVariable<?>> variables, CtTypeReference<?> typeRef) {
+        List<CtVariableAccess> varReads = generateAllVarReadsOfType(variables, typeRef);
         return varReads.get(RandomUtils.nextInt(varReads.size()));
     }
 
-    public static List<CtExpression<?>> generateAllUserDefVarReadsOfType(List<CtVariable<?>> vars, CtTypeReference<?> typeRef) {
-        List<CtExpression<?>> varReads = new ArrayList<>();
+    /**
+     * Generates a random variable read of a reference type from the possible reads from the given variables.
+     *
+     * @param variables the variables from which to consider possible reads.
+     * @return a random variable read of type typeRef.
+     */
+    public static CtVariableAccess generateRandomVarReadRefType(List<CtVariable<?>> variables) {
+        List<CtVariableAccess> varReads = generateAllVarReadsOfType(variables, SpoonFactory.getTypeFactory().OBJECT);
+        return varReads.get(RandomUtils.nextInt(varReads.size()));
+    }
 
-        varReads.addAll(
-                SpoonQueries.getVariablesOfType(vars, typeRef).stream().filter(
-                        var -> SpoonQueries.isUserDefined(var)
-                ).map(
-                        var -> SpoonFactory.createVariableRead(var)
-                ).toList()
-        );
+    /**
+     * Generates all variable reads of a reference type from the given variables.
+     *
+     * @param vars the variables from which to consider possible reads.
+     * @return all variable reads of a reference type
+     */
+    public static List<CtVariableAccess> generateAllVarReadsOfReferenceType(List<CtVariable<?>> vars) {
+        return generateAllVarReadsOfType(vars, SpoonFactory.getTypeFactory().OBJECT);
+    }
 
-        List<CtVariable<?>> refTypedVars = SpoonQueries.getVariablesOfReferenceType(vars);
-        for (CtVariable<?> var : refTypedVars) {
-            varReads.addAll(
-                    SpoonQueries.getFieldsOfType(var, typeRef).stream().filter(
-                            field -> SpoonQueries.isAccessibleField(field) && SpoonQueries.isUserDefined(var)
-                    ).map(
-                            field -> SpoonFactory.createFieldRead(var, field)
-                    ).toList()
-            );
+    /**
+     * Generates all variable reads of the given type from the given variables.
+     *
+     * @param variables the variables from which to consider possible reads.
+     * @param typeRef   the type of the required variable read
+     * @return all variable reads of the given type
+     */
+    public static List<CtVariableAccess> generateAllVarReadsOfType(List<CtVariable<?>> variables, CtTypeReference<?> typeRef) {
+        List<CtVariableAccess> varReads = new ArrayList<>();
+        for (CtVariable<?> var : variables) {
+            varReads.addAll(SpoonHelper.createVariableReads(
+                    var,
+                    typeRef,
+                    true
+            ));
         }
-
         return varReads;
     }
 
-    public static List<CtExpression<?>> generateAllVarReads(List<CtVariable<?>> vars) {
-        List<CtExpression<?>> varReads = new ArrayList<>();
+    /**
+     * Generates a random variable write of a reference type from the possible writes from the given variable.
+     *
+     * @param var        the variable from which to consider possible reads.
+     * @param includeVar whether to include the variable itself as a possible write
+     * @return a random variable read of a reference type
+     */
+    public static CtVariableAccess generateRandomVarWriteOfRefType(CtVariable<?> var, boolean includeVar) {
+        return generateRandomVarWriteOfType(var, SpoonFactory.getTypeFactory().OBJECT, includeVar);
+    }
 
-        varReads.addAll(
-                vars.stream().map(var -> SpoonFactory.createVariableRead(var)).toList()
+
+    /**
+     * Generates a random variable write of the given type from the possible writes from the given variable.
+     *
+     * @param var        the variable from which to consider possible reads.
+     * @param typeRef    the type of the required variable read
+     * @param includeVar whether to include the variable itself as a possible write
+     * @return a random variable read of the given type
+     */
+    public static CtVariableAccess generateRandomVarWriteOfType(
+            CtVariable<?> var,
+            CtTypeReference<?> typeRef,
+            boolean includeVar
+    ) {
+        List<CtVariableAccess> varWrites = SpoonHelper.createVariableWrites(
+                var,
+                typeRef,
+                includeVar
         );
+        return varWrites.get(RandomUtils.nextInt(varWrites.size()));
+    }
 
-        List<CtVariable<?>> refTypedVars = SpoonQueries.getVariablesOfReferenceType(vars);
-        for (CtVariable<?> var : refTypedVars) {
-            List<CtVariable<?>> fields = SpoonQueries.getAccessibleFields(var);
-            varReads.addAll(
-                    fields.stream().map(
-                            field -> SpoonFactory.createFieldRead(var, field)
-                    ).toList()
-            );
+    /**
+     * Generates a random variable write of the given type from the possible writes from the given variables.
+     *
+     * @param scope   the scope from which to consider possible reads.
+     * @param typeRef the type of the required variable read
+     * @return a random variable read of the given type
+     */
+    public static CtVariableAccess generateRandomVarWriteOfType(Scope scope, CtTypeReference<?> typeRef) {
+        List<CtVariableAccess> varWrites = generateAllVarWritesOfType(scope.getLocalVariables(), typeRef);
+        return varWrites.get(RandomUtils.nextInt(varWrites.size()));
+    }
+
+
+    public static List<CtVariableAccess> generateAllVarWritesOfReferenceType(List<CtVariable<?>> vars) {
+        return generateAllVarWritesOfType(vars, SpoonFactory.getTypeFactory().OBJECT);
+    }
+
+    /**
+     * Generates all variable writes of the given type from the given variables.
+     *
+     * @param variables the variables from which to consider possible writes.
+     * @param typeRef   the type of the required variable write
+     * @return all variable writes of the given type
+     */
+    public static List<CtVariableAccess> generateAllVarWritesOfType(List<CtVariable<?>> variables, CtTypeReference<?> typeRef) {
+        List<CtVariableAccess> varReads = new ArrayList<>();
+        for (CtVariable<?> var : variables) {
+            varReads.addAll(SpoonHelper.createVariableReads(
+                    var,
+                    typeRef,
+                    true
+            ));
         }
-
         return varReads;
+
     }
 
 

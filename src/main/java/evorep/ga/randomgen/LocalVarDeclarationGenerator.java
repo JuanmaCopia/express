@@ -4,8 +4,8 @@ import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
@@ -33,7 +33,7 @@ public class LocalVarDeclarationGenerator {
     }
 
     public static CtStatement generateUserDefinedLocalVarDeclaration(List<CtVariable<?>> fields, String varName) {
-        List<CtExpression<?>> refFieldReads = ReferenceExpressionGenerator.generateAllUserDefVarReadsOfReferenceType(fields);
+        List<CtVariableAccess> refFieldReads = ReferenceExpressionGenerator.generateAllVarReadsOfReferenceType(fields);
         CtVariableRead<?> chosenFieldRead = (CtVariableRead<?>) refFieldReads.get(RandomUtils.nextInt(refFieldReads.size()));
         CtTypeReference<?> fieldType = chosenFieldRead.getVariable().getType();
 

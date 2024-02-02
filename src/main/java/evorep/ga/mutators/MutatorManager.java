@@ -24,7 +24,7 @@ public class MutatorManager {
         mutators.add(new BinaryOperatorMutator());*/
     }
 
-    private static CtCodeElement selectElementToMutate(Individual individual) {
+    private static CtCodeElement selectGene(Individual individual) {
         List<CtCodeElement> mutableCodeElements = filterMutableCodeElements(individual.getChromosome());
         return mutableCodeElements.get(RandomUtils.nextInt(mutableCodeElements.size()));
     }
@@ -47,11 +47,9 @@ public class MutatorManager {
 
     public static Individual mutate(Individual individual) {
         Individual mutant = individual.clone();
-        CtCodeElement elemToMutate = selectElementToMutate(mutant);
-
-        Mutator mutator = selectMutator(elemToMutate);
-        mutator.mutate(elemToMutate, new Scope(elemToMutate));
-
+        CtCodeElement gene = selectGene(mutant);
+        CtCodeElement mutatedGene = selectMutator(gene).mutate(gene, new Scope(gene));
+        gene.replace(mutatedGene);
         return mutant;
     }
 

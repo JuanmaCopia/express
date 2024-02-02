@@ -5,8 +5,8 @@ import spoon.reflect.code.CtCodeElement;
 
 interface Mutator {
 
-    boolean isApplicable(CtCodeElement element);
+    boolean isApplicable(CtCodeElement gene);
 
-    void mutate(CtCodeElement elementToMutate, Scope scope);
+    CtCodeElement mutate(CtCodeElement gene, Scope scope);
 
 }

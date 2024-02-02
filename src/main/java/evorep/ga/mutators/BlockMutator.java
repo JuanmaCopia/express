@@ -6,13 +6,13 @@ import spoon.reflect.code.CtCodeElement;
 
 public class BlockMutator implements Mutator {
 
-    public boolean isApplicable(CtCodeElement element) {
-        return element instanceof CtBlock;
+    public boolean isApplicable(CtCodeElement gene) {
+        return gene instanceof CtBlock;
     }
 
     @Override
-    public void mutate(CtCodeElement elementToMutate, Scope scope) {
-
+    public CtCodeElement mutate(CtCodeElement gene, Scope scope) {
+        return null;
     }
 
 /*    public void mutate(CtBlock<?> block, List<CtVariable<?>> fields, List<CtVariable<?>> localVariables) {
