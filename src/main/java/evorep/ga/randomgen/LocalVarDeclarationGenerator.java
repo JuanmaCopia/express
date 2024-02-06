@@ -1,5 +1,6 @@
 package evorep.ga.randomgen;
 
+import evorep.scope.Scope;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
@@ -19,17 +20,15 @@ public class LocalVarDeclarationGenerator {
     private static int varCount = 0;
 
     private static String getVarName() {
-        return "var" + varCount++;
+        return "current";
+        //return "var" + varCount++;
     }
 
-    public static CtStatement chooseLocalVarDeclaration(List<CtVariable<?>> fields) {
-        CtStatement varDeclaration;
+    public static CtStatement chooseLocalVarDeclaration(Scope scope) {
         if (RandomUtils.nextBoolean())
-            varDeclaration = generateUserDefinedLocalVarDeclaration(fields, getVarName());
-        else
-            varDeclaration = generateCollectionLocalVarDeclaration(fields);
-        //System.err.println("\nvarDeclaration generated: " + varDeclaration.toString());
-        return varDeclaration;
+            return generateUserDefinedLocalVarDeclaration(scope.getFields(), getVarName());
+        return generateCollectionLocalVarDeclaration(scope.getFields());
+
     }
 
     public static CtStatement generateUserDefinedLocalVarDeclaration(List<CtVariable<?>> fields, String varName) {

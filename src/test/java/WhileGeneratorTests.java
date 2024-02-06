@@ -1,4 +1,5 @@
 import evorep.ga.randomgen.WhileGenerator;
+import evorep.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
@@ -8,11 +9,8 @@ import spoon.SpoonAPI;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,9 +26,7 @@ public class WhileGeneratorTests {
 
     static CtClass<?> nodeClass;
     static CtMethod<?> method;
-    static List<CtVariable<?>> fields;
-    static List<CtVariable<?>> localVars;
-    static List<CtVariable<?>> allVars;
+    static Scope scope;
 
 
     static Set<String> possibleNullCompExpressions;
@@ -66,11 +62,7 @@ public class WhileGeneratorTests {
         launcher = SpoonFactory.getLauncher();
         nodeClass = SpoonQueries.getClass(CLASS_NAME);
         method = nodeClass.getMethodsByName(METHOD_NAME).get(0);
-        fields = SpoonQueries.getFields(nodeClass);
-        localVars = SpoonQueries.getLocalVariables(method);
-        allVars = new ArrayList<>();
-        allVars.addAll(fields);
-        allVars.addAll(localVars);
+        scope = new Scope(method.getBody().getLastStatement());
     }
 
     private static void initializeSpoon() {
@@ -87,7 +79,7 @@ public class WhileGeneratorTests {
 
     @Test
     void emptyWhileWithFalseConditionTest() {
-        CtWhile whileAssignment = (CtWhile) WhileGenerator.generateWhileFalse(fields, localVars);
+        CtWhile whileAssignment = (CtWhile) WhileGenerator.generateWhileFalse(scope);
 
         CtBlock body = (CtBlock) whileAssignment.getBody();
         assertEquals(0, body.getStatements().size());
@@ -99,7 +91,7 @@ public class WhileGeneratorTests {
 
     @Test
     void emptyWhileWithRandomConditionTest() {
-        CtWhile whileAssignment = (CtWhile) WhileGenerator.generateWhileWithRandomExpression(fields, localVars);
+        CtWhile whileAssignment = (CtWhile) WhileGenerator.generateWhileWithRandomExpression(scope);
 
         CtBlock body = (CtBlock) whileAssignment.getBody();
         assertEquals(0, body.getStatements().size());
@@ -110,7 +102,7 @@ public class WhileGeneratorTests {
 
     @Test
     void whileWithIfReturnAndRandomConditionTest() {
-        CtWhile whileAssignment = (CtWhile) WhileGenerator.generateWhileWithIfStatement(fields, localVars);
+        CtWhile whileAssignment = (CtWhile) WhileGenerator.generateWhileWithIfStatement(scope);
 
         CtBlock body = (CtBlock) whileAssignment.getBody();
         assertEquals(1, body.getStatements().size());

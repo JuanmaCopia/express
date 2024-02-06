@@ -1,5 +1,6 @@
 package evorep.ga.randomgen;
 
+import evorep.scope.Scope;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
@@ -14,13 +15,12 @@ import java.util.List;
 
 public class BooleanExpressionGenerator {
 
-    public static CtExpression<Boolean> generateRandomExpression(List<CtVariable<?>> fields,
-                                                                 List<CtVariable<?>> localVars) {
+    public static CtExpression<Boolean> generateRandomExpression(Scope scope) {
 
         CtExpression<Boolean> expression;
-        switch (getChoice(fields, localVars)) {
-            case 0 -> expression = generateNullComparison(fields, localVars);
-            case 1 -> expression = generateRandomCollectionMethodCallExpression(fields, localVars);
+        switch (getChoice(scope)) {
+            case 0 -> expression = generateNullComparison(scope);
+            case 1 -> expression = generateRandomCollectionMethodCallExpression(scope);
             case -1 -> expression = SpoonFactory.getCodeFactory().createLiteral(false);
             default -> throw new RuntimeException("Invalid choice");
         }
@@ -28,45 +28,35 @@ public class BooleanExpressionGenerator {
         return RandomUtils.negateOrNot(expression);
     }
 
-    public static int getChoice(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
-        List<Integer> filteredChoices = getChoices(fields, localVars);
+    public static int getChoice(Scope scope) {
+        List<Integer> filteredChoices = getChoices(scope);
         return filteredChoices.get(RandomUtils.nextInt(filteredChoices.size()));
     }
 
-    public static List<Integer> getChoices(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
+    public static List<Integer> getChoices(Scope scope) {
         List<Integer> filteredChoices = new ArrayList<>();
-        if (SpoonQueries.containsVariableOfType(fields, Object.class))
+        if (SpoonQueries.containsVariableOfType(scope.getFields(), Object.class))
             filteredChoices.add(0);
-        if (SpoonQueries.containsVariableOfType(localVars, Collection.class))
+        if (SpoonQueries.containsVariableOfType(scope.getLocalVariables(), Collection.class))
             filteredChoices.add(1);
         if (filteredChoices.isEmpty())
             filteredChoices.add(-1);
         return filteredChoices;
     }
 
-    public static CtExpression<Boolean> generateNullComparison(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
-        List<CtVariable<?>> referenceFields = SpoonQueries.getVariablesOfReferenceType(fields);
-        List<CtVariable<?>> referenceLocalVars = SpoonQueries.getVariablesOfReferenceType(localVars);
+    public static CtExpression<Boolean> generateNullComparison(Scope scope) {
+        List<CtVariable<?>> referenceFields = SpoonQueries.getVariablesOfReferenceType(scope.getFields());
+        List<CtVariable<?>> referenceLocalVars = SpoonQueries.getVariablesOfReferenceType(scope.getLocalVariables());
         CtVariable<?> chosenVariable = RandomUtils.getRandomElement(referenceFields, referenceLocalVars);
 
         CtExpression<?> fieldRead = ReferenceExpressionGenerator.generateRandomVarReadRefType(chosenVariable, true);
-
         CtExpression<?> nullExpression = SpoonFactory.parseToExpression(null);
-
         return (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(fieldRead, nullExpression, BinaryOperatorKind.EQ);
     }
 
-    public static CtExpression<Boolean> generateRandomCollectionMethodCallExpression(
-            List<CtVariable<?>> fields,
-            List<CtVariable<?>> localVars
-    ) {
-
-        CtVariable<?> collection = RandomUtils.getRandomElementOfType(localVars, Collection.class);
-
-        List<CtVariable<?>> scopeVariables = new ArrayList<>();
-        scopeVariables.addAll(fields);
-        scopeVariables.addAll(localVars);
-        return generateCollectionMethodCallExpression(collection, "add", scopeVariables);
+    public static CtExpression<Boolean> generateRandomCollectionMethodCallExpression(Scope scope) {
+        CtVariable<?> collection = RandomUtils.getRandomElementOfType(scope.getLocalVariables(), Collection.class);
+        return generateCollectionMethodCallExpression(collection, "add", scope.getAllVariables());
     }
 
     public static CtExpression<Boolean> generateCollectionMethodCallExpression(

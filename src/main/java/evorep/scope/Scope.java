@@ -6,13 +6,14 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtVariable;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class Scope {
 
-    List<CtVariable<?>> allVariables;
-    List<CtVariable<?>> fields;
-    List<CtVariable<?>> localVariables;
+    private List<CtVariable<?>> allVariables;
+    private List<CtVariable<?>> fields;
+    private List<CtVariable<?>> localVariables;
 
     public Scope(CtCodeElement element) {
         allVariables = SpoonQueries.getAllReachableVariables(element);
@@ -21,14 +22,14 @@ public class Scope {
     }
 
     public List<CtVariable<?>> getAllVariables() {
-        return allVariables;
+        return new LinkedList(allVariables);
     }
 
     public List<CtVariable<?>> getFields() {
-        return fields;
+        return new LinkedList(fields);
     }
 
     public List<CtVariable<?>> getLocalVariables() {
-        return localVariables;
+        return new LinkedList(localVariables);
     }
 }

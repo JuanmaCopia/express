@@ -1,4 +1,5 @@
 import evorep.ga.randomgen.BooleanExpressionGenerator;
+import evorep.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
@@ -12,7 +13,6 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,9 +30,7 @@ public class BooleanExpressionGeneratorTests {
 
     static CtClass<?> nodeClass;
     static CtMethod<?> method;
-    static List<CtVariable<?>> fields;
-    static List<CtVariable<?>> localVars;
-    static List<CtVariable<?>> allVars;
+    static Scope scope;
 
     static Set<String> possibleNullCompExpressions;
     static Set<String> allPossibleExpression;
@@ -67,11 +65,7 @@ public class BooleanExpressionGeneratorTests {
         launcher = SpoonFactory.getLauncher();
         nodeClass = SpoonQueries.getClass(CLASS_NAME);
         method = nodeClass.getMethodsByName(METHOD_NAME).get(0);
-        fields = SpoonQueries.getFields(nodeClass);
-        localVars = SpoonQueries.getLocalVariables(method);
-        allVars = new ArrayList<>();
-        allVars.addAll(fields);
-        allVars.addAll(localVars);
+        scope = new Scope(method.getBody().getLastStatement());
     }
 
     private static void initializeSpoon() {
@@ -88,7 +82,7 @@ public class BooleanExpressionGeneratorTests {
 
     @Test
     void nullEqualityGenerationTest() {
-        CtExpression<Boolean> expression = BooleanExpressionGenerator.generateNullComparison(fields, localVars);
+        CtExpression<Boolean> expression = BooleanExpressionGenerator.generateNullComparison(scope);
         assertTrue(possibleNullCompExpressions.contains(expression.toString()));
     }
 
@@ -97,7 +91,7 @@ public class BooleanExpressionGeneratorTests {
     void ensureAllNullExpressionsAreGeneratedTest() {
         Set<String> expressionsGenerated = new HashSet<>();
         while (expressionsGenerated.size() < 5)
-            expressionsGenerated.add(BooleanExpressionGenerator.generateNullComparison(fields, localVars).toString());
+            expressionsGenerated.add(BooleanExpressionGenerator.generateNullComparison(scope).toString());
 
         assertTrue(expressionsGenerated.containsAll(possibleNullCompExpressions));
     }
@@ -106,13 +100,13 @@ public class BooleanExpressionGeneratorTests {
     void ensureAllExpressionsAreGeneratedTest() {
         Set<String> expressionsGenerated = new HashSet<>();
         while (expressionsGenerated.size() < 18)
-            expressionsGenerated.add(BooleanExpressionGenerator.generateRandomExpression(fields, localVars).toString());
+            expressionsGenerated.add(BooleanExpressionGenerator.generateRandomExpression(scope).toString());
         assertTrue(expressionsGenerated.containsAll(allPossibleExpression));
     }
 
     @Test
     void choicesTest() {
-        List<Integer> choices = BooleanExpressionGenerator.getChoices(fields, localVars);
+        List<Integer> choices = BooleanExpressionGenerator.getChoices(scope);
         assertEquals(2, choices.size());
         assertTrue(choices.contains(0));
         assertTrue(choices.contains(1));
@@ -121,7 +115,7 @@ public class BooleanExpressionGeneratorTests {
 
     @Test
     void negateTest() {
-        CtVariable<?> variable = SpoonQueries.getVariableByName(localVars, "current");
+        CtVariable<?> variable = SpoonQueries.getVariableByName(scope.getLocalVariables(), "current");
         CtExpression<Boolean> expression = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(variable, null, BinaryOperatorKind.EQ);
         expression = (CtExpression<Boolean>) SpoonFactory.createUnaryExpression(expression, UnaryOperatorKind.NOT);
         assertEquals("!(current == null)", expression.toString());

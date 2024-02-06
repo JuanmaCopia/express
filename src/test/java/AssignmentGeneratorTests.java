@@ -1,4 +1,5 @@
 import evorep.ga.randomgen.AssignmentGenerator;
+import evorep.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
@@ -8,11 +9,8 @@ import spoon.SpoonAPI;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,9 +25,7 @@ public class AssignmentGeneratorTests {
 
     static CtClass<?> nodeClass;
     static CtMethod<?> method;
-    static List<CtVariable<?>> fields;
-    static List<CtVariable<?>> localVars;
-    static List<CtVariable<?>> allVars;
+    static Scope scope;
 
     static Set<String> possibleAssignments;
 
@@ -49,11 +45,7 @@ public class AssignmentGeneratorTests {
         launcher = SpoonFactory.getLauncher();
         nodeClass = SpoonQueries.getClass(CLASS_NAME);
         method = nodeClass.getMethodsByName(METHOD_NAME).get(0);
-        fields = SpoonQueries.getFields(nodeClass);
-        localVars = SpoonQueries.getLocalVariables(method);
-        allVars = new ArrayList<>();
-        allVars.addAll(fields);
-        allVars.addAll(localVars);
+        scope = new Scope(method.getBody().getLastStatement());
     }
 
     private static void initializeSpoon() {
@@ -72,7 +64,7 @@ public class AssignmentGeneratorTests {
     void varDeclarationGeneratorTest() {
         Set<String> assignments = new HashSet<>();
         while (assignments.size() < 4) {
-            CtStatement varDecl = AssignmentGenerator.generateRandomAssignment(fields, localVars);
+            CtStatement varDecl = AssignmentGenerator.generateRandomAssignment(scope);
             assignments.add(varDecl.toString());
         }
         assertTrue(assignments.containsAll(possibleAssignments));

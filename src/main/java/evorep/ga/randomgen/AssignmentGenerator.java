@@ -1,30 +1,21 @@
 package evorep.ga.randomgen;
 
+import evorep.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
-import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtTypeReference;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AssignmentGenerator {
 
-    public static CtStatement generateRandomAssignment(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
-        CtVariable<?> chosenVar = SpoonQueries.getRandomUserDefLocalVar(localVars);
-        CtTypeReference<?> varType = chosenVar.getType();
-
-        List<CtVariable<?>> allVars = new ArrayList<>();
-        allVars.addAll(fields);
-        allVars.addAll(localVars);
-        CtExpression<?> chosenFieldRead = ReferenceExpressionGenerator.generateRandomVarReadOfType(allVars, varType);
-
-        CtAssignment assignment = SpoonFactory.createAssignment(chosenVar, chosenFieldRead);
-        //System.err.println("\nassignment generated: " + assignment.toString());
-        return assignment;
+    public static CtStatement generateRandomAssignment(Scope scope) {
+        CtVariable<?> chosenVar = SpoonQueries.getRandomUserDefLocalVar(scope.getLocalVariables());
+        CtExpression<?> chosenFieldRead = ReferenceExpressionGenerator.generateRandomVarReadOfType(
+                scope.getAllVariables(),
+                chosenVar.getType()
+        );
+        return SpoonFactory.createAssignment(chosenVar, chosenFieldRead);
     }
 
 

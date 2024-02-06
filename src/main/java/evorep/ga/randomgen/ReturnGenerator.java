@@ -1,14 +1,12 @@
 package evorep.ga.randomgen;
 
+import evorep.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtVariable;
-
-import java.util.List;
 
 public class ReturnGenerator {
 
-    public static CtStatement chooseReturnGenerator(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
+    public static CtStatement chooseReturnGenerator(Scope scope) {
         int random = evorep.spoon.RandomUtils.nextInt(2);
         return switch (random) {
             case 0 -> generateReturnFalse();
@@ -26,7 +24,7 @@ public class ReturnGenerator {
         return SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(true));
     }
 
-    public static CtStatement generateReturnRandomExpression(List<CtVariable<?>> fields, List<CtVariable<?>> localVars) {
-        return SpoonFactory.createReturnStatement(BooleanExpressionGenerator.generateRandomExpression(fields, localVars));
+    public static CtStatement generateReturnRandomExpression(Scope scope) {
+        return SpoonFactory.createReturnStatement(BooleanExpressionGenerator.generateRandomExpression(scope));
     }
 }

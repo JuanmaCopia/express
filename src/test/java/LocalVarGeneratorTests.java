@@ -1,4 +1,5 @@
 import evorep.ga.randomgen.LocalVarDeclarationGenerator;
+import evorep.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
@@ -8,11 +9,8 @@ import spoon.SpoonAPI;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,9 +25,7 @@ public class LocalVarGeneratorTests {
 
     static CtClass<?> nodeClass;
     static CtMethod<?> method;
-    static List<CtVariable<?>> fields;
-    static List<CtVariable<?>> localVars;
-    static List<CtVariable<?>> allVars;
+    static Scope scope;
 
     static Set<String> possibleVarDeclarations;
 
@@ -53,11 +49,7 @@ public class LocalVarGeneratorTests {
         launcher = SpoonFactory.getLauncher();
         nodeClass = SpoonQueries.getClass(CLASS_NAME);
         method = nodeClass.getMethodsByName(METHOD_NAME).get(0);
-        fields = SpoonQueries.getFields(nodeClass);
-        localVars = SpoonQueries.getLocalVariables(method);
-        allVars = new ArrayList<>();
-        allVars.addAll(fields);
-        allVars.addAll(localVars);
+        scope = new Scope(method.getBody().getLastStatement());
     }
 
     private static void initializeSpoon() {
@@ -76,7 +68,7 @@ public class LocalVarGeneratorTests {
     void varDeclarationGeneratorTest() {
         Set<String> varDeclarations = new HashSet<>();
         while (varDeclarations.size() < 2) {
-            CtStatement varDecl = LocalVarDeclarationGenerator.generateUserDefinedLocalVarDeclaration(fields, "myVar");
+            CtStatement varDecl = LocalVarDeclarationGenerator.generateUserDefinedLocalVarDeclaration(scope.getFields(), "myVar");
             varDeclarations.add(varDecl.toString());
         }
         assertTrue(varDeclarations.containsAll(possibleVarDeclarations));
@@ -86,7 +78,7 @@ public class LocalVarGeneratorTests {
     void collectionVarDeclarationGeneratorTest() {
         Set<String> varDeclarations = new HashSet<>();
         while (varDeclarations.size() < 2) {
-            CtStatement varDecl = LocalVarDeclarationGenerator.generateCollectionLocalVarDeclaration(fields);
+            CtStatement varDecl = LocalVarDeclarationGenerator.generateCollectionLocalVarDeclaration(scope.getFields());
             varDeclarations.add(varDecl.toString());
         }
         assertTrue(varDeclarations.containsAll(possibleColVarDecl));
