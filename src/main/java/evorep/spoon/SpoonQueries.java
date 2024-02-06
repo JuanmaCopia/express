@@ -1,5 +1,6 @@
 package evorep.spoon;
 
+import evorep.ga.Individual;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtReturn;
@@ -94,6 +95,10 @@ public class SpoonQueries {
 
     public static List<CtVariable<?>> getAllReachableVariablesFromMethod(CtMethod method) {
         return getAllReachableVariables(method.getBody().getLastStatement());
+    }
+
+    public static List<CtVariable<?>> getAllReachableVariablesFromIndividual(Individual individual) {
+        return getAllReachableVariables(individual.getLastGene());
     }
 
     public static List<CtVariable<?>> getAllReachableVariables(CtElement statement) {

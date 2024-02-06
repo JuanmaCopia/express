@@ -4,14 +4,17 @@ import evorep.config.ToolConfig;
 import evorep.ga.GeneticAlgorithm;
 import evorep.ga.Individual;
 import evorep.ga.Population;
+import evorep.ga.mutators.MutatorManager;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import spoon.reflect.declaration.CtMethod;
 
 public class Main {
 
-    private static void initializeRepOKMethod() {
+    private static void initialize() {
+        ToolConfig.parseConfigurationFile();
         SpoonManager.getTargetClass().addMethod(SpoonFactory.createRepOK("repOK"));
+        MutatorManager.initialize();
     }
 
     private static CtMethod getRepOKMethod() {
@@ -19,8 +22,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        ToolConfig.parseConfigurationFile();
-        initializeRepOKMethod();
+        initialize();
         startSearch();
     }
 

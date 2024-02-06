@@ -31,7 +31,6 @@ public class StatementGenerator {
 
     public static CtStatement chooseRandomStatement(CtBlock<?> block, Scope scope) {
         List<Integer> choices = getChoices(block, scope);
-        //System.out.println("\nchoices: " + choices);
         int random = choices.get(RandomUtils.nextInt(choices.size()));
         return switch (random) {
             case 0 -> AssignmentGenerator.generateRandomAssignment(scope);

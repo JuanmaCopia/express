@@ -1,5 +1,6 @@
 package evorep.ga;
 
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtMethod;
 
 public class Individual {
@@ -33,6 +34,10 @@ public class Individual {
      */
     public CtMethod getChromosome() {
         return this.chromosome;
+    }
+
+    public CtStatement getLastGene() {
+        return this.chromosome.getBody().getLastStatement();
     }
 
     /**

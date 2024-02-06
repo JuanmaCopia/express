@@ -225,12 +225,12 @@ public class GeneticAlgorithm {
         // Loop over current population by fitness
         for (int populationIndex = 0; populationIndex < population.size(); populationIndex++) {
             Individual individual = population.getFittest(populationIndex);
-            newPopulation.setIndividual(populationIndex, individual);
 
             if (populationIndex > this.elitismCount) {
                 // Mutate individual
-                MutatorManager.mutate(individual);
+                individual = MutatorManager.mutate(individual);
             }
+            newPopulation.setIndividual(populationIndex, individual);
         }
 
         // Return mutated population

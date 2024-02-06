@@ -1,9 +1,6 @@
 package evorep.spoon;
 
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -70,6 +67,18 @@ public class RandomUtils {
                 e instanceof CtStatement
                         && !(e instanceof CtBlock)
                         && !(e instanceof CtExpression)
+        );
+        if (statements.isEmpty())
+            return null;
+        return statements.get(r.nextInt(statements.size()));
+    }
+
+    public static CtStatement getRandomStatementNonBlockNonExpressionNonReturn(CtBlock<?> block) {
+        List<CtStatement> statements = block.getElements(e ->
+                e instanceof CtStatement
+                        && !(e instanceof CtBlock)
+                        && !(e instanceof CtExpression)
+                        && !(e instanceof CtReturn)
         );
         if (statements.isEmpty())
             return null;

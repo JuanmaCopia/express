@@ -4,10 +4,7 @@ import evorep.scope.Scope;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
-import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtVariableAccess;
-import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -32,11 +29,14 @@ public class LocalVarDeclarationGenerator {
     }
 
     public static CtStatement generateUserDefinedLocalVarDeclaration(List<CtVariable<?>> fields, String varName) {
-        List<CtVariableAccess> refFieldReads = ReferenceExpressionGenerator.generateAllVarReadsOfReferenceType(fields);
+        List<CtVariable<?>> userDefFields = SpoonQueries.getUserDefinedVariables(fields);
+        List<CtVariableAccess> refFieldReads = ReferenceExpressionGenerator.generateAllVarReadsOfReferenceType(userDefFields);
         CtVariableRead<?> chosenFieldRead = (CtVariableRead<?>) refFieldReads.get(RandomUtils.nextInt(refFieldReads.size()));
         CtTypeReference<?> fieldType = chosenFieldRead.getVariable().getType();
 
-        return SpoonFactory.createLocalVariable(varName, fieldType, chosenFieldRead);
+        CtLocalVariable varDecl = SpoonFactory.createLocalVariable(varName, fieldType, chosenFieldRead);
+        //System.err.println("LocalVarDeclarationGenerator: " + varDecl.toString());
+        return varDecl;
     }
 
     public static CtStatement generateCollectionLocalVarDeclaration(List<CtVariable<?>> fields) {

@@ -3,6 +3,7 @@ package evorep.ga.mutators;
 import evorep.ga.Individual;
 import evorep.scope.Scope;
 import evorep.spoon.RandomUtils;
+import evorep.spoon.SpoonManager;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 
@@ -14,18 +15,20 @@ public class MutatorManager {
 
     private static Set<Mutator> mutators = new HashSet<>();
 
-    public static void initializeMutators() {
+    public static void initialize() {
         mutators = new HashSet<>();
-        /*mutators.add(new BlockMutator());
-        mutators.add(new IfMutator());
-        mutators.add(new AssignmentMutator());
-        mutators.add(new InvocationMutator());
+        mutators.add(new BlockMutator());
+        mutators.add(new VariableReadMutator());
+        mutators.add(new VariableWriteMutator());
         mutators.add(new UnaryOperatorMutator());
-        mutators.add(new BinaryOperatorMutator());*/
+        mutators.add(new BinaryOperatorMutator());
+        mutators.add(new ExpressionMutator());
     }
 
     private static CtCodeElement selectGene(Individual individual) {
         List<CtCodeElement> mutableCodeElements = filterMutableCodeElements(individual.getChromosome());
+        if (mutableCodeElements.isEmpty())
+            throw new RuntimeException("No mutable code elements found in the chromosome");
         return mutableCodeElements.get(RandomUtils.nextInt(mutableCodeElements.size()));
     }
 
@@ -47,9 +50,28 @@ public class MutatorManager {
 
     public static Individual mutate(Individual individual) {
         Individual mutant = individual.clone();
+        
+        SpoonManager.getTargetClass().removeMethod(mutant.getChromosome());
+        SpoonManager.getTargetClass().addMethod(mutant.getChromosome());
         CtCodeElement gene = selectGene(mutant);
-        CtCodeElement mutatedGene = selectMutator(gene).mutate(gene, new Scope(gene));
+        Scope scope = new Scope(mutant.getChromosome().getBody().getLastStatement());
+
+        //System.err.println("Scope: " + scope.toString());
+        Mutator mutator = selectMutator(gene);
+
+/*        System.out.println("\nOriginal: \n" + individual.getChromosome().toString());
+        System.out.println("\nSelected gene: \n" + gene.toString());
+        System.out.println("\nRole of gene: \n" + gene.getRoleInParent().toString());
+        System.out.println("\nMutator applied: " + mutator.getClass().getSimpleName() + "\n");*/
+
+        CtCodeElement mutatedGene = mutator.mutate(gene, scope);
+        //System.out.println("\nMutated gene: \n" + mutatedGene.toString());
+
         gene.replace(mutatedGene);
+
+
+        //System.out.println("\nMutant: \n" + mutant.getChromosome().toString());
+
         return mutant;
     }
 

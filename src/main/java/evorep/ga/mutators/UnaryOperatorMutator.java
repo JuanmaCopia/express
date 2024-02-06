@@ -18,8 +18,8 @@ public class UnaryOperatorMutator implements Mutator {
         CtExpression<?> mutant;
         UnaryOperatorKind operator = unaryOperator.getKind();
         switch (operator) {
-            case NEG -> mutant = unaryOperator.getOperand();
-            default -> throw new RuntimeException("Unsupported unary operator");
+            case NOT -> mutant = unaryOperator.getOperand();
+            default -> throw new RuntimeException("Unsupported unary operator: " + operator.toString());
         }
         return mutant;
     }

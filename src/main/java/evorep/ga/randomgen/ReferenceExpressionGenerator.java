@@ -50,6 +50,8 @@ public class ReferenceExpressionGenerator {
      */
     public static CtVariableAccess generateRandomVarReadOfType(List<CtVariable<?>> variables, CtTypeReference<?> typeRef) {
         List<CtVariableAccess> varReads = generateAllVarReadsOfType(variables, typeRef);
+        if (varReads.isEmpty())
+            return null;
         return varReads.get(RandomUtils.nextInt(varReads.size()));
     }
 

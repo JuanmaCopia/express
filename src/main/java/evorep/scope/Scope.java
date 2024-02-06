@@ -32,4 +32,12 @@ public class Scope {
     public List<CtVariable<?>> getLocalVariables() {
         return new LinkedList(localVariables);
     }
+
+    public String toString() {
+        return "Scope{" +
+                "allVariables=" + allVariables +
+                ", fields=" + fields +
+                ", localVariables=" + localVariables +
+                '}';
+    }
 }

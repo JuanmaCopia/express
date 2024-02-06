@@ -3,6 +3,7 @@ package evorep.ga.randomgen;
 import evorep.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtVariable;
@@ -15,7 +16,9 @@ public class AssignmentGenerator {
                 scope.getAllVariables(),
                 chosenVar.getType()
         );
-        return SpoonFactory.createAssignment(chosenVar, chosenFieldRead);
+        CtAssignment assignment = SpoonFactory.createAssignment(chosenVar, chosenFieldRead);
+        //System.err.println("AssignmentGenerator: " + assignment.toString());
+        return assignment;
     }
 
 

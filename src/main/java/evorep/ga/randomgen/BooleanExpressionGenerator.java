@@ -37,8 +37,9 @@ public class BooleanExpressionGenerator {
         List<Integer> filteredChoices = new ArrayList<>();
         if (SpoonQueries.containsVariableOfType(scope.getFields(), Object.class))
             filteredChoices.add(0);
-        if (SpoonQueries.containsVariableOfType(scope.getLocalVariables(), Collection.class))
+        if (SpoonQueries.containsVariableOfType(scope.getLocalVariables(), Collection.class)) {
             filteredChoices.add(1);
+        }
         if (filteredChoices.isEmpty())
             filteredChoices.add(-1);
         return filteredChoices;
