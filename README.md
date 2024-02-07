@@ -49,10 +49,15 @@ evorep.max_generations = <NUMBER_OF_GENERATIONS>
 ```
 
 `evorep.src_path` is the path to the source code of the subject.
+
 `evorep.bin_path` is the path to the binary folder of the subject. (Not used yet)
+
 `evorep.class_name` is the fully qualified name of the class for which the RepOK method will be generated.
+
 `evorep.src_java_version` is the version of the source code.
+
 `evorep.max_population` is the maximum number of individuals in the population.
+
 `evorep.max_generations` is the maximum number of generations to be performed.
 
 ## Case Studies
