@@ -2,7 +2,6 @@ package evorep.ga.randomgen;
 
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
-import evorep.spoon.SpoonHelper;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
@@ -32,7 +31,7 @@ public class ReferenceExpressionGenerator {
      * @return a random variable read of the given type
      */
     public static CtVariableAccess generateRandomVarReadOfType(CtVariable<?> var, CtTypeReference<?> typeRef, boolean includeVar) {
-        List<CtVariableAccess> varReads = SpoonHelper.createVariableReads(
+        List<CtVariableAccess> varReads = SpoonFactory.createVariableReads(
                 var,
                 typeRef,
                 includeVar
@@ -86,7 +85,7 @@ public class ReferenceExpressionGenerator {
     public static List<CtVariableAccess> generateAllVarReadsOfType(List<CtVariable<?>> variables, CtTypeReference<?> typeRef) {
         List<CtVariableAccess> varReads = new ArrayList<>();
         for (CtVariable<?> var : variables) {
-            varReads.addAll(SpoonHelper.createVariableReads(
+            varReads.addAll(SpoonFactory.createVariableReads(
                     var,
                     typeRef,
                     true
@@ -120,7 +119,7 @@ public class ReferenceExpressionGenerator {
             CtTypeReference<?> typeRef,
             boolean includeVar
     ) {
-        List<CtVariableAccess> varWrites = SpoonHelper.createVariableWrites(
+        List<CtVariableAccess> varWrites = SpoonFactory.createVariableWrites(
                 var,
                 typeRef,
                 includeVar
@@ -155,7 +154,7 @@ public class ReferenceExpressionGenerator {
     public static List<CtVariableAccess> generateAllVarWritesOfType(List<CtVariable<?>> variables, CtTypeReference<?> typeRef) {
         List<CtVariableAccess> varReads = new ArrayList<>();
         for (CtVariable<?> var : variables) {
-            varReads.addAll(SpoonHelper.createVariableReads(
+            varReads.addAll(SpoonFactory.createVariableReads(
                     var,
                     typeRef,
                     true
