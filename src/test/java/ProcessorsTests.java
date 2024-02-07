@@ -1,15 +1,16 @@
-import evorep.spoon.SpoonFactory;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import evorep.ga.mutators.processors.NullCheckProcessor;
+import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.SpoonAPI;
 import spoon.processing.Processor;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ProcessorsTests {
 
@@ -18,7 +19,7 @@ class ProcessorsTests {
 
     @BeforeEach
     void setUp() {
-        SpoonManager.initialize("./src/test/resources", "./target/class-test", "Node");
+        SpoonManager.initialize("./src/test/resources", "./target/class-test", "Node", 17);
         launcher = SpoonFactory.getLauncher();
         nodeClass = SpoonQueries.getClass("Node");
     }

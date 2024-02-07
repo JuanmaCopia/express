@@ -12,7 +12,7 @@ plugins {
 }
 
 application {
-    mainClass = 'evorep.Main'
+    mainClass = 'evorep.EvoRep'
 }
 
 repositories {

@@ -1,5 +1,6 @@
 package evorep.spoon;
 
+import evorep.ga.Individual;
 import spoon.SpoonAPI;
 import spoon.SpoonModelBuilder;
 
@@ -13,8 +14,16 @@ public class SpoonCompiler {
         compiler.compile();
     }
 
-    public static boolean compile() {
-        return compiler.compile();
+    public static boolean compileIndividual(Individual individual) {
+        SpoonHelper.putIndividualIntoTheEnvironment(individual);
+        boolean compiles = false;
+        //System.out.println("Compiling individual: " + individual);
+        try {
+            compiles = compiler.compile();
+        } catch (Exception e) {
+            //e.printStackTrace();
+        }
+        return compiles;
     }
 
 }

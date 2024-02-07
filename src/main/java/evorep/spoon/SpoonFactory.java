@@ -1,29 +1,8 @@
 package evorep.spoon;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.lang3.ClassUtils;
-
 import spoon.SpoonAPI;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldRead;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.code.CtWhile;
-import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
@@ -33,6 +12,12 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class SpoonFactory {
 
@@ -84,12 +69,16 @@ public class SpoonFactory {
     }
 
     public static CtMethod<Boolean> createMethod(ModifierKind modifier, CtTypeReference<?> returnType,
-            String name) {
+                                                 String name) {
         CtMethod<Boolean> newMethod = coreFactory.createMethod();
         newMethod.addModifier(modifier);
         newMethod.setType(returnType);
         newMethod.setSimpleName(name);
         return newMethod;
+    }
+
+    public static CtBlock<?> createBlock() {
+        return coreFactory.createBlock();
     }
 
     public static CtReturn createReturnStatement(CtExpression returnExpression) {
@@ -114,7 +103,7 @@ public class SpoonFactory {
     }
 
     public static CtIf createIfThenElseStatement(CtExpression<Boolean> condition, CtStatement thenStatement,
-            CtStatement elseStatement) {
+                                                 CtStatement elseStatement) {
         if (!(thenStatement instanceof CtBlock<?>))
             thenStatement = encapsulateStatement(thenStatement);
         if (!(elseStatement instanceof CtBlock<?>))
@@ -134,6 +123,15 @@ public class SpoonFactory {
         whileStatement.setBody(body);
         return whileStatement;
     }
+
+    public static CtWhile createWhileStatement(CtExpression<Boolean> condition) {
+        CtBlock<?> emptyBlock = coreFactory.createBlock();
+        CtWhile whileStatement = coreFactory.createWhile();
+        whileStatement.setLoopingExpression(condition);
+        whileStatement.setBody(emptyBlock);
+        return whileStatement;
+    }
+
 
     public static CtBlock<?> encapsulateStatement(CtStatement statement) {
         CtBlock<?> block = coreFactory.createBlock();
@@ -157,7 +155,7 @@ public class SpoonFactory {
     }
 
     public static CtLocalVariable<?> createLocalVariable(String varName, CtTypeReference<?> type,
-            Object assignment) {
+                                                         Object assignment) {
         CtLocalVariable localVariable = coreFactory.createLocalVariable();
 
         localVariable.setSimpleName(varName);
@@ -185,8 +183,23 @@ public class SpoonFactory {
         return fieldRead;
     }
 
+    public static CtFieldWrite<?> createFieldWrite(CtExpression<?> variable, CtVariable<?> field) {
+        CtFieldWrite fieldWrite = coreFactory.createFieldWrite();
+        fieldWrite.setTarget(variable);
+        fieldWrite.setVariable(field.getReference());
+        return fieldWrite;
+    }
+
+    public static CtVariableRead<?> createFieldRead(CtVariable<?> variable) {
+        return createVariableRead(variable);
+    }
+
     public static CtFieldRead<?> createFieldRead(CtVariable<?> variable, CtVariable<?> field) {
         return createFieldRead(createVariableRead(variable), field);
+    }
+
+    public static CtFieldWrite<?> createFieldWrite(CtVariable<?> variable, CtVariable<?> field) {
+        return createFieldWrite(createVariableRead(variable), field);
     }
 
     public static CtTypeReference<?> createTypeReference(Class<?> type) {
@@ -213,24 +226,28 @@ public class SpoonFactory {
         return codeFactory.createConstructorCall(type);
     }
 
+/*    public static CtConstructorCall<?> createConstructorCall(CtTypeReference<?> type, CtTypeReference<?> subtype) {
+        CtConstructorCall<?> constructorCall = codeFactory.createConstructorCall(type);
+    }*/
+
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName,
-            CtTypeReference<?> argsTypes,
-            CtExpression<?> args) {
+                                                CtTypeReference<?> argsTypes,
+                                                CtExpression<?> args) {
 
         return createInvocation(target, methodName, Collections.singletonList(argsTypes),
                 Collections.singletonList(args));
     }
 
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName,
-            List<CtTypeReference<?>> argsTypes,
-            List<CtExpression<?>> args) {
+                                                List<CtTypeReference<?>> argsTypes,
+                                                List<CtExpression<?>> args) {
 
         CtExecutableReference<?> method = createExecutableReference(target.getType(), methodName, argsTypes);
         return createMethodCall(target, method, args);
     }
 
     public static CtExecutableReference createExecutableReference(CtTypeReference<?> targetType, String methodName,
-            List<CtTypeReference<?>> args) {
+                                                                  List<CtTypeReference<?>> args) {
         CtExecutableReference method = coreFactory.createExecutableReference();
         method.setDeclaringType(targetType);
         method.setSimpleName(methodName);
@@ -239,7 +256,7 @@ public class SpoonFactory {
     }
 
     public static CtInvocation createMethodCall(CtVariable<?> target, CtExecutableReference<?> method,
-            List<CtExpression<?>> args) {
+                                                List<CtExpression<?>> args) {
         CtInvocation invocation = coreFactory.createInvocation();
         invocation.setTarget(createVariableRead(target));
         invocation.setExecutable(method);
@@ -269,7 +286,7 @@ public class SpoonFactory {
     }
 
     private static CtExpression<?> createBinaryExpression(CtExpression<?> left, CtExpression<?> right,
-            BinaryOperatorKind op) {
+                                                          BinaryOperatorKind op) {
         CtBinaryOperator<?> expression = coreFactory.createBinaryOperator();
         expression.setLeftHandOperand(left);
         expression.setRightHandOperand(right);
@@ -298,12 +315,59 @@ public class SpoonFactory {
         return ctAssignment;
     }
 
-    // public static CtAssignment createAssignment(CtVariable<?> assigned,
-    // CtExpression<?> assignment) {
-    // CtAssignment ctAssignment = coreFactory.createAssignment();
-    // ctAssignment.setAssigned(createVariableWrite(assigned));
-    // ctAssignment.setAssignment(assignment);
-    // return ctAssignment;
-    // }
+
+    public static List<CtVariableAccess> createVariableWrites(
+            CtVariable<?> var,
+            CtTypeReference<?> typeRef,
+            boolean includeVar
+    ) {
+        return createVariableAccesses(
+                var,
+                typeRef,
+                includeVar,
+                SpoonFactory::createVariableWrite,
+                SpoonFactory::createFieldWrite
+        );
+    }
+
+    public static List<CtVariableAccess> createVariableReads(
+            CtVariable<?> var,
+            CtTypeReference<?> typeRef,
+            boolean includeVar
+    ) {
+        return createVariableAccesses(
+                var,
+                typeRef,
+                includeVar,
+                SpoonFactory::createVariableRead,
+
+                SpoonFactory::createFieldRead
+        );
+    }
+
+    /**
+     * Creates a list of variable accesses of the given type from the given variable.
+     *
+     * @param var               the variable from which to consider possible reads.
+     * @param typeRef           the type of the required variable read
+     * @param createFieldAccess the function to create the variable access
+     * @return a list of variable accesses of the given type
+     */
+    public static List<CtVariableAccess> createVariableAccesses(
+            CtVariable<?> var,
+            CtTypeReference<?> typeRef,
+            boolean includeVar,
+            Function<CtVariable<?>, CtVariableAccess> createVariableAccess,
+            BiFunction<CtVariable<?>, CtVariable<?>, CtVariableAccess> createFieldAccess
+    ) {
+        List<CtVariableAccess> varAccesses = new ArrayList<>();
+        if (includeVar && var.getType().isSubtypeOf(typeRef))
+            varAccesses.add(createVariableAccess.apply(var));
+
+        varAccesses.addAll(SpoonQueries.getFieldsOfType(var, typeRef).stream().map(
+                field -> createFieldAccess.apply(var, field)
+        ).toList());
+        return varAccesses;
+    }
 
 }

@@ -1,30 +1,24 @@
 package evorep.spoon;
 
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-
-import evorep.ga.mutators.processors.AddMethodCallProcessor;
-import evorep.ga.mutators.processors.AlreadyVisitedCheckProcessor;
-import evorep.ga.mutators.processors.DeclareVisitedSetProcessor;
-import evorep.ga.mutators.processors.ExampleClassProcessor;
-import evorep.ga.mutators.processors.NullCheckAllFieldsProcessor;
-import evorep.ga.mutators.processors.ReferenceTraversalProcessor;
+import evorep.ga.mutators.processors.*;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
 public class ProcessorsUseExamples {
 
     public static void classProcessorExample() {
-        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
+        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL", 17);
         CtClass<?> cls = SpoonQueries.getClass("code.ExampleClass");
 
         Processor<CtClass<?>> p = new ExampleClassProcessor();
@@ -36,7 +30,7 @@ public class ProcessorsUseExamples {
     }
 
     public static void nullCheckProcessorExample() {
-        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
+        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL", 17);
         CtClass<?> cls = SpoonManager.getTargetClass();
         CtMethod<?> method = cls.getMethodsByName("mymethod2").get(0);
 
@@ -49,7 +43,7 @@ public class ProcessorsUseExamples {
     }
 
     public static void referenceTraversalExample() {
-        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
+        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL", 17);
         CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
         CtMethod<?> method = sllClass.getMethodsByName("mymethod2").get(0);
 
@@ -70,7 +64,7 @@ public class ProcessorsUseExamples {
     }
 
     public static void declareVisitedProcessorExample() {
-        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
+        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL", 17);
         CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
         CtClass<?> nodeClass = SpoonQueries.getClass("examples.SLL$Node");
 
@@ -99,7 +93,7 @@ public class ProcessorsUseExamples {
     }
 
     public static void alreadyVisitedCheckProcessorExample() {
-        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
+        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL", 17);
         CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
 
         CtMethod<?> method = sllClass.getMethodsByName("mymethod3").get(0);
@@ -107,14 +101,14 @@ public class ProcessorsUseExamples {
         // System.err.println(SpoonQueries.getAllRecheableVariables(method.getBody()).toString();
 
         List<CtVariable<?>> localAndParamVars = SpoonQueries
-                .getAllRecheableLocalVariablesOfType(method.getBody().getLastStatement(), Set.class);
+                .getAllReachableLocalVariablesOfType(method.getBody().getLastStatement(), Set.class);
         assert (!localAndParamVars.isEmpty());
 
         CtVariable<?> setVariable = localAndParamVars.get(0);
 
         CtTypeReference<?> typeOfElementsInSet = setVariable.getReference().getType().getActualTypeArguments().get(0);
 
-        List<CtVariable<?>> localVarsOfSetType = SpoonQueries.getAllRecheableLocalVariablesOfType(
+        List<CtVariable<?>> localVarsOfSetType = SpoonQueries.getAllReachableLocalVariablesOfType(
                 method.getBody().getLastStatement(),
                 typeOfElementsInSet);
 
@@ -159,7 +153,7 @@ public class ProcessorsUseExamples {
         System.err.println("\n\n ==== AFTER ==== \n\n" + method.toString());
     }
 
-    public static void obtainLocalVariablesExample() {
+/*    public static void obtainLocalVariablesExample() {
         SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
         CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
         CtMethod<?> method = sllClass.getMethodsByName("mymethod4").get(0);
@@ -168,12 +162,28 @@ public class ProcessorsUseExamples {
 
         CtStatement last = method.getBody().getLastStatement();
 
-        List<CtVariable<?>> query = SpoonQueries.getAllRecheableLocalVariables(last);
+        List<CtVariable<?>> query = SpoonQueries.getAllReachableLocalVariables(last);
 
         System.err.println("\n\nPotentialVariableDeclarationFunction:\n");
         for (CtElement e : query) {
             System.err.println(e.toString());
         }
+
+    }*/
+
+    public static void printStatements() {
+        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL", 17);
+        CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
+        CtMethod<?> method = sllClass.getMethodsByName("structureRepOK").get(0);
+
+        SpoonQueries.getStatements(method).forEach(
+                s -> System.err.println("Statement:\n" + s.toString() + "\n")
+        );
+
+        /*method.getBody().getStatements().forEach(
+                s -> System.err.println("Statement:\n" + s.toString() + "\n")
+        );*/
+
 
     }
 

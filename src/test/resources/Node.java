@@ -1,3 +1,5 @@
+import java.util.HashSet;
+import java.util.Set;
 
 public class Node {
     int data;
@@ -16,6 +18,12 @@ public class Node {
     public boolean m() {
 
         Node current = this;
+        return true;
+    }
+
+    public boolean methodWithVisitedSet() {
+        Node current = this;
+        Set<Node> visited = new HashSet<>();
         return true;
     }
 }

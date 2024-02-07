@@ -1,122 +1,98 @@
 package evorep.ga;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import evorep.spoon.SpoonFactory;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtMethod;
 
-public class Individual {
+public class Individual implements Comparable<Individual> {
 
-	private List<CtStatement> chromosome;
-	private double fitness = -1;
+    private CtMethod chromosome;
+    private double fitness = -1;
+    private boolean isFitnessUpdated = false;
 
-	/**
-	 * Initializes individual with an specific chromosome.
-	 * A chromosome is a list of statements.
-	 *
-	 * @param chromosome
-	 *                   The chromosome of the individual
-	 */
-	public Individual(List<CtStatement> chromosome) {
-		this.chromosome = chromosome;
-	}
 
-	/**
-	 * Initializes an individual with a return true statement
-	 */
-	public Individual() {
-		chromosome = new ArrayList<>();
-		chromosome.add(SpoonFactory.createReturnTrueStatement());
-	}
+    /**
+     * Initializes individual with an specific chromosome.
+     * A chromosome is a list of statements.
+     *
+     * @param repOK The repOK method
+     */
+    public Individual(CtMethod repOK) {
+        chromosome = repOK.clone();
+    }
 
-	/**
-	 * Gets individual's chromosome
-	 *
-	 * @return The individual's chromosome
-	 */
-	public List<CtStatement> getChromosome() {
-		return this.chromosome;
-	}
 
-	/**
-	 * Gets individual's chromosome length
-	 *
-	 * @return The individual's chromosome length
-	 */
-	public int getChromosomeLength() {
-		return chromosome.size();
-	}
+    /**
+     * Gets individual's chromosome
+     *
+     * @return The individual's chromosome
+     */
+    public CtMethod getChromosome() {
+        return this.chromosome;
+    }
 
-	/**
-	 * Inserts a new gene to the chromosome at offset
-	 *
-	 * @param gene
-	 */
-	public void addGene(int offset, CtStatement gene) {
-		if (offset == chromosome.size())
-			chromosome.add(gene);
-		else if (offset < chromosome.size())
-			chromosome.add(offset, gene);
-		else
-			throw new IndexOutOfBoundsException("Offset is out of bounds");
-	}
+    /**
+     * Store individual's fitness
+     *
+     * @param fitnessValue The individuals fitness
+     */
+    public void setFitness(double fitnessValue) {
+        fitness = fitnessValue;
+        isFitnessUpdated = true;
+    }
 
-	/**
-	 * Set gene at offset
-	 *
-	 * @param gene
-	 * @param offset
-	 * @return gene
-	 */
-	public void setGene(int offset, CtStatement gene) {
-		chromosome.set(offset, gene);
-	}
+    public boolean needsFitnessUpdate() {
+        return !isFitnessUpdated;
+    }
 
-	/**
-	 * Get gene at offset
-	 *
-	 * @param offset
-	 * @return gene
-	 */
-	public CtStatement getGene(int offset) {
-		return chromosome.get(offset);
-	}
+    public void setFitnessAsOutdated() {
+        isFitnessUpdated = false;
+    }
 
-	/**
-	 * Store individual's fitness
-	 *
-	 * @param fitness
-	 *                The individuals fitness
-	 */
-	public void setFitness(double fitness) {
-		this.fitness = fitness;
-	}
+    public CtStatement getLastGene() {
+        return this.chromosome.getBody().getLastStatement();
+    }
 
-	/**
-	 * Gets individual's fitness
-	 *
-	 * @return The individual's fitness
-	 */
-	public double getFitness() {
-		return this.fitness;
-	}
+    /**
+     * Gets individual's chromosome length
+     *
+     * @return The individual's chromosome length
+     */
+    public int getChromosomeLength() {
+        return chromosome.getBody().getStatements().size();
+    }
 
-	/**
-	 * Display the chromosome as a string.
-	 *
-	 * @return string representation of the chromosome
-	 */
-	public String toString() {
-		StringBuilder stringBuilder = new StringBuilder();
-		for (CtStatement statement : chromosome) {
-			stringBuilder.append(statement.toString());
-			stringBuilder.append("\n");
-		}
-		return stringBuilder.toString();
-	}
 
-	// public List<CtLocalVariable<?>> getLocalVariables() {
+    /**
+     * Gets individual's fitness
+     *
+     * @return The individual's fitness
+     */
+    public double getFitness() {
+        return this.fitness;
+    }
 
-	// }
+    /**
+     * Display the chromosome as a string.
+     *
+     * @return string representation of the chromosome
+     */
+    @Override
+    public String toString() {
+        if (chromosome == null)
+            return "Empty individual";
+        return chromosome.toString();
+    }
+
+    public Individual clone() {
+        return new Individual(chromosome);
+    }
+
+    @Override
+    public int compareTo(Individual other) {
+        if (this.getFitness() < other.getFitness())
+            return -1;
+        else if (this.getFitness() > other.getFitness())
+            return 1;
+        return 0;
+    }
 }

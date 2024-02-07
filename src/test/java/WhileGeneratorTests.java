@@ -1,4 +1,4 @@
-import evorep.ga.randomgen.BooleanExpressionGenerator;
+import evorep.ga.randomgen.WhileGenerator;
 import evorep.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
@@ -6,21 +6,17 @@ import evorep.spoon.SpoonQueries;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import spoon.SpoonAPI;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BooleanExpressionGeneratorTests {
+public class WhileGeneratorTests {
 
     final static String SOURCE_PATH = "./src/test/resources";
     final static String CLASS_NAME = "Node";
@@ -31,6 +27,7 @@ public class BooleanExpressionGeneratorTests {
     static CtClass<?> nodeClass;
     static CtMethod<?> method;
     static Scope scope;
+
 
     static Set<String> possibleNullCompExpressions;
     static Set<String> allPossibleExpression;
@@ -81,44 +78,46 @@ public class BooleanExpressionGeneratorTests {
     }
 
     @Test
-    void nullEqualityGenerationTest() {
-        CtExpression<Boolean> expression = BooleanExpressionGenerator.generateNullComparison(scope);
-        assertTrue(possibleNullCompExpressions.contains(expression.toString()));
-    }
+    void emptyWhileWithFalseConditionTest() {
+        CtWhile whileAssignment = (CtWhile) WhileGenerator.generateWhileFalse(scope);
+
+        CtBlock body = (CtBlock) whileAssignment.getBody();
+        assertEquals(0, body.getStatements().size());
 
 
-    @Test
-    void ensureAllNullExpressionsAreGeneratedTest() {
-        Set<String> expressionsGenerated = new HashSet<>();
-        while (expressionsGenerated.size() < 5)
-            expressionsGenerated.add(BooleanExpressionGenerator.generateNullComparison(scope).toString());
-
-        assertTrue(expressionsGenerated.containsAll(possibleNullCompExpressions));
+        CtExpression<?> condition = whileAssignment.getLoopingExpression();
+        assertEquals("false", condition.toString());
     }
 
     @Test
-    void ensureAllExpressionsAreGeneratedTest() {
-        Set<String> expressionsGenerated = new HashSet<>();
-        while (expressionsGenerated.size() < 18)
-            expressionsGenerated.add(BooleanExpressionGenerator.generateRandomExpression(scope).toString());
-        assertTrue(expressionsGenerated.containsAll(allPossibleExpression));
+    void emptyWhileWithRandomConditionTest() {
+        CtWhile whileAssignment = (CtWhile) WhileGenerator.generateWhileWithRandomExpression(scope);
+
+        CtBlock body = (CtBlock) whileAssignment.getBody();
+        assertEquals(0, body.getStatements().size());
+
+        CtExpression<?> condition = whileAssignment.getLoopingExpression();
+        assertTrue(allPossibleExpression.contains(condition.toString()));
     }
 
     @Test
-    void choicesTest() {
-        List<Integer> choices = BooleanExpressionGenerator.getChoices(scope);
-        assertEquals(2, choices.size());
-        assertTrue(choices.contains(0));
-        assertTrue(choices.contains(1));
-        assertTrue(!choices.contains(-1));
+    void whileWithIfReturnAndRandomConditionTest() {
+        CtWhile whileAssignment = (CtWhile) WhileGenerator.generateWhileWithIfStatement(scope);
+
+        CtBlock body = (CtBlock) whileAssignment.getBody();
+        assertEquals(1, body.getStatements().size());
+        CtIf ifStatement = (CtIf) body.getStatement(0);
+
+        CtBlock<?> thenBlock = ifStatement.getThenStatement();
+        CtReturn<?> returnStatement = (CtReturn<?>) thenBlock.getStatement(0);
+        assertEquals("return false", returnStatement.toString());
+
+        CtExpression<?> ifCondition = ifStatement.getCondition();
+        assertTrue(allPossibleExpression.contains(ifCondition.toString()));
+
+        CtExpression<?> condition = whileAssignment.getLoopingExpression();
+        assertTrue(allPossibleExpression.contains(condition.toString()));
     }
 
-    @Test
-    void negateTest() {
-        CtVariable<?> variable = SpoonQueries.getVariableByName(scope.getLocalVariables(), "current");
-        CtExpression<Boolean> expression = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(variable, null, BinaryOperatorKind.EQ);
-        expression = (CtExpression<Boolean>) SpoonFactory.createUnaryExpression(expression, UnaryOperatorKind.NOT);
-        assertEquals("!(current == null)", expression.toString());
-    }
 
 }

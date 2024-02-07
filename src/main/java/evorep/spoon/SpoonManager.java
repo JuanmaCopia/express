@@ -1,12 +1,15 @@
 package evorep.spoon;
 
-import java.io.File;
-
+import evorep.config.ToolConfig;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.reflect.declaration.CtClass;
 
+import java.io.File;
+
 public class SpoonManager {
+
+    private final static String DEFAULT_BIN_PATH = "./target";
 
     private static SpoonAPI launcher;
     private static CtClass<?> targetClass;
@@ -14,29 +17,34 @@ public class SpoonManager {
     private SpoonManager() {
     }
 
-    public static void initialize(String srcPath, String binPath, String fullClassName) {
+    public static void initialize() {
+        initialize(ToolConfig.srcPath, ToolConfig.binPath, ToolConfig.className, ToolConfig.srcJavaVersion);
+    }
+
+    public static void initialize(String srcPath, String binPath, String fullClassName, int srcJavaVersion) {
         try {
-            initializeLauncher(srcPath, binPath);
+            initializeLauncher(srcPath, binPath, srcJavaVersion);
             initializeFactories();
             initializeClass(fullClassName);
-            initializeRepOKMethod();
             initializeCompiler();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void initializeLauncher(String srcPath, String binPath) {
+    private static void initializeLauncher(String srcPath, String binPath, int srcJavaVersion) {
         launcher = new Launcher();
         launcher.addInputResource(srcPath);
         launcher.setBinaryOutputDirectory(createBinDirectory(binPath));
-        launcher.getEnvironment().setComplianceLevel(17);
+        launcher.getEnvironment().setComplianceLevel(srcJavaVersion);
         launcher.getEnvironment().setShouldCompile(true);
         launcher.getEnvironment().setAutoImports(true);
         launcher.buildModel();
     }
 
     private static File createBinDirectory(String binPath) {
+        if (binPath == null)
+            binPath = DEFAULT_BIN_PATH;
         File binDir = new File(binPath);
         if (!binDir.exists()) {
             binDir.mkdirs();
@@ -50,10 +58,6 @@ public class SpoonManager {
 
     private static void initializeClass(String fullClassName) {
         targetClass = launcher.getFactory().Class().get(fullClassName);
-    }
-
-    private static void initializeRepOKMethod() {
-        targetClass.addMethod(SpoonFactory.createRepOK("repOK"));
     }
 
     private static void initializeCompiler() {

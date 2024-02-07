@@ -1,12 +1,11 @@
 package evorep.spoon;
 
-import java.util.List;
-import java.util.Random;
-
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.List;
+import java.util.Random;
 
 public class RandomUtils {
 
@@ -14,6 +13,10 @@ public class RandomUtils {
 
     public static int nextInt(int bound) {
         return r.nextInt(bound);
+    }
+
+    public static boolean nextBoolean() {
+        return r.nextBoolean();
     }
 
     public static boolean chooseWithProbability(int numberOfElements) {
@@ -31,7 +34,8 @@ public class RandomUtils {
         List<CtVariable<?>> newList = SpoonQueries.getVariablesOfType(list, type);
         if (newList.isEmpty())
             return null;
-        return newList.get(r.nextInt(list.size()));
+        int choice = r.nextInt(newList.size());
+        return newList.get(choice);
     }
 
     public static CtVariable<?> getRandomElementOfType(List<CtVariable<?>> list, CtTypeReference<?> type) {
@@ -56,6 +60,29 @@ public class RandomUtils {
             throw new IllegalArgumentException("Lists cannot be null");
 
         return list.get(r.nextInt(list.size()));
+    }
+
+    public static CtStatement getRandomStatementNonBlockNonExpression(CtBlock<?> block) {
+        List<CtStatement> statements = block.getElements(e ->
+                e instanceof CtStatement
+                        && !(e instanceof CtBlock)
+                        && !(e instanceof CtExpression)
+        );
+        if (statements.isEmpty())
+            return null;
+        return statements.get(r.nextInt(statements.size()));
+    }
+
+    public static CtStatement getRandomStatementNonBlockNonExpressionNonReturn(CtBlock<?> block) {
+        List<CtStatement> statements = block.getElements(e ->
+                e instanceof CtStatement
+                        && !(e instanceof CtBlock)
+                        && !(e instanceof CtExpression)
+                        && !(e instanceof CtReturn)
+        );
+        if (statements.isEmpty())
+            return null;
+        return statements.get(r.nextInt(statements.size()));
     }
 
 }
