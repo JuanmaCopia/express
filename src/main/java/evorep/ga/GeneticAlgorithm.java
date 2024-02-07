@@ -29,7 +29,7 @@ import spoon.reflect.declaration.CtMethod;
  * @author bkanber
  */
 public class GeneticAlgorithm {
-    private int populationSize;
+    private int maxPopulationSize;
 
     /**
      * Mutation rate is the fractional probability than an individual gene will
@@ -46,8 +46,8 @@ public class GeneticAlgorithm {
      */
     private double crossoverRate;
 
-    public GeneticAlgorithm(int populationSize, double mutationRate, double crossoverRate) {
-        this.populationSize = populationSize;
+    public GeneticAlgorithm(int maxPopulationSize, double mutationRate, double crossoverRate) {
+        this.maxPopulationSize = maxPopulationSize;
         this.mutationRate = mutationRate;
         this.crossoverRate = crossoverRate;
     }
@@ -59,7 +59,7 @@ public class GeneticAlgorithm {
      * @return population The initial population generated
      */
     public Population initPopulation(CtMethod repOK) {
-        return new Population(this.populationSize, repOK);
+        return new Population(this.maxPopulationSize, repOK);
     }
 
     /**
@@ -119,8 +119,10 @@ public class GeneticAlgorithm {
     public Population selectFittest(Population population) {
         Population newPopulation = new Population();
         System.out.println("Population size: " + population.size());
-        for (int i = 0; i < populationSize; i++) {
+        int i = 0;
+        while (i < maxPopulationSize && population.size() > 0) {
             newPopulation.addIndividual(population.removeFittest());
+            i++;
         }
         return newPopulation;
     }
