@@ -3,7 +3,7 @@ package evorep.ga.mutators;
 import evorep.ga.Individual;
 import evorep.scope.Scope;
 import evorep.spoon.RandomUtils;
-import evorep.spoon.SpoonManager;
+import evorep.spoon.SpoonHelper;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 
@@ -50,13 +50,11 @@ public class MutatorManager {
 
     public static Individual mutate(Individual individual) {
         Individual mutant = individual.clone();
-        
-        SpoonManager.getTargetClass().removeMethod(mutant.getChromosome());
-        SpoonManager.getTargetClass().addMethod(mutant.getChromosome());
-        CtCodeElement gene = selectGene(mutant);
-        Scope scope = new Scope(mutant.getChromosome().getBody().getLastStatement());
 
+        Scope scope = SpoonHelper.getScope(mutant);
         //System.err.println("Scope: " + scope.toString());
+
+        CtCodeElement gene = selectGene(mutant);
         Mutator mutator = selectMutator(gene);
 
 /*        System.out.println("\nOriginal: \n" + individual.getChromosome().toString());
