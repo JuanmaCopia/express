@@ -8,7 +8,7 @@ import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import spoon.reflect.declaration.CtMethod;
 
-public class Main {
+public class EvoRep {
 
     private static void initialize() {
         ToolConfig.parseConfigurationFile();

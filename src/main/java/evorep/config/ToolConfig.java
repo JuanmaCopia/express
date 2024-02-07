@@ -14,16 +14,14 @@ public class ToolConfig {
         try (FileInputStream input = new FileInputStream(CONFIG_FILE_PATH)) {
             properties.load(input);
 
-            boolean debugMode = Boolean.parseBoolean(properties.getProperty("app.debug"));
-            String srcPath = properties.getProperty("app.srcpath");
-            String binPath = properties.getProperty("app.binpath");
-            String className = properties.getProperty("app.classname");
+            String srcPath = properties.getProperty("evorep.srcpath");
+            String binPath = properties.getProperty("evorep.binpath");
+            String className = properties.getProperty("evorep.classname");
 
             System.out.println("\n -----------------  Configuration Parameters  -----------------\n");
-            System.out.println("\tapp.debug = " + debugMode);
-            System.out.println("\tapp.srcpath = " + srcPath);
-            System.out.println("\tapp.binpath = " + binPath);
-            System.out.println("\tapp.classname = " + className);
+            System.out.println("\tevorep.srcpath = " + srcPath);
+            System.out.println("\tevorep.binpath = " + binPath);
+            System.out.println("\tevorep.classname = " + className);
 
             SpoonManager.initialize(srcPath, binPath, className);
 
