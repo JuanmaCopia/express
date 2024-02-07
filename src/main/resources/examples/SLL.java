@@ -44,14 +44,14 @@ public class SLL {
     public boolean structureRepOK2() {
         Set<Node> visited = new HashSet<>();
         visited.add(head);
-        Node curr = head;
-        while (curr != null) {
-            if (curr.next != null) {
-                if (!visited.add(curr.next)) {
+        Node current = head;
+        while (current != null) {
+            if (current.next != null) {
+                if (!visited.add(current.next)) {
                     return false;
                 }
             }
-            curr = curr.next;
+            current = current.next;
         }
         return true;
     }

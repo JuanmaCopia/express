@@ -23,6 +23,7 @@ public class MutatorManager {
         mutators.add(new UnaryOperatorMutator());
         mutators.add(new BinaryOperatorMutator());
         mutators.add(new ExpressionMutator());
+        mutators.add(new DeclareVarRootBlockMutator());
     }
 
     private static CtCodeElement selectGene(Individual individual) {

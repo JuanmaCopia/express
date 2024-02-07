@@ -1,6 +1,7 @@
 package evorep.ga;
 
 import evorep.ga.mutators.MutatorManager;
+import evorep.spoon.SpoonCompiler;
 import evorep.spoon.SpoonQueries;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import spoon.reflect.declaration.CtMethod;
@@ -29,6 +30,8 @@ import spoon.reflect.declaration.CtMethod;
  * @author bkanber
  */
 public class GeneticAlgorithm {
+
+    private static final double NOT_COMPILE_PENALIZATION = 1000;
     private int maxPopulationSize;
 
     /**
@@ -73,6 +76,11 @@ public class GeneticAlgorithm {
         String individualString = individual.toString();
 
         double fitness = new LevenshteinDistance().apply(goal, individualString);
+
+        if (!SpoonCompiler.compileIndividual(individual)) {
+            fitness += NOT_COMPILE_PENALIZATION;
+        }
+
         individual.setFitness(fitness);
         return fitness;
     }
