@@ -22,6 +22,7 @@ public class EvoRep {
 
     public static void main(String[] args) {
         initialize();
+        printStart();
         startSearch();
     }
 
@@ -43,6 +44,10 @@ public class EvoRep {
             generation++;
         }
         printResults(population, generation);
+    }
+
+    public static void printStart() {
+        System.out.println("\n==============================  Search Started  ==============================\n");
     }
 
     public static void printGeneration(int generation, Population population) {

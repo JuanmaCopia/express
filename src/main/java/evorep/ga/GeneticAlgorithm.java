@@ -2,7 +2,7 @@ package evorep.ga;
 
 import evorep.ga.mutators.MutatorManager;
 import evorep.spoon.SpoonCompiler;
-import evorep.spoon.SpoonQueries;
+import evorep.spoon.SpoonHelper;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import spoon.reflect.declaration.CtMethod;
 
@@ -72,8 +72,8 @@ public class GeneticAlgorithm {
      * @return double The fitness value for individual
      */
     public double calcFitness(Individual individual) {
-        String goal = SpoonQueries.getFalseFitnessString();
-        String individualString = individual.toString();
+        String goal = SpoonHelper.getFalseFitnessString();
+        String individualString = SpoonHelper.getStatementsString(individual.getChromosome());
 
         double fitness = new LevenshteinDistance().apply(goal, individualString);
 
@@ -81,7 +81,7 @@ public class GeneticAlgorithm {
             fitness += NOT_COMPILE_PENALIZATION;
         }
 
-        fitness = fitness / 10;
+        //fitness = fitness / 10;
 
         individual.setFitness(fitness);
         return fitness;

@@ -29,6 +29,7 @@ public class ToolConfig {
             System.out.println("\tevorep.binpath = " + binPath);
             System.out.println("\tevorep.classname = " + className);
             System.out.println("\tevorep.srcjavaversion = " + srcjavaversion);
+            System.out.println("\n --------------------------------------------------------------\n");
 
             SpoonManager.initialize();
 

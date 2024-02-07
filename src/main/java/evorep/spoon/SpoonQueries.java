@@ -150,18 +150,6 @@ public class SpoonQueries {
         return -1;
     }
 
-    public static String getFalseFitnessString() {
-        CtClass<?> clazz = SpoonManager.getTargetClass();
-        CtMethod<?> method = clazz.getMethodsByName("structureRepOK2").get(0);
-
-        StringBuilder stringBuilder = new StringBuilder();
-        for (CtStatement statement : method.getBody().getStatements()) {
-            stringBuilder.append(statement.toString());
-            stringBuilder.append("\n");
-        }
-        return stringBuilder.toString();
-    }
-
     public static CtVariable<?> getVariableByName(List<CtVariable<?>> localVars, String varName) {
         return localVars.stream().filter(var -> var.getSimpleName().equals(varName)).findFirst().orElse(null);
     }
