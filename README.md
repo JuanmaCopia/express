@@ -31,6 +31,24 @@ Run:
 ./gradlew run
 ```
 
+The main class is `evorep.Evorep`.
+
 ## Parameter Configuration
 
 The parameters of the tool can be configured in the file `config.properties`.
+
+Available parameters:
+
+```
+app.srcpath   = <PATH_TO_SRC>
+app.binpath   = <PATH_TO_BIN_FOLDER>
+app.classname = <FULLY_QUALIFIED_CLASS_NAME>
+```
+
+`app.srcpath` is the path to the source code of the subject.
+`app.binpath` is the path to the binary folder of the subject. (Not used yet)
+`app.classname` is the fully qualified name of the class for which the RepOK method will be generated.
+
+## Case Studies
+
+The source code of the case studies can be found under the `src/main/resources` folder.
