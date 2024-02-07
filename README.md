@@ -40,16 +40,20 @@ The parameters of the tool can be configured in the file `config.properties`.
 Available parameters:
 
 ```
-app.srcpath   = <PATH_TO_SRC>
-app.binpath   = <PATH_TO_BIN_FOLDER>
-app.classname = <FULLY_QUALIFIED_CLASS_NAME>
-app.srcjavaversion = <JAVA_VERSION_OF_SOURCE_CODE>
+evorep.src_path   = <PATH_TO_SRC>
+evorep.bin_path   = <PATH_TO_BIN_FOLDER>
+evorep.class_name = <FULLY_QUALIFIED_CLASS_NAME>
+evorep.src_java_version = <JAVA_VERSION_OF_SOURCE_CODE>
+evorep.max_population = <POPULATION_SIZE>
+evorep.max_generations = <NUMBER_OF_GENERATIONS>
 ```
 
-`app.srcpath` is the path to the source code of the subject.
-`app.binpath` is the path to the binary folder of the subject. (Not used yet)
-`app.classname` is the fully qualified name of the class for which the RepOK method will be generated.
-`app.srcjavaversion` is the version of the source code.
+`evorep.src_path` is the path to the source code of the subject.
+`evorep.bin_path` is the path to the binary folder of the subject. (Not used yet)
+`evorep.class_name` is the fully qualified name of the class for which the RepOK method will be generated.
+`evorep.src_java_version` is the version of the source code.
+`evorep.max_population` is the maximum number of individuals in the population.
+`evorep.max_generations` is the maximum number of generations to be performed.
 
 ## Case Studies
 

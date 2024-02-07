@@ -18,7 +18,7 @@ public class SpoonManager {
     }
 
     public static void initialize() {
-        initialize(ToolConfig.srcPath, ToolConfig.binPath, ToolConfig.className, ToolConfig.srcjavaversion);
+        initialize(ToolConfig.srcPath, ToolConfig.binPath, ToolConfig.className, ToolConfig.srcJavaVersion);
     }
 
     public static void initialize(String srcPath, String binPath, String fullClassName, int srcJavaVersion) {
