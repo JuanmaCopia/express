@@ -1,4 +1,4 @@
-import evorep.ga.randomgen.BooleanExpressionGenerator;
+import evorep.ga.randomgen.MethodCallGenerator;
 import evorep.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
@@ -62,7 +62,7 @@ public class MethodCallGeneratorTest {
     void generateAddMethodCallTest() {
         Set<String> expressionsGenerated = new HashSet<>();
         while (expressionsGenerated.size() < 4) {
-            CtExpression<Boolean> expr = BooleanExpressionGenerator.generateRandomCollectionMethodCallExpression(scope);
+            CtExpression<Boolean> expr = MethodCallGenerator.generateRandomCollectionMethodCallExpression(scope);
             expressionsGenerated.add(expr.toString());
         }
         assertTrue(expressionsGenerated.containsAll(possibleCallExpressions));

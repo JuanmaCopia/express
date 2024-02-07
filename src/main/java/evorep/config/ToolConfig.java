@@ -1,9 +1,9 @@
 package evorep.config;
 
+import evorep.spoon.SpoonManager;
+
 import java.io.FileInputStream;
 import java.util.Properties;
-
-import evorep.spoon.SpoonManager;
 
 public class ToolConfig {
     private static final String CONFIG_FILE_PATH = "config.properties";
@@ -19,7 +19,7 @@ public class ToolConfig {
             String binPath = properties.getProperty("app.binpath");
             String className = properties.getProperty("app.classname");
 
-            System.err.println("\n -----------------  Configuration Parameters  -----------------\n");
+            System.out.println("\n -----------------  Configuration Parameters  -----------------\n");
             System.out.println("\tapp.debug = " + debugMode);
             System.out.println("\tapp.srcpath = " + srcPath);
             System.out.println("\tapp.binpath = " + binPath);
@@ -27,7 +27,7 @@ public class ToolConfig {
 
             SpoonManager.initialize(srcPath, binPath, className);
 
-            System.err.println("\n --------------------------  Running  -------------------------\n\n");
+            System.out.println("\n --------------------------  Running  -------------------------\n\n");
 
         } catch (Exception e) {
             e.printStackTrace();

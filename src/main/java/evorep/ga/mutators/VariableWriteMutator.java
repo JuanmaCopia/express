@@ -14,7 +14,7 @@ public class VariableWriteMutator implements Mutator {
     @Override
     public CtCodeElement mutate(CtCodeElement gene, Scope scope) {
         CtVariableWrite<?> varWrite = (CtVariableWrite<?>) gene;
-        return ReferenceExpressionGenerator.generateRandomVarWriteOfType(scope.getAllVariables(), varWrite.getType());
+        return ReferenceExpressionGenerator.generateRandomVarWriteOfType(scope.getLocalVariables(), varWrite.getType());
     }
 
 }

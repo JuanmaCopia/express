@@ -7,7 +7,6 @@ import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtTypeReference;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +19,7 @@ public class BooleanExpressionGenerator {
         CtExpression<Boolean> expression;
         switch (getChoice(scope)) {
             case 0 -> expression = generateNullComparison(scope);
-            case 1 -> expression = generateRandomCollectionMethodCallExpression(scope);
+            case 1 -> expression = MethodCallGenerator.generateRandomCollectionMethodCallExpression(scope);
             case -1 -> expression = SpoonFactory.getCodeFactory().createLiteral(false);
             default -> throw new RuntimeException("Invalid choice");
         }
@@ -53,25 +52,6 @@ public class BooleanExpressionGenerator {
         CtExpression<?> fieldRead = ReferenceExpressionGenerator.generateRandomVarReadRefType(chosenVariable, true);
         CtExpression<?> nullExpression = SpoonFactory.parseToExpression(null);
         return (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(fieldRead, nullExpression, BinaryOperatorKind.EQ);
-    }
-
-    public static CtExpression<Boolean> generateRandomCollectionMethodCallExpression(Scope scope) {
-        CtVariable<?> collection = RandomUtils.getRandomElementOfType(scope.getLocalVariables(), Collection.class);
-        return generateCollectionMethodCallExpression(collection, "add", scope.getAllVariables());
-    }
-
-    public static CtExpression<Boolean> generateCollectionMethodCallExpression(
-            CtVariable<?> collection,
-            String methodName,
-            List<CtVariable<?>> scopeVariables
-    ) {
-        // The type of the argument of the method call is the type of the elements of the collection
-        CtTypeReference<?> argType = collection.getReference().getType().getActualTypeArguments().get(0);
-
-        CtExpression<?> argument = ReferenceExpressionGenerator.generateRandomVarReadOfType(
-                scopeVariables, argType);
-        return (CtExpression<Boolean>) SpoonFactory.createInvocation(collection, methodName, argType, argument);
-
     }
 
     public static CtExpression<Boolean> generateRandomBooleanLiteral() {

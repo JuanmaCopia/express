@@ -31,7 +31,7 @@ import spoon.reflect.declaration.CtMethod;
  */
 public class GeneticAlgorithm {
 
-    private static final double NOT_COMPILE_PENALIZATION = 1000;
+    private static final double NOT_COMPILE_PENALIZATION = 75;
     private int maxPopulationSize;
 
     /**
@@ -81,6 +81,8 @@ public class GeneticAlgorithm {
             fitness += NOT_COMPILE_PENALIZATION;
         }
 
+        fitness = fitness / 10;
+
         individual.setFitness(fitness);
         return fitness;
     }
@@ -126,7 +128,6 @@ public class GeneticAlgorithm {
 
     public Population selectFittest(Population population) {
         Population newPopulation = new Population();
-        System.out.println("Population size: " + population.size());
         int i = 0;
         while (i < maxPopulationSize && population.size() > 0) {
             newPopulation.addIndividual(population.removeFittest());
