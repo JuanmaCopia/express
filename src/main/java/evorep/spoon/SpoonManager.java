@@ -1,5 +1,6 @@
 package evorep.spoon;
 
+import evorep.config.ToolConfig;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.reflect.declaration.CtClass;
@@ -16,9 +17,13 @@ public class SpoonManager {
     private SpoonManager() {
     }
 
-    public static void initialize(String srcPath, String binPath, String fullClassName) {
+    public static void initialize() {
+        initialize(ToolConfig.srcPath, ToolConfig.binPath, ToolConfig.className, ToolConfig.srcjavaversion);
+    }
+
+    public static void initialize(String srcPath, String binPath, String fullClassName, int srcJavaVersion) {
         try {
-            initializeLauncher(srcPath, binPath);
+            initializeLauncher(srcPath, binPath, srcJavaVersion);
             initializeFactories();
             initializeClass(fullClassName);
             initializeCompiler();
@@ -27,11 +32,11 @@ public class SpoonManager {
         }
     }
 
-    private static void initializeLauncher(String srcPath, String binPath) {
+    private static void initializeLauncher(String srcPath, String binPath, int srcJavaVersion) {
         launcher = new Launcher();
         launcher.addInputResource(srcPath);
         launcher.setBinaryOutputDirectory(createBinDirectory(binPath));
-        launcher.getEnvironment().setComplianceLevel(17);
+        launcher.getEnvironment().setComplianceLevel(srcJavaVersion);
         launcher.getEnvironment().setShouldCompile(true);
         launcher.getEnvironment().setAutoImports(true);
         launcher.buildModel();

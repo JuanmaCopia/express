@@ -22,7 +22,7 @@ public class SpoonQueriesTests {
 
     @BeforeEach
     void setUp() {
-        SpoonManager.initialize("./src/test/resources", "./target/class-test", "SLL");
+        SpoonManager.initialize("./src/test/resources", "./target/class-test", "SLL", 17);
         launcher = SpoonFactory.getLauncher();
         sllClass = SpoonQueries.getClass("SLL");
         method = sllClass.getMethodsByName(METHOD_NAME).get(0);

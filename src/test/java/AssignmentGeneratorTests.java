@@ -49,7 +49,7 @@ public class AssignmentGeneratorTests {
     }
 
     private static void initializeSpoon() {
-        SpoonManager.initialize(SOURCE_PATH, null, CLASS_NAME);
+        SpoonManager.initialize(SOURCE_PATH, null, CLASS_NAME, 17);
         launcher = SpoonFactory.getLauncher();
     }
 

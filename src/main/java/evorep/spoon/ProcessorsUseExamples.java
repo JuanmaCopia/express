@@ -18,7 +18,7 @@ import java.util.Set;
 public class ProcessorsUseExamples {
 
     public static void classProcessorExample() {
-        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
+        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL", 17);
         CtClass<?> cls = SpoonQueries.getClass("code.ExampleClass");
 
         Processor<CtClass<?>> p = new ExampleClassProcessor();
@@ -30,7 +30,7 @@ public class ProcessorsUseExamples {
     }
 
     public static void nullCheckProcessorExample() {
-        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
+        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL", 17);
         CtClass<?> cls = SpoonManager.getTargetClass();
         CtMethod<?> method = cls.getMethodsByName("mymethod2").get(0);
 
@@ -43,7 +43,7 @@ public class ProcessorsUseExamples {
     }
 
     public static void referenceTraversalExample() {
-        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
+        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL", 17);
         CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
         CtMethod<?> method = sllClass.getMethodsByName("mymethod2").get(0);
 
@@ -64,7 +64,7 @@ public class ProcessorsUseExamples {
     }
 
     public static void declareVisitedProcessorExample() {
-        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
+        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL", 17);
         CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
         CtClass<?> nodeClass = SpoonQueries.getClass("examples.SLL$Node");
 
@@ -93,7 +93,7 @@ public class ProcessorsUseExamples {
     }
 
     public static void alreadyVisitedCheckProcessorExample() {
-        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
+        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL", 17);
         CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
 
         CtMethod<?> method = sllClass.getMethodsByName("mymethod3").get(0);
@@ -172,7 +172,7 @@ public class ProcessorsUseExamples {
     }*/
 
     public static void printStatements() {
-        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL");
+        SpoonManager.initialize("./src/main/resources", "./target/class-sll", "examples.SLL", 17);
         CtClass<?> sllClass = SpoonQueries.getClass("examples.SLL");
         CtMethod<?> method = sllClass.getMethodsByName("structureRepOK").get(0);
 

@@ -43,11 +43,13 @@ Available parameters:
 app.srcpath   = <PATH_TO_SRC>
 app.binpath   = <PATH_TO_BIN_FOLDER>
 app.classname = <FULLY_QUALIFIED_CLASS_NAME>
+app.srcjavaversion = <JAVA_VERSION_OF_SOURCE_CODE>
 ```
 
 `app.srcpath` is the path to the source code of the subject.
 `app.binpath` is the path to the binary folder of the subject. (Not used yet)
 `app.classname` is the fully qualified name of the class for which the RepOK method will be generated.
+`app.srcjavaversion` is the version of the source code.
 
 ## Case Studies
 
