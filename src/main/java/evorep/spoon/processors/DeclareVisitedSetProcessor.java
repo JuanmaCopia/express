@@ -1,7 +1,4 @@
-package evorep.ga.mutators.processors;
-
-import java.util.HashSet;
-import java.util.Set;
+package evorep.spoon.processors;
 
 import evorep.spoon.SpoonFactory;
 import spoon.processing.AbstractProcessor;
@@ -9,6 +6,9 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class DeclareVisitedSetProcessor extends AbstractProcessor<CtBlock<?>> {
 

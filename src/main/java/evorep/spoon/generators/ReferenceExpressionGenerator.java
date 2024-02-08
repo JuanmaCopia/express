@@ -1,4 +1,4 @@
-package evorep.ga.randomgen;
+package evorep.spoon.generators;
 
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;

@@ -1,7 +1,4 @@
-package evorep.ga.mutators.processors;
-
-import java.util.Collections;
-import java.util.List;
+package evorep.spoon.processors;
 
 import evorep.spoon.SpoonFactory;
 import spoon.processing.AbstractProcessor;
@@ -11,6 +8,9 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
+import java.util.Collections;
+import java.util.List;
+
 public class AddMethodCallProcessor extends AbstractProcessor<CtStatement> {
 
     CtVariable<?> setVariable;
@@ -19,12 +19,12 @@ public class AddMethodCallProcessor extends AbstractProcessor<CtStatement> {
     List<CtTypeReference<?>> argsTypes;
 
     public AddMethodCallProcessor(CtVariable<?> setVariable, String methodName, CtExpression<?> arg,
-            CtTypeReference<?> argType) {
+                                  CtTypeReference<?> argType) {
         this(setVariable, methodName, Collections.singletonList(arg), Collections.singletonList(argType));
     }
 
     public AddMethodCallProcessor(CtVariable<?> setVariable, String methodName, List<CtExpression<?>> args,
-            List<CtTypeReference<?>> argsTypes) {
+                                  List<CtTypeReference<?>> argsTypes) {
         this.setVariable = setVariable;
         this.methodName = methodName;
         this.args = args;

@@ -1,4 +1,5 @@
-import evorep.ga.randomgen.WhileGenerator;
+package evorep.spoon.generators;
+
 import evorep.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
@@ -6,7 +7,10 @@ import evorep.spoon.SpoonQueries;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import spoon.SpoonAPI;
-import spoon.reflect.code.*;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 
@@ -16,7 +20,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class WhileGeneratorTests {
+public class IfGeneratorTests {
 
     final static String SOURCE_PATH = "./src/test/resources";
     final static String CLASS_NAME = "Node";
@@ -78,45 +82,29 @@ public class WhileGeneratorTests {
     }
 
     @Test
-    void emptyWhileWithFalseConditionTest() {
-        CtWhile whileAssignment = (CtWhile) WhileGenerator.generateWhileFalse(scope);
+    void ifExpressionReturnFalseTest() {
+        CtIf ifAssignment = (CtIf) IfGenerator.generateIfExprReturnFalse(scope);
 
-        CtBlock body = (CtBlock) whileAssignment.getBody();
-        assertEquals(0, body.getStatements().size());
+        CtBlock thenBlock = ifAssignment.getThenStatement();
+        CtStatement thenStatement = thenBlock.getStatement(0);
+        assertTrue(thenStatement != null);
+        assertTrue(thenStatement.toString().equals("return false"));
 
+        CtExpression<?> condition = ifAssignment.getCondition();
+        assertTrue(allPossibleExpression.contains(condition.toString()));
+    }
 
-        CtExpression<?> condition = whileAssignment.getLoopingExpression();
+    @Test
+    void ifFalseReturnFalseTest() {
+        CtIf ifAssignment = (CtIf) IfGenerator.generateIfFalseReturnFalse(scope);
+
+        CtBlock thenBlock = ifAssignment.getThenStatement();
+        CtStatement thenStatement = thenBlock.getStatement(0);
+        assertTrue(thenStatement != null);
+        assertTrue(thenStatement.toString().equals("return false"));
+
+        CtExpression<?> condition = ifAssignment.getCondition();
         assertEquals("false", condition.toString());
-    }
-
-    @Test
-    void emptyWhileWithRandomConditionTest() {
-        CtWhile whileAssignment = (CtWhile) WhileGenerator.generateWhileWithRandomExpression(scope);
-
-        CtBlock body = (CtBlock) whileAssignment.getBody();
-        assertEquals(0, body.getStatements().size());
-
-        CtExpression<?> condition = whileAssignment.getLoopingExpression();
-        assertTrue(allPossibleExpression.contains(condition.toString()));
-    }
-
-    @Test
-    void whileWithIfReturnAndRandomConditionTest() {
-        CtWhile whileAssignment = (CtWhile) WhileGenerator.generateWhileWithIfStatement(scope);
-
-        CtBlock body = (CtBlock) whileAssignment.getBody();
-        assertEquals(1, body.getStatements().size());
-        CtIf ifStatement = (CtIf) body.getStatement(0);
-
-        CtBlock<?> thenBlock = ifStatement.getThenStatement();
-        CtReturn<?> returnStatement = (CtReturn<?>) thenBlock.getStatement(0);
-        assertEquals("return false", returnStatement.toString());
-
-        CtExpression<?> ifCondition = ifStatement.getCondition();
-        assertTrue(allPossibleExpression.contains(ifCondition.toString()));
-
-        CtExpression<?> condition = whileAssignment.getLoopingExpression();
-        assertTrue(allPossibleExpression.contains(condition.toString()));
     }
 
 

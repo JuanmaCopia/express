@@ -1,6 +1,5 @@
-import evorep.spoon.SpoonFactory;
-import evorep.spoon.SpoonManager;
-import evorep.spoon.SpoonQueries;
+package evorep.spoon;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.SpoonAPI;

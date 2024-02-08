@@ -1,6 +1,6 @@
 package evorep.spoon;
 
-import evorep.ga.mutators.processors.*;
+import evorep.spoon.processors.*;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;

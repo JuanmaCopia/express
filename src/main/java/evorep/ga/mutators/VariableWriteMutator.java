@@ -1,7 +1,7 @@
 package evorep.ga.mutators;
 
-import evorep.ga.randomgen.ReferenceExpressionGenerator;
 import evorep.scope.Scope;
+import evorep.spoon.generators.ReferenceExpressionGenerator;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtVariableWrite;
 

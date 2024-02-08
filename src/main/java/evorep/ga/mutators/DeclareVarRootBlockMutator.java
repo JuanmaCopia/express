@@ -1,7 +1,7 @@
 package evorep.ga.mutators;
 
-import evorep.ga.randomgen.LocalVarDeclarationGenerator;
 import evorep.scope.Scope;
+import evorep.spoon.generators.LocalVarDeclarationGenerator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 

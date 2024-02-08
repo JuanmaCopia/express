@@ -1,4 +1,5 @@
-import evorep.ga.randomgen.AssignmentGenerator;
+package evorep.spoon.generators;
+
 import evorep.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
@@ -6,7 +7,7 @@ import evorep.spoon.SpoonQueries;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import spoon.SpoonAPI;
-import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 
@@ -15,7 +16,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AssignmentGeneratorTests {
+public class MethodCallGeneratorTest {
 
     final static String SOURCE_PATH = "./src/test/resources";
     final static String CLASS_NAME = "Node";
@@ -27,19 +28,24 @@ public class AssignmentGeneratorTests {
     static CtMethod<?> method;
     static Scope scope;
 
-    static Set<String> possibleAssignments;
+    static Set<String> possibleCallExpressions;
 
-
-    private static void initializeAssignments() {
-        if (possibleAssignments == null) {
-            possibleAssignments = new HashSet<>();
-            possibleAssignments.add("current = next");
-            possibleAssignments.add("current = current");
-            possibleAssignments.add("current = current.next");
-            possibleAssignments.add("current = next.next");
-        }
+    @BeforeAll
+    static void setUp() {
+        initializeSpoon();
+        initializeASTElements();
+        initializeExpressions();
     }
 
+    private static void initializeExpressions() {
+        if (possibleCallExpressions == null) {
+            possibleCallExpressions = new HashSet<>();
+            possibleCallExpressions.add("visited.add(next)");
+            possibleCallExpressions.add("visited.add(next.next)");
+            possibleCallExpressions.add("visited.add(current)");
+            possibleCallExpressions.add("visited.add(current.next)");
+        }
+    }
 
     private static void initializeASTElements() {
         launcher = SpoonFactory.getLauncher();
@@ -53,22 +59,13 @@ public class AssignmentGeneratorTests {
         launcher = SpoonFactory.getLauncher();
     }
 
-    @BeforeAll
-    static void setUp() {
-        initializeSpoon();
-        initializeASTElements();
-        initializeAssignments();
-    }
-
     @Test
-    void varDeclarationGeneratorTest() {
-        Set<String> assignments = new HashSet<>();
-        while (assignments.size() < 4) {
-            CtStatement varDecl = AssignmentGenerator.generateRandomAssignment(scope);
-            assignments.add(varDecl.toString());
+    void generateAddMethodCallTest() {
+        Set<String> expressionsGenerated = new HashSet<>();
+        while (expressionsGenerated.size() < 4) {
+            CtExpression<Boolean> expr = MethodCallGenerator.generateRandomCollectionMethodCallExpression(scope);
+            expressionsGenerated.add(expr.toString());
         }
-        assertTrue(assignments.containsAll(possibleAssignments));
+        assertTrue(expressionsGenerated.containsAll(possibleCallExpressions));
     }
-
-
 }

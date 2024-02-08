@@ -1,14 +1,8 @@
-package evorep.ga.mutators.processors;
+package evorep.spoon.processors;
 
 import evorep.spoon.SpoonFactory;
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldRead;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtField;
 
 public class ReferenceTraversalProcessor extends AbstractProcessor<CtBlock<?>> {

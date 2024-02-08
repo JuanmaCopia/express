@@ -1,7 +1,7 @@
 package evorep.ga.mutators;
 
-import evorep.ga.randomgen.BooleanExpressionGenerator;
 import evorep.scope.Scope;
+import evorep.spoon.generators.BooleanExpressionGenerator;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtUnaryOperator;

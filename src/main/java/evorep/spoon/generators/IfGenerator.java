@@ -1,4 +1,4 @@
-package evorep.ga.randomgen;
+package evorep.spoon.generators;
 
 import evorep.scope.Scope;
 import evorep.spoon.RandomUtils;

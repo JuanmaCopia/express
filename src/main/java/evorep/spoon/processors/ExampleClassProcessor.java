@@ -1,18 +1,14 @@
-package evorep.ga.mutators.processors;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+package evorep.spoon.processors;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetStatement;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 public class ExampleClassProcessor extends AbstractProcessor<CtClass<?>> {
     @Override
