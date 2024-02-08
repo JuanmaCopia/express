@@ -20,7 +20,7 @@ public class Example {
     public static void main(String[] args) {
         initialize();
         CtClass<?> targetClass = SpoonManager.getTargetClass();
-        TypesGraph graph = TypesGraphFactory.createTypesGraph(targetClass);
+        TypesGraph graph = TypesGraphFactory.createTypesGraph(targetClass.getReference());
         System.out.println(graph.toString());
     }
 }

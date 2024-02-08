@@ -7,7 +7,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import spoon.SpoonAPI;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 
@@ -39,15 +40,37 @@ public class TypesGraphTest {
 
     @Test
     void createTypeGraphTest() {
-        TypesGraph graph = TypesGraphFactory.createTypesGraph(targetClass);
-        List<CtType<?>> adj = graph.getAdjacentNodes(targetClass);
-        assertEquals(1, adj.size());
-        CtType<?> adjNode = adj.get(0);
-        assertEquals("Node", adjNode.getSimpleName());
+        CtTypeReference<?> rootType = targetClass.getReference();
+        TypesGraph graph = TypesGraphFactory.createTypesGraph(rootType);
 
-        List<CtType<?>> adjOfNode = graph.getAdjacentNodes(adjNode);
-        assertEquals(1, adjOfNode.size());
-        adjNode = adjOfNode.get(0);
-        assertEquals("Node", adjNode.getSimpleName());
+        List<TypesGraph.Edge> adjOfSLL = graph.getAdjacentNodes(rootType);
+        assertEquals(2, adjOfSLL.size());
+
+        TypesGraph.Edge headEdge = adjOfSLL.get(0);
+        CtTypeReference<?> nodeType = headEdge.getDestination();
+        CtField<?> headField = headEdge.getLabel();
+        assertEquals("Node", nodeType.getSimpleName());
+        assertEquals("head", headField.getSimpleName());
+
+        TypesGraph.Edge sizeEdge = adjOfSLL.get(1);
+        CtTypeReference<?> intType = sizeEdge.getDestination();
+        CtField<?> sizeField = sizeEdge.getLabel();
+        assertEquals("int", intType.getSimpleName());
+        assertEquals("size", sizeField.getSimpleName());
+
+        List<TypesGraph.Edge> adjOfNode = graph.getAdjacentNodes(nodeType);
+        assertEquals(2, adjOfNode.size());
+
+        TypesGraph.Edge dataEdge = adjOfNode.get(0);
+        CtTypeReference<?> dataType = dataEdge.getDestination();
+        CtField<?> dataField = dataEdge.getLabel();
+        assertEquals("int", dataType.getSimpleName());
+        assertEquals("data", dataField.getSimpleName());
+
+        TypesGraph.Edge nextEdge = adjOfNode.get(1);
+        CtTypeReference<?> nextType = nextEdge.getDestination();
+        CtField<?> nextField = nextEdge.getLabel();
+        assertEquals("Node", nextType.getSimpleName());
+        assertEquals("next", nextField.getSimpleName());
     }
 }
