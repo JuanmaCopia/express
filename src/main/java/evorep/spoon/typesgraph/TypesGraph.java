@@ -1,4 +1,4 @@
-package evorep.typesgraph;
+package evorep.spoon.typesgraph;
 
 
 import spoon.reflect.declaration.CtField;

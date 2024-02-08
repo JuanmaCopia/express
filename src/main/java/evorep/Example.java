@@ -4,8 +4,8 @@ import evorep.config.ToolConfig;
 import evorep.ga.mutators.MutatorManager;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
-import evorep.typesgraph.TypesGraph;
-import evorep.typesgraph.TypesGraphFactory;
+import evorep.spoon.typesgraph.TypesGraph;
+import evorep.spoon.typesgraph.TypesGraphFactory;
 import spoon.reflect.declaration.CtClass;
 
 public class Example {

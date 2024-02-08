@@ -1,6 +1,6 @@
 package evorep.ga.mutators;
 
-import evorep.scope.Scope;
+import evorep.spoon.scope.Scope;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.generators.StatementGenerator;
 import spoon.reflect.code.CtBlock;

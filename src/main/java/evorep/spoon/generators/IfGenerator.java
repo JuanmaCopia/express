@@ -1,6 +1,6 @@
 package evorep.spoon.generators;
 
-import evorep.scope.Scope;
+import evorep.spoon.scope.Scope;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import spoon.reflect.code.CtExpression;

@@ -1,4 +1,4 @@
-package evorep.scope;
+package evorep.spoon.scope;
 
 import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.CtCodeElement;

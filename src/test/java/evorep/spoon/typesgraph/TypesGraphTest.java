@@ -1,4 +1,4 @@
-package evorep.typesgraph;
+package evorep.spoon.typesgraph;
 
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;

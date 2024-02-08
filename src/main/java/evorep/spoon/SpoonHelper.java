@@ -1,7 +1,7 @@
 package evorep.spoon;
 
 import evorep.ga.Individual;
-import evorep.scope.Scope;
+import evorep.spoon.scope.Scope;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;

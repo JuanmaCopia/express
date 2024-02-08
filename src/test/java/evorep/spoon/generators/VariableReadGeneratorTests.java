@@ -1,6 +1,6 @@
 package evorep.spoon.generators;
 
-import evorep.scope.Scope;
+import evorep.spoon.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;

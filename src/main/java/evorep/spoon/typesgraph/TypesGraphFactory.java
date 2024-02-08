@@ -1,4 +1,4 @@
-package evorep.typesgraph;
+package evorep.spoon.typesgraph;
 
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
@@ -26,7 +26,7 @@ public class TypesGraphFactory {
             CtType<?> declaration = currentType.getDeclaration();
             if (declaration == null)
                 continue; // Type is not declared in the current project
-            
+
             List<CtField<?>> fields = declaration.getFields();
             for (CtField<?> field : fields) {
                 CtTypeReference fieldType = field.getType();

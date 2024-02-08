@@ -1,6 +1,6 @@
 package evorep.ga.mutators;
 
-import evorep.scope.Scope;
+import evorep.spoon.scope.Scope;
 import evorep.spoon.generators.BooleanExpressionGenerator;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtCodeElement;
