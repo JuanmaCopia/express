@@ -1,7 +1,7 @@
 package evorep.ga.mutators;
 
 import evorep.ga.Individual;
-import evorep.scope.Scope;
+import evorep.spoon.scope.Scope;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonHelper;
 import spoon.reflect.code.CtCodeElement;
