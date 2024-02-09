@@ -10,7 +10,7 @@ fitness function that is based on the number of valid and invalid instances that
 Clone the repository:
 
 ```
-git clone git@github.com:JuanmaCopia/spf-pli.git
+git clone git@github.com:JuanmaCopia/evorep.git
 ```
 
 Move to the folder:
