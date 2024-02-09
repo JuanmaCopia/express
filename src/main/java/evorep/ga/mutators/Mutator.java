@@ -1,6 +1,6 @@
 package evorep.ga.mutators;
 
-import evorep.scope.Scope;
+import evorep.spoon.scope.Scope;
 import spoon.reflect.code.CtCodeElement;
 
 interface Mutator {

@@ -1,18 +1,20 @@
 package evorep.spoon;
 
 import evorep.config.ToolConfig;
+import evorep.spoon.typesgraph.TypesGraph;
+import evorep.spoon.typesgraph.TypesGraphFactory;
+import evorep.util.Utils;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.reflect.declaration.CtClass;
 
-import java.io.File;
-
 public class SpoonManager {
 
-    private final static String DEFAULT_BIN_PATH = "./target";
+    private final static String DEFAULT_BIN_PATH = "./bin";
 
     private static SpoonAPI launcher;
     private static CtClass<?> targetClass;
+    private static TypesGraph typesGraph;
 
     private SpoonManager() {
     }
@@ -27,30 +29,25 @@ public class SpoonManager {
             initializeFactories();
             initializeClass(fullClassName);
             initializeCompiler();
+            initializeRepOKMethod();
+            initializeTypesGraph();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private static void initializeLauncher(String srcPath, String binPath, int srcJavaVersion) {
+        if (binPath == null)
+            binPath = DEFAULT_BIN_PATH;
         launcher = new Launcher();
+        launcher.setBinaryOutputDirectory(Utils.createDirectory(binPath));
         launcher.addInputResource(srcPath);
-        launcher.setBinaryOutputDirectory(createBinDirectory(binPath));
         launcher.getEnvironment().setComplianceLevel(srcJavaVersion);
         launcher.getEnvironment().setShouldCompile(true);
         launcher.getEnvironment().setAutoImports(true);
         launcher.buildModel();
     }
 
-    private static File createBinDirectory(String binPath) {
-        if (binPath == null)
-            binPath = DEFAULT_BIN_PATH;
-        File binDir = new File(binPath);
-        if (!binDir.exists()) {
-            binDir.mkdirs();
-        }
-        return binDir;
-    }
 
     private static void initializeFactories() {
         SpoonFactory.initialize(launcher);
@@ -64,8 +61,20 @@ public class SpoonManager {
         SpoonCompiler.initialize(launcher);
     }
 
+    private static void initializeRepOKMethod() {
+        targetClass.addMethod(SpoonFactory.createRepOK("repOK"));
+    }
+
+    private static void initializeTypesGraph() {
+        typesGraph = TypesGraphFactory.createTypesGraph(targetClass.getReference());
+    }
+
     public static CtClass<?> getTargetClass() {
         return targetClass;
+    }
+
+    public static TypesGraph getTypesGraph() {
+        return typesGraph;
     }
 
 }

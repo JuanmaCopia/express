@@ -9,6 +9,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'jacoco'
 }
 
 application {
@@ -33,19 +34,33 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
-// tasks.withType(JavaCompile) {
-//     options.compilerArgs << '-Xlint:unchecked'
-//     options.deprecation = true
-// }
+/*tasks.withType(JavaCompile) {
+    options.compilerArgs << '-Xlint:unchecked'
+    options.deprecation = true
+}*/
 
 run {
     enableAssertions = true
 }
 
 test {
+    finalizedBy jacocoTestReport
     useJUnitPlatform {
         testLogging {
             events "passed", "skipped", "failed"
         }
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
     }
 }
