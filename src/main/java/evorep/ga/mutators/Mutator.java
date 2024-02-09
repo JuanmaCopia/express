@@ -3,7 +3,7 @@ package evorep.ga.mutators;
 import evorep.spoon.scope.Scope;
 import spoon.reflect.code.CtCodeElement;
 
-interface Mutator {
+public interface Mutator {
 
     boolean isApplicable(CtCodeElement gene);
 

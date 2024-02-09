@@ -1,8 +1,6 @@
 package evorep;
 
-import evorep.config.ToolConfig;
 import evorep.ga.mutators.MutatorManager;
-import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.typesgraph.TypesGraph;
 import evorep.spoon.typesgraph.TypesGraphFactory;
@@ -10,9 +8,11 @@ import spoon.reflect.declaration.CtClass;
 
 public class Example {
 
+    final static String SOURCE_PATH = "./src/test/resources";
+    final static String CLASS_NAME = "BinTree";
+
     private static void initialize() {
-        ToolConfig.parseConfigurationFile();
-        SpoonManager.getTargetClass().addMethod(SpoonFactory.createRepOK("repOK"));
+        SpoonManager.initialize(SOURCE_PATH, null, CLASS_NAME, 17);
         MutatorManager.initialize();
     }
 

@@ -1,5 +1,6 @@
 package evorep.spoon.typesgraph;
 
+import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
@@ -72,5 +73,70 @@ public class TypesGraphTest {
         CtField<?> nextField = nextEdge.getLabel();
         assertEquals("Node", nextType.getSimpleName());
         assertEquals("next", nextField.getSimpleName());
+    }
+
+    @Test
+    void createTypeGraphTest2() {
+        CtTypeReference<?> rootType = SpoonQueries.getClass("BinTree").getReference();
+        TypesGraph graph = TypesGraphFactory.createTypesGraph(rootType);
+
+        List<TypesGraph.Edge> adjOfBinTree = graph.getAdjacentNodes(rootType);
+        assertEquals(2, adjOfBinTree.size());
+
+        TypesGraph.Edge rootEdge = adjOfBinTree.get(0);
+        CtTypeReference<?> btNodeType = rootEdge.getDestination();
+        CtField<?> rootField = rootEdge.getLabel();
+        assertEquals("BTNode", btNodeType.getSimpleName());
+        assertEquals("root", rootField.getSimpleName());
+
+        TypesGraph.Edge sizeEdge = adjOfBinTree.get(1);
+        CtTypeReference<?> intType = sizeEdge.getDestination();
+        CtField<?> sizeField = sizeEdge.getLabel();
+        assertEquals("int", intType.getSimpleName());
+        assertEquals("size", sizeField.getSimpleName());
+
+        List<TypesGraph.Edge> adjOfBTNode = graph.getAdjacentNodes(btNodeType);
+        assertEquals(3, adjOfBTNode.size());
+
+        TypesGraph.Edge dataEdge = adjOfBTNode.get(0);
+        CtTypeReference<?> dataType = dataEdge.getDestination();
+        CtField<?> dataField = dataEdge.getLabel();
+        assertEquals("int", dataType.getSimpleName());
+        assertEquals("data", dataField.getSimpleName());
+
+        TypesGraph.Edge leftEdge = adjOfBTNode.get(1);
+        CtTypeReference<?> leftType = leftEdge.getDestination();
+        CtField<?> leftField = leftEdge.getLabel();
+        assertEquals("BTNode", leftType.getSimpleName());
+        assertEquals("left", leftField.getSimpleName());
+
+        TypesGraph.Edge rightEdge = adjOfBTNode.get(2);
+        CtTypeReference<?> rightType = rightEdge.getDestination();
+        CtField<?> rightField = rightEdge.getLabel();
+        assertEquals("BTNode", rightType.getSimpleName());
+        assertEquals("right", rightField.getSimpleName());
+
+    }
+
+    @Test
+    void createTypeGraphTest3() {
+        CtTypeReference<?> rootType = SpoonQueries.getClass("BinTree").getReference();
+        TypesGraph graph = TypesGraphFactory.createTypesGraph(rootType);
+        List<CtTypeReference<?>> nodesWithCycles = graph.getNodesWithSelfCycles();
+
+        System.out.println("Nodes with cycles: " + nodesWithCycles.toString());
+
+        CtTypeReference<?> randomNode = nodesWithCycles.get(RandomUtils.nextInt(nodesWithCycles.size()));
+
+        System.out.println("Chosen node: " + randomNode.toString());
+
+        List<List<CtField<?>>> simplePaths = graph.getAllSimplePaths(rootType, randomNode);
+
+        System.out.println("Simple paths from root to chose node: " + simplePaths.toString());
+
+        List<CtField<?>> cyclicFields = graph.getSelfCyclicFieldsOfNode(randomNode);
+
+        System.out.println("Cyclic fields of chosen node: " + cyclicFields.toString());
+
     }
 }

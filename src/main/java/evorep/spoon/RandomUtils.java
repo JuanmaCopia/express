@@ -61,7 +61,7 @@ public class RandomUtils {
 
         return list.get(r.nextInt(list.size()));
     }
-
+    
     public static CtStatement getRandomStatementNonBlockNonExpression(CtBlock<?> block) {
         List<CtStatement> statements = block.getElements(e ->
                 e instanceof CtStatement

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TypesGraph {
 
@@ -32,6 +33,60 @@ public class TypesGraph {
 
     public List<Edge> getAdjacentNodes(CtTypeReference<?> source) {
         return adjacencyList.get(source);
+    }
+
+    public boolean nodeHasCycle(CtTypeReference<?> node) {
+        List<Edge> adjacent = adjacencyList.get(node);
+        for (Edge edge : adjacent) {
+            if (edge.getDestination().equals(node))
+                return true;
+        }
+        return false;
+    }
+
+    public List<CtTypeReference<?>> getNodesWithSelfCycles() {
+        List<CtTypeReference<?>> nodesWithCycles = new LinkedList<>();
+        for (CtTypeReference<?> node : adjacencyList.keySet()) {
+            if (nodeHasCycle(node))
+                nodesWithCycles.add(node);
+        }
+        return nodesWithCycles;
+    }
+
+    public List<Edge> getSelfCyclesOfNode(CtTypeReference<?> node) {
+        List<Edge> selfCycles = new LinkedList<>();
+        List<Edge> adjacent = adjacencyList.get(node);
+        for (Edge edge : adjacent) {
+            if (edge.getDestination().equals(node))
+                selfCycles.add(edge);
+        }
+        return selfCycles;
+    }
+
+    public List<CtField<?>> getSelfCyclicFieldsOfNode(CtTypeReference<?> node) {
+        return getSelfCyclesOfNode(node).stream().map(edge -> edge.getLabel()).collect(Collectors.toList());
+    }
+
+    public List<List<CtField<?>>> getAllSimplePaths(CtTypeReference<?> source, CtTypeReference<?> destination) {
+        List<List<CtField<?>>> paths = new LinkedList<>();
+        List<CtField<?>> currentPath = new LinkedList<>();
+        getAllSimplePaths(source, destination, currentPath, paths);
+        return paths;
+    }
+
+    private void getAllSimplePaths(CtTypeReference<?> source, CtTypeReference<?> destination, List<CtField<?>> currentPath, List<List<CtField<?>>> paths) {
+        if (source.equals(destination)) {
+            paths.add(new LinkedList<>(currentPath));
+            return;
+        }
+        //System.out.println("\nThe graph is: " + toString());
+        //System.out.println("Source: " + source.getSimpleName());
+        List<Edge> adjacent = adjacencyList.get(source);
+        for (Edge edge : adjacent) {
+            currentPath.add(edge.getLabel());
+            getAllSimplePaths(edge.getDestination(), destination, currentPath, paths);
+            currentPath.remove(currentPath.size() - 1);
+        }
     }
 
     public String toString() {
