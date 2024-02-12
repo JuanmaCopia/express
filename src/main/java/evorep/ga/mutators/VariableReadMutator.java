@@ -1,9 +1,10 @@
 package evorep.ga.mutators;
 
-import evorep.spoon.scope.Scope;
+import evorep.ga.Individual;
+import evorep.spoon.SpoonHelper;
 import evorep.spoon.generators.ReferenceExpressionGenerator;
+import evorep.spoon.scope.Scope;
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.path.CtRole;
 
@@ -14,13 +15,12 @@ public class VariableReadMutator implements Mutator {
     }
 
     @Override
-    public CtCodeElement mutate(CtCodeElement gene, Scope scope) {
+    public void mutate(Individual individual, CtCodeElement gene) {
+        Scope scope = SpoonHelper.getScope(individual, gene);
         CtVariableRead<?> varRead = (CtVariableRead<?>) gene;
-        //System.out.println("\nVariableReadMutator: " + varRead.toString());
-        CtVariableAccess newGene = ReferenceExpressionGenerator.generateRandomVarReadOfType(scope.getAllVariables(), varRead.getType());
-        if (newGene == null)
-            return gene;
-        return newGene;
+        CtCodeElement mutatedGene = ReferenceExpressionGenerator.generateRandomVarReadOfType(scope.getAllVariables(), varRead.getType());
+        if (mutatedGene != null)
+            gene.replace(mutatedGene);
     }
 
 }

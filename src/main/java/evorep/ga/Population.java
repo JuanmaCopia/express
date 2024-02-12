@@ -23,7 +23,8 @@ public class Population {
         population = new PriorityQueue<>();
 
         for (int i = 0; i < populationSize; i++) {
-            Individual individual = MutatorManager.initialMutation(new Individual(repOK));
+            Individual individual = new Individual(repOK);
+            MutatorManager.initialMutation(individual);
             population.add(individual);
         }
     }

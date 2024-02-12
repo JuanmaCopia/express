@@ -3,8 +3,6 @@ package evorep.ga.mutators;
 import evorep.ga.Individual;
 import evorep.ga.mutators.typebased.TypeGraphCycleBasedMutator;
 import evorep.spoon.RandomUtils;
-import evorep.spoon.SpoonHelper;
-import evorep.spoon.scope.Scope;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
@@ -59,26 +57,18 @@ public class MutatorManager {
 
     public static Individual mutate(Individual individual) {
         Individual mutant = individual.clone();
-        Scope scope = SpoonHelper.getScope(mutant);
         CtCodeElement gene = selectGene(mutant);
         Mutator mutator = selectMutator(mutators, gene);
-        if (mutator != null) {
-            CtCodeElement mutatedGene = mutator.mutate(gene, scope);
-            gene.replace(mutatedGene);
-        }
+        if (mutator != null)
+            mutator.mutate(mutant, gene);
         return mutant;
     }
 
-    public static Individual initialMutation(Individual individual) {
-        Individual mutant = individual.clone();
-        Scope scope = SpoonHelper.getScope(mutant);
-        CtBlock<?> gene = mutant.getChromosome().getBody();
+    public static void initialMutation(Individual individual) {
+        CtBlock<?> gene = individual.getChromosome().getBody();
         Mutator mutator = selectMutator(initPopulationMutators, gene);
-        if (mutator != null) {
-            CtCodeElement mutatedGene = mutator.mutate(mutant.getChromosome().getBody(), scope);
-            gene.replace(mutatedGene);
-        }
-        return mutant;
+        if (mutator != null)
+            mutator.mutate(individual, gene);
     }
 
 }

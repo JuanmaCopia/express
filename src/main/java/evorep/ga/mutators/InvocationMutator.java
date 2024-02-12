@@ -1,6 +1,6 @@
 package evorep.ga.mutators;
 
-import evorep.spoon.scope.Scope;
+import evorep.ga.Individual;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtInvocation;
 
@@ -11,8 +11,7 @@ public class InvocationMutator implements Mutator {
     }
 
     @Override
-    public CtCodeElement mutate(CtCodeElement elementToMutate, Scope scope) {
-        return null;
+    public void mutate(Individual individual, CtCodeElement gene) {
     }
 
 /*    public void mutate(CtInvocation<?> invocation, List<CtVariable<?>> fields, List<CtVariable<?>> localVariables) {

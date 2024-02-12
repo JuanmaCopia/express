@@ -1,11 +1,11 @@
 package evorep.ga.mutators.typebased;
 
+import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.processors.ReferenceTraversalProcessor;
-import evorep.spoon.scope.Scope;
 import evorep.spoon.typesgraph.TypesGraph;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
@@ -24,8 +24,8 @@ public class TypeGraphCycleBasedMutator implements Mutator {
     }
 
     @Override
-    public CtCodeElement mutate(CtCodeElement gene, Scope scope) {
-        CtBlock<?> block = (CtBlock<?>) gene.clone();
+    public void mutate(Individual individual, CtCodeElement gene) {
+        CtBlock<?> mutatedGene = (CtBlock<?>) gene.clone();
 
         TypesGraph typesGraph = SpoonManager.getTypesGraph();
 
@@ -35,13 +35,13 @@ public class TypeGraphCycleBasedMutator implements Mutator {
         List<List<CtField<?>>> simplePaths = typesGraph.getSimplePaths(typesGraph.getRoot(), chosenNode);
         List<CtField<?>> cyclicFields = typesGraph.getSelfCyclicFieldsOfNode(chosenNode);
         switch (getChoice(cyclicFields)) {
-            case 0 -> applySingleFieldTraversal(block, simplePaths, cyclicFields);
+            case 0 -> applySingleFieldTraversal(mutatedGene, simplePaths, cyclicFields);
             case 1 -> {
 
             }
             default -> throw new RuntimeException("Invalid choice");
         }
-        return block;
+        gene.replace(mutatedGene);
     }
 
     public static int getChoice(List<CtField<?>> cyclicFields) {

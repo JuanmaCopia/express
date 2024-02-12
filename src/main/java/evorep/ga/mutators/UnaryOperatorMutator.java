@@ -1,6 +1,6 @@
 package evorep.ga.mutators;
 
-import evorep.spoon.scope.Scope;
+import evorep.ga.Individual;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtUnaryOperator;
@@ -13,15 +13,15 @@ public class UnaryOperatorMutator implements Mutator {
     }
 
     @Override
-    public CtCodeElement mutate(CtCodeElement gene, Scope scope) {
+    public void mutate(Individual individual, CtCodeElement gene) {
         CtUnaryOperator<?> unaryOperator = (CtUnaryOperator<?>) gene;
-        CtExpression<?> mutant;
+        CtExpression<?> mutatedGene;
         UnaryOperatorKind operator = unaryOperator.getKind();
         switch (operator) {
-            case NOT -> mutant = unaryOperator.getOperand();
+            case NOT -> mutatedGene = unaryOperator.getOperand();
             default -> throw new RuntimeException("Unsupported unary operator: " + operator.toString());
         }
-        return mutant;
+        gene.replace(mutatedGene);
     }
 
 }
