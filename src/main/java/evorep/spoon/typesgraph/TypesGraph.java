@@ -2,17 +2,51 @@ package evorep.spoon.typesgraph;
 
 
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TypesGraph {
 
+    public static TypesGraph createTypesGraph(CtTypeReference rootType) {
+        TypesGraph graph = new TypesGraph(rootType);
+
+        Set<CtTypeReference> visited = new HashSet<>();
+        visited.add(rootType);
+        LinkedList<CtTypeReference> workList = new LinkedList<>();
+        workList.add(rootType);
+
+        while (!workList.isEmpty()) {
+            CtTypeReference currentType = workList.removeFirst();
+            graph.addNode(currentType);
+
+            CtType<?> declaration = currentType.getDeclaration();
+            if (declaration == null)
+                continue; // Type is not declared in the current project
+
+            List<CtField<?>> fields = declaration.getFields();
+            for (CtField<?> field : fields) {
+                CtTypeReference fieldType = field.getType();
+                if (fieldType != null) {
+                    graph.addEdge(currentType, fieldType, field);
+                    if (visited.add(fieldType))
+                        workList.add(fieldType);
+                }
+            }
+
+        }
+        return graph;
+    }
+
+    CtTypeReference<?> rootType;
     Map<CtTypeReference<?>, List<Edge>> adjacencyList = new HashMap<>();
+
+    public TypesGraph(CtTypeReference<?> rootType) {
+        this.rootType = rootType;
+        addNode(rootType);
+    }
 
     public void addNode(CtTypeReference<?> node) {
         if (!adjacencyList.containsKey(node)) {
@@ -44,12 +78,42 @@ public class TypesGraph {
         return false;
     }
 
-    public List<CtTypeReference<?>> getNodesWithSelfCycles() {
+    /*public List<CtTypeReference<?>> getNodesWithSelfCycles() {
         List<CtTypeReference<?>> nodesWithCycles = new LinkedList<>();
         for (CtTypeReference<?> node : adjacencyList.keySet()) {
             if (nodeHasCycle(node))
                 nodesWithCycles.add(node);
         }
+        return nodesWithCycles;
+    }
+*/
+    public List<CtTypeReference<?>> getNodesWithSelfCycles() {
+        Set<CtTypeReference> visited = new HashSet<>();
+        LinkedList<CtTypeReference> workList = new LinkedList<>();
+        visited.add(rootType);
+        workList.add(rootType);
+
+        List<CtTypeReference<?>> nodesWithCycles = new LinkedList<>();
+        while (!workList.isEmpty()) {
+            CtTypeReference currentType = workList.removeFirst();
+
+            if (nodeHasCycle(currentType))
+                nodesWithCycles.add(currentType);
+
+            CtType<?> declaration = currentType.getDeclaration();
+            if (declaration == null)
+                continue; // Type is not declared in the current project
+
+            List<CtField<?>> fields = declaration.getFields();
+            for (CtField<?> field : fields) {
+                CtTypeReference fieldType = field.getType();
+                if (fieldType != null) {
+                    if (visited.add(fieldType))
+                        workList.add(fieldType);
+                }
+            }
+        }
+
         return nodesWithCycles;
     }
 
@@ -67,14 +131,14 @@ public class TypesGraph {
         return getSelfCyclesOfNode(node).stream().map(edge -> edge.getLabel()).collect(Collectors.toList());
     }
 
-    public List<List<CtField<?>>> getAllSimplePaths(CtTypeReference<?> source, CtTypeReference<?> destination) {
+    public List<List<CtField<?>>> getSimplePaths(CtTypeReference<?> source, CtTypeReference<?> destination) {
         List<List<CtField<?>>> paths = new LinkedList<>();
         List<CtField<?>> currentPath = new LinkedList<>();
-        getAllSimplePaths(source, destination, currentPath, paths);
+        getSimplePaths(source, destination, currentPath, paths);
         return paths;
     }
 
-    private void getAllSimplePaths(CtTypeReference<?> source, CtTypeReference<?> destination, List<CtField<?>> currentPath, List<List<CtField<?>>> paths) {
+    private void getSimplePaths(CtTypeReference<?> source, CtTypeReference<?> destination, List<CtField<?>> currentPath, List<List<CtField<?>>> paths) {
         if (source.equals(destination)) {
             paths.add(new LinkedList<>(currentPath));
             return;
@@ -84,9 +148,13 @@ public class TypesGraph {
         List<Edge> adjacent = adjacencyList.get(source);
         for (Edge edge : adjacent) {
             currentPath.add(edge.getLabel());
-            getAllSimplePaths(edge.getDestination(), destination, currentPath, paths);
+            getSimplePaths(edge.getDestination(), destination, currentPath, paths);
             currentPath.remove(currentPath.size() - 1);
         }
+    }
+
+    public CtTypeReference<?> getRoot() {
+        return rootType;
     }
 
     public String toString() {

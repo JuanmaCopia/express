@@ -2,7 +2,6 @@ package evorep.spoon;
 
 import evorep.config.ToolConfig;
 import evorep.spoon.typesgraph.TypesGraph;
-import evorep.spoon.typesgraph.TypesGraphFactory;
 import evorep.util.Utils;
 import spoon.Launcher;
 import spoon.SpoonAPI;
@@ -66,7 +65,7 @@ public class SpoonManager {
     }
 
     private static void initializeTypesGraph() {
-        typesGraph = TypesGraphFactory.createTypesGraph(targetClass.getReference());
+        typesGraph = TypesGraph.createTypesGraph(targetClass.getReference());
     }
 
     public static CtClass<?> getTargetClass() {

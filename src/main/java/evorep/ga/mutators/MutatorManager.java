@@ -1,9 +1,11 @@
 package evorep.ga.mutators;
 
 import evorep.ga.Individual;
-import evorep.spoon.scope.Scope;
+import evorep.ga.mutators.typebased.TypeGraphCycleBasedMutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonHelper;
+import evorep.spoon.scope.Scope;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 
@@ -15,6 +17,8 @@ public class MutatorManager {
 
     private static Set<Mutator> mutators = new HashSet<>();
 
+    private static Set<Mutator> initPopulationMutators = new HashSet<>();
+
     public static void initialize() {
         mutators = new HashSet<>();
         mutators.add(new BlockMutator());
@@ -24,6 +28,8 @@ public class MutatorManager {
         mutators.add(new BinaryOperatorMutator());
         mutators.add(new ExpressionMutator());
         mutators.add(new DeclareVarRootBlockMutator());
+
+        initPopulationMutators.add(new TypeGraphCycleBasedMutator());
     }
 
     private static CtCodeElement selectGene(Individual individual) {
@@ -44,33 +50,34 @@ public class MutatorManager {
         return false;
     }
 
-    private static Mutator selectMutator(CtCodeElement element) {
-        List<Mutator> possibleMutators = mutators.stream().filter(mutator -> mutator.isApplicable(element)).toList();
+    private static Mutator selectMutator(Set<Mutator> candidateMutators, CtCodeElement gene) {
+        List<Mutator> possibleMutators = candidateMutators.stream().filter(mutator -> mutator.isApplicable(gene)).toList();
+        if (possibleMutators.isEmpty())
+            return null;
         return possibleMutators.get(RandomUtils.nextInt(possibleMutators.size()));
     }
 
     public static Individual mutate(Individual individual) {
         Individual mutant = individual.clone();
-
         Scope scope = SpoonHelper.getScope(mutant);
-        //System.err.println("Scope: " + scope.toString());
-
         CtCodeElement gene = selectGene(mutant);
-        Mutator mutator = selectMutator(gene);
+        Mutator mutator = selectMutator(mutators, gene);
+        if (mutator != null) {
+            CtCodeElement mutatedGene = mutator.mutate(gene, scope);
+            gene.replace(mutatedGene);
+        }
+        return mutant;
+    }
 
-/*        System.out.println("\nOriginal: \n" + individual.getChromosome().toString());
-        System.out.println("\nSelected gene: \n" + gene.toString());
-        System.out.println("\nRole of gene: \n" + gene.getRoleInParent().toString());
-        System.out.println("\nMutator applied: " + mutator.getClass().getSimpleName() + "\n");*/
-
-        CtCodeElement mutatedGene = mutator.mutate(gene, scope);
-        //System.out.println("\nMutated gene: \n" + mutatedGene.toString());
-
-        gene.replace(mutatedGene);
-
-
-        //System.out.println("\nMutant: \n" + mutant.getChromosome().toString());
-
+    public static Individual initialMutation(Individual individual) {
+        Individual mutant = individual.clone();
+        Scope scope = SpoonHelper.getScope(mutant);
+        CtBlock<?> gene = mutant.getChromosome().getBody();
+        Mutator mutator = selectMutator(initPopulationMutators, gene);
+        if (mutator != null) {
+            CtCodeElement mutatedGene = mutator.mutate(mutant.getChromosome().getBody(), scope);
+            gene.replace(mutatedGene);
+        }
         return mutant;
     }
 
