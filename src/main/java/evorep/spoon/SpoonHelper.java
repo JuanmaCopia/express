@@ -2,6 +2,7 @@ package evorep.spoon;
 
 import evorep.ga.Individual;
 import evorep.spoon.scope.Scope;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
@@ -15,9 +16,9 @@ public class SpoonHelper {
         SpoonManager.getTargetClass().addMethod(individual.getChromosome());
     }
 
-    public static Scope getScope(Individual individual) {
+    public static Scope getScope(Individual individual, CtCodeElement gene) {
         putIndividualIntoTheEnvironment(individual);
-        return new Scope(individual.getChromosome().getBody().getLastStatement());
+        return new Scope(gene);
     }
 
     public static String getFalseFitnessString() {

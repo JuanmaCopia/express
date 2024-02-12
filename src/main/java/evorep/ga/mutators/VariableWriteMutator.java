@@ -1,7 +1,9 @@
 package evorep.ga.mutators;
 
-import evorep.spoon.scope.Scope;
+import evorep.ga.Individual;
+import evorep.spoon.SpoonHelper;
 import evorep.spoon.generators.ReferenceExpressionGenerator;
+import evorep.spoon.scope.Scope;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtVariableWrite;
 
@@ -12,9 +14,11 @@ public class VariableWriteMutator implements Mutator {
     }
 
     @Override
-    public CtCodeElement mutate(CtCodeElement gene, Scope scope) {
+    public void mutate(Individual individual, CtCodeElement gene) {
+        Scope scope = SpoonHelper.getScope(individual, gene);
         CtVariableWrite<?> varWrite = (CtVariableWrite<?>) gene;
-        return ReferenceExpressionGenerator.generateRandomVarWriteOfType(scope.getLocalVariables(), varWrite.getType());
+        CtCodeElement mutatedGene = ReferenceExpressionGenerator.generateRandomVarWriteOfType(scope.getLocalVariables(), varWrite.getType());
+        gene.replace(mutatedGene);
     }
 
 }

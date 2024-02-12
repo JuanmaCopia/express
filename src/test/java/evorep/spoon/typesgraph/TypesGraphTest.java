@@ -42,7 +42,7 @@ public class TypesGraphTest {
     @Test
     void createTypeGraphTest() {
         CtTypeReference<?> rootType = targetClass.getReference();
-        TypesGraph graph = TypesGraphFactory.createTypesGraph(rootType);
+        TypesGraph graph = TypesGraph.createTypesGraph(rootType);
 
         List<TypesGraph.Edge> adjOfSLL = graph.getAdjacentNodes(rootType);
         assertEquals(2, adjOfSLL.size());
@@ -78,7 +78,7 @@ public class TypesGraphTest {
     @Test
     void createTypeGraphTest2() {
         CtTypeReference<?> rootType = SpoonQueries.getClass("BinTree").getReference();
-        TypesGraph graph = TypesGraphFactory.createTypesGraph(rootType);
+        TypesGraph graph = TypesGraph.createTypesGraph(rootType);
 
         List<TypesGraph.Edge> adjOfBinTree = graph.getAdjacentNodes(rootType);
         assertEquals(2, adjOfBinTree.size());
@@ -121,7 +121,7 @@ public class TypesGraphTest {
     @Test
     void createTypeGraphTest3() {
         CtTypeReference<?> rootType = SpoonQueries.getClass("BinTree").getReference();
-        TypesGraph graph = TypesGraphFactory.createTypesGraph(rootType);
+        TypesGraph graph = TypesGraph.createTypesGraph(rootType);
         List<CtTypeReference<?>> nodesWithCycles = graph.getNodesWithSelfCycles();
 
         System.out.println("Nodes with cycles: " + nodesWithCycles.toString());
@@ -130,7 +130,7 @@ public class TypesGraphTest {
 
         System.out.println("Chosen node: " + randomNode.toString());
 
-        List<List<CtField<?>>> simplePaths = graph.getAllSimplePaths(rootType, randomNode);
+        List<List<CtField<?>>> simplePaths = graph.getSimplePaths(rootType, randomNode);
 
         System.out.println("Simple paths from root to chose node: " + simplePaths.toString());
 

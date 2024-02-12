@@ -7,34 +7,37 @@ import spoon.reflect.declaration.CtField;
 
 public class ReferenceTraversalProcessor extends AbstractProcessor<CtBlock<?>> {
 
-    CtField<?> rootField;
-    CtField<?> nextField;
+    CtVariableRead<?> initialField;
+    CtField<?> loopField;
 
-    public ReferenceTraversalProcessor(CtField<?> rootField, CtField<?> nextField) {
+    public ReferenceTraversalProcessor(CtField<?> initialField, CtField<?> loopField) {
+        this(SpoonFactory.createFieldRead(initialField), loopField);
+    }
+
+    public ReferenceTraversalProcessor(CtVariableRead<?> initialField, CtField<?> loopField) {
         super();
-        this.rootField = rootField;
-        this.nextField = nextField;
+        this.initialField = initialField;
+        this.loopField = loopField;
     }
 
     @Override
     public void process(CtBlock<?> ctBlock) {
-        CtLocalVariable<?> localVariable = SpoonFactory.createLocalVariable("current", rootField.getType(), rootField);
+        CtLocalVariable<?> localVariable = SpoonFactory.createLocalVariable("current", initialField.getType(), initialField);
 
         // Create while condition
         CtExpression<Boolean> whileCondition = (CtExpression<Boolean>) SpoonFactory
                 .createBinaryExpression(localVariable, null, BinaryOperatorKind.NE);
 
-        CtFieldRead<?> nextFieldRead = SpoonFactory.createFieldRead(localVariable, nextField);
+        CtFieldRead<?> loopFieldRead = SpoonFactory.createFieldRead(localVariable, loopField);
 
         // reate the assignment of the "current.next" field to the local var "current"
-        CtAssignment assignment = SpoonFactory.createAssignment(localVariable, nextFieldRead);
+        CtAssignment assignment = SpoonFactory.createAssignment(localVariable, loopFieldRead);
 
         // // Create the complete while statement: while (current != null) { ... }
         CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, assignment);
 
         // insert the if statement at the beginning of the block
-        ctBlock.getLastStatement().insertBefore(localVariable);
-        ctBlock.getLastStatement().insertBefore(whileStatement);
-
+        ctBlock.insertBegin(whileStatement);
+        ctBlock.insertBegin(localVariable);
     }
 }

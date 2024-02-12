@@ -1,5 +1,6 @@
 package evorep.ga;
 
+import evorep.ga.mutators.MutatorManager;
 import spoon.reflect.declaration.CtMethod;
 
 import java.util.PriorityQueue;
@@ -21,8 +22,11 @@ public class Population {
     public Population(int populationSize, CtMethod repOK) {
         population = new PriorityQueue<>();
 
-        for (int i = 0; i < populationSize; i++)
-            population.add(new Individual(repOK));
+        for (int i = 0; i < populationSize; i++) {
+            Individual individual = new Individual(repOK);
+            MutatorManager.initialMutation(individual);
+            population.add(individual);
+        }
     }
 
     /**

@@ -1,6 +1,6 @@
 package evorep.ga.mutators;
 
-import evorep.spoon.scope.Scope;
+import evorep.ga.Individual;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtCodeElement;
@@ -12,21 +12,21 @@ public class BinaryOperatorMutator implements Mutator {
     }
 
     @Override
-    public CtCodeElement mutate(CtCodeElement gene, Scope scope) {
-        CtBinaryOperator<?> mutant = (CtBinaryOperator<?>) gene.clone();
-        BinaryOperatorKind operator = mutant.getKind();
+    public void mutate(Individual individual, CtCodeElement gene) {
+        CtBinaryOperator<?> mutatedGene = (CtBinaryOperator<?>) gene.clone();
+        BinaryOperatorKind operator = mutatedGene.getKind();
         switch (operator) {
-            case PLUS -> mutant.setKind(BinaryOperatorKind.MINUS);
-            case MINUS -> mutant.setKind(BinaryOperatorKind.PLUS);
-            case MUL -> mutant.setKind(BinaryOperatorKind.DIV);
-            case DIV -> mutant.setKind(BinaryOperatorKind.MUL);
-            case AND -> mutant.setKind(BinaryOperatorKind.OR);
-            case OR -> mutant.setKind(BinaryOperatorKind.AND);
-            case EQ -> mutant.setKind(BinaryOperatorKind.NE);
-            case NE -> mutant.setKind(BinaryOperatorKind.EQ);
+            case PLUS -> mutatedGene.setKind(BinaryOperatorKind.MINUS);
+            case MINUS -> mutatedGene.setKind(BinaryOperatorKind.PLUS);
+            case MUL -> mutatedGene.setKind(BinaryOperatorKind.DIV);
+            case DIV -> mutatedGene.setKind(BinaryOperatorKind.MUL);
+            case AND -> mutatedGene.setKind(BinaryOperatorKind.OR);
+            case OR -> mutatedGene.setKind(BinaryOperatorKind.AND);
+            case EQ -> mutatedGene.setKind(BinaryOperatorKind.NE);
+            case NE -> mutatedGene.setKind(BinaryOperatorKind.EQ);
             default -> throw new RuntimeException("Unsupported binary operator");
         }
-        return mutant;
+        gene.replace(mutatedGene);
     }
 
 }

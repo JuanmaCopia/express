@@ -3,6 +3,7 @@ package evorep.spoon;
 import org.apache.commons.lang3.ClassUtils;
 import spoon.SpoonAPI;
 import spoon.reflect.code.*;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
@@ -200,6 +201,13 @@ public class SpoonFactory {
 
     public static CtFieldWrite<?> createFieldWrite(CtVariable<?> variable, CtVariable<?> field) {
         return createFieldWrite(createVariableRead(variable), field);
+    }
+
+    public static CtVariableRead<?> createFieldRead(List<CtField<?>> path) {
+        CtVariableRead<?> fieldRead = createFieldRead(path.get(0));
+        for (int i = 1; i < path.size(); i++)
+            fieldRead = createFieldRead(fieldRead, path.get(i));
+        return fieldRead;
     }
 
     public static CtTypeReference<?> createTypeReference(Class<?> type) {

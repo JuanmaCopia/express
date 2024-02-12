@@ -1,8 +1,10 @@
 package evorep.ga.mutators;
 
-import evorep.spoon.scope.Scope;
+import evorep.ga.Individual;
 import evorep.spoon.RandomUtils;
+import evorep.spoon.SpoonHelper;
 import evorep.spoon.generators.StatementGenerator;
+import evorep.spoon.scope.Scope;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtReturn;
@@ -18,19 +20,20 @@ public class BlockMutator implements Mutator {
     }
 
     @Override
-    public CtCodeElement mutate(CtCodeElement gene, Scope scope) {
-        CtBlock<?> block = (CtBlock<?>) gene.clone();
-        CtStatement newStatement = StatementGenerator.chooseRandomStatement(block, scope);
-        CtStatement selectedStatement = RandomUtils.getRandomStatementNonBlockNonExpression(block);
+    public void mutate(Individual individual, CtCodeElement gene) {
+        Scope scope = SpoonHelper.getScope(individual, gene);
+        CtBlock<?> mutatedGene = (CtBlock<?>) gene.clone();
+        CtStatement newStatement = StatementGenerator.chooseRandomStatement(mutatedGene, scope);
+        CtStatement selectedStatement = RandomUtils.getRandomStatementNonBlockNonExpression(mutatedGene);
         switch (getChoice(newStatement, selectedStatement)) {
-            case 0 -> block.addStatement(newStatement);
+            case 0 -> mutatedGene.addStatement(newStatement);
             case 1 -> selectedStatement.insertBefore(newStatement);
             case 2 -> selectedStatement.insertAfter(newStatement);
             case 3 -> selectedStatement.replace(newStatement);
-            case 4 -> block.removeStatement(selectedStatement);
+            case 4 -> mutatedGene.removeStatement(selectedStatement);
             default -> throw new RuntimeException("Invalid choice");
         }
-        return block;
+        gene.replace(mutatedGene);
     }
 
     public static int getChoice(CtStatement newStatement, CtStatement selectedStatement) {

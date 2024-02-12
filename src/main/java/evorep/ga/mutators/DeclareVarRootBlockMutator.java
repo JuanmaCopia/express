@@ -1,7 +1,9 @@
 package evorep.ga.mutators;
 
-import evorep.spoon.scope.Scope;
+import evorep.ga.Individual;
+import evorep.spoon.SpoonHelper;
 import evorep.spoon.generators.LocalVarDeclarationGenerator;
+import evorep.spoon.scope.Scope;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 
@@ -13,9 +15,10 @@ public class DeclareVarRootBlockMutator implements Mutator {
     }
 
     @Override
-    public CtCodeElement mutate(CtCodeElement gene, Scope scope) {
-        CtBlock block = (CtBlock) gene.clone();
-        block.addStatement(0, LocalVarDeclarationGenerator.chooseLocalVarDeclaration(scope));
-        return block;
+    public void mutate(Individual individual, CtCodeElement gene) {
+        Scope scope = SpoonHelper.getScope(individual, gene);
+        CtBlock mutatedGene = (CtBlock) gene.clone();
+        mutatedGene.addStatement(0, LocalVarDeclarationGenerator.chooseLocalVarDeclaration(scope));
+        gene.replace(mutatedGene);
     }
 }
