@@ -1,10 +1,19 @@
 package evorep.ga;
 
 import evorep.ga.mutators.MutatorManager;
+import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonHelper;
 import evorep.spoon.SpoonManager;
+import evorep.spoon.processors.ReferenceTraversalProcessor;
+import evorep.spoon.typesgraph.TypesGraph;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.reference.CtTypeReference;
+
+import java.util.List;
 
 /**
  * The GeneticAlgorithm class is our main abstraction for managing the
@@ -63,6 +72,29 @@ public class GeneticAlgorithm {
      */
     public Population initPopulation(CtMethod repOK) {
         return new Population(this.maxPopulationSize, repOK);
+    }
+
+    public Population initPopulationBasedOnTypeGraph(CtMethod repOK) {
+        Population population = new Population();
+
+        TypesGraph typesGraph = SpoonManager.getTypesGraph();
+        List<CtTypeReference<?>> nodesWithCycles = typesGraph.getNodesWithSelfCycles();
+        for (CtTypeReference<?> node : nodesWithCycles) {
+            List<CtField<?>> cyclicFields = typesGraph.getSelfCyclicFieldsOfNode(node);
+            List<List<CtField<?>>> simplePaths = typesGraph.getSimplePaths(typesGraph.getRoot(), node);
+            for (List<CtField<?>> path : simplePaths) {
+                CtVariableRead<?> initialField = SpoonFactory.createFieldRead(path);
+                for (CtField<?> loopField : cyclicFields) {
+                    Individual individual = new Individual(repOK);
+                    CtBlock<?> repOKBody = individual.getChromosome().getBody();
+                    ReferenceTraversalProcessor p = new ReferenceTraversalProcessor(initialField, loopField);
+                    p.process(repOKBody);
+                    population.addIndividual(individual);
+                }
+            }
+        }
+
+        return population;
     }
 
     /**

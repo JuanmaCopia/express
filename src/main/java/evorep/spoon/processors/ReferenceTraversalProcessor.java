@@ -10,6 +10,10 @@ public class ReferenceTraversalProcessor extends AbstractProcessor<CtBlock<?>> {
     CtVariableRead<?> initialField;
     CtField<?> loopField;
 
+    public ReferenceTraversalProcessor() {
+        super();
+    }
+
     public ReferenceTraversalProcessor(CtField<?> initialField, CtField<?> loopField) {
         this(SpoonFactory.createFieldRead(initialField), loopField);
     }
