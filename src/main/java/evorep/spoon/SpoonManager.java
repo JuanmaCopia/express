@@ -38,6 +38,7 @@ public class SpoonManager {
             initializeClass(fullClassName);
             initializeRepOKMethod();
             initializeTypesGraph();
+            compileModel();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -88,6 +89,10 @@ public class SpoonManager {
 
     public static boolean compileIndividual(Individual individual) {
         SpoonHelper.putIndividualIntoTheEnvironment(individual);
+        return compileModel();
+    }
+
+    public static boolean compileModel() {
         boolean compiles = false;
         try {
             compiles = launcher.getModelBuilder().compile();
@@ -101,8 +106,8 @@ public class SpoonManager {
         SpoonHelper.putIndividualIntoTheEnvironment(individual);
         boolean repOKResult = false;
         try {
-            Class<?> aClass = urlClassLoader.loadClass(targetClass.getSimpleName());
-            Method repOKMethod = aClass.getMethod("repOK");
+            Class<?> aClass = urlClassLoader.loadClass(targetClass.getQualifiedName());
+            Method repOKMethod = aClass.getMethod(individual.getChromosome().getSimpleName());
             repOKResult = (boolean) repOKMethod.invoke(aClass.getDeclaredConstructor().newInstance());
         } catch (Exception e) {
             e.printStackTrace();
