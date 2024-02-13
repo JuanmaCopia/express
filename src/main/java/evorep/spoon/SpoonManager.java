@@ -1,17 +1,17 @@
 package evorep.spoon;
 
 import evorep.config.ToolConfig;
+import evorep.ga.Individual;
 import evorep.spoon.typesgraph.TypesGraph;
 import evorep.util.Utils;
 import spoon.Launcher;
-import spoon.SpoonAPI;
 import spoon.reflect.declaration.CtClass;
 
 public class SpoonManager {
 
     private final static String DEFAULT_BIN_PATH = "./bin";
 
-    private static SpoonAPI launcher;
+    private static Launcher launcher;
     private static CtClass<?> targetClass;
     private static TypesGraph typesGraph;
 
@@ -27,7 +27,6 @@ public class SpoonManager {
             initializeLauncher(srcPath, binPath, srcJavaVersion);
             initializeFactories();
             initializeClass(fullClassName);
-            initializeCompiler();
             initializeRepOKMethod();
             initializeTypesGraph();
         } catch (Exception e) {
@@ -56,10 +55,6 @@ public class SpoonManager {
         targetClass = launcher.getFactory().Class().get(fullClassName);
     }
 
-    private static void initializeCompiler() {
-        SpoonCompiler.initialize(launcher);
-    }
-
     private static void initializeRepOKMethod() {
         targetClass.addMethod(SpoonFactory.createRepOK("repOK"));
     }
@@ -74,6 +69,17 @@ public class SpoonManager {
 
     public static TypesGraph getTypesGraph() {
         return typesGraph;
+    }
+
+    public static boolean compileIndividual(Individual individual) {
+        SpoonHelper.putIndividualIntoTheEnvironment(individual);
+        boolean compiles = false;
+        try {
+            compiles = launcher.getModelBuilder().compile();
+        } catch (Exception e) {
+            //e.printStackTrace();
+        }
+        return compiles;
     }
 
 }

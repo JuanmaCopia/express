@@ -1,8 +1,8 @@
 package evorep.ga;
 
 import evorep.ga.mutators.MutatorManager;
-import evorep.spoon.SpoonCompiler;
 import evorep.spoon.SpoonHelper;
+import evorep.spoon.SpoonManager;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import spoon.reflect.declaration.CtMethod;
 
@@ -77,7 +77,7 @@ public class GeneticAlgorithm {
 
         double fitness = new LevenshteinDistance().apply(goal, individualString);
 
-        if (!SpoonCompiler.compileIndividual(individual)) {
+        if (!SpoonManager.compileIndividual(individual)) {
             fitness += NOT_COMPILE_PENALIZATION;
         }
 
