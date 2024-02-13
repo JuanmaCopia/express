@@ -31,7 +31,7 @@ import spoon.reflect.declaration.CtMethod;
  */
 public class GeneticAlgorithm {
 
-    private static final double NOT_COMPILE_PENALIZATION = 75;
+    private static final double NOT_COMPILE_PENALIZATION = 1000;
     private int maxPopulationSize;
 
     /**
