@@ -84,7 +84,9 @@ public class Individual implements Comparable<Individual> {
     }
 
     public Individual clone() {
-        return new Individual(chromosome);
+        Individual clone = new Individual(chromosome);
+        clone.setFitness(fitness);
+        return clone;
     }
 
     @Override
