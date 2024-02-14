@@ -4,15 +4,18 @@ import evorep.ga.mutators.MutatorManager;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonHelper;
 import evorep.spoon.SpoonManager;
-import evorep.spoon.processors.ReferenceTraversalProcessor;
+import evorep.spoon.processors.MultipleReferenceTraversalProcessor;
 import evorep.spoon.typesgraph.TypesGraph;
+import evorep.util.Utils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -84,13 +87,25 @@ public class GeneticAlgorithm {
             List<List<CtField<?>>> simplePaths = typesGraph.getSimplePaths(typesGraph.getRoot(), node);
             for (List<CtField<?>> path : simplePaths) {
                 CtVariableRead<?> initialField = SpoonFactory.createFieldRead(path);
-                for (CtField<?> loopField : cyclicFields) {
+                List<List<CtField<?>>> allCominations = new LinkedList<>();
+                for (int i = 1; i <= cyclicFields.size(); i++) {
+                    allCominations.addAll(Utils.generateCombinations(cyclicFields, i));
+                }
+                for (List<CtField<?>> combination : allCominations) {
                     Individual individual = new Individual(repOK);
                     CtBlock<?> repOKBody = individual.getChromosome().getBody();
-                    ReferenceTraversalProcessor p = new ReferenceTraversalProcessor(initialField, loopField);
+                    Processor<CtBlock<?>> p = new MultipleReferenceTraversalProcessor(initialField, combination);
                     p.process(repOKBody);
                     population.addIndividual(individual);
                 }
+            }
+        }
+
+        if (population.size() < maxPopulationSize) {
+            int remaining = maxPopulationSize - population.size();
+            for (int i = 0; i < remaining; i++) {
+                Individual individual = new Individual(repOK);
+                population.addIndividual(individual);
             }
         }
 

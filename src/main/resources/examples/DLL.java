@@ -4,18 +4,15 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-public class SLL {
+public class DLL {
 
-    public Node head;
-    public int size;
+    Node head;
+    Node tail;
+    int size;
 
     private class Node {
         int data;
         Node next;
-
-        public Node(int data) {
-            this.data = data;
-        }
     }
 
     public boolean repOKStructure() {
