@@ -1,22 +1,31 @@
 package evorep.spoon;
 
 import evorep.ga.Individual;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
+import evorep.spoon.typesgraph.TypesGraph;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class SpoonQueries {
 
     public static CtClass<?> getClass(String qualifiedClassName) {
         return SpoonFactory.getFactory().Class().get(qualifiedClassName);
+    }
+
+    public static List<CtVariable<?>> getFieldsOfType(CtVariable<?> var, CtTypeReference<?> type) {
+        CtType<?> varType = var.getType().getDeclaration();
+        if (varType == null)
+            return new LinkedList<>();
+        return getVariablesOfType(getFields(varType), type);
+    }
+
+    public static List<CtVariable<?>> getVariablesOfType(List<CtVariable<?>> list, CtTypeReference<?> type) {
+        if (list == null)
+            throw new IllegalArgumentException("List cannot be null");
+        return list.stream().filter(var -> var.getType().isSubtypeOf(type)).toList();
     }
 
     public static List<CtVariable<?>> getFields(CtType<?> clazz) {
@@ -25,13 +34,6 @@ public class SpoonQueries {
         List<CtVariable<?>> result = new LinkedList<>();
         result.addAll(clazz.getFields());
         return result;
-    }
-
-    public static List<CtVariable<?>> getFieldsOfType(CtVariable<?> var, CtTypeReference<?> type) {
-        CtType<?> varType = var.getType().getDeclaration();
-        if (varType == null)
-            return new LinkedList<>();
-        return getVariablesOfType(getFields(varType), type);
     }
 
     public static List<CtVariable<?>> getFieldsOfType(CtType<?> varType, CtTypeReference<?> type) {
@@ -68,25 +70,12 @@ public class SpoonQueries {
         return list.stream().filter(var -> isReferenceType(var)).toList();
     }
 
-    public static List<CtVariable<?>> getUserDefinedVariables(List<CtVariable<?>> list) {
-        if (list == null)
-            throw new IllegalArgumentException("List cannot be null");
-
-        return list.stream().filter(var -> isUserDefined(var)).toList();
-    }
-
-    public static boolean isUserDefined(CtVariable<?> var) {
-        return isReferenceType(var) && var.getType().getDeclaration() != null;
+    public static boolean isReferenceType(CtVariable var) {
+        return var.getType().isSubtypeOf(SpoonFactory.getTypeFactory().OBJECT);
     }
 
     public static boolean isAccessibleField(CtVariable<?> var) {
         return true;
-    }
-
-    public static List<CtVariable<?>> getVariablesOfType(List<CtVariable<?>> list, CtTypeReference<?> type) {
-        if (list == null)
-            throw new IllegalArgumentException("List cannot be null");
-        return list.stream().filter(var -> var.getType().isSubtypeOf(type)).toList();
     }
 
     public static List<CtVariable<?>> getVariablesOfType(List<CtVariable<?>> list, Class<?> type) {
@@ -97,19 +86,12 @@ public class SpoonQueries {
         return getAllReachableVariables(method.getBody().getLastStatement());
     }
 
-    public static List<CtVariable<?>> getAllReachableVariablesFromIndividual(Individual individual) {
-        return getAllReachableVariables(individual.getLastGene());
-    }
-
     public static List<CtVariable<?>> getAllReachableVariables(CtElement statement) {
         return statement.map(new PotentialVariableDeclarationFunction()).list();
     }
 
-    public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
-                                                                          CtTypeReference<?> type) {
-        return statement.map(new PotentialVariableDeclarationFunction())
-                .map(e -> e instanceof CtLocalVariable && ((CtVariable<?>) e).getType().isSubtypeOf(type))
-                .list();
+    public static List<CtVariable<?>> getAllReachableVariablesFromIndividual(Individual individual) {
+        return getAllReachableVariables(individual.getLastGene());
     }
 
     public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
@@ -117,8 +99,11 @@ public class SpoonQueries {
         return getAllReachableLocalVariablesOfType(statement, SpoonFactory.getTypeFactory().createReference(type));
     }
 
-    public static boolean isReferenceType(CtVariable var) {
-        return var.getType().isSubtypeOf(SpoonFactory.getTypeFactory().OBJECT);
+    public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
+                                                                          CtTypeReference<?> type) {
+        return statement.map(new PotentialVariableDeclarationFunction())
+                .map(e -> e instanceof CtLocalVariable && ((CtVariable<?>) e).getType().isSubtypeOf(type))
+                .list();
     }
 
     public static boolean containsVariableOfType(Collection<CtVariable<?>> vars, Class<?> type) {
@@ -154,7 +139,6 @@ public class SpoonQueries {
         return localVars.stream().filter(var -> var.getSimpleName().equals(varName)).findFirst().orElse(null);
     }
 
-
     public static CtVariable<?> getRandomUserDefLocalVar(List<CtVariable<?>> localVars) {
         List<CtVariable<?>> userDefLocalVars = SpoonQueries.getUserDefinedVariables(localVars).stream().filter(
                 var -> var instanceof CtLocalVariable<?>
@@ -164,7 +148,65 @@ public class SpoonQueries {
         return userDefLocalVars.get(RandomUtils.nextInt(userDefLocalVars.size()));
     }
 
+    public static List<CtVariable<?>> getUserDefinedVariables(List<CtVariable<?>> list) {
+        if (list == null)
+            throw new IllegalArgumentException("List cannot be null");
+
+        return list.stream().filter(var -> isUserDefined(var)).toList();
+    }
+
+    public static boolean isUserDefined(CtVariable<?> var) {
+        return isReferenceType(var) && var.getType().getDeclaration() != null;
+    }
+
     public static boolean containsReturnStatement(CtBlock<?> block) {
         return !block.getElements(e -> e instanceof CtReturn).isEmpty();
+    }
+
+    public static Set<CtTypeReference<?>> getCandidateCyclicTypes(
+            CtBlock<?> block,
+            String varNamePrefix
+    ) {
+        List<CtTypeReference<?>> selfCyclicTypes = SpoonManager.getTypesGraph().getNodesWithSelfCycles();
+        List<CtLocalVariable<?>> localVars = SpoonQueries.getDeclaredLocalVars(block);
+
+        Set<CtTypeReference<?>> candidateTypes = new HashSet<>();
+        for (CtTypeReference type : selfCyclicTypes) {
+            if (localVars.stream().noneMatch(var ->
+                    var.getSimpleName().startsWith(varNamePrefix) &&
+                            var.getReference().getType().getActualTypeArguments().get(0).equals(type)
+            ))
+                candidateTypes.add(type);
+        }
+        return candidateTypes;
+    }
+
+    public static List<CtLocalVariable<?>> getDeclaredLocalVars(CtBlock<?> block) {
+        List<CtLocalVariable<?>> localVars = new LinkedList<>();
+        for (CtStatement statement : block.getStatements()) {
+            if (statement instanceof CtLocalVariable<?> localVar)
+                localVars.add(localVar);
+        }
+        return localVars;
+    }
+
+    public static Set<CtField<?>> getCandidateFields(
+            CtBlock<?> block
+    ) {
+        TypesGraph typesGraph = SpoonManager.getTypesGraph();
+        CtTypeReference<?> root = typesGraph.getRoot();
+
+        List<CtField<?>> fields = typesGraph.getOutgoingFields(root);
+        List<CtLocalVariable<?>> localVars = SpoonQueries.getDeclaredLocalVars(block);
+
+        Set<CtField<?>> candidateFields = new HashSet<>();
+        for (CtField<?> field : fields) {
+            if (localVars.stream().noneMatch(var ->
+                    var.getAssignment() instanceof CtVariableRead<?> varRead &&
+                            varRead.getVariable().equals(field))
+            )
+                candidateFields.add(field);
+        }
+        return candidateFields;
     }
 }

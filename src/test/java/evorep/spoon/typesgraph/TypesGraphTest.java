@@ -23,9 +23,10 @@ public class TypesGraphTest {
 
     static CtClass<?> targetClass;
 
-    private static void initializeASTElements() {
-        launcher = SpoonFactory.getLauncher();
-        targetClass = SpoonQueries.getClass(CLASS_NAME);
+    @BeforeAll
+    static void setUp() {
+        initializeSpoon();
+        initializeASTElements();
     }
 
     private static void initializeSpoon() {
@@ -33,10 +34,9 @@ public class TypesGraphTest {
         launcher = SpoonFactory.getLauncher();
     }
 
-    @BeforeAll
-    static void setUp() {
-        initializeSpoon();
-        initializeASTElements();
+    private static void initializeASTElements() {
+        launcher = SpoonFactory.getLauncher();
+        targetClass = SpoonQueries.getClass(CLASS_NAME);
     }
 
     @Test
@@ -44,7 +44,7 @@ public class TypesGraphTest {
         CtTypeReference<?> rootType = targetClass.getReference();
         TypesGraph graph = TypesGraph.createTypesGraph(rootType);
 
-        List<TypesGraph.Edge> adjOfSLL = graph.getAdjacentNodes(rootType);
+        List<TypesGraph.Edge> adjOfSLL = graph.getOutgoingEdges(rootType);
         assertEquals(2, adjOfSLL.size());
 
         TypesGraph.Edge headEdge = adjOfSLL.get(0);
@@ -59,7 +59,7 @@ public class TypesGraphTest {
         assertEquals("int", intType.getSimpleName());
         assertEquals("size", sizeField.getSimpleName());
 
-        List<TypesGraph.Edge> adjOfNode = graph.getAdjacentNodes(nodeType);
+        List<TypesGraph.Edge> adjOfNode = graph.getOutgoingEdges(nodeType);
         assertEquals(2, adjOfNode.size());
 
         TypesGraph.Edge dataEdge = adjOfNode.get(0);
@@ -80,7 +80,7 @@ public class TypesGraphTest {
         CtTypeReference<?> rootType = SpoonQueries.getClass("BinTree").getReference();
         TypesGraph graph = TypesGraph.createTypesGraph(rootType);
 
-        List<TypesGraph.Edge> adjOfBinTree = graph.getAdjacentNodes(rootType);
+        List<TypesGraph.Edge> adjOfBinTree = graph.getOutgoingEdges(rootType);
         assertEquals(2, adjOfBinTree.size());
 
         TypesGraph.Edge rootEdge = adjOfBinTree.get(0);
@@ -95,7 +95,7 @@ public class TypesGraphTest {
         assertEquals("int", intType.getSimpleName());
         assertEquals("size", sizeField.getSimpleName());
 
-        List<TypesGraph.Edge> adjOfBTNode = graph.getAdjacentNodes(btNodeType);
+        List<TypesGraph.Edge> adjOfBTNode = graph.getOutgoingEdges(btNodeType);
         assertEquals(3, adjOfBTNode.size());
 
         TypesGraph.Edge dataEdge = adjOfBTNode.get(0);
