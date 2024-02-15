@@ -9,25 +9,27 @@ import spoon.reflect.declaration.CtMethod;
 
 public class EvoRep {
 
-    private static void initialize() {
-        ToolConfig.parseConfigurationFile();
-        MutatorManager.initialize();
-    }
-
-    private static CtMethod getRepOKMethod() {
-        return SpoonManager.getTargetClass().getMethod("repOK");
-    }
-
     public static void main(String[] args) {
         initialize();
         printStart();
         startSearch();
     }
 
+    private static void initialize() {
+        ToolConfig.parseConfigurationFile();
+        MutatorManager.initialize();
+    }
+
+    public static void printStart() {
+        System.out.println("\n==============================  Search Started  ==============================\n");
+    }
+
     public static void startSearch() {
         GeneticAlgorithm ga = new GeneticAlgorithm(ToolConfig.maxPopulation, 1.0, 1.0);
-        Population population = ga.initPopulationBasedOnTypeGraph(getRepOKMethod());
+        //Population population = ga.initPopulationBasedOnTypeGraph(getRepOKMethod());
+        Population population = ga.initPopulation(getRepOKMethod());
         ga.evalPopulation(population);
+        population = ga.selectFittest(population);
 
         int generation = 1;
         while (!ga.isTerminationConditionMet(population) && generation <= ToolConfig.maxGenerations) {
@@ -41,8 +43,8 @@ public class EvoRep {
         printResults(population, generation);
     }
 
-    public static void printStart() {
-        System.out.println("\n==============================  Search Started  ==============================\n");
+    private static CtMethod getRepOKMethod() {
+        return SpoonManager.getTargetClass().getMethod("repOK");
     }
 
     public static void printGeneration(int generation, Population population) {

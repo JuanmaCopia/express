@@ -1,6 +1,5 @@
 package evorep.ga;
 
-import evorep.ga.mutators.MutatorManager;
 import spoon.reflect.declaration.CtMethod;
 
 import java.util.HashSet;
@@ -28,7 +27,7 @@ public class Population {
 
         for (int i = 0; i < populationSize; i++) {
             Individual individual = new Individual(repOK);
-            MutatorManager.initialMutation(individual);
+            //MutatorManager.initialMutation(individual);
             addIndividual(individual);
         }
     }

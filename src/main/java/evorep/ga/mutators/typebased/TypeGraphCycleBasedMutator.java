@@ -19,7 +19,7 @@ import java.util.List;
 
 public class TypeGraphCycleBasedMutator implements Mutator {
 
-    public boolean isApplicable(CtCodeElement gene) {
+    public boolean isApplicable(Individual individual, CtCodeElement gene) {
         return gene instanceof CtBlock && !SpoonManager.getTypesGraph().getNodesWithSelfCycles().isEmpty();
     }
 
