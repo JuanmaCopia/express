@@ -174,7 +174,7 @@ public class SpoonQueries {
         for (CtTypeReference type : selfCyclicTypes) {
             if (localVars.stream().noneMatch(var ->
                     var.getSimpleName().startsWith(varNamePrefix) &&
-                            var.getReference().getType().getActualTypeArguments().get(0).equals(type)
+                            var.getReference().getType().getActualTypeArguments().get(0).getQualifiedName().equals(type.getQualifiedName())
             ))
                 candidateTypes.add(type);
         }
@@ -196,14 +196,14 @@ public class SpoonQueries {
         TypesGraph typesGraph = SpoonManager.getTypesGraph();
         CtTypeReference<?> root = typesGraph.getRoot();
 
-        List<CtField<?>> fields = typesGraph.getOutgoingFields(root);
+        List<CtField<?>> fields = typesGraph.getOutgoingFields(root).stream().filter(var -> isUserDefined(var)).toList();
         List<CtLocalVariable<?>> localVars = SpoonQueries.getDeclaredLocalVars(block);
 
         Set<CtField<?>> candidateFields = new HashSet<>();
         for (CtField<?> field : fields) {
             if (localVars.stream().noneMatch(var ->
-                    var.getAssignment() instanceof CtVariableRead<?> varRead &&
-                            varRead.getVariable().equals(field))
+                    var.getAssignment() instanceof CtVariableRead varRead &&
+                            varRead.getVariable().getSimpleName().equals(field.getSimpleName()))
             )
                 candidateFields.add(field);
         }

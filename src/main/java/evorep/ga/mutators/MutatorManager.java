@@ -33,6 +33,8 @@ public class MutatorManager {
     public static Individual mutate(Individual individual) {
         Individual mutant = individual.clone();
         CtCodeElement gene = selectGene(mutant);
+        if (gene == null)
+            return mutant;
         Mutator mutator = selectMutator(mutators, individual, gene);
         if (mutator != null)
             mutator.mutate(mutant, gene);
@@ -42,7 +44,7 @@ public class MutatorManager {
     private static CtCodeElement selectGene(Individual individual) {
         List<CtCodeElement> mutableCodeElements = filterMutableCodeElements(individual);
         if (mutableCodeElements.isEmpty())
-            throw new RuntimeException("No mutable code elements found in the chromosome");
+            return null;
         return mutableCodeElements.get(RandomUtils.nextInt(mutableCodeElements.size()));
     }
 
