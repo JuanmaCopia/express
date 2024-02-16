@@ -86,13 +86,13 @@ public class TypesGraph {
         return nodesWithCycles;
     }
 */
-    public List<CtTypeReference<?>> getNodesWithSelfCycles() {
+    public Set<CtTypeReference<?>> getNodesWithSelfCycles() {
         Set<CtTypeReference> visited = new HashSet<>();
         LinkedList<CtTypeReference> workList = new LinkedList<>();
         visited.add(rootType);
         workList.add(rootType);
 
-        List<CtTypeReference<?>> nodesWithCycles = new LinkedList<>();
+        Set<CtTypeReference<?>> nodesWithCycles = new HashSet<>();
         while (!workList.isEmpty()) {
             CtTypeReference currentType = workList.removeFirst();
 

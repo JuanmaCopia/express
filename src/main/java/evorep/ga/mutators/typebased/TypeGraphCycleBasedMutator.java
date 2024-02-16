@@ -16,6 +16,7 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class TypeGraphCycleBasedMutator implements Mutator {
 
@@ -29,8 +30,8 @@ public class TypeGraphCycleBasedMutator implements Mutator {
 
         TypesGraph typesGraph = SpoonManager.getTypesGraph();
 
-        List<CtTypeReference<?>> nodesWithCycles = typesGraph.getNodesWithSelfCycles();
-        CtTypeReference<?> chosenNode = nodesWithCycles.get(RandomUtils.nextInt(nodesWithCycles.size()));
+        Set<CtTypeReference<?>> nodesWithCycles = typesGraph.getNodesWithSelfCycles();
+        CtTypeReference<?> chosenNode = nodesWithCycles.stream().findAny().get();
 
         List<List<CtField<?>>> simplePaths = typesGraph.getSimplePaths(typesGraph.getRoot(), chosenNode);
         List<CtField<?>> cyclicFields = typesGraph.getSelfCyclicFieldsOfNode(chosenNode);

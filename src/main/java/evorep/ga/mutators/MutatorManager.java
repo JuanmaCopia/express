@@ -3,7 +3,8 @@ package evorep.ga.mutators;
 import evorep.ga.Individual;
 import evorep.ga.mutators.typebased.DeclareRootAdjacentLocalVarMutator;
 import evorep.ga.mutators.typebased.DeclareVisitedSetMutator;
-import evorep.ga.mutators.typebased.DeclareWorkListMutator;
+import evorep.ga.mutators.typebased.DeclareWorklistMutator;
+import evorep.ga.mutators.typebased.LoopOverWorklistMutator;
 import evorep.spoon.RandomUtils;
 import spoon.reflect.code.CtCodeElement;
 
@@ -26,8 +27,9 @@ public class MutatorManager {
         mutators.add(new ExpressionMutator());
         mutators.add(new DeclareVarRootBlockMutator());*/
         mutators.add(new DeclareVisitedSetMutator());
-        mutators.add(new DeclareWorkListMutator());
+        mutators.add(new DeclareWorklistMutator());
         mutators.add(new DeclareRootAdjacentLocalVarMutator());
+        mutators.add(new LoopOverWorklistMutator());
     }
 
     public static Individual mutate(Individual individual) {

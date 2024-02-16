@@ -1,6 +1,5 @@
 package evorep.spoon.typesgraph;
 
-import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
@@ -12,6 +11,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -122,13 +122,13 @@ public class TypesGraphTest {
     void createTypeGraphTest3() {
         CtTypeReference<?> rootType = SpoonQueries.getClass("BinTree").getReference();
         TypesGraph graph = TypesGraph.createTypesGraph(rootType);
-        List<CtTypeReference<?>> nodesWithCycles = graph.getNodesWithSelfCycles();
+        Set<CtTypeReference<?>> nodesWithCycles = graph.getNodesWithSelfCycles();
 
         System.out.println("Nodes with cycles: " + nodesWithCycles.toString());
 
-        CtTypeReference<?> randomNode = nodesWithCycles.get(RandomUtils.nextInt(nodesWithCycles.size()));
+        CtTypeReference<?> randomNode = nodesWithCycles.stream().findAny().get();
 
-        System.out.println("Chosen node: " + randomNode.toString());
+        System.out.println("Chosen node: " + randomNode);
 
         List<List<CtField<?>>> simplePaths = graph.getSimplePaths(rootType, randomNode);
 

@@ -17,6 +17,7 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The GeneticAlgorithm class is our main abstraction for managing the
@@ -44,14 +45,14 @@ import java.util.List;
 public class GeneticAlgorithm {
 
     private static final double NOT_COMPILE_PENALIZATION = 1000;
-    private int maxPopulationSize;
+    private final int maxPopulationSize;
 
     /**
      * Mutation rate is the fractional probability than an individual gene will
      * mutate randomly in a given generation. The range is 0.0-1.0, but is
      * generally small (on the order of 0.1 or less).
      */
-    private double mutationRate;
+    private final double mutationRate;
 
     /**
      * Crossover rate is the fractional probability that two individuals will
@@ -59,7 +60,7 @@ public class GeneticAlgorithm {
      * offspring with traits of each of the parents. Like mutation rate the
      * rance is 0.0-1.0 but small.
      */
-    private double crossoverRate;
+    private final double crossoverRate;
 
     public GeneticAlgorithm(int maxPopulationSize, double mutationRate, double crossoverRate) {
         this.maxPopulationSize = maxPopulationSize;
@@ -81,7 +82,7 @@ public class GeneticAlgorithm {
         Population population = new Population();
 
         TypesGraph typesGraph = SpoonManager.getTypesGraph();
-        List<CtTypeReference<?>> nodesWithCycles = typesGraph.getNodesWithSelfCycles();
+        Set<CtTypeReference<?>> nodesWithCycles = typesGraph.getNodesWithSelfCycles();
         for (CtTypeReference<?> node : nodesWithCycles) {
             List<CtField<?>> cyclicFields = typesGraph.getSelfCyclicFieldsOfNode(node);
             List<List<CtField<?>>> simplePaths = typesGraph.getSimplePaths(typesGraph.getRoot(), node);
@@ -112,6 +113,10 @@ public class GeneticAlgorithm {
         return population;
     }
 
+    public void evalPopulation(Population population) {
+        population.getIndividuals().stream().filter(Individual::needsFitnessUpdate).forEach(this::calcFitness);
+    }
+
     /**
      * Calculate fitness for an individual.
      *
@@ -132,11 +137,6 @@ public class GeneticAlgorithm {
 
         individual.setFitness(fitness);
         return fitness;
-    }
-
-
-    public void evalPopulation(Population population) {
-        population.getIndividuals().stream().filter(Individual::needsFitnessUpdate).forEach(this::calcFitness);
     }
 
     /**

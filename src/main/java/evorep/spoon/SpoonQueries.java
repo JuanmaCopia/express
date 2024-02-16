@@ -52,16 +52,8 @@ public class SpoonQueries {
         return getFields(typeRef.getDeclaration());
     }
 
-    public static List<CtVariable<?>> getLocalVariables(CtElement element) {
-        return element.getElements(e -> e instanceof CtLocalVariable);
-    }
-
     public static List<CtStatement> getStatements(CtElement element) {
-        return element.getElements(e -> e instanceof CtStatement);
-    }
-
-    public static List<CtStatement> getNonBlockStatements(CtElement element) {
-        return element.getElements(e -> e instanceof CtStatement && !(e instanceof CtBlock));
+        return element.getElements(Objects::nonNull);
     }
 
     public static List<CtVariable<?>> getVariablesOfReferenceType(List<CtVariable<?>> list) {
@@ -167,7 +159,7 @@ public class SpoonQueries {
             CtBlock<?> block,
             String varNamePrefix
     ) {
-        List<CtTypeReference<?>> selfCyclicTypes = SpoonManager.getTypesGraph().getNodesWithSelfCycles();
+        Set<CtTypeReference<?>> selfCyclicTypes = SpoonManager.getTypesGraph().getNodesWithSelfCycles();
         List<CtLocalVariable<?>> localVars = SpoonQueries.getDeclaredLocalVars(block);
 
         Set<CtTypeReference<?>> candidateTypes = new HashSet<>();
@@ -181,6 +173,7 @@ public class SpoonQueries {
         return candidateTypes;
     }
 
+/*
     public static List<CtLocalVariable<?>> getDeclaredLocalVars(CtBlock<?> block) {
         List<CtLocalVariable<?>> localVars = new LinkedList<>();
         for (CtStatement statement : block.getStatements()) {
@@ -188,6 +181,11 @@ public class SpoonQueries {
                 localVars.add(localVar);
         }
         return localVars;
+    }
+*/
+
+    public static List<CtLocalVariable<?>> getDeclaredLocalVars(CtBlock<?> block) {
+        return block.getElements(Objects::nonNull);
     }
 
     public static Set<CtField<?>> getCandidateFields(
@@ -209,4 +207,60 @@ public class SpoonQueries {
         }
         return candidateFields;
     }
+
+    /*public static boolean hasWorklistDeclared(CtBlock<?> block) {
+        Set<CtTypeReference<?>> cyclicNodes = SpoonManager.getTypesGraph().getNodesWithSelfCycles();
+
+        List<CtLocalVariable<?>> localVars = getDeclaredLocalVars(block).stream().filter(var ->
+                var.getType().isSubtypeOf(SpoonFactory.getTypeFactory().createReference(List.class)) &&
+                cyclicNodes.contains(var.getType().getActualTypeArguments().get(0))
+
+        ).toList();
+
+        return !localVars.isEmpty();
+    }*/
+
+    public static boolean hasWorklistDeclared(CtBlock<?> block) {
+        return !getWorklistDeclared(block).isEmpty();
+    }
+
+    public static List<CtLocalVariable<?>> getWorklistDeclared(CtBlock<?> block) {
+        Set<CtTypeReference<?>> cyclicNodes = SpoonManager.getTypesGraph().getNodesWithSelfCycles();
+        return block.getElements(var -> isWorklist(var, cyclicNodes));
+    }
+
+    public static boolean isWorklist(CtLocalVariable<?> var, Set<CtTypeReference<?>> cyclicNodes) {
+        return var.getType().isSubtypeOf(SpoonFactory.getTypeFactory().createReference(List.class)) &&
+                cyclicNodes.contains(var.getType().getActualTypeArguments().get(0));
+    }
+
+    public static List<CtLocalVariable<?>> getNonTraversedWorklists(CtBlock<?> block) {
+        List<CtLocalVariable<?>> worklists = getWorklistDeclared(block);
+        List<CtLocalVariable<?>> nonTraversedWorklists = new LinkedList<>();
+
+        List<CtWhile> loops = block.getElements(Objects::nonNull);
+
+        for (CtLocalVariable<?> worklist : worklists) {
+            boolean isTraversed = false;
+            for (CtWhile loop : loops) {
+                if (isWorklistTraversed(worklist, loop))
+                    isTraversed = true;
+            }
+            if (!isTraversed)
+                nonTraversedWorklists.add(worklist);
+        }
+
+        return nonTraversedWorklists;
+    }
+    
+    private static boolean isWorklistTraversed(CtLocalVariable<?> worklist, CtWhile loop) {
+        List<CtVariableRead<?>> varReads = loop.getLoopingExpression().getElements(Objects::nonNull);
+        for (CtVariableRead<?> varRead : varReads) {
+            if (varRead.getVariable().getSimpleName().equals(worklist.getSimpleName()))
+                return true;
+        }
+        return false;
+    }
+
+
 }

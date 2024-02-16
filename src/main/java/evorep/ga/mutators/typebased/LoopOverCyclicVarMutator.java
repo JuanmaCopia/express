@@ -8,29 +8,28 @@ import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.reference.CtTypeReference;
 
-import java.util.Set;
-
-public class DeclareWorkListMutator implements Mutator {
+public class LoopOverCyclicVarMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
             return false;
 
-        Set<CtTypeReference<?>> candidateTypes = SpoonQueries.getCandidateCyclicTypes(block, LocalVarHelper.WORKLIST_VAR_NAME);
-        return !candidateTypes.isEmpty();
+        return !SpoonQueries.getCandidateFields(block).isEmpty();
     }
 
     @Override
     public void mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
-        Set<CtTypeReference<?>> candidateTypes = SpoonQueries.getCandidateCyclicTypes(blockGene, LocalVarHelper.WORKLIST_VAR_NAME);
-        CtTypeReference<?> chosenType = candidateTypes.stream().findAny().get();
-
-        CtLocalVariable<?> visitedSet = SpoonFactory.createWorkListDeclaration(chosenType);
-        blockGene.insertBegin(visitedSet);
+        CtField<?> chosenField = SpoonQueries.getCandidateFields(blockGene).stream().findAny().get();
+        CtLocalVariable<?> varDeclaration = SpoonFactory.createLocalVariable(
+                LocalVarHelper.getVarName(),
+                chosenField.getType(),
+                chosenField
+        );
+        blockGene.insertBegin(varDeclaration);
     }
 
 
