@@ -33,17 +33,14 @@ public class WorklistTraversalProcessor extends AbstractProcessor<CtBlock<?>> {
         CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable("current", subtypeOfWorklist, removeFirstMethodCall);
         whileBody.insertEnd(currentDeclaration);
 
-        // Create if (current == null) continue;
-        CtExpression<Boolean> currentNullComp = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(currentDeclaration, null, BinaryOperatorKind.EQ);
-        CtContinue continueStatement = SpoonFactory.createContinueStatement();
-        CtIf ifStatement = SpoonFactory.createIfThenStatement(currentNullComp, continueStatement);
-        whileBody.insertEnd(ifStatement);
-
         // Create worklist.add(current.<loopField>); for each loopField
         for (CtField<?> loopField : loopFields) {
             CtFieldRead<?> loopFieldRead = SpoonFactory.createFieldRead(currentDeclaration, loopField);
+            CtExpression<Boolean> fieldNullComp = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(loopFieldRead, null, BinaryOperatorKind.NE);
+
             CtInvocation<?> addToListCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, loopFieldRead);
-            whileBody.insertEnd(addToListCall);
+            CtIf ifNotNull = SpoonFactory.createIfThenStatement(fieldNullComp, addToListCall);
+            whileBody.insertEnd(ifNotNull);
         }
 
         // Create while statement
