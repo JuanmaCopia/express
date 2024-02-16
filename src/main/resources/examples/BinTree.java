@@ -10,8 +10,9 @@ public class BinTree {
     int size;
 
     public boolean repOKStructure() {
-        if (root == null)
+        if (root == null) {
             return true;
+        }
         Set<BTNode> visited = new HashSet<BTNode>();
         LinkedList<BTNode> worklist = new LinkedList<BTNode>();
         worklist.add(root);

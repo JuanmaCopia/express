@@ -1,6 +1,7 @@
 package evorep.spoon.typesgraph;
 
 
+import evorep.spoon.SpoonQueries;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
@@ -70,7 +71,15 @@ public class TypesGraph {
     }
 
     public List<CtField<?>> getOutgoingFields(CtTypeReference<?> source) {
-        return adjacencyList.get(source).stream().map(edge -> edge.getLabel()).collect(Collectors.toList());
+        return adjacencyList.get(source).stream().map(Edge::getLabel).collect(Collectors.toList());
+    }
+
+    public List<CtField<?>> getOutgoingReferenceFields(CtTypeReference<?> source) {
+        return adjacencyList.get(source).stream().map(Edge::getLabel).filter(SpoonQueries::isReferenceType).collect(Collectors.toList());
+    }
+
+    public List<CtField<?>> getOutgoingPrimitiveFields(CtTypeReference<?> source) {
+        return adjacencyList.get(source).stream().map(Edge::getLabel).filter(SpoonQueries::isPrimitiveType).collect(Collectors.toList());
     }
 
     public List<CtTypeReference<?>> getAdjacentNodes(CtTypeReference<?> source) {

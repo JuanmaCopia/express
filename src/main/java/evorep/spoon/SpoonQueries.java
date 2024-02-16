@@ -59,15 +59,29 @@ public class SpoonQueries {
     public static List<CtVariable<?>> getVariablesOfReferenceType(List<CtVariable<?>> list) {
         if (list == null)
             throw new IllegalArgumentException("List cannot be null");
-        return list.stream().filter(var -> isReferenceType(var)).toList();
+        return list.stream().filter(SpoonQueries::isReferenceType).toList();
     }
 
-    public static boolean isReferenceType(CtVariable var) {
-        return var.getType().isSubtypeOf(SpoonFactory.getTypeFactory().OBJECT);
+    public static boolean isReferenceType(CtVariable<?> var) {
+        return !var.getType().isPrimitive();
     }
 
-    public static boolean isAccessibleField(CtVariable<?> var) {
-        return true;
+    public static boolean isPrimitiveType(CtVariable<?> var) {
+        return var.getType().isPrimitive();
+    }
+
+    public static boolean isBoxedPrimitive(CtVariable<?> var) {
+        CtTypeReference<?> type = var.getType();
+        return (
+                type.equals(SpoonFactory.getTypeFactory().BOOLEAN) ||
+                        type.equals(SpoonFactory.getTypeFactory().CHARACTER) ||
+                        type.equals(SpoonFactory.getTypeFactory().BYTE) ||
+                        type.equals(SpoonFactory.getTypeFactory().SHORT) ||
+                        type.equals(SpoonFactory.getTypeFactory().INTEGER) ||
+                        type.equals(SpoonFactory.getTypeFactory().LONG) ||
+                        type.equals(SpoonFactory.getTypeFactory().FLOAT) ||
+                        type.equals(SpoonFactory.getTypeFactory().DOUBLE)
+        );
     }
 
     public static List<CtVariable<?>> getVariablesOfType(List<CtVariable<?>> list, Class<?> type) {
@@ -104,10 +118,6 @@ public class SpoonQueries {
                 return true;
         }
         return false;
-    }
-
-    public static boolean isPrimitiveType(CtVariable var) {
-        return !isReferenceType(var);
     }
 
     public static int getStatementPosition(CtStatement statement, CtBlock<?> block) {
@@ -252,7 +262,7 @@ public class SpoonQueries {
 
         return nonTraversedWorklists;
     }
-    
+
     private static boolean isWorklistTraversed(CtLocalVariable<?> worklist, CtWhile loop) {
         List<CtVariableRead<?>> varReads = loop.getLoopingExpression().getElements(Objects::nonNull);
         for (CtVariableRead<?> varRead : varReads) {
@@ -261,6 +271,5 @@ public class SpoonQueries {
         }
         return false;
     }
-
 
 }
