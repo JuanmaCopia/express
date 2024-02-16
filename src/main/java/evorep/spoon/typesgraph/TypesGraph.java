@@ -78,6 +78,11 @@ public class TypesGraph {
         return adjacencyList.get(source).stream().map(Edge::getLabel).filter(SpoonQueries::isReferenceType).collect(Collectors.toList());
     }
 
+    public List<CtField<?>> getOutgoingUserDefinedFields(CtTypeReference<?> source) {
+        return adjacencyList.get(source).stream().map(Edge::getLabel).filter(SpoonQueries::isUserDefined).collect(Collectors.toList());
+    }
+
+
     public List<CtField<?>> getOutgoingPrimitiveFields(CtTypeReference<?> source) {
         return adjacencyList.get(source).stream().map(Edge::getLabel).filter(SpoonQueries::isPrimitiveType).collect(Collectors.toList());
     }

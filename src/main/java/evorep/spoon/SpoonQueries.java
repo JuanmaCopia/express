@@ -204,7 +204,7 @@ public class SpoonQueries {
         TypesGraph typesGraph = SpoonManager.getTypesGraph();
         CtTypeReference<?> root = typesGraph.getRoot();
 
-        List<CtField<?>> fields = typesGraph.getOutgoingFields(root).stream().filter(var -> isUserDefined(var)).toList();
+        List<CtField<?>> fields = typesGraph.getOutgoingUserDefinedFields(root);
         List<CtLocalVariable<?>> localVars = SpoonQueries.getDeclaredLocalVars(block);
 
         Set<CtField<?>> candidateFields = new HashSet<>();
@@ -218,17 +218,26 @@ public class SpoonQueries {
         return candidateFields;
     }
 
-    /*public static boolean hasWorklistDeclared(CtBlock<?> block) {
-        Set<CtTypeReference<?>> cyclicNodes = SpoonManager.getTypesGraph().getNodesWithSelfCycles();
+    public static Set<CtField<?>> getCandidateFieldsForNullCheck(CtBlock<?> block) {
+        TypesGraph typesGraph = SpoonManager.getTypesGraph();
+        Set<CtField<?>> candidateFields = new HashSet<>(typesGraph.getOutgoingFields(typesGraph.getRoot()));
 
-        List<CtLocalVariable<?>> localVars = getDeclaredLocalVars(block).stream().filter(var ->
-                var.getType().isSubtypeOf(SpoonFactory.getTypeFactory().createReference(List.class)) &&
-                cyclicNodes.contains(var.getType().getActualTypeArguments().get(0))
+        List<CtIf> ifStatements = block.getStatements().stream().filter(CtIf.class::isInstance).map(CtIf.class::cast).toList();
+        for (CtIf ifStatement : ifStatements) {
+            if (ifStatement.getCondition() instanceof CtBinaryOperator<?> binaryOperator) {
+                if (binaryOperator.getKind().equals(BinaryOperatorKind.EQ)) {
+                    if (binaryOperator.getLeftHandOperand() instanceof CtVariableRead<?> varRead &&
+                            binaryOperator.getRightHandOperand().toString().equals("null")
+                    ) {
+                        CtVariable<?> readVar = varRead.getVariable().getDeclaration();
+                        candidateFields.remove(readVar);
+                    }
+                }
+            }
+        }
+        return candidateFields;
+    }
 
-        ).toList();
-
-        return !localVars.isEmpty();
-    }*/
 
     public static boolean hasWorklistDeclared(CtBlock<?> block) {
         return !getWorklistDeclared(block).isEmpty();
@@ -241,6 +250,16 @@ public class SpoonQueries {
 
     public static boolean isWorklist(CtLocalVariable<?> var, Set<CtTypeReference<?>> cyclicNodes) {
         return var.getType().isSubtypeOf(SpoonFactory.getTypeFactory().createReference(List.class)) &&
+                cyclicNodes.contains(var.getType().getActualTypeArguments().get(0));
+    }
+
+    public static List<CtLocalVariable<?>> getVisitedSetDeclared(CtBlock<?> block) {
+        Set<CtTypeReference<?>> cyclicNodes = SpoonManager.getTypesGraph().getNodesWithSelfCycles();
+        return block.getElements(var -> isVisitedSet(var, cyclicNodes));
+    }
+
+    public static boolean isVisitedSet(CtLocalVariable<?> var, Set<CtTypeReference<?>> cyclicNodes) {
+        return var.getType().isSubtypeOf(SpoonFactory.getTypeFactory().createReference(Set.class)) &&
                 cyclicNodes.contains(var.getType().getActualTypeArguments().get(0));
     }
 
@@ -272,4 +291,7 @@ public class SpoonQueries {
         return false;
     }
 
+    public static List<CtField<?>> filterFieldsByType(List<CtField<?>> candidateFields, CtTypeReference<?> ctTypeReference) {
+        return candidateFields.stream().filter(field -> field.getType().isSubtypeOf(ctTypeReference)).toList();
+    }
 }

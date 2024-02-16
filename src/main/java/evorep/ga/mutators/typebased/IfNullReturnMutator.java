@@ -5,21 +5,19 @@ import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
+import evorep.spoon.SpoonQueries;
 import evorep.spoon.typesgraph.TypesGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
-
-import java.util.List;
 
 public class IfNullReturnMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
             return false;
-        TypesGraph typesGraph = SpoonManager.getTypesGraph();
-        List<CtField<?>> fields = typesGraph.getOutgoingReferenceFields(typesGraph.getRoot());
-        return !fields.isEmpty();
+
+        return !SpoonQueries.getCandidateFieldsForNullCheck(block).isEmpty();
     }
 
     @Override

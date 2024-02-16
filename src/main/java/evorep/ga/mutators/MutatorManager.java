@@ -21,6 +21,7 @@ public class MutatorManager {
         mutators.add(new DeclareRootAdjacentLocalVarMutator());
         mutators.add(new LoopOverWorklistMutator());
         mutators.add(new IfNullReturnMutator());
+        mutators.add(new AddToCollectionMutator());
     }
 
     public static Individual mutate(Individual individual) {
