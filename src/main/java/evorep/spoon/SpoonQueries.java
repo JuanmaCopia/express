@@ -261,6 +261,14 @@ public class SpoonQueries {
 
     public static boolean isVisitedSet(CtLocalVariable<?> var, Set<CtTypeReference<?>> cyclicNodes) {
         return var.getType().isSubtypeOf(SpoonFactory.getTypeFactory().createReference(Set.class)) &&
+                var.getSimpleName().startsWith(LocalVarHelper.SET_VAR_NAME) &&
+                cyclicNodes.contains(var.getType().getActualTypeArguments().get(0));
+    }
+
+    public static boolean isVisitedSet(CtLocalVariable<?> var, CtTypeReference<?> subtype, Set<CtTypeReference<?>> cyclicNodes) {
+        return var.getType().isSubtypeOf(SpoonFactory.getTypeFactory().createReference(Set.class)) &&
+                var.getSimpleName().startsWith(LocalVarHelper.SET_VAR_NAME) &&
+                var.getType().getActualTypeArguments().get(0).equals(subtype) &&
                 cyclicNodes.contains(var.getType().getActualTypeArguments().get(0));
     }
 
