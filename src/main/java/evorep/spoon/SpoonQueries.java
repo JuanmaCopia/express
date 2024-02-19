@@ -1,6 +1,7 @@
 package evorep.spoon;
 
 import evorep.ga.Individual;
+import evorep.ga.helper.LocalVarHelper;
 import evorep.spoon.typesgraph.TypesGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
@@ -293,5 +294,92 @@ public class SpoonQueries {
 
     public static List<CtField<?>> filterFieldsByType(List<CtField<?>> candidateFields, CtTypeReference<?> ctTypeReference) {
         return candidateFields.stream().filter(field -> field.getType().isSubtypeOf(ctTypeReference)).toList();
+    }
+
+    public static boolean isLoopOverWorklist(CtWhile loop) {
+        return loop.getLoopingExpression().toString().equals("!" + LocalVarHelper.WORKLIST_VAR_NAME + ".isEmpty()");
+    }
+
+    public static List<CtBlock<?>> divideBlocksOfWorklistLoop(CtBlock<?> block) {
+        List<CtBlock<?>> blocks = new LinkedList<>();
+        CtBlock<?> removeBlock = SpoonFactory.createBlock();
+        CtBlock<?> handleBlock = SpoonFactory.createBlock();
+        CtBlock<?> addBlock = SpoonFactory.createBlock();
+
+        List<CtStatement> statements = block.getStatements();
+        removeBlock.insertBegin(statements.get(0));
+        int i = 1;
+        while (i < statements.size() && !isIfNotNullAddToWorklist(statements.get(i))) {
+            handleBlock.insertEnd(statements.get(i));
+            i++;
+        }
+
+        while (i < statements.size()) {
+            assert isIfNotNullAddToWorklist(statements.get(i));
+            addBlock.insertEnd(statements.get(i));
+            i++;
+        }
+
+        blocks.add(removeBlock);
+        blocks.add(handleBlock);
+        blocks.add(addBlock);
+        return blocks;
+    }
+
+    public static boolean isIfNotNullAddToWorklist(CtStatement statement) {
+        if (!(statement instanceof CtIf ifStatement))
+            return false;
+
+        List<CtStatement> thenStatements = ifStatement.getThenStatement().getElements(Objects::nonNull);
+        if (thenStatements.size() != 1)
+            return false;
+        CtStatement thenStatement = thenStatements.get(0);
+        if (!(thenStatement instanceof CtInvocation<?> invocation))
+            return false;
+        if (!invocation.getExecutable().getSimpleName().equals("add"))
+            return false;
+        if (invocation.getArguments().size() != 1)
+            return false;
+        if (!(invocation.getTarget() instanceof CtVariableRead<?> varRead))
+            return false;
+        if (!varRead.getVariable().getSimpleName().equals(LocalVarHelper.WORKLIST_VAR_NAME))
+            return false;
+
+        CtExpression<?> condition = ifStatement.getCondition();
+        if (!(condition instanceof CtBinaryOperator<?> binaryOperator))
+            return false;
+        if (!binaryOperator.getKind().equals(BinaryOperatorKind.NE))
+            return false;
+        if (!(binaryOperator.getLeftHandOperand() instanceof CtVariableRead<?> varRead2))
+            return false;
+        if (!varRead2.getVariable().getSimpleName().equals(LocalVarHelper.WORKLIST_VAR_NAME))
+            return false;
+        return binaryOperator.getRightHandOperand().toString().equals("null");
+    }
+
+    public static boolean hasVisitedCheckForCurrent(CtWhile loop) {
+        return !loop.getBody().getElements(SpoonQueries::isVisitedCheck).isEmpty();
+    }
+
+    public static boolean isVisitedCheck(CtStatement statement) {
+        if (!(statement instanceof CtIf ifStatement))
+            return false;
+        if (!(ifStatement.getCondition() instanceof CtUnaryOperator<?> operator))
+            return false;
+        if (!operator.getKind().equals(UnaryOperatorKind.NOT))
+            return false;
+        if (!(operator.getOperand() instanceof CtInvocation<?> invocation))
+            return false;
+        if (!invocation.getExecutable().getSimpleName().equals("add"))
+            return false;
+        if (invocation.getArguments().size() != 1)
+            return false;
+        if (!(invocation.getArguments().get(0) instanceof CtVariableRead<?> currentRead))
+            return false;
+        if (!currentRead.getVariable().getSimpleName().equals("current"))
+            return false;
+        if (!(invocation.getTarget() instanceof CtVariableRead<?> varRead))
+            return false;
+        return varRead.getVariable().getSimpleName().equals(LocalVarHelper.SET_VAR_NAME);
     }
 }

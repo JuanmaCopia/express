@@ -22,6 +22,7 @@ public class MutatorManager {
         mutators.add(new LoopOverWorklistMutator());
         mutators.add(new IfNullReturnMutator());
         mutators.add(new AddToCollectionMutator());
+        mutators.add(new AddVisitedCheckMutator());
     }
 
     public static Individual mutate(Individual individual) {

@@ -95,21 +95,6 @@ public class SpoonFactory {
         return typeFactory.createReference(type);
     }
 
-    public static CtIf createIfThenStatement(CtExpression<Boolean> condition, CtStatement thenStatement) {
-        if (!(thenStatement instanceof CtBlock<?>))
-            thenStatement = encapsulateStatement(thenStatement);
-        CtIf ifStatement = coreFactory.createIf();
-        ifStatement.setCondition(condition);
-        ifStatement.setThenStatement(thenStatement);
-        return ifStatement;
-    }
-
-    public static CtBlock<?> encapsulateStatement(CtStatement statement) {
-        CtBlock<?> block = coreFactory.createBlock();
-        block.addStatement(statement);
-        return block;
-    }
-
     public static CtIf createIfThenElseStatement(CtExpression<Boolean> condition, CtStatement thenStatement,
                                                  CtStatement elseStatement) {
         if (!(thenStatement instanceof CtBlock<?>))
@@ -121,6 +106,12 @@ public class SpoonFactory {
         ifStatement.setThenStatement(thenStatement);
         ifStatement.setElseStatement(elseStatement);
         return ifStatement;
+    }
+
+    public static CtBlock<?> encapsulateStatement(CtStatement statement) {
+        CtBlock<?> block = coreFactory.createBlock();
+        block.addStatement(statement);
+        return block;
     }
 
     public static CtWhile createWhileStatement(CtExpression<Boolean> condition, CtStatement body) {
@@ -145,14 +136,6 @@ public class SpoonFactory {
         for (CtStatement statement : statements)
             block.addStatement(statement.clone());
         return block;
-    }
-
-    public static CtExpression<?> createLiteral(Object value) {
-        if (value == null)
-            return codeFactory.createLiteral(null);
-        if (!ClassUtils.isPrimitiveOrWrapper(value.getClass()))
-            throw new IllegalArgumentException("Value must be a primitive or a wrapper");
-        return codeFactory.createLiteral(value);
     }
 
     public static CtVariableRead<?> createFieldRead(List<CtField<?>> path) {
@@ -197,12 +180,8 @@ public class SpoonFactory {
         return codeFactory.createConstructorCall(type);
     }
 
-    public static CtInvocation createInvocation(CtVariable<?> target, String methodName,
-                                                CtTypeReference<?> argsTypes,
-                                                Object arg) {
-
-        return createInvocation(target, methodName, Collections.singletonList(argsTypes),
-                Collections.singletonList(arg));
+    public static CtInvocation createInvocation(CtVariable<?> target, String methodName) {
+        return createInvocation(target, methodName, new LinkedList<>(), new LinkedList<>());
     }
 
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName,
@@ -249,18 +228,6 @@ public class SpoonFactory {
             invocation.setArguments(args);
         return invocation;
     }
-
-    public static CtInvocation createInvocation(CtVariable<?> target, String methodName) {
-        return createInvocation(target, methodName, new LinkedList<>(), new LinkedList<>());
-    }
-
-    /*
-     * public static CtConstructorCall<?> createConstructorCall(CtTypeReference<?>
-     * type, CtTypeReference<?> subtype) {
-     * CtConstructorCall<?> constructorCall =
-     * codeFactory.createConstructorCall(type);
-     * }
-     */
 
     public static CtExpression<?> createUnaryExpression(Object operand, UnaryOperatorKind operator) {
         return createUnaryExpression(parseToExpression(operand), operator);
@@ -326,6 +293,40 @@ public class SpoonFactory {
         localVariable.setType(type);
         localVariable.setAssignment(parseToExpression(assignment));
         return localVariable;
+    }
+
+    public static CtIf createVisitedCheck(CtVariable<?> setVariable, CtVariable<?> argument) {
+        CtTypeReference<?> elemType = setVariable.getReference().getType().getActualTypeArguments().get(0);
+        CtInvocation<?> addInvocation = SpoonFactory.createInvocation(setVariable, "add", elemType, argument);
+        CtUnaryOperator<Boolean> condition = (CtUnaryOperator<Boolean>) SpoonFactory
+                .createUnaryExpression(addInvocation, UnaryOperatorKind.NOT);
+        CtReturn<?> returnStatement = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
+        return SpoonFactory.createIfThenStatement(condition, returnStatement);
+    }
+
+    public static CtInvocation createInvocation(CtVariable<?> target, String methodName,
+                                                CtTypeReference<?> argsTypes,
+                                                Object arg) {
+
+        return createInvocation(target, methodName, Collections.singletonList(argsTypes),
+                Collections.singletonList(arg));
+    }
+
+    public static CtExpression<?> createLiteral(Object value) {
+        if (value == null)
+            return codeFactory.createLiteral(null);
+        if (!ClassUtils.isPrimitiveOrWrapper(value.getClass()))
+            throw new IllegalArgumentException("Value must be a primitive or a wrapper");
+        return codeFactory.createLiteral(value);
+    }
+
+    public static CtIf createIfThenStatement(CtExpression<Boolean> condition, CtStatement thenStatement) {
+        if (!(thenStatement instanceof CtBlock<?>))
+            thenStatement = encapsulateStatement(thenStatement);
+        CtIf ifStatement = coreFactory.createIf();
+        ifStatement.setCondition(condition);
+        ifStatement.setThenStatement(thenStatement);
+        return ifStatement;
     }
 
     public static CtLocalVariable<?> createWorkListDeclaration(CtTypeReference<?> subType) {
