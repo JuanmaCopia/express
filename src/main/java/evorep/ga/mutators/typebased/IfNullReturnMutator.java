@@ -4,9 +4,7 @@ import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
-import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
-import evorep.spoon.typesgraph.TypesGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -24,8 +22,7 @@ public class IfNullReturnMutator implements Mutator {
     public void mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        TypesGraph typesGraph = SpoonManager.getTypesGraph();
-        CtField<?> chosenField = typesGraph.getOutgoingReferenceFields(typesGraph.getRoot()).stream().findAny().get();
+        CtField<?> chosenField = SpoonQueries.getCandidateFieldsForNullCheck(blockGene).stream().findAny().get();
 
         CtIf ifStatement = SpoonFactory.createIfThenStatement(
                 (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(chosenField, null, BinaryOperatorKind.EQ),

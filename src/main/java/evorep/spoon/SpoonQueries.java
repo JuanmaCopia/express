@@ -223,7 +223,7 @@ public class SpoonQueries {
         TypesGraph typesGraph = SpoonManager.getTypesGraph();
         Set<CtField<?>> candidateFields = new HashSet<>(typesGraph.getOutgoingFields(typesGraph.getRoot()));
 
-        List<CtIf> ifStatements = block.getStatements().stream().filter(CtIf.class::isInstance).map(CtIf.class::cast).toList();
+        List<CtIf> ifStatements = block.getStatements().stream().filter(e -> e instanceof CtIf).map(e -> (CtIf) e).toList();
         for (CtIf ifStatement : ifStatements) {
             if (ifStatement.getCondition() instanceof CtBinaryOperator<?> binaryOperator) {
                 if (binaryOperator.getKind().equals(BinaryOperatorKind.EQ)) {
