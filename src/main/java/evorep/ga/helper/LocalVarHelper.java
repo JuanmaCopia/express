@@ -5,6 +5,7 @@ public class LocalVarHelper {
     public static final String LOCAL_VAR_PREFIX = "var_";
     public static final String SET_VAR_NAME = "visited";
     public static final String WORKLIST_VAR_NAME = "worklist";
+    public static final String CURRENT_VAR_NAME = "current";
 
     static int id = 0;
 

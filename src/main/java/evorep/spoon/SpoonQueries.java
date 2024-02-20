@@ -308,6 +308,19 @@ public class SpoonQueries {
         return loop.getLoopingExpression().toString().equals("!" + LocalVarHelper.WORKLIST_VAR_NAME + ".isEmpty()");
     }
 
+    public static boolean isLoopOverCyclicVar(CtWhile loop) {
+        CtExpression<?> condition = loop.getLoopingExpression();
+        if (!(condition instanceof CtBinaryOperator<?> binaryOperator))
+            return false;
+        if (!binaryOperator.getKind().equals(BinaryOperatorKind.NE))
+            return false;
+        if (!(binaryOperator.getLeftHandOperand() instanceof CtVariableRead<?> varRead))
+            return false;
+        if (!varRead.getVariable().getSimpleName().equals(LocalVarHelper.CURRENT_VAR_NAME))
+            return false;
+        return binaryOperator.getRightHandOperand().toString().equals("null");
+    }
+
     public static List<CtBlock<?>> divideBlocksOfWorklistLoop(CtBlock<?> block) {
         List<CtBlock<?>> blocks = new LinkedList<>();
         CtBlock<?> removeBlock = SpoonFactory.createBlock();

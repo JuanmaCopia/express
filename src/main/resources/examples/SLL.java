@@ -1,7 +1,6 @@
 package examples;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
 
 public class SLL {
@@ -9,7 +8,23 @@ public class SLL {
     public Node head;
     public int size;
 
+
     public boolean repOKStructure() {
+        if (head == null) {
+            return true;
+        }
+        Set<Node> visited = new HashSet<Node>();
+        Node current = head;
+        while (current != null) {
+            if (!visited.add(current)) {
+                return false;
+            }
+            current = current.next;
+        }
+        return true;
+    }
+
+    /*public boolean repOKStructure() {
         if (head == null) {
             return true;
         }
@@ -26,7 +41,7 @@ public class SLL {
             }
         }
         return true;
-    }
+    }*/
 
     private class Node {
         int data;

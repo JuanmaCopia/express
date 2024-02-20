@@ -22,7 +22,8 @@ public class MutatorManager {
         mutators.add(new LoopOverWorklistMutator());
         mutators.add(new IfNullReturnMutator());
         mutators.add(new AddToCollectionMutator());
-        mutators.add(new AddVisitedCheckMutator());
+        mutators.add(new AddVisitedCheckWorklistTraversalMutator());
+        mutators.add(new AddVisitedCheckCyclicVarTraversalMutator());
         mutators.add(new LoopOverCyclicVarMutator());
     }
 

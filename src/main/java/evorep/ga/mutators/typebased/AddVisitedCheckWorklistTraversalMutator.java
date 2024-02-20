@@ -12,7 +12,7 @@ import spoon.reflect.reference.CtTypeReference;
 import java.util.List;
 import java.util.Set;
 
-public class AddVisitedCheckMutator implements Mutator {
+public class AddVisitedCheckWorklistTraversalMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
