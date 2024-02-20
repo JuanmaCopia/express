@@ -266,12 +266,6 @@ public class SpoonFactory {
         return ctAssignment;
     }
 
-    public static CtVariableWrite createVariableWrite(CtVariable<?> variable) {
-        CtVariableWrite variableWrite = coreFactory.createVariableWrite();
-        variableWrite.setVariable(variable.getReference());
-        return variableWrite;
-    }
-
     public static CtLocalVariable<?> createVisitedSetDeclaration(CtTypeReference<?> subType) {
         CtTypeReference<?> setType = createTypeWithSubtypeReference(Set.class, subType);
         CtTypeReference<?> hashSetType = createTypeWithSubtypeReference(HashSet.class, subType);
@@ -329,6 +323,22 @@ public class SpoonFactory {
         return ifStatement;
     }
 
+    public static List<CtStatement> creteCyclicReferenceTraversal(CtVariableRead<?> initialField, CtField<?> loopField) {
+        List<CtStatement> statements = new LinkedList<>();
+        CtLocalVariable<?> currentVar = SpoonFactory.createLocalVariable("current", initialField.getType(), initialField);
+
+        CtExpression<Boolean> whileCondition = (CtExpression<Boolean>) createBinaryExpression(currentVar, null, BinaryOperatorKind.NE);
+
+        CtFieldRead<?> loopFieldRead = SpoonFactory.createFieldRead(currentVar, loopField);
+        CtAssignment assignment = SpoonFactory.createAssignment(currentVar, loopFieldRead);
+
+        CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, assignment);
+
+        statements.add(currentVar);
+        statements.add(whileStatement);
+        return statements;
+    }
+
     public static CtLocalVariable<?> createWorkListDeclaration(CtTypeReference<?> subType) {
         CtTypeReference<?> listType = createTypeWithSubtypeReference(LinkedList.class, subType);
         CtTypeReference<?> linkedListType = createTypeWithSubtypeReference(LinkedList.class, subType);
@@ -378,6 +388,12 @@ public class SpoonFactory {
         varAccesses.addAll(SpoonQueries.getFieldsOfType(var, typeRef).stream().map(
                 field -> createFieldAccess.apply(var, field)).toList());
         return varAccesses;
+    }
+
+    public static CtVariableWrite createVariableWrite(CtVariable<?> variable) {
+        CtVariableWrite variableWrite = coreFactory.createVariableWrite();
+        variableWrite.setVariable(variable.getReference());
+        return variableWrite;
     }
 
     public static CtFieldWrite<?> createFieldWrite(CtVariable<?> variable, CtVariable<?> field) {

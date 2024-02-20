@@ -390,4 +390,42 @@ public class SpoonQueries {
             return false;
         return varRead.getVariable().getSimpleName().equals(LocalVarHelper.SET_VAR_NAME);
     }
+
+    public static boolean isCurrentVarDefined(CtBlock<?> block) {
+        return SpoonQueries.getDeclaredLocalVars(block).stream().anyMatch(var -> var.getSimpleName().equals("current"));
+    }
+
+    public static Set<CtVariableRead<?>> getReacheableCyclicFieldReads(CtBlock<?> block) {
+        Set<CtVariableRead<?>> reacheableCyclicFieldReads = new HashSet<>();
+        TypesGraph typesGraph = SpoonManager.getTypesGraph();
+        Set<CtTypeReference<?>> nodesWithCycles = typesGraph.getNodesWithSelfCycles();
+        for (CtTypeReference<?> node : nodesWithCycles) {
+            List<List<CtField<?>>> simplePaths = typesGraph.getSimplePaths(typesGraph.getRoot(), node);
+            for (List<CtField<?>> path : simplePaths) {
+                reacheableCyclicFieldReads.add(SpoonFactory.createFieldRead(path));
+            }
+        }
+        return reacheableCyclicFieldReads;
+    }
+
+    public static CtStatement getFirstNonNullCheck(CtBlock<?> code) {
+        List<CtStatement> statements = code.getStatements();
+        for (CtStatement statement : statements) {
+            if (!isNullCheck(statement))
+                return statement;
+        }
+        return null;
+    }
+
+    public static boolean isNullCheck(CtStatement statement) {
+        if (!(statement instanceof CtIf ifStatement))
+            return false;
+        if (!(ifStatement.getCondition() instanceof CtBinaryOperator<?> binaryOperator))
+            return false;
+        if (!binaryOperator.getKind().equals(BinaryOperatorKind.EQ))
+            return false;
+        if (!(binaryOperator.getLeftHandOperand() instanceof CtVariableRead<?> varRead))
+            return false;
+        return binaryOperator.getRightHandOperand().toString().equals("null");
+    }
 }

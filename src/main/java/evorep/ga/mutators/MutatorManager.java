@@ -23,6 +23,7 @@ public class MutatorManager {
         mutators.add(new IfNullReturnMutator());
         mutators.add(new AddToCollectionMutator());
         mutators.add(new AddVisitedCheckMutator());
+        mutators.add(new LoopOverCyclicVarMutator());
     }
 
     public static Individual mutate(Individual individual) {
