@@ -16,9 +16,11 @@ public class SLL {
         Set<Node> visited = new HashSet<Node>();
         Node current = head;
         while (current != null) {
+            /* Handle current: */
             if (!visited.add(current)) {
                 return false;
             }
+            /* End of Handle current: */
             current = current.next;
         }
         return true;

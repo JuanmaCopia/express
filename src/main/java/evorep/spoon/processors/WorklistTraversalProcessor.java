@@ -29,9 +29,17 @@ public class WorklistTraversalProcessor extends AbstractProcessor<CtBlock<?>> {
 
         // Create while body
         CtBlock<?> whileBody = SpoonFactory.createBlock();
+
+        // Create current = worklist.removeFirst();
         CtInvocation<?> removeFirstMethodCall = SpoonFactory.createInvocation(worklist, "removeFirst");
         CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable("current", subtypeOfWorklist, removeFirstMethodCall);
         whileBody.insertEnd(currentDeclaration);
+
+        // Create comment: // Handle current:
+        whileBody.insertEnd(SpoonFactory.createComment("Handle current:"));
+
+        // Create comment: // Add children to worklist:
+        whileBody.insertEnd(SpoonFactory.createComment("End of Handle current:"));
 
         // Create worklist.add(current.<loopField>); for each loopField
         for (CtField<?> loopField : loopFields) {

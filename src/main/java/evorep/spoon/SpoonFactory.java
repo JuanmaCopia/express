@@ -329,10 +329,16 @@ public class SpoonFactory {
 
         CtExpression<Boolean> whileCondition = (CtExpression<Boolean>) createBinaryExpression(currentVar, null, BinaryOperatorKind.NE);
 
+        // Create While body
+        CtBlock<?> whileBody = SpoonFactory.createBlock();
+        whileBody.addStatement(SpoonFactory.createComment("Handle current:"));
+        whileBody.addStatement(SpoonFactory.createComment("End of Handle current:"));
+
         CtFieldRead<?> loopFieldRead = SpoonFactory.createFieldRead(currentVar, loopField);
         CtAssignment assignment = SpoonFactory.createAssignment(currentVar, loopFieldRead);
+        whileBody.addStatement(assignment);
 
-        CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, assignment);
+        CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, whileBody);
 
         statements.add(currentVar);
         statements.add(whileStatement);
@@ -422,6 +428,10 @@ public class SpoonFactory {
 
     public static CtFieldRead<?> createFieldRead(CtVariable<?> variable, CtVariable<?> field) {
         return createFieldRead(createVariableRead(variable), field);
+    }
+
+    public static CtComment createComment(String content) {
+        return coreFactory.createComment().setContent(content);
     }
 
 }

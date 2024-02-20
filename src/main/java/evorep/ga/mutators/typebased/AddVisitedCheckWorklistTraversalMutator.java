@@ -48,7 +48,10 @@ public class AddVisitedCheckWorklistTraversalMutator implements Mutator {
         CtLocalVariable<?> chosenSetVariable = setVariables.stream().findAny().get();
 
         CtIf ifStatement = SpoonFactory.createVisitedCheck(chosenSetVariable, currentVarDeclaration);
-        currentVarDeclaration.insertAfter(ifStatement);
+
+        CtComment handleCurrentComment = (CtComment) whileBody.getElements(SpoonQueries::isEndOfHandleCurrent).get(0);
+
+        handleCurrentComment.insertBefore(ifStatement);
     }
 
 

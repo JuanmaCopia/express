@@ -18,9 +18,11 @@ public class BinTree {
         worklist.add(root);
         while (!worklist.isEmpty()) {
             BTNode current = worklist.removeFirst();
+            /* Handle current: */
             if (!visited.add(current)) {
                 return false;
             }
+            /* End of Handle current: */
             if (current.left != null) {
                 worklist.add(current.left);
             }

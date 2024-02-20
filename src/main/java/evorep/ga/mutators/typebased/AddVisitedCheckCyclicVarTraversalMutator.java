@@ -49,7 +49,9 @@ public class AddVisitedCheckCyclicVarTraversalMutator implements Mutator {
 
         CtIf ifStatement = SpoonFactory.createVisitedCheck(chosenSetVariable, currentVarDeclaration);
         CtBlock<?> whileBody = (CtBlock<?>) chosenLoop.getBody();
-        whileBody.insertBegin(ifStatement);
+
+        CtComment handleCurrentComment = (CtComment) whileBody.getElements(SpoonQueries::isEndOfHandleCurrent).get(0);
+        handleCurrentComment.insertBefore(ifStatement);
     }
 
 

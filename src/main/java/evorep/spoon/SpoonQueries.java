@@ -441,4 +441,17 @@ public class SpoonQueries {
             return false;
         return binaryOperator.getRightHandOperand().toString().equals("null");
     }
+
+    public static boolean isHandleCurrentComment(CtElement element) {
+        if (!(element instanceof CtComment comment))
+            return false;
+        return comment.getContent().equals("Handle current:");
+    }
+
+    public static boolean isEndOfHandleCurrent(CtElement element) {
+        if (!(element instanceof CtComment comment))
+            return false;
+        //System.out.println("The content of the comment is:" + comment.getContent());
+        return comment.getContent().equals("End of Handle current:");
+    }
 }
