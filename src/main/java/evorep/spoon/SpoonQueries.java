@@ -285,9 +285,6 @@ public class SpoonQueries {
         return candidateFields.stream().filter(field -> field.getType().isSubtypeOf(ctTypeReference)).toList();
     }
 
-    public static boolean isLoopOverWorklist(CtWhile loop) {
-        return loop.getLoopingExpression().toString().equals("!" + LocalVarHelper.WORKLIST_VAR_NAME + ".isEmpty()");
-    }
 
     public static boolean isLoopOverCyclicVar(CtWhile loop) {
         CtExpression<?> condition = loop.getLoopingExpression();
@@ -407,6 +404,35 @@ public class SpoonQueries {
         if (!(invocation.getTarget() instanceof CtVariableRead<?> varRead))
             return false;
         return varRead.getVariable().getSimpleName().startsWith(LocalVarHelper.SET_VAR_NAME);
+    }
+
+
+    public static boolean isTraversalLoop(CtElement element) {
+        if (!(element instanceof CtWhile loop))
+            return false;
+        return isCyclicReferenceTraversal(loop) || isWorklistTraversal(loop);
+    }
+
+    public static boolean isCyclicReferenceTraversal(CtWhile loop) {
+        String condition = loop.getLoopingExpression().toString();
+        return condition.startsWith(LocalVarHelper.CURRENT_VAR_NAME) && condition.endsWith("!= null");
+    }
+
+    public static boolean isWorklistTraversal(CtWhile loop) {
+        String condition = loop.getLoopingExpression().toString();
+        return condition.startsWith("!" + LocalVarHelper.WORKLIST_VAR_NAME) && condition.endsWith(".isEmpty()");
+    }
+
+    public CtLocalVariable<?> getCurrentVarDeclaration(CtWhile loop) {
+        CtBlock<?> whileBody = (CtBlock<?>) loop.getBody();
+        CtAssignment<?, ?> assignment = null;
+        if (isCyclicReferenceTraversal(loop)) {
+            assignment = whileBody.getLastStatement();
+        } else if (isWorklistTraversal(loop)) {
+            assignment = whileBody.getStatement(0);
+        }
+        CtVariableWrite<?> varWrite = (CtVariableWrite<?>) assignment.getAssigned();
+        return (CtLocalVariable<?>) varWrite.getVariable().getDeclaration();
     }
 
 }
