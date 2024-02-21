@@ -1,5 +1,6 @@
 package evorep.spoon.processors;
 
+import evorep.ga.helper.LocalVarHelper;
 import evorep.spoon.SpoonFactory;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.*;
@@ -8,20 +9,27 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 
-public class WorklistTraversalProcessor extends AbstractProcessor<CtBlock<?>> {
+public class TraverseWorklistProcessor extends AbstractProcessor<CtBlock<?>> {
 
-    CtLocalVariable<?> worklist;
     List<CtField<?>> loopFields;
+    CtVariableRead<?> initialField;
 
-    public WorklistTraversalProcessor(CtLocalVariable<?> worklist, List<CtField<?>> loopFields) {
+    public TraverseWorklistProcessor(CtVariableRead<?> initialField, List<CtField<?>> loopFields) {
         super();
-        this.worklist = worklist;
         this.loopFields = loopFields;
+        this.initialField = initialField;
     }
 
     @Override
     public void process(CtBlock<?> ctBlock) {
+        CtLocalVariable<?> visitedSet = SpoonFactory.createVisitedSetDeclaration(initialField.getType());
+        CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(initialField.getType());
+
         CtTypeReference<?> subtypeOfWorklist = worklist.getType().getActualTypeArguments().get(0);
+
+        CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(ctBlock), subtypeOfWorklist, initialField);
+
+        CtInvocation<?> addToWorklistCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, currentDeclaration);
 
         // create condition: !workList.isEmpty()
         CtInvocation<?> isEmptyMethodCall = SpoonFactory.createInvocation(worklist, "isEmpty");
@@ -32,8 +40,13 @@ public class WorklistTraversalProcessor extends AbstractProcessor<CtBlock<?>> {
 
         // Create current = worklist.removeFirst();
         CtInvocation<?> removeFirstMethodCall = SpoonFactory.createInvocation(worklist, "removeFirst");
-        CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable("current", subtypeOfWorklist, removeFirstMethodCall);
-        whileBody.insertEnd(currentDeclaration);
+
+        CtAssignment<?, ?> assignRemoveFirst = SpoonFactory.createAssignment(currentDeclaration, removeFirstMethodCall);
+        whileBody.insertEnd(assignRemoveFirst);
+
+        // Add visited check
+        CtIf ifStatement = SpoonFactory.createVisitedCheck(visitedSet, currentDeclaration);
+        whileBody.insertEnd(ifStatement);
 
         // Create comment: // Handle current:
         whileBody.insertEnd(SpoonFactory.createComment("Handle current:"));
@@ -55,6 +68,12 @@ public class WorklistTraversalProcessor extends AbstractProcessor<CtBlock<?>> {
         CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, whileBody);
 
         CtStatement lastStatement = ctBlock.getLastStatement();
+        lastStatement.insertBefore(visitedSet);
+        lastStatement.insertBefore(worklist);
+        lastStatement.insertBefore(SpoonFactory.createComment("Initialize root element:"));
+        lastStatement.insertBefore(currentDeclaration);
+        lastStatement.insertBefore(addToWorklistCall);
+        lastStatement.insertBefore(SpoonFactory.createComment("Cycle over cyclic references:"));
         lastStatement.insertBefore(whileStatement);
     }
 }

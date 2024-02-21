@@ -5,7 +5,7 @@ import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
-import evorep.spoon.processors.ReferenceTraversalProcessor;
+import evorep.spoon.processors.TraverseCyclicReferenceProcessor;
 import evorep.spoon.typesgraph.TypesGraph;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
@@ -61,7 +61,7 @@ public class TypeGraphCycleBasedMutator implements Mutator {
 
         CtField<?> loopField = cyclicFields.get(RandomUtils.nextInt(cyclicFields.size()));
 
-        Processor<CtBlock<?>> p = new ReferenceTraversalProcessor(initialField, loopField);
+        Processor<CtBlock<?>> p = new TraverseCyclicReferenceProcessor(initialField, loopField);
         p.process(block);
     }
 

@@ -15,19 +15,22 @@ public class BinTree {
         }
         Set<BTNode> visited = new HashSet<BTNode>();
         LinkedList<BTNode> worklist = new LinkedList<BTNode>();
-        worklist.add(root);
+        /* Initialize root element: */
+        BTNode current_0 = root;
+        worklist.add(current_0);
+        /* Cycle over cyclic references: */
         while (!worklist.isEmpty()) {
-            BTNode current = worklist.removeFirst();
-            /* Handle current: */
-            if (!visited.add(current)) {
+            current_0 = worklist.removeFirst();
+            if (!visited.add(current_0)) {
                 return false;
             }
+            /* Handle current: */
             /* End of Handle current: */
-            if (current.left != null) {
-                worklist.add(current.left);
+            if (current_0.left != null) {
+                worklist.add(current_0.left);
             }
-            if (current.right != null) {
-                worklist.add(current.right);
+            if (current_0.right != null) {
+                worklist.add(current_0.right);
             }
         }
         return true;

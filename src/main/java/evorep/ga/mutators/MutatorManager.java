@@ -1,7 +1,9 @@
 package evorep.ga.mutators;
 
 import evorep.ga.Individual;
-import evorep.ga.mutators.typebased.*;
+import evorep.ga.mutators.typebased.IfNullReturnMutator;
+import evorep.ga.mutators.typebased.TraverseCyclicReferenceMutator;
+import evorep.ga.mutators.typebased.TraverseWorklistMutator;
 import evorep.spoon.RandomUtils;
 import spoon.reflect.code.CtCodeElement;
 
@@ -16,15 +18,10 @@ public class MutatorManager {
 
     public static void initialize() {
         mutators = new HashSet<>();
-        mutators.add(new DeclareVisitedSetMutator());
-        mutators.add(new DeclareWorklistMutator());
-        mutators.add(new DeclareRootAdjacentLocalVarMutator());
-        mutators.add(new LoopOverWorklistMutator());
+        //mutators.add(new DeclareRootAdjacentLocalVarMutator());
         mutators.add(new IfNullReturnMutator());
-        mutators.add(new AddToCollectionMutator());
-        mutators.add(new AddVisitedCheckWorklistTraversalMutator());
-        mutators.add(new AddVisitedCheckCyclicVarTraversalMutator());
-        mutators.add(new LoopOverCyclicVarMutator());
+        mutators.add(new TraverseCyclicReferenceMutator());
+        mutators.add(new TraverseWorklistMutator());
     }
 
     public static Individual mutate(Individual individual) {

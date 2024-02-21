@@ -1,7 +1,6 @@
 package examples;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
 
 public class DLL {
@@ -10,26 +9,37 @@ public class DLL {
     Node tail;
     int size;
 
-    private class Node {
-        int data;
-        Node next;
-    }
-
     public boolean repOKStructure() {
+        if (head == null) {
+            return tail == null;
+        }
+        if (tail == null) {
+            return false;
+        }
         Set<Node> visited = new HashSet<Node>();
-        LinkedList<Node> worklist = new LinkedList<Node>();
-        worklist.add(head);
-        while (!worklist.isEmpty()) {
-            Node current = worklist.removeFirst();
-            if (current == null) {
-                continue;
-            }
+        Node current = head;
+        Node prev = null;
+        while (current != null) {
             if (!visited.add(current)) {
                 return false;
             }
-            worklist.add(current.next);
+            if (prev != current.back) {
+                return false;
+            }
+            prev = current;
+            current = current.next;
+        }
+        if (prev != tail) {
+            return false;
         }
         return true;
     }
+
+    private class Node {
+        int data;
+        Node next;
+        Node back;
+    }
+
 
 }

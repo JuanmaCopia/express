@@ -25,7 +25,7 @@ public class DeclareRootAdjacentLocalVarMutator implements Mutator {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
         CtField<?> chosenField = SpoonQueries.getCandidateFields(blockGene).stream().findAny().get();
         CtLocalVariable<?> varDeclaration = SpoonFactory.createLocalVariable(
-                LocalVarHelper.getVarName(),
+                LocalVarHelper.getVarName(blockGene),
                 chosenField.getType(),
                 chosenField
         );
