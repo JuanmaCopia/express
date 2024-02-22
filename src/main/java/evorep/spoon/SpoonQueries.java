@@ -360,6 +360,10 @@ public class SpoonQueries {
         return code.getElements(var -> var.getSimpleName().startsWith(varPrefix));
     }
 
+    public static List<CtVariable<?>> getLocalVariablesFromElement(CtElement element) {
+        return element.getElements(e -> e instanceof CtLocalVariable);
+    }
+
     public static Set<CtLocalVariable<?>> getCurrentVarsWithoutVisitedCheck(CtBlock<?> code) {
         Set<CtLocalVariable<?>> currentVarsWithoutCheck = new HashSet<>();
 
