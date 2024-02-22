@@ -23,7 +23,7 @@ public class SpoonHelper {
 
     public static String getFalseFitnessString() {
         CtClass<?> clazz = SpoonManager.getTargetClass();
-        CtMethod<?> method = clazz.getMethodsByName("structureRepOK2").get(0);
+        CtMethod<?> method = clazz.getMethodsByName("repOKStructure").get(0);
         return getStatementsString(method);
     }
 

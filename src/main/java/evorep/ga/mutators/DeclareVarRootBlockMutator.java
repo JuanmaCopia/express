@@ -10,7 +10,7 @@ import spoon.reflect.code.CtCodeElement;
 public class DeclareVarRootBlockMutator implements Mutator {
 
     @Override
-    public boolean isApplicable(CtCodeElement gene) {
+    public boolean isApplicable(Individual individual, CtCodeElement gene) {
         return gene instanceof CtBlock;
     }
 

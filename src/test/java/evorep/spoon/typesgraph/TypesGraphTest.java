@@ -1,6 +1,5 @@
 package evorep.spoon.typesgraph;
 
-import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
@@ -12,6 +11,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,9 +23,10 @@ public class TypesGraphTest {
 
     static CtClass<?> targetClass;
 
-    private static void initializeASTElements() {
-        launcher = SpoonFactory.getLauncher();
-        targetClass = SpoonQueries.getClass(CLASS_NAME);
+    @BeforeAll
+    static void setUp() {
+        initializeSpoon();
+        initializeASTElements();
     }
 
     private static void initializeSpoon() {
@@ -33,10 +34,9 @@ public class TypesGraphTest {
         launcher = SpoonFactory.getLauncher();
     }
 
-    @BeforeAll
-    static void setUp() {
-        initializeSpoon();
-        initializeASTElements();
+    private static void initializeASTElements() {
+        launcher = SpoonFactory.getLauncher();
+        targetClass = SpoonQueries.getClass(CLASS_NAME);
     }
 
     @Test
@@ -44,7 +44,7 @@ public class TypesGraphTest {
         CtTypeReference<?> rootType = targetClass.getReference();
         TypesGraph graph = TypesGraph.createTypesGraph(rootType);
 
-        List<TypesGraph.Edge> adjOfSLL = graph.getAdjacentNodes(rootType);
+        List<TypesGraph.Edge> adjOfSLL = graph.getOutgoingEdges(rootType);
         assertEquals(2, adjOfSLL.size());
 
         TypesGraph.Edge headEdge = adjOfSLL.get(0);
@@ -59,7 +59,7 @@ public class TypesGraphTest {
         assertEquals("int", intType.getSimpleName());
         assertEquals("size", sizeField.getSimpleName());
 
-        List<TypesGraph.Edge> adjOfNode = graph.getAdjacentNodes(nodeType);
+        List<TypesGraph.Edge> adjOfNode = graph.getOutgoingEdges(nodeType);
         assertEquals(2, adjOfNode.size());
 
         TypesGraph.Edge dataEdge = adjOfNode.get(0);
@@ -80,7 +80,7 @@ public class TypesGraphTest {
         CtTypeReference<?> rootType = SpoonQueries.getClass("BinTree").getReference();
         TypesGraph graph = TypesGraph.createTypesGraph(rootType);
 
-        List<TypesGraph.Edge> adjOfBinTree = graph.getAdjacentNodes(rootType);
+        List<TypesGraph.Edge> adjOfBinTree = graph.getOutgoingEdges(rootType);
         assertEquals(2, adjOfBinTree.size());
 
         TypesGraph.Edge rootEdge = adjOfBinTree.get(0);
@@ -95,7 +95,7 @@ public class TypesGraphTest {
         assertEquals("int", intType.getSimpleName());
         assertEquals("size", sizeField.getSimpleName());
 
-        List<TypesGraph.Edge> adjOfBTNode = graph.getAdjacentNodes(btNodeType);
+        List<TypesGraph.Edge> adjOfBTNode = graph.getOutgoingEdges(btNodeType);
         assertEquals(3, adjOfBTNode.size());
 
         TypesGraph.Edge dataEdge = adjOfBTNode.get(0);
@@ -122,13 +122,13 @@ public class TypesGraphTest {
     void createTypeGraphTest3() {
         CtTypeReference<?> rootType = SpoonQueries.getClass("BinTree").getReference();
         TypesGraph graph = TypesGraph.createTypesGraph(rootType);
-        List<CtTypeReference<?>> nodesWithCycles = graph.getNodesWithSelfCycles();
+        Set<CtTypeReference<?>> nodesWithCycles = graph.getNodesWithSelfCycles();
 
         System.out.println("Nodes with cycles: " + nodesWithCycles.toString());
 
-        CtTypeReference<?> randomNode = nodesWithCycles.get(RandomUtils.nextInt(nodesWithCycles.size()));
+        CtTypeReference<?> randomNode = nodesWithCycles.stream().findAny().get();
 
-        System.out.println("Chosen node: " + randomNode.toString());
+        System.out.println("Chosen node: " + randomNode);
 
         List<List<CtField<?>>> simplePaths = graph.getSimplePaths(rootType, randomNode);
 

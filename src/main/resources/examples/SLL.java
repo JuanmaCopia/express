@@ -1,15 +1,58 @@
 package examples;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Set;
 
 public class SLL {
 
-    public List<Integer> list = new ArrayList<>();
     public Node head;
     public int size;
+
+    public boolean repOKStructure() {
+        if (head == null) {
+            return true;
+        }
+        Set<Node> visited = new HashSet<Node>();
+        LinkedList<Node> worklist = new LinkedList<Node>();
+        /* Initialize root element: */
+        Node current_0 = head;
+        worklist.add(current_0);
+        /* Cycle over cyclic references: */
+        while (!worklist.isEmpty()) {
+            current_0 = worklist.removeFirst();
+            if (!visited.add(current_0)) {
+                return false;
+            }
+            /* Handle current: */
+            /* End of Handle current: */
+            if (current_0.next != null) {
+                worklist.add(current_0.next);
+            }
+        }
+        return true;
+    }
+
+    /*
+     * public boolean repOKStructure() {
+     * if (head == null) {
+     * return true;
+     * }
+     * Set<Node> visited = new HashSet<Node>();
+     * LinkedList<Node> worklist = new LinkedList<Node>();
+     * worklist.add(head);
+     * while (!worklist.isEmpty()) {
+     * Node current = worklist.removeFirst();
+     * if (!visited.add(current)) {
+     * return false;
+     * }
+     * if (current.next != null) {
+     * worklist.add(current.next);
+     * }
+     * }
+     * return true;
+     * }
+     */
 
     private class Node {
         int data;
@@ -18,66 +61,6 @@ public class SLL {
         public Node(int data) {
             this.data = data;
         }
-    }
-
-    public boolean traverse() {
-        Node curr = head;
-        while (curr != null) {
-            curr = curr.next;
-        }
-        return true;
-    }
-
-    public boolean structureRepOK() {
-        Set<Node> visited = new HashSet<>();
-        visited.add(head);
-        Node curr = head;
-        while (curr != null) {
-            if (curr.next != null && !visited.add(curr.next)) {
-                return false;
-            }
-            curr = curr.next;
-        }
-        return true;
-    }
-
-    public boolean structureRepOK2() {
-        Set<Node> visited = new HashSet<>();
-        visited.add(head);
-        Node current = head;
-        while (current != null) {
-            if (current.next != null) {
-                if (!visited.add(current.next)) {
-                    return false;
-                }
-            }
-            current = current.next;
-        }
-        return true;
-    }
-
-    public boolean mymethod2() {
-        return true;
-    }
-
-    public boolean mymethod3() {
-        Set<Node> visited = new HashSet<>();
-        Node current = head;
-        return true;
-    }
-
-    public boolean mymethod4() {
-        Set<Node> visited = new HashSet<>();
-        visited.add(head);
-        Node curr = head;
-        while (curr != null) {
-            Node shouldNotBeVisible = curr.next;
-            if (curr.next != null && !visited.add(curr.next)) {
-                return false;
-            }
-            curr = curr.next;
-        }
-        return true;
     }
 
 }

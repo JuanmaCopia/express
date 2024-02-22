@@ -6,7 +6,7 @@ import spoon.reflect.code.CtInvocation;
 
 public class InvocationMutator implements Mutator {
 
-    public boolean isApplicable(CtCodeElement element) {
+    public boolean isApplicable(Individual individual, CtCodeElement element) {
         return element instanceof CtInvocation;
     }
 

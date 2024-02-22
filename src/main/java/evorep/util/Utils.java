@@ -1,7 +1,12 @@
 package evorep.util;
 
+import org.apache.commons.math3.util.Combinations;
+import spoon.reflect.declaration.CtField;
+
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Utils {
 
@@ -20,5 +25,20 @@ public class Utils {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    public static List<List<CtField<?>>> generateCombinations(List<CtField<?>> inputList, int r) {
+        Combinations combinations = new Combinations(inputList.size(), r);
+        List<List<CtField<?>>> result = new ArrayList<>();
+
+        for (int[] indices : combinations) {
+            List<CtField<?>> combination = new ArrayList<>();
+            for (int index : indices) {
+                combination.add(inputList.get(index));
+            }
+            result.add(combination);
+        }
+
+        return result;
     }
 }

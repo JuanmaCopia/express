@@ -5,7 +5,7 @@ import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
-import evorep.spoon.processors.ReferenceTraversalProcessor;
+import evorep.spoon.processors.TraverseCyclicReferenceProcessor;
 import evorep.spoon.typesgraph.TypesGraph;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
@@ -16,10 +16,11 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class TypeGraphCycleBasedMutator implements Mutator {
 
-    public boolean isApplicable(CtCodeElement gene) {
+    public boolean isApplicable(Individual individual, CtCodeElement gene) {
         return gene instanceof CtBlock && !SpoonManager.getTypesGraph().getNodesWithSelfCycles().isEmpty();
     }
 
@@ -29,8 +30,8 @@ public class TypeGraphCycleBasedMutator implements Mutator {
 
         TypesGraph typesGraph = SpoonManager.getTypesGraph();
 
-        List<CtTypeReference<?>> nodesWithCycles = typesGraph.getNodesWithSelfCycles();
-        CtTypeReference<?> chosenNode = nodesWithCycles.get(RandomUtils.nextInt(nodesWithCycles.size()));
+        Set<CtTypeReference<?>> nodesWithCycles = typesGraph.getNodesWithSelfCycles();
+        CtTypeReference<?> chosenNode = nodesWithCycles.stream().findAny().get();
 
         List<List<CtField<?>>> simplePaths = typesGraph.getSimplePaths(typesGraph.getRoot(), chosenNode);
         List<CtField<?>> cyclicFields = typesGraph.getSelfCyclicFieldsOfNode(chosenNode);
@@ -60,7 +61,7 @@ public class TypeGraphCycleBasedMutator implements Mutator {
 
         CtField<?> loopField = cyclicFields.get(RandomUtils.nextInt(cyclicFields.size()));
 
-        Processor<CtBlock<?>> p = new ReferenceTraversalProcessor(initialField, loopField);
+        Processor<CtBlock<?>> p = new TraverseCyclicReferenceProcessor(initialField, loopField);
         p.process(block);
     }
 
