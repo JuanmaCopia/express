@@ -1,17 +1,12 @@
 package evorep.object;
 
-import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
-import evorep.spoon.scope.Scope;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import spoon.SpoonAPI;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtMethod;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ObjectGeneratorTests {
 
@@ -35,7 +30,7 @@ public class ObjectGeneratorTests {
 
   @Test
   public void testGenerateObjectsSortedList() {
-    ObjectGenerator.generateObjects(testSuiteClass);
+    ObjectGeneratorManager.generateObjects(testSuiteClass);
     assertEquals(3, ObjectCollector.positiveObjects.size());
   }
 

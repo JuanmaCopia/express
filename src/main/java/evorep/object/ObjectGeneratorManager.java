@@ -1,6 +1,8 @@
 package evorep.object;
 
+import evorep.config.ToolConfig;
 import evorep.spoon.SpoonManager;
+import evorep.spoon.SpoonQueries;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
@@ -12,13 +14,21 @@ import spoon.reflect.declaration.CtMethod;
  * they are obtained by modifying the positive objects through random mutations.
  * @author Facundo Molina <facundo.molina@imdea.org>
  */
-public class ObjectGenerator {
+public class ObjectGeneratorManager {
+
+  /**
+   * Generate the set of positive and negative objects.
+   */
+  public static void generate() {
+    CtClass<?> testSuiteClass = SpoonQueries.getClass(ToolConfig.testSuiteClassName);
+    generateObjects(testSuiteClass);
+  }
 
   /**
    * Generate the set of positive and negative objects.
    * @param testSuiteClass is the spoon class corresponding to the test suite under analysis
    */
-  public static void generateObjects(CtClass<?> testSuiteClass) {
+  protected static void generateObjects(CtClass<?> testSuiteClass) {
     // Initialize the test suite class by instrumenting the test methods
     initialize(testSuiteClass);
     // Generate the positive objects
