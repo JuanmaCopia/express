@@ -1,10 +1,23 @@
 package evorep.ga;
 
 import evorep.ga.mutators.MutatorManager;
+import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonHelper;
 import evorep.spoon.SpoonManager;
+import evorep.spoon.processors.MultipleReferenceTraversalProcessor;
+import evorep.spoon.typesgraph.TypesGraph;
+import evorep.util.Utils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import spoon.processing.Processor;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.reference.CtTypeReference;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The GeneticAlgorithm class is our main abstraction for managing the
@@ -32,14 +45,14 @@ import spoon.reflect.declaration.CtMethod;
 public class GeneticAlgorithm {
 
     private static final double NOT_COMPILE_PENALIZATION = 1000;
-    private int maxPopulationSize;
+    private final int maxPopulationSize;
 
     /**
      * Mutation rate is the fractional probability than an individual gene will
      * mutate randomly in a given generation. The range is 0.0-1.0, but is
      * generally small (on the order of 0.1 or less).
      */
-    private double mutationRate;
+    private final double mutationRate;
 
     /**
      * Crossover rate is the fractional probability that two individuals will
@@ -47,7 +60,7 @@ public class GeneticAlgorithm {
      * offspring with traits of each of the parents. Like mutation rate the
      * rance is 0.0-1.0 but small.
      */
-    private double crossoverRate;
+    private final double crossoverRate;
 
     public GeneticAlgorithm(int maxPopulationSize, double mutationRate, double crossoverRate) {
         this.maxPopulationSize = maxPopulationSize;
@@ -63,6 +76,45 @@ public class GeneticAlgorithm {
      */
     public Population initPopulation(CtMethod repOK) {
         return new Population(this.maxPopulationSize, repOK);
+    }
+
+    public Population initPopulationBasedOnTypeGraph(CtMethod repOK) {
+        Population population = new Population();
+
+        TypesGraph typesGraph = SpoonManager.getTypesGraph();
+        Set<CtTypeReference<?>> nodesWithCycles = typesGraph.getNodesWithSelfCycles();
+        for (CtTypeReference<?> node : nodesWithCycles) {
+            List<CtField<?>> cyclicFields = typesGraph.getSelfCyclicFieldsOfNode(node);
+            List<List<CtField<?>>> simplePaths = typesGraph.getSimplePaths(typesGraph.getRoot(), node);
+            for (List<CtField<?>> path : simplePaths) {
+                CtVariableRead<?> initialField = SpoonFactory.createFieldRead(path);
+                List<List<CtField<?>>> allCominations = new LinkedList<>();
+                for (int i = 1; i <= cyclicFields.size(); i++) {
+                    allCominations.addAll(Utils.generateCombinations(cyclicFields, i));
+                }
+                for (List<CtField<?>> combination : allCominations) {
+                    Individual individual = new Individual(repOK);
+                    CtBlock<?> repOKBody = individual.getChromosome().getBody();
+                    Processor<CtBlock<?>> p = new MultipleReferenceTraversalProcessor(initialField, combination);
+                    p.process(repOKBody);
+                    population.addIndividual(individual);
+                }
+            }
+        }
+
+        if (population.size() < maxPopulationSize) {
+            int remaining = maxPopulationSize - population.size();
+            for (int i = 0; i < remaining; i++) {
+                Individual individual = new Individual(repOK);
+                population.addIndividual(individual);
+            }
+        }
+
+        return population;
+    }
+
+    public void evalPopulation(Population population) {
+        population.getIndividuals().stream().filter(Individual::needsFitnessUpdate).forEach(this::calcFitness);
     }
 
     /**
@@ -87,11 +139,6 @@ public class GeneticAlgorithm {
         return fitness;
     }
 
-
-    public void evalPopulation(Population population) {
-        population.getIndividuals().stream().filter(Individual::needsFitnessUpdate).forEach(this::calcFitness);
-    }
-
     /**
      * Check if population has met termination condition
      *
@@ -99,7 +146,7 @@ public class GeneticAlgorithm {
      * @return boolean True if termination condition met, otherwise, false
      */
     public boolean isTerminationConditionMet(Population population) {
-        return false;
+        return population.getFittest().getFitness() == 0.0;
     }
 
     /**

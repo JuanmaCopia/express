@@ -425,4 +425,29 @@ public class LinkedList {
         }
     }
 
+    public boolean isCircularLinkedList() {
+        Set<Entry> visited = new HashSet<Entry>();
+        if (header == null)
+            return false;
+
+        if (!visited.add(header))
+            return false;
+        Entry current = header;
+
+        while (true) {
+            Entry next = current.next;
+            if (next == null)
+                return false;
+            if (next.previous != current)
+                return false;
+            current = next;
+            if (!visited.add(next))
+                break;
+        }
+        if (current != header)
+            return false;
+
+        return true;
+    }
+
 }

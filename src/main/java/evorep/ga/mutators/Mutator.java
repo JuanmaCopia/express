@@ -5,7 +5,7 @@ import spoon.reflect.code.CtCodeElement;
 
 public interface Mutator {
 
-    boolean isApplicable(CtCodeElement gene);
+    boolean isApplicable(Individual individual, CtCodeElement gene);
 
     void mutate(Individual individual, CtCodeElement gene);
 

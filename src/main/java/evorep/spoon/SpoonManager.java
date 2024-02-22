@@ -11,6 +11,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.concurrent.*;
 
 public class SpoonManager {
 
@@ -38,7 +39,6 @@ public class SpoonManager {
             initializeClass(fullClassName);
             initializeRepOKMethod();
             initializeTypesGraph();
-            compileModel();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,6 +60,7 @@ public class SpoonManager {
         launcher.getEnvironment().setShouldCompile(true);
         launcher.getEnvironment().setAutoImports(true);
         launcher.buildModel();
+        launcher.getModelBuilder().compile();
     }
 
 
@@ -108,12 +109,39 @@ public class SpoonManager {
         try {
             Class<?> aClass = urlClassLoader.loadClass(targetClass.getQualifiedName());
             Method repOKMethod = aClass.getMethod(individual.getChromosome().getSimpleName());
-            repOKResult = (boolean) repOKMethod.invoke(aClass.getDeclaredConstructor().newInstance());
+            repOKResult = runRepOK(repOKMethod, aClass.getDeclaredConstructor().newInstance());
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
         return repOKResult;
+    }
+
+    public static boolean runRepOK(Method repOK, Object instance) {
+        // Create an ExecutorService with a single thread
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        // Create a Callable<Boolean> to invoke the method
+        Callable<Boolean> task = () -> {
+            return (boolean) repOK.invoke(instance);
+        };
+
+        boolean result = false;
+        try {
+            // Submit the task to the executor and get a Future object
+            Future<Boolean> future = executor.submit(task);
+            // Set a timeout for the task
+            result = future.get(300, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            // Handle timeout exception
+        } catch (Exception e) {
+            // Handle other exceptions
+            //e.printStackTrace();
+        } finally {
+            // Shutdown the executor
+            executor.shutdown();
+        }
+        return result;
     }
 
 }

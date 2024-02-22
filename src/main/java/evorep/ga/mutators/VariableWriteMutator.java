@@ -9,7 +9,7 @@ import spoon.reflect.code.CtVariableWrite;
 
 public class VariableWriteMutator implements Mutator {
 
-    public boolean isApplicable(CtCodeElement gene) {
+    public boolean isApplicable(Individual individual, CtCodeElement gene) {
         return gene instanceof CtVariableWrite;
     }
 

@@ -10,7 +10,7 @@ import spoon.reflect.path.CtRole;
 
 public class VariableReadMutator implements Mutator {
 
-    public boolean isApplicable(CtCodeElement gene) {
+    public boolean isApplicable(Individual individual, CtCodeElement gene) {
         return gene instanceof CtVariableRead && !gene.getRoleInParent().equals(CtRole.TARGET);
     }
 

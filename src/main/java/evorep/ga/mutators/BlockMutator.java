@@ -15,7 +15,7 @@ import java.util.List;
 
 public class BlockMutator implements Mutator {
 
-    public boolean isApplicable(CtCodeElement gene) {
+    public boolean isApplicable(Individual individual, CtCodeElement gene) {
         return gene instanceof CtBlock<?>;
     }
 

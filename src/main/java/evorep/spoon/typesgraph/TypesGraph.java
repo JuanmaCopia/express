@@ -1,6 +1,9 @@
 package evorep.spoon.typesgraph;
 
 
+import evorep.spoon.SpoonFactory;
+import evorep.spoon.SpoonQueries;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
@@ -9,6 +12,20 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class TypesGraph {
+
+    CtTypeReference<?> rootType;
+    Map<CtTypeReference<?>, List<Edge>> adjacencyList = new HashMap<>();
+
+    private TypesGraph(CtTypeReference<?> rootType) {
+        this.rootType = rootType;
+        addNode(rootType);
+    }
+
+    public void addNode(CtTypeReference<?> node) {
+        if (!adjacencyList.containsKey(node)) {
+            adjacencyList.put(node, new LinkedList<>());
+        }
+    }
 
     public static TypesGraph createTypesGraph(CtTypeReference rootType) {
         TypesGraph graph = new TypesGraph(rootType);
@@ -40,20 +57,6 @@ public class TypesGraph {
         return graph;
     }
 
-    CtTypeReference<?> rootType;
-    Map<CtTypeReference<?>, List<Edge>> adjacencyList = new HashMap<>();
-
-    public TypesGraph(CtTypeReference<?> rootType) {
-        this.rootType = rootType;
-        addNode(rootType);
-    }
-
-    public void addNode(CtTypeReference<?> node) {
-        if (!adjacencyList.containsKey(node)) {
-            adjacencyList.put(node, new LinkedList<>());
-        }
-    }
-
     public void addEdge(CtTypeReference<?> source, CtTypeReference<?> destination, CtField<?> label) {
         Edge newEdge = new Edge(destination, label);
         if (!adjacencyList.containsKey(source)) {
@@ -65,17 +68,29 @@ public class TypesGraph {
         }
     }
 
-    public List<Edge> getAdjacentNodes(CtTypeReference<?> source) {
+    public List<Edge> getOutgoingEdges(CtTypeReference<?> source) {
         return adjacencyList.get(source);
     }
 
-    public boolean nodeHasCycle(CtTypeReference<?> node) {
-        List<Edge> adjacent = adjacencyList.get(node);
-        for (Edge edge : adjacent) {
-            if (edge.getDestination().equals(node))
-                return true;
-        }
-        return false;
+    public List<CtField<?>> getOutgoingFields(CtTypeReference<?> source) {
+        return adjacencyList.get(source).stream().map(Edge::getLabel).collect(Collectors.toList());
+    }
+
+    public List<CtField<?>> getOutgoingReferenceFields(CtTypeReference<?> source) {
+        return adjacencyList.get(source).stream().map(Edge::getLabel).filter(SpoonQueries::isReferenceType).collect(Collectors.toList());
+    }
+
+    public List<CtField<?>> getOutgoingUserDefinedFields(CtTypeReference<?> source) {
+        return adjacencyList.get(source).stream().map(Edge::getLabel).filter(SpoonQueries::isUserDefined).collect(Collectors.toList());
+    }
+
+
+    public List<CtField<?>> getOutgoingPrimitiveFields(CtTypeReference<?> source) {
+        return adjacencyList.get(source).stream().map(Edge::getLabel).filter(SpoonQueries::isPrimitiveType).collect(Collectors.toList());
+    }
+
+    public List<CtTypeReference<?>> getAdjacentNodes(CtTypeReference<?> source) {
+        return adjacencyList.get(source).stream().map(edge -> edge.getDestination()).collect(Collectors.toList());
     }
 
     /*public List<CtTypeReference<?>> getNodesWithSelfCycles() {
@@ -87,13 +102,13 @@ public class TypesGraph {
         return nodesWithCycles;
     }
 */
-    public List<CtTypeReference<?>> getNodesWithSelfCycles() {
+    public Set<CtTypeReference<?>> getNodesWithSelfCycles() {
         Set<CtTypeReference> visited = new HashSet<>();
         LinkedList<CtTypeReference> workList = new LinkedList<>();
         visited.add(rootType);
         workList.add(rootType);
 
-        List<CtTypeReference<?>> nodesWithCycles = new LinkedList<>();
+        Set<CtTypeReference<?>> nodesWithCycles = new HashSet<>();
         while (!workList.isEmpty()) {
             CtTypeReference currentType = workList.removeFirst();
 
@@ -117,6 +132,19 @@ public class TypesGraph {
         return nodesWithCycles;
     }
 
+    public boolean nodeHasCycle(CtTypeReference<?> node) {
+        List<Edge> adjacent = adjacencyList.get(node);
+        for (Edge edge : adjacent) {
+            if (edge.getDestination().equals(node))
+                return true;
+        }
+        return false;
+    }
+
+    public List<CtField<?>> getSelfCyclicFieldsOfNode(CtTypeReference<?> node) {
+        return getSelfCyclesOfNode(node).stream().map(edge -> edge.getLabel()).collect(Collectors.toList());
+    }
+
     public List<Edge> getSelfCyclesOfNode(CtTypeReference<?> node) {
         List<Edge> selfCycles = new LinkedList<>();
         List<Edge> adjacent = adjacencyList.get(node);
@@ -125,10 +153,6 @@ public class TypesGraph {
                 selfCycles.add(edge);
         }
         return selfCycles;
-    }
-
-    public List<CtField<?>> getSelfCyclicFieldsOfNode(CtTypeReference<?> node) {
-        return getSelfCyclesOfNode(node).stream().map(edge -> edge.getLabel()).collect(Collectors.toList());
     }
 
     public List<List<CtField<?>>> getSimplePaths(CtTypeReference<?> source, CtTypeReference<?> destination) {
@@ -153,6 +177,18 @@ public class TypesGraph {
         }
     }
 
+    public Set<CtVariableRead<?>> getReacheableCyclicFieldReads() {
+        Set<CtVariableRead<?>> reacheableCyclicFieldReads = new HashSet<>();
+        Set<CtTypeReference<?>> nodesWithCycles = getNodesWithSelfCycles();
+        for (CtTypeReference<?> node : nodesWithCycles) {
+            List<List<CtField<?>>> simplePaths = getSimplePaths(rootType, node);
+            for (List<CtField<?>> path : simplePaths) {
+                reacheableCyclicFieldReads.add(SpoonFactory.createFieldRead(path));
+            }
+        }
+        return reacheableCyclicFieldReads;
+    }
+
     public CtTypeReference<?> getRoot() {
         return rootType;
     }
@@ -161,15 +197,15 @@ public class TypesGraph {
         StringBuilder builder = new StringBuilder();
         for (CtTypeReference<?> node : adjacencyList.keySet()) {
             List<String> adj = adjacencyList.get(node).stream().map(edge -> edge.toString()).toList();
-            builder.append(node.getSimpleName() + " -> " + adj.toString() + "\n");
+            builder.append(node.getSimpleName() + " -> " + adj + "\n");
         }
         return builder.toString();
     }
 
 
     static class Edge {
-        private CtTypeReference<?> destination;
-        private CtField<?> label;
+        private final CtTypeReference<?> destination;
+        private final CtField<?> label;
 
         public Edge(CtTypeReference<?> destination, CtField<?> label) {
             this.destination = destination;

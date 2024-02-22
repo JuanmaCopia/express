@@ -7,7 +7,7 @@ import spoon.reflect.code.CtCodeElement;
 
 public class BinaryOperatorMutator implements Mutator {
 
-    public boolean isApplicable(CtCodeElement gene) {
+    public boolean isApplicable(Individual individual, CtCodeElement gene) {
         return gene instanceof CtBinaryOperator;
     }
 

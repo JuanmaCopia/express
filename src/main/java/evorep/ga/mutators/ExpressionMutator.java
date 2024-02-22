@@ -10,7 +10,7 @@ import spoon.reflect.code.CtUnaryOperator;
 
 public class ExpressionMutator implements Mutator {
 
-    public boolean isApplicable(CtCodeElement gene) {
+    public boolean isApplicable(Individual individual, CtCodeElement gene) {
         return gene instanceof CtBinaryOperator || gene instanceof CtUnaryOperator<?>;
     }
 

@@ -8,7 +8,7 @@ import spoon.reflect.code.UnaryOperatorKind;
 
 public class UnaryOperatorMutator implements Mutator {
 
-    public boolean isApplicable(CtCodeElement gene) {
+    public boolean isApplicable(Individual individual, CtCodeElement gene) {
         return gene instanceof CtUnaryOperator;
     }
 
