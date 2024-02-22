@@ -36,7 +36,7 @@ public class ObjectGenerator {
     testSuiteClass.getMethods().forEach(method -> {
       // Check if the method contains the test annotation
       if (isTestMethod(method)) {
-        Instrumenter.instrumentMethod(testSuiteClass, method);
+        Instrumenter.instrumentMethod(method);
       }
     });
   }

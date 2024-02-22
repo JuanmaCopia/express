@@ -20,10 +20,10 @@ public class Instrumenter {
    * Instrument the given test method by adding a call to the ObjectCollector.collectObject method at the end of the method
    * @param method the test method to instrument
    */
-  public static void instrumentMethod(CtClass<?> clazz, CtMethod<?> method) {
+  public static void instrumentMethod(CtMethod<?> method) {
     System.out.println("Instrumenting method: " + method.getSimpleName());
     CodeFactory codeFactory = SpoonFactory.getCodeFactory();
-    List<CtVariable<?>> localVariableList = SpoonQueries.getLocalVariables(method);
+    List<CtVariable<?>> localVariableList = SpoonQueries.getLocalVariablesFromElement(method);
     for (CtVariable<?> variable : localVariableList) {
       if (variable.getType().getSimpleName().equals("SortedList")) {
         CtCodeSnippetStatement statement = codeFactory.createCodeSnippetStatement("evorep.object.ObjectCollector.saveObject(" + variable.getSimpleName() + ")");
