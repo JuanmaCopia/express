@@ -31,13 +31,26 @@ public class SpoonManager {
     }
 
     public static void initialize() {
-        initialize(ToolConfig.srcPath, ToolConfig.binPath, ToolConfig.className, ToolConfig.srcJavaVersion);
+        initialize(ToolConfig.srcPath, ToolConfig.testSrcPath, ToolConfig.binPath, ToolConfig.className, ToolConfig.srcJavaVersion);
     }
 
     public static void initialize(String srcPath, String binPath, String fullClassName, int srcJavaVersion) {
         try {
             initializeOutputDirectories(binPath);
-            initializeLauncher(srcPath, srcJavaVersion);
+            initializeLauncher(srcPath, null, srcJavaVersion);
+            initializeFactories();
+            initializeClass(fullClassName);
+            initializeRepOKMethod();
+            initializeTypesGraph();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void initialize(String srcPath, String testSrcPath, String binPath, String fullClassName, int srcJavaVersion) {
+        try {
+            initializeOutputDirectories(binPath);
+            initializeLauncher(srcPath, testSrcPath, srcJavaVersion);
             initializeFactories();
             initializeClass(fullClassName);
             initializeRepOKMethod();
@@ -55,13 +68,16 @@ public class SpoonManager {
         urlClassLoader = new URLClassLoader(new URL[]{outputBinURL});
     }
 
-    private static void initializeLauncher(String srcPath, int srcJavaVersion) {
+    private static void initializeLauncher(String srcPath, String testSrcPath, int srcJavaVersion) {
         launcher = new Launcher();
         launcher.setBinaryOutputDirectory(outputBinDirectory);
         launcher.addInputResource(srcPath);
+        if (testSrcPath != null)
+            launcher.addInputResource(testSrcPath);
         launcher.getEnvironment().setComplianceLevel(srcJavaVersion);
         launcher.getEnvironment().setShouldCompile(true);
         launcher.getEnvironment().setAutoImports(true);
+        //launcher.getEnvironment().setSourceClasspath(new String[]{System.getProperty("java.class.path")});
         launcher.buildModel();
         launcher.getModelBuilder().compile();
     }
