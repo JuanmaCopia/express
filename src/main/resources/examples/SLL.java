@@ -9,6 +9,34 @@ public class SLL {
     public Node head;
     public int size;
 
+    // ======== Implementation ========
+    public SLL() {
+        head = null;
+        size = 0;
+    }
+
+    public void addFirst(int value) {
+        Node newNode = new Node(value);
+        newNode.next = head;
+        head = newNode;
+        size++;
+    }
+
+    public void addLast(int value) {
+        Node newNode = new Node(value);
+        if (head == null) {
+            head = newNode;
+        } else {
+            Node current = head;
+            while (current.next != null) {
+                current = current.next;
+            }
+            current.next = newNode;
+        }
+        size++;
+    }
+    // ======== End of Implementation ========
+
     public boolean repOKStructure() {
         if (head == null) {
             return true;
