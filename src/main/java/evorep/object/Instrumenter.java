@@ -1,5 +1,6 @@
 package evorep.object;
 
+import evorep.config.ToolConfig;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.CtCodeSnippetStatement;
@@ -25,7 +26,7 @@ public class Instrumenter {
     CodeFactory codeFactory = SpoonFactory.getCodeFactory();
     List<CtVariable<?>> localVariableList = SpoonQueries.getLocalVariablesFromElement(method);
     for (CtVariable<?> variable : localVariableList) {
-      if (variable.getType().getSimpleName().equals("SortedList")) {
+      if (variable.getType().getQualifiedName().equals(ToolConfig.className)) {
         CtCodeSnippetStatement statement = codeFactory.createCodeSnippetStatement("evorep.object.ObjectCollector.saveObject(" + variable.getSimpleName() + ")");
         method.getBody().addStatement(statement);
       }
