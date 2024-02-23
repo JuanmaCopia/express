@@ -2,6 +2,7 @@ package evorep.ga.mutators;
 
 import evorep.ga.Individual;
 import evorep.ga.mutators.typebased.IfNullReturnMutator;
+import evorep.ga.mutators.typebased.TraversalBlockMutator;
 import evorep.ga.mutators.typebased.TraverseCyclicReferenceMutator;
 import evorep.ga.mutators.typebased.TraverseWorklistMutator;
 import evorep.spoon.RandomUtils;
@@ -22,6 +23,7 @@ public class MutatorManager {
         mutators.add(new IfNullReturnMutator());
         mutators.add(new TraverseCyclicReferenceMutator());
         mutators.add(new TraverseWorklistMutator());
+        mutators.add(new TraversalBlockMutator());
     }
 
     public static Individual mutate(Individual individual) {

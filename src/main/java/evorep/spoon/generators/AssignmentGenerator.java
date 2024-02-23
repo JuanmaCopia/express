@@ -1,8 +1,8 @@
 package evorep.spoon.generators;
 
-import evorep.spoon.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
+import evorep.spoon.scope.Scope;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
@@ -12,7 +12,7 @@ public class AssignmentGenerator {
 
     public static CtStatement generateRandomAssignment(Scope scope) {
         CtVariable<?> chosenVar = SpoonQueries.getRandomUserDefLocalVar(scope.getLocalVariables());
-        CtExpression<?> chosenFieldRead = ReferenceExpressionGenerator.generateRandomVarReadOfType(
+        CtExpression<?> chosenFieldRead = (CtExpression<?>) ReferenceExpressionGenerator.generateRandomVarReadOfType(
                 scope.getAllVariables(),
                 chosenVar.getType()
         );
