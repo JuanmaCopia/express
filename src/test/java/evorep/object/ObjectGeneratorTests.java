@@ -1,5 +1,6 @@
 package evorep.object;
 
+import evorep.config.ToolConfig;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,6 +18,8 @@ public class ObjectGeneratorTests {
 
   @BeforeAll
   public static void setUp() {
+    // Initialise ToolConfig
+    ToolConfig.className = "SortedList";
     // Initialise Spoon
     SpoonManager.initialize(SOURCE_PATH, null, CLASS_NAME, 17);
     // Get the test suite class
