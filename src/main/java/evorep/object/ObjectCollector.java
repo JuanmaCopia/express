@@ -11,6 +11,8 @@ public class ObjectCollector {
 
   public static List<Object> positiveObjects = new ArrayList<>();
 
+  public static List<Object> negativeObjects = new ArrayList<>();
+
   public static void saveObject(Object object) {
     positiveObjects.add(object);
   }
