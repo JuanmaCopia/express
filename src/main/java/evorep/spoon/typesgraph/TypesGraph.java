@@ -177,6 +177,32 @@ public class TypesGraph {
         }
     }
 
+    /**
+     * Get all the possible paths of length k from the source node to any other node in the graph.
+     * @param source the source node
+     * @param k the length of the paths
+     * @return the list of all the possible paths of length k from the source node to any other node in the graph
+     */
+    public List<List<CtField<?>>> getAllPaths(CtTypeReference<?> source, int k) {
+        List<List<CtField<?>>> paths = new LinkedList<>();
+        List<CtField<?>> currentPath = new LinkedList<>();
+        getAllPaths(source, currentPath, paths, k);
+        return paths;
+    }
+
+    private void getAllPaths(CtTypeReference<?> source, List<CtField<?>> currentPath, List<List<CtField<?>>> paths, int k) {
+        if (k == 1) {
+            return;
+        }
+        List<Edge> adjacent = adjacencyList.get(source);
+        for (Edge edge : adjacent) {
+            currentPath.add(edge.getLabel());
+            paths.add(new LinkedList<>(currentPath));
+            getAllPaths(edge.getDestination(), currentPath, paths, k - 1);
+            currentPath.remove(currentPath.size() - 1);
+        }
+    }
+
     public Set<CtVariableRead<?>> getReacheableCyclicFieldReads() {
         Set<CtVariableRead<?>> reacheableCyclicFieldReads = new HashSet<>();
         Set<CtTypeReference<?>> nodesWithCycles = getNodesWithSelfCycles();

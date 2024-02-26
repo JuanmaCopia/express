@@ -139,4 +139,13 @@ public class TypesGraphTest {
         System.out.println("Cyclic fields of chosen node: " + cyclicFields.toString());
 
     }
+
+    @Test
+    public void allPathsTest() {
+        CtTypeReference<?> rootType = SpoonQueries.getClass("BinTree").getReference();
+        TypesGraph graph = TypesGraph.createTypesGraph(rootType);
+        int maxLength = 3;
+        List<List<CtField<?>>> allPaths = graph.getAllPaths(rootType, maxLength);
+        assertEquals(5, allPaths.size());
+    }
 }
