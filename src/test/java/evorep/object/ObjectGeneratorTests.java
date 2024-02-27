@@ -3,6 +3,7 @@ package evorep.object;
 import evorep.config.ToolConfig;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
+import evorep.spoon.typesgraph.TypesGraph;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtClass;
@@ -20,8 +21,9 @@ public class ObjectGeneratorTests {
   public static void setUp() {
     // Initialise ToolConfig
     ToolConfig.className = "SortedList";
+    ToolConfig.testSuiteClassName = "SortedListTestSuite";
     // Initialise Spoon
-    SpoonManager.initialize(SOURCE_PATH, null, CLASS_NAME, 17);
+    SpoonManager.initialize(SOURCE_PATH, SOURCE_PATH, null, ToolConfig.className, 17);
     // Get the test suite class
     testSuiteClass = SpoonQueries.getClass(CLASS_NAME);
   }
