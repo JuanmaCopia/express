@@ -1,11 +1,16 @@
 package evorep.object;
 
+import com.google.gson.Gson;
 import evorep.config.ToolConfig;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
+import evorep.spoon.typesgraph.TypesGraph;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+
+import java.util.List;
 
 /**
  * This class allows to generate a set of positive and negative objects from a given test suite.
@@ -78,9 +83,27 @@ public class ObjectGeneratorManager {
    * Generate the negative objects by randomly mutating the positive objects.
    */
   private static void generateNegativeObjects() {
+    Gson gson = new Gson();
+    List<List<CtField<?>>> mutableExpressions = getMutableExpressions();
     for (Object positiveObject : ObjectCollector.positiveObjects) {
-      //
+      // Create a deep copy of the positive object
+      Object copy = gson.fromJson(gson.toJson(positiveObject), positiveObject.getClass());
+      // Mutate the negative object
+      ObjectMutator.mutate(copy, mutableExpressions);
+      // Add the negative object to the list of negative objects
+      ObjectCollector.negativeObjects.add(copy);
     }
+  }
+
+  /**
+   * Get mutable expressions for the current class under analysis
+   * Mutable expressions are chains of fields that can be mutated to generate negative objects
+   * @return a list of mutable expressions
+   */
+  private static List<List<CtField<?>>> getMutableExpressions() {
+    TypesGraph graph = SpoonManager.getTypesGraph();
+    // TODO k should be a parameter from the configuration
+    return graph.getAllPaths(SpoonManager.getTargetClass().getReference(), 3);
   }
 
 }
