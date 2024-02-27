@@ -2,6 +2,7 @@ package evorep.spoon;
 
 import evorep.ga.Individual;
 import evorep.ga.helper.LocalVarHelper;
+import evorep.spoon.generators.ReferenceExpressionGenerator;
 import evorep.spoon.typesgraph.TypesGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
@@ -9,6 +10,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SpoonQueries {
 
@@ -194,9 +196,16 @@ public class SpoonQueries {
         return candidateFields;
     }
 
-    public static Set<CtField<?>> getCandidateFieldsForNullCheck(CtBlock<?> block) {
+    public static List<CtVariableRead<?>> getCandidateVarReadsForNullCheck(CtBlock<?> block) {
         TypesGraph typesGraph = SpoonManager.getTypesGraph();
-        Set<CtField<?>> candidateFields = new HashSet<>(typesGraph.getOutgoingFields(typesGraph.getRoot()));
+
+        List<CtVariable<?>> referenceFields = typesGraph.getOutgoingReferenceFields(typesGraph.getRoot());
+
+        List<CtCodeElement> candidateFieldReads = ReferenceExpressionGenerator.generateAllVarReadsOfReferenceType(referenceFields);
+        Set<String> candidateFieldStrings = new HashSet<>();
+        for (CtCodeElement element : candidateFieldReads) {
+            candidateFieldStrings.add(element.toString());
+        }
 
         List<CtIf> ifStatements = block.getStatements().stream().filter(e -> e instanceof CtIf).map(e -> (CtIf) e).toList();
         for (CtIf ifStatement : ifStatements) {
@@ -205,13 +214,14 @@ public class SpoonQueries {
                     if (binaryOperator.getLeftHandOperand() instanceof CtVariableRead<?> varRead &&
                             binaryOperator.getRightHandOperand().toString().equals("null")
                     ) {
-                        CtVariable<?> readVar = varRead.getVariable().getDeclaration();
-                        candidateFields.remove(readVar);
+                        if (candidateFieldStrings.contains(varRead.toString())) {
+                            candidateFieldReads.remove(varRead);
+                        }
                     }
                 }
             }
         }
-        return candidateFields;
+        return candidateFieldReads.stream().map(e -> (CtVariableRead<?>) e).collect(Collectors.toList());
     }
 
     public static List<CtLocalVariable<?>> getWorklistDeclared(CtBlock<?> block) {

@@ -221,5 +221,15 @@ public class ReferenceExpressionGenerator {
         return varReads;
     }
 
+    public static CtVariableRead<?> readDistinctRandomFieldSameType(CtVariableRead<?> varRead) {
+        CtVariable<?> var = varRead.getVariable().getDeclaration();
+        List<CtVariable<?>> fields = new ArrayList<>(SpoonQueries.getFieldsOfType(var, var.getType()));
+        if (fields.size() >= 2) {
+            fields.remove(var);
+        }
+        CtVariable<?> chosenField = fields.get(RandomUtils.nextInt(fields.size()));
+        return SpoonFactory.createFieldRead(varRead, chosenField);
+    }
+
 
 }
