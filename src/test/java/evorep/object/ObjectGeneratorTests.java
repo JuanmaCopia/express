@@ -37,6 +37,7 @@ public class ObjectGeneratorTests {
   public void testGenerateObjectsSortedList() {
     ObjectGeneratorManager.generateObjects(testSuiteClass);
     assertEquals(3, ObjectCollector.positiveObjects.size());
+    assertEquals(3, ObjectCollector.negativeObjects.size());
   }
 
 }
