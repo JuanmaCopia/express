@@ -22,7 +22,6 @@ public class Instrumenter {
    * @param method the test method to instrument
    */
   public static void instrumentMethod(CtMethod<?> method) {
-    System.out.println("Instrumenting method: " + method.getSimpleName());
     CodeFactory codeFactory = SpoonFactory.getCodeFactory();
     List<CtVariable<?>> localVariableList = SpoonQueries.getLocalVariablesFromElement(method);
     for (CtVariable<?> variable : localVariableList) {
@@ -31,8 +30,6 @@ public class Instrumenter {
         method.getBody().addStatement(statement);
       }
     }
-    System.out.println("Method now is:");
-    System.out.println(method);
   }
 
 }
