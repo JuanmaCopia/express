@@ -37,10 +37,13 @@ public class ObjectGeneratorManager {
     // Initialize the test suite class by instrumenting the test methods
     initialize(testSuiteClass);
     // Generate the positive objects
+    System.out.println("Running test suite: "+ testSuiteClass.getQualifiedName());
     generatePositiveObjects(testSuiteClass);
     System.out.println("Positive objects: "+ObjectCollector.positiveObjects.size());
+    System.out.println();
     // Generate the negative objects
     generateNegativeObjects();
+    System.out.println("Negative objects: "+ObjectCollector.negativeObjects.size());
   }
 
   /**
@@ -85,6 +88,7 @@ public class ObjectGeneratorManager {
   private static void generateNegativeObjects() {
     Gson gson = new Gson();
     List<List<CtField<?>>> mutableExpressions = getMutableExpressions();
+    System.out.println("Generating negative objects");
     for (Object positiveObject : ObjectCollector.positiveObjects) {
       // Create a deep copy of the positive object
       Object copy = gson.fromJson(gson.toJson(positiveObject), positiveObject.getClass());
