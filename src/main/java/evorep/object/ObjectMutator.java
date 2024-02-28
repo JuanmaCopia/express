@@ -19,7 +19,6 @@ public class ObjectMutator {
    * @param allMutableExpressions is the list of mutable expressions
    */
   public static void mutate(Object object, List<List<CtField<?>>> allMutableExpressions) {
-    System.out.println("Mutating object: " + object);
     if (object == null) throw new IllegalArgumentException("Object to mutate cannot be null");
 
     // Get the list of mutable expressions
@@ -30,11 +29,9 @@ public class ObjectMutator {
     int random = (int) (Math.random() * mutableExpressions.size());
     List<CtField<?>> expression = mutableExpressions.get(random);
 
-    System.out.println("Selected expression: " + expression);
+    System.out.println("Performing mutation on field: " + expression);
+    mutableExpressions.remove(random); // Remove the selected expression from the list of mutable expressions
     replaceByRandomValue(expression, object, mutableExpressions);
-
-    System.out.println("Mutated object: " + object);
-    System.out.println();
   }
 
   /**
@@ -94,7 +91,6 @@ public class ObjectMutator {
     } else {
       newValue = ValueProvider.getRandomValueForReferenceType(lastField.getType(), o, mutableExpressions);
     }
-    System.out.println("Replacing " + expression + " by " + newValue);
     Object current = o;
     for (int i = 0; i < expression.size() - 1; i++) {
       try {
