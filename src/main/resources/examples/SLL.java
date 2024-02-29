@@ -1,7 +1,6 @@
 package examples;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
 
 public class SLL {
@@ -14,21 +13,16 @@ public class SLL {
             return true;
         }
         Set<Node> visited = new HashSet<Node>();
-        LinkedList<Node> worklist = new LinkedList<Node>();
         /* Initialize root element: */
         Node current_0 = head;
-        worklist.add(current_0);
         /* Cycle over cyclic references: */
-        while (!worklist.isEmpty()) {
-            current_0 = worklist.removeFirst();
+        while (current_0 != null) {
             if (!visited.add(current_0)) {
                 return false;
             }
             /* Handle current: */
             /* End of Handle current: */
-            if (current_0.next != null) {
-                worklist.add(current_0.next);
-            }
+            current_0 = current_0.next;
         }
         return true;
     }

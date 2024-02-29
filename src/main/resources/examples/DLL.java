@@ -16,21 +16,29 @@ public class DLL {
         if (tail == null) {
             return false;
         }
-        Set<Node> visited = new HashSet<Node>();
-        Node current = head;
-        Node prev = null;
-        while (current != null) {
-            if (!visited.add(current)) {
-                return false;
-            }
-            if (prev != current.back) {
-                return false;
-            }
-            prev = current;
-            current = current.next;
-        }
-        if (prev != tail) {
+        if (head.back != null) {
             return false;
+        }
+        if (tail.next != null) {
+            return false;
+        }
+        Set<Node> visited = new HashSet<Node>();
+        /* Initialize root element: */
+        Node current_0 = head;
+        /* Cycle over cyclic references: */
+        while (current_0 != null) {
+            if (!visited.add(current_0)) {
+                return false;
+            }
+            /* Handle current: */
+            if (current_0.back != null && current_0.back.next != current_0) {
+                return false;
+            }
+            if (current_0 == tail && current_0.next != null) {
+                return false;
+            }
+            /* End of Handle current: */
+            current_0 = current_0.next;
         }
         return true;
     }
