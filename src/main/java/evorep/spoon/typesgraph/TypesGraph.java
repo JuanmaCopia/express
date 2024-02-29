@@ -6,6 +6,7 @@ import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.*;
@@ -76,7 +77,7 @@ public class TypesGraph {
         return adjacencyList.get(source).stream().map(Edge::getLabel).collect(Collectors.toList());
     }
 
-    public List<CtField<?>> getOutgoingReferenceFields(CtTypeReference<?> source) {
+    public List<CtVariable<?>> getOutgoingReferenceFields(CtTypeReference<?> source) {
         return adjacencyList.get(source).stream().map(Edge::getLabel).filter(SpoonQueries::isReferenceType).collect(Collectors.toList());
     }
 

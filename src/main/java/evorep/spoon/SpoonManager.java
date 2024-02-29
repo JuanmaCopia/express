@@ -140,7 +140,7 @@ public class SpoonManager {
         try {
             Class<?> testClass = urlClassLoader.loadClass(testSuiteFullyQualifiedName);
             List<Method> testMethods = getRunnableTests(testClass);
-            Object testObject = testClass.newInstance();
+            Object testObject = testClass.getDeclaredConstructor().newInstance();
             int testsExecuted = 0;
             int errors = 0;
             for (Method testMethod : testMethods) {
@@ -149,7 +149,7 @@ public class SpoonManager {
                     Object result = testMethod.invoke(testObject);
                     testsExecuted++;
                 } catch (Exception e) {
-                    System.err.println("error running test " + testMethod.getName() + ": "+e.getMessage());
+                    System.err.println("error running test " + testMethod.getName() + ": " + e.getMessage());
                 }
             }
         } catch (Exception e) {
@@ -161,6 +161,7 @@ public class SpoonManager {
     /**
      * Get the list of runnable tests in the given test class
      * A test method is runnable if it is annotated with @Test.
+     *
      * @param testClass the test class
      * @return the list of methods corresponding to runnable tests
      */
