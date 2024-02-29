@@ -2,14 +2,13 @@ package evorep.spoon;
 
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 import java.util.Random;
 
 public class RandomUtils {
 
-    private static Random r = new Random();
+    private static final Random r = new Random();
 
     public static int nextInt(int bound) {
         return r.nextInt(bound);
@@ -17,11 +16,6 @@ public class RandomUtils {
 
     public static boolean nextBoolean() {
         return r.nextBoolean();
-    }
-
-    public static boolean chooseWithProbability(int numberOfElements) {
-        int probability = 100 / numberOfElements;
-        return r.nextInt(100) < probability;
     }
 
     public static CtExpression<Boolean> negateOrNot(CtExpression<Boolean> expression) {
@@ -38,9 +32,6 @@ public class RandomUtils {
         return newList.get(choice);
     }
 
-    public static CtVariable<?> getRandomElementOfType(List<CtVariable<?>> list, CtTypeReference<?> type) {
-        return getRandomElementOfType(list, type.getActualClass());
-    }
 
     public static CtVariable<?> getRandomElement(List<CtVariable<?>> list1, List<CtVariable<?>> list2) {
         if (list1 == null || list2 == null)
@@ -55,13 +46,7 @@ public class RandomUtils {
         return list2.get(choice - list1.size());
     }
 
-    public static CtVariable<?> getRandomElement(List<CtVariable<?>> list) {
-        if (list == null)
-            throw new IllegalArgumentException("Lists cannot be null");
 
-        return list.get(r.nextInt(list.size()));
-    }
-    
     public static CtStatement getRandomStatementNonBlockNonExpression(CtBlock<?> block) {
         List<CtStatement> statements = block.getElements(e ->
                 e instanceof CtStatement
@@ -83,6 +68,26 @@ public class RandomUtils {
         if (statements.isEmpty())
             return null;
         return statements.get(r.nextInt(statements.size()));
+    }
+
+    public static List<Integer> getTwoRandomIndices(int bound) {
+        if (bound < 2)
+            throw new IllegalArgumentException("Bound must be at least 2");
+        int index1 = r.nextInt(bound);
+        int index2 = r.nextInt(bound);
+        while (index2 == index1)
+            index2 = r.nextInt(bound);
+        return List.of(index1, index2);
+    }
+
+    public static int getRandomInteger(List<Integer> list) {
+        return list.get(r.nextInt(list.size()));
+    }
+
+    public static CtCodeElement getRandomElement(List<CtCodeElement> list) {
+        if (list.isEmpty())
+            return null;
+        return list.get(r.nextInt(list.size()));
     }
 
 }

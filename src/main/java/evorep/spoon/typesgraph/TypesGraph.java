@@ -6,6 +6,7 @@ import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.*;
@@ -76,7 +77,7 @@ public class TypesGraph {
         return adjacencyList.get(source).stream().map(Edge::getLabel).collect(Collectors.toList());
     }
 
-    public List<CtField<?>> getOutgoingReferenceFields(CtTypeReference<?> source) {
+    public List<CtVariable<?>> getOutgoingReferenceFields(CtTypeReference<?> source) {
         return adjacencyList.get(source).stream().map(Edge::getLabel).filter(SpoonQueries::isReferenceType).collect(Collectors.toList());
     }
 
@@ -173,6 +174,32 @@ public class TypesGraph {
         for (Edge edge : adjacent) {
             currentPath.add(edge.getLabel());
             getSimplePaths(edge.getDestination(), destination, currentPath, paths);
+            currentPath.remove(currentPath.size() - 1);
+        }
+    }
+
+    /**
+     * Get all the possible paths of length k from the source node to any other node in the graph.
+     * @param source the source node
+     * @param k the length of the paths
+     * @return the list of all the possible paths of length k from the source node to any other node in the graph
+     */
+    public List<List<CtField<?>>> getAllPaths(CtTypeReference<?> source, int k) {
+        List<List<CtField<?>>> paths = new LinkedList<>();
+        List<CtField<?>> currentPath = new LinkedList<>();
+        getAllPaths(source, currentPath, paths, k);
+        return paths;
+    }
+
+    private void getAllPaths(CtTypeReference<?> source, List<CtField<?>> currentPath, List<List<CtField<?>>> paths, int k) {
+        if (k == 1) {
+            return;
+        }
+        List<Edge> adjacent = adjacencyList.get(source);
+        for (Edge edge : adjacent) {
+            currentPath.add(edge.getLabel());
+            paths.add(new LinkedList<>(currentPath));
+            getAllPaths(edge.getDestination(), currentPath, paths, k - 1);
             currentPath.remove(currentPath.size() - 1);
         }
     }

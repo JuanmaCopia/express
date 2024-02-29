@@ -6,8 +6,9 @@ import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+
+import java.util.List;
 
 public class IfNullReturnMutator implements Mutator {
 
@@ -15,17 +16,20 @@ public class IfNullReturnMutator implements Mutator {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
             return false;
 
-        return !SpoonQueries.getCandidateFieldsForNullCheck(block).isEmpty();
+        return !SpoonQueries.getCandidateVarReadsForNullCheck(block).isEmpty();
     }
 
     @Override
     public void mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        CtField<?> chosenField = SpoonQueries.getCandidateFieldsForNullCheck(blockGene).stream().findAny().get();
+        List<CtVariableRead<?>> variableReads = SpoonQueries.getCandidateVarReadsForNullCheck(blockGene);
+        CtVariableRead<?> chosenVarRead = variableReads.get(RandomUtils.nextInt(variableReads.size()));
+
+        BinaryOperatorKind operator = RandomUtils.nextBoolean() ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE;
 
         CtIf ifStatement = SpoonFactory.createIfThenStatement(
-                (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(chosenField, null, BinaryOperatorKind.EQ),
+                (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(chosenVarRead, null, operator),
                 SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(RandomUtils.nextBoolean()))
         );
 
