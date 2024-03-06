@@ -205,4 +205,24 @@ public class SpoonManager {
         return result;
     }
 
+    public static Class<?> loadClass() {
+        Class<?> aClass = null;
+        try {
+            aClass = urlClassLoader.loadClass(targetClass.getQualifiedName());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return aClass;
+    }
+
+    public static Method loadMethod(Class<?> clazz, String methodName) {
+        Method method = null;
+        try {
+            method = clazz.getMethod(methodName);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return method;
+    }
+
 }

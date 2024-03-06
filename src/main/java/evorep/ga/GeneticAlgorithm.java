@@ -1,6 +1,7 @@
 package evorep.ga;
 
 import evorep.ga.mutators.MutatorManager;
+import evorep.object.ObjectCollector;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonHelper;
 import evorep.spoon.SpoonManager;
@@ -15,6 +16,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
 
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +46,8 @@ import java.util.Set;
  */
 public class GeneticAlgorithm {
 
-    private static final double NOT_COMPILE_PENALIZATION = 1000;
+    private static final float WORST_FITNESS_VALUE = -1000;
+
     private final int maxPopulationSize;
 
     /**
@@ -66,6 +69,29 @@ public class GeneticAlgorithm {
         this.maxPopulationSize = maxPopulationSize;
         this.mutationRate = mutationRate;
         this.crossoverRate = crossoverRate;
+    }
+
+    public float invalidInstancesFitness(Individual individual) {
+        SpoonHelper.putIndividualIntoTheEnvironment(individual);
+        Class aClass = SpoonManager.loadClass();
+        Method repOKMethod = SpoonManager.loadMethod(aClass, individual.getChromosome().getSimpleName());
+
+        float fitness = 0;
+
+        for (Object validInstance : ObjectCollector.positiveObjects) {
+            if (!SpoonManager.runRepOK(repOKMethod, validInstance))
+                return WORST_FITNESS_VALUE;
+        }
+
+        fitness = ObjectCollector.negativeObjects.size() * -1;
+
+        for (Object invalidInstance : ObjectCollector.negativeObjects) {
+            if (!SpoonManager.runRepOK(repOKMethod, invalidInstance))
+                fitness += 1;
+        }
+
+        individual.setFitness(fitness);
+        return fitness;
     }
 
     /**
@@ -114,7 +140,7 @@ public class GeneticAlgorithm {
     }
 
     public void evalPopulation(Population population) {
-        population.getIndividuals().stream().filter(Individual::needsFitnessUpdate).forEach(this::calcFitness);
+        population.getIndividuals().stream().filter(Individual::needsFitnessUpdate).forEach(this::invalidInstancesFitness);
     }
 
     /**
@@ -123,17 +149,15 @@ public class GeneticAlgorithm {
      * @param individual the individual to evaluate
      * @return double The fitness value for individual
      */
-    public double calcFitness(Individual individual) {
+    public float calcFitness(Individual individual) {
         String goal = SpoonHelper.getFalseFitnessString();
         String individualString = SpoonHelper.getStatementsString(individual.getChromosome());
 
-        double fitness = new LevenshteinDistance().apply(goal, individualString);
+        float fitness = new LevenshteinDistance().apply(goal, individualString) * -1;
 
         if (!SpoonManager.compileIndividual(individual)) {
-            fitness += NOT_COMPILE_PENALIZATION;
+            return WORST_FITNESS_VALUE;
         }
-
-        //fitness = fitness / 10;
 
         individual.setFitness(fitness);
         return fitness;

@@ -5,7 +5,7 @@ import spoon.reflect.declaration.CtMethod;
 
 public class Individual implements Comparable<Individual> {
 
-    private CtMethod chromosome;
+    private final CtMethod chromosome;
     private double fitness = -1;
     private boolean isFitnessUpdated = false;
 
@@ -30,16 +30,6 @@ public class Individual implements Comparable<Individual> {
         return this.chromosome;
     }
 
-    /**
-     * Store individual's fitness
-     *
-     * @param fitnessValue The individuals fitness
-     */
-    public void setFitness(double fitnessValue) {
-        fitness = fitnessValue;
-        isFitnessUpdated = true;
-    }
-
     public boolean needsFitnessUpdate() {
         return !isFitnessUpdated;
     }
@@ -61,7 +51,6 @@ public class Individual implements Comparable<Individual> {
         return chromosome.getBody().getStatements().size();
     }
 
-
     /**
      * Gets individual's fitness
      *
@@ -69,6 +58,22 @@ public class Individual implements Comparable<Individual> {
      */
     public double getFitness() {
         return this.fitness;
+    }
+
+    /**
+     * Store individual's fitness
+     *
+     * @param fitnessValue The individuals fitness
+     */
+    public void setFitness(double fitnessValue) {
+        fitness = fitnessValue;
+        isFitnessUpdated = true;
+    }
+
+    public Individual clone() {
+        Individual clone = new Individual(chromosome);
+        clone.setFitness(fitness);
+        return clone;
     }
 
     /**
@@ -83,17 +88,11 @@ public class Individual implements Comparable<Individual> {
         return chromosome.toString();
     }
 
-    public Individual clone() {
-        Individual clone = new Individual(chromosome);
-        clone.setFitness(fitness);
-        return clone;
-    }
-
     @Override
     public int compareTo(Individual other) {
-        if (this.getFitness() < other.getFitness())
+        if (this.getFitness() > other.getFitness())
             return -1;
-        else if (this.getFitness() > other.getFitness())
+        else if (this.getFitness() < other.getFitness())
             return 1;
         return 0;
     }
