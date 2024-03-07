@@ -1,41 +1,16 @@
 package evorep.spoon;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import evorep.ga.Individual;
 import evorep.ga.helper.LocalVarHelper;
 import evorep.spoon.generators.ReferenceExpressionGenerator;
-import evorep.spoon.typesgraph.TypesGraph;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.code.CtWhile;
-import spoon.reflect.code.UnaryOperatorKind;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtVariable;
+import evorep.spoon.typesgraph.TypeGraph;
+import spoon.reflect.code.*;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SpoonQueries {
 
@@ -100,8 +75,7 @@ public class SpoonQueries {
         return var.getType().isPrimitive();
     }
 
-    public static boolean isBoxedPrimitive(CtVariable<?> var) {
-        CtTypeReference<?> type = var.getType();
+    public static boolean isBoxedPrimitive(CtTypeReference<?> type) {
         return (type.equals(SpoonFactory.getTypeFactory().BOOLEAN) ||
                 type.equals(SpoonFactory.getTypeFactory().CHARACTER) ||
                 type.equals(SpoonFactory.getTypeFactory().BYTE) ||
@@ -129,12 +103,12 @@ public class SpoonQueries {
     }
 
     public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
-            Class<?> type) {
+                                                                          Class<?> type) {
         return getAllReachableLocalVariablesOfType(statement, SpoonFactory.getTypeFactory().createReference(type));
     }
 
     public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
-            CtTypeReference<?> type) {
+                                                                          CtTypeReference<?> type) {
         return statement.map(new PotentialVariableDeclarationFunction())
                 .map(e -> e instanceof CtLocalVariable && ((CtVariable<?>) e).getType().isSubtypeOf(type))
                 .list();
@@ -171,6 +145,10 @@ public class SpoonQueries {
         return isReferenceType(var) && var.getType().getDeclaration() != null;
     }
 
+    public static boolean isUserDefined(CtTypeReference<?> var) {
+        return var.getDeclaration() != null;
+    }
+
     public static boolean containsReturnStatement(CtBlock<?> block) {
         return !block.getElements(e -> e instanceof CtReturn).isEmpty();
     }
@@ -178,7 +156,7 @@ public class SpoonQueries {
     public static Set<CtTypeReference<?>> getCandidateCyclicTypes(
             CtBlock<?> block,
             String varNamePrefix) {
-        Set<CtTypeReference<?>> selfCyclicTypes = SpoonManager.getTypesGraph().getNodesWithSelfCycles();
+        Set<CtTypeReference<?>> selfCyclicTypes = SpoonManager.getTypeGraph().getNodesWithSelfCycles();
         List<CtLocalVariable<?>> localVars = SpoonQueries.getDeclaredLocalVars(block);
 
         Set<CtTypeReference<?>> candidateTypes = new HashSet<>();
@@ -197,7 +175,7 @@ public class SpoonQueries {
 
     public static Set<CtField<?>> getCandidateFields(
             CtBlock<?> block) {
-        TypesGraph typesGraph = SpoonManager.getTypesGraph();
+        TypeGraph typesGraph = SpoonManager.getTypeGraph();
         CtTypeReference<?> root = typesGraph.getRoot();
 
         List<CtField<?>> fields = typesGraph.getOutgoingUserDefinedFields(root);
@@ -213,7 +191,7 @@ public class SpoonQueries {
     }
 
     public static List<CtVariableRead<?>> getCandidateVarReadsForNullCheck(CtBlock<?> block) {
-        TypesGraph typesGraph = SpoonManager.getTypesGraph();
+        TypeGraph typesGraph = SpoonManager.getTypeGraph();
 
         List<CtVariable<?>> referenceFields = typesGraph.getOutgoingReferenceFields(typesGraph.getRoot());
 
@@ -242,7 +220,7 @@ public class SpoonQueries {
     }
 
     public static List<CtLocalVariable<?>> getWorklistDeclared(CtBlock<?> block) {
-        Set<CtTypeReference<?>> cyclicNodes = SpoonManager.getTypesGraph().getNodesWithSelfCycles();
+        Set<CtTypeReference<?>> cyclicNodes = SpoonManager.getTypeGraph().getNodesWithSelfCycles();
         return block.getElements(var -> isWorklist(var, cyclicNodes));
     }
 
@@ -252,7 +230,7 @@ public class SpoonQueries {
     }
 
     public static List<CtLocalVariable<?>> getVisitedSetDeclared(CtBlock<?> block) {
-        Set<CtTypeReference<?>> cyclicNodes = SpoonManager.getTypesGraph().getNodesWithSelfCycles();
+        Set<CtTypeReference<?>> cyclicNodes = SpoonManager.getTypeGraph().getNodesWithSelfCycles();
         return block.getElements(var -> isVisitedSet(var, cyclicNodes));
     }
 
@@ -263,7 +241,7 @@ public class SpoonQueries {
     }
 
     public static List<CtField<?>> filterFieldsByType(List<CtField<?>> candidateFields,
-            CtTypeReference<?> ctTypeReference) {
+                                                      CtTypeReference<?> ctTypeReference) {
         return candidateFields.stream().filter(field -> field.getType().isSubtypeOf(ctTypeReference)).toList();
     }
 
@@ -340,8 +318,8 @@ public class SpoonQueries {
     public static List<CtVariableRead<?>> getNonTraversedCyclicFieldReads(CtBlock<?> code) {
         List<CtVariableRead<?>> nonTraversedCyclicVarReads = new LinkedList<>();
 
-        TypesGraph typesGraph = SpoonManager.getTypesGraph();
-        Set<CtVariableRead<?>> cyclicVarReads = typesGraph.getReacheableCyclicFieldReads();
+        TypeGraph typeGraph = SpoonManager.getTypeGraph();
+        Set<CtVariableRead<?>> cyclicVarReads = typeGraph.getReacheableCyclicFieldReads();
 
         List<CtLocalVariable<?>> currentVars = getLocalVariablesMathingPrefix(code, LocalVarHelper.CURRENT_VAR_NAME);
         for (CtVariableRead<?> varRead : cyclicVarReads) {

@@ -6,7 +6,7 @@ import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.processors.TraverseCyclicReferenceProcessor;
-import evorep.spoon.typesgraph.TypesGraph;
+import evorep.spoon.typesgraph.TypeGraph;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
@@ -19,31 +19,6 @@ import java.util.List;
 import java.util.Set;
 
 public class TypeGraphCycleBasedMutator implements Mutator {
-
-    public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        return gene instanceof CtBlock && !SpoonManager.getTypesGraph().getNodesWithSelfCycles().isEmpty();
-    }
-
-    @Override
-    public void mutate(Individual individual, CtCodeElement gene) {
-        CtBlock<?> mutatedGene = (CtBlock<?>) gene.clone();
-
-        TypesGraph typesGraph = SpoonManager.getTypesGraph();
-
-        Set<CtTypeReference<?>> nodesWithCycles = typesGraph.getNodesWithSelfCycles();
-        CtTypeReference<?> chosenNode = nodesWithCycles.stream().findAny().get();
-
-        List<List<CtField<?>>> simplePaths = typesGraph.getSimplePaths(typesGraph.getRoot(), chosenNode);
-        List<CtField<?>> cyclicFields = typesGraph.getSelfCyclicFieldsOfNode(chosenNode);
-        switch (getChoice(cyclicFields)) {
-            case 0 -> applySingleFieldTraversal(mutatedGene, simplePaths, cyclicFields);
-            case 1 -> {
-
-            }
-            default -> throw new RuntimeException("Invalid choice");
-        }
-        gene.replace(mutatedGene);
-    }
 
     public static int getChoice(List<CtField<?>> cyclicFields) {
         List<Integer> filteredChoices = new ArrayList<>();
@@ -63,6 +38,31 @@ public class TypeGraphCycleBasedMutator implements Mutator {
 
         Processor<CtBlock<?>> p = new TraverseCyclicReferenceProcessor(initialField, loopField);
         p.process(block);
+    }
+
+    public boolean isApplicable(Individual individual, CtCodeElement gene) {
+        return gene instanceof CtBlock && !SpoonManager.getTypeGraph().getNodesWithSelfCycles().isEmpty();
+    }
+
+    @Override
+    public void mutate(Individual individual, CtCodeElement gene) {
+        CtBlock<?> mutatedGene = (CtBlock<?>) gene.clone();
+
+        TypeGraph typesGraph = SpoonManager.getTypeGraph();
+
+        Set<CtTypeReference<?>> nodesWithCycles = typesGraph.getNodesWithSelfCycles();
+        CtTypeReference<?> chosenNode = nodesWithCycles.stream().findAny().get();
+
+        List<List<CtField<?>>> simplePaths = typesGraph.getSimplePaths(typesGraph.getRoot(), chosenNode);
+        List<CtField<?>> cyclicFields = typesGraph.getSelfCyclicFieldsOfNode(chosenNode);
+        switch (getChoice(cyclicFields)) {
+            case 0 -> applySingleFieldTraversal(mutatedGene, simplePaths, cyclicFields);
+            case 1 -> {
+
+            }
+            default -> throw new RuntimeException("Invalid choice");
+        }
+        gene.replace(mutatedGene);
     }
 
 

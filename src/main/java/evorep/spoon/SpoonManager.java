@@ -2,7 +2,7 @@ package evorep.spoon;
 
 import evorep.config.ToolConfig;
 import evorep.ga.Individual;
-import evorep.spoon.typesgraph.TypesGraph;
+import evorep.spoon.typesgraph.TypeGraph;
 import evorep.util.Utils;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
@@ -22,7 +22,7 @@ public class SpoonManager {
 
     private static Launcher launcher;
     private static CtClass<?> targetClass;
-    private static TypesGraph typesGraph;
+    private static TypeGraph typesGraph;
 
     private static File outputBinDirectory;
     private static URLClassLoader urlClassLoader;
@@ -41,7 +41,7 @@ public class SpoonManager {
             initializeFactories();
             initializeClass(fullClassName);
             initializeRepOKMethod();
-            initializeTypesGraph();
+            initializeTypeGraph();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,7 +54,7 @@ public class SpoonManager {
             initializeFactories();
             initializeClass(fullClassName);
             initializeRepOKMethod();
-            initializeTypesGraph();
+            initializeTypeGraph();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -95,15 +95,15 @@ public class SpoonManager {
         targetClass.addMethod(SpoonFactory.createRepOK("repOK"));
     }
 
-    private static void initializeTypesGraph() {
-        typesGraph = TypesGraph.createTypesGraph(targetClass.getReference());
+    private static void initializeTypeGraph() {
+        typesGraph = new TypeGraph(targetClass.getReference());
     }
 
     public static CtClass<?> getTargetClass() {
         return targetClass;
     }
 
-    public static TypesGraph getTypesGraph() {
+    public static TypeGraph getTypeGraph() {
         return typesGraph;
     }
 

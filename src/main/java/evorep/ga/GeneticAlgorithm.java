@@ -6,7 +6,7 @@ import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonHelper;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.processors.MultipleReferenceTraversalProcessor;
-import evorep.spoon.typesgraph.TypesGraph;
+import evorep.spoon.typesgraph.TypeGraph;
 import evorep.util.Utils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import spoon.processing.Processor;
@@ -107,7 +107,7 @@ public class GeneticAlgorithm {
     public Population initPopulationBasedOnTypeGraph(CtMethod repOK) {
         Population population = new Population();
 
-        TypesGraph typesGraph = SpoonManager.getTypesGraph();
+        TypeGraph typesGraph = SpoonManager.getTypeGraph();
         Set<CtTypeReference<?>> nodesWithCycles = typesGraph.getNodesWithSelfCycles();
         for (CtTypeReference<?> node : nodesWithCycles) {
             List<CtField<?>> cyclicFields = typesGraph.getSelfCyclicFieldsOfNode(node);

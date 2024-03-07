@@ -1,121 +1,209 @@
 package evorep.object;
 
+import evorep.spoon.SpoonManager;
+import evorep.spoon.SpoonQueries;
+import evorep.spoon.typesgraph.TypeGraph;
+import evorep.util.Utils;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * This class provides methods to perform random mutations on a given object
+ *
  * @author Facundo Molina <facundo.molina@imdea.org>
  */
 public class ObjectMutator {
 
-  /**
-   * Perform a random mutation on the given object
-   * @param object is the object to mutate
-   * @param allMutableExpressions is the list of mutable expressions
-   */
-  public static void mutate(Object object, List<List<CtField<?>>> allMutableExpressions) {
-    if (object == null) throw new IllegalArgumentException("Object to mutate cannot be null");
 
-    // Get the list of mutable expressions
-    List<List<CtField<?>>> mutableExpressions = getMutableExpressions(object, allMutableExpressions);
-    if (mutableExpressions.isEmpty()) throw new IllegalArgumentException("No mutable expressions found");
+    /**
+     * Perform a random mutation on the given object
+     *
+     * @param rootObject is the object to mutate
+     */
+    public static void mutate(Object rootObject) {
+        List<Object> candidates = collectCandidatesForMutation(rootObject);
+        TargetField targetField = selectTargetField(candidates);
+        if (targetField == null)
+            System.out.println("No target field found for mutation");
 
-    // Choose a random expression
-    int random = (int) (Math.random() * mutableExpressions.size());
-    List<CtField<?>> expression = mutableExpressions.get(random);
-
-    System.out.println("Performing mutation on field: " + expression);
-    mutableExpressions.remove(random); // Remove the selected expression from the list of mutable expressions
-    replaceByRandomValue(expression, object, mutableExpressions);
-  }
-
-  /**
-   * Get the list of mutable expressions for the given object
-   * The mutable expressions are those that can be evaluated on the object
-   * @param object is the object to get the mutable expressions from
-   * @param allMutableExpressions is the list of mutable expressions
-   * @return the list of mutable expressions for the given object
-   */
-  private static List<List<CtField<?>>> getMutableExpressions(Object object, List<List<CtField<?>>> allMutableExpressions) {
-    List<List<CtField<?>>> mutableExpressions = new ArrayList<>();
-    for (List<CtField<?>> mutableExpression : allMutableExpressions) {
-      if (isMutable(object, mutableExpression)) {
-        mutableExpressions.add(mutableExpression);
-      }
+        Object newFieldValue = getNewValueForField(targetField, candidates);
+        targetField.setValue(newFieldValue);
     }
-    return mutableExpressions;
-  }
 
-  /**
-   * Check if the given expression is mutable on the given object
-   * @param object is the object to check
-   * @param expression is the expression to check
-   * @return true if the expression is mutable on the object, false otherwise
-   */
-  private static boolean isMutable(Object object, List<CtField<?>> expression) {
-    if (object == null) return false;
-    Object current = object;
-    boolean isMutable = true;
-    for (int i = 0; i < expression.size() - 1; i++) {
-      try {
-        Field f = current.getClass().getDeclaredField(expression.get(i).getSimpleName());
-        f.setAccessible(true);
-        current  = f.get(current);
-        if (current == null) {
-          isMutable = false;
-          break;
+    /**
+     * Collect all the objects that can be mutated from the given root object
+     *
+     * @param rootObject is the root object to start the search from
+     * @return a list of objects that can be mutated
+     */
+    static List<Object> collectCandidatesForMutation(Object rootObject) {
+        Queue<Object> queue = new ArrayDeque<>();
+        Set<Object> visited = new HashSet<>();
+        queue.offer(rootObject);
+
+        while (!queue.isEmpty()) {
+            Object currentObject = queue.poll();
+            if (!visited.contains(currentObject)) {
+                visited.add(currentObject);
+
+                Class<?> clazz = currentObject.getClass();
+                Field[] fields = clazz.getDeclaredFields();
+                for (Field field : fields) {
+                    field.setAccessible(true);
+                    try {
+                        Object fieldValue = field.get(currentObject);
+                        if (fieldValue != null && !field.getType().isPrimitive()) {
+                            queue.offer(fieldValue);
+                        }
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
-      } catch (NoSuchFieldException | IllegalAccessException e) {
-        isMutable = false;
-      }
+        return visited.stream().toList();
     }
-    return isMutable;
-  }
 
-  /**
-   * Replace the given expression by a random value in the given object
-   * @param expression is the expression to replace
-   * @param o is the object to replace the expression in
-   * @param mutableExpressions is the list of mutable expressions of the object
-   */
-  private static void replaceByRandomValue(List<CtField<?>> expression, Object o, List<List<CtField<?>>> mutableExpressions) {
-    CtField<?> lastField = expression.get(expression.size() - 1);
-    Object newValue;
-    if (isBasicType(lastField.getType())) {
-      newValue = ValueProvider.getRandomValueForPrimitiveType(lastField.getType());
-    } else {
-      newValue = ValueProvider.getRandomValueForReferenceType(lastField.getType(), o, mutableExpressions);
-    }
-    Object current = o;
-    for (int i = 0; i < expression.size() - 1; i++) {
-      try {
-        Field f = current.getClass().getDeclaredField(expression.get(i).getSimpleName());
-        f.setAccessible(true);
-        current  = f.get(current);
-      } catch (NoSuchFieldException | IllegalAccessException e) {
-        // Do nothing
-      }
-    }
-    try {
-      Field f = current.getClass().getDeclaredField(lastField.getSimpleName());
-      f.setAccessible(true);
-      f.set(current, newValue);
-    } catch (NoSuchFieldException | IllegalAccessException e) {
-      // Do nothing
-    }
-  }
 
-  /**
-   * Check if the given type is a basic type
-   * @param type is the type to check
-   * @return true if the type is a primitive type, false otherwise
-   */
-  private static boolean isBasicType(CtTypeReference<?> type) {
-    return type.isPrimitive();
-  }
+    /**
+     * Select a random field to mutate from the given list of candidates
+     *
+     * @param candidates is the list of objects to select the field from
+     * @return a random field to mutate
+     */
+    static TargetField selectTargetField(List<Object> candidates) {
+        int maxAttempts = 10;
+        List<CtTypeReference<?>> userDefTypes = SpoonManager.getTypeGraph().getUserDefinedTypes().stream().toList();
+        CtTypeReference<?> targetType = userDefTypes.get(new Random().nextInt(userDefTypes.size()));
+
+        Object targetObject = getRandomReferenceOfType(candidates, targetType);
+        CtField<?> fieldToMutate = selectReferenceField(targetType);
+        int i = 0;
+        while ((targetObject == null || fieldToMutate == null) && i < maxAttempts) {
+            targetType = userDefTypes.get(new Random().nextInt(userDefTypes.size()));
+            targetObject = getRandomReferenceOfType(candidates, targetType);
+            fieldToMutate = selectReferenceField(targetType);
+            i++;
+        }
+
+        if (i == maxAttempts)
+            return null;
+
+        return new TargetField(targetObject, fieldToMutate);
+    }
+
+    /**
+     * Get a new value for the given field
+     *
+     * @param targetField is the field to get the new value for
+     * @param candidates  is the list of objects to get the new value from
+     * @return a new value for the given field
+     */
+    static Object getNewValueForField(TargetField targetField, List<Object> candidates) {
+        List<Object> possibleChoices = getCandidatesOfType(candidates, targetField);
+        if (possibleChoices.isEmpty() || Utils.nextInt(2) == 0)
+            return null;
+        return possibleChoices.get(new Random().nextInt(possibleChoices.size()));
+    }
+
+    /**
+     * Get all the possible candidates for the given target field. A candidate
+     * is an object of the same type as the field and different from the current
+     * value (to avoid assigning the same value to the field that it already has)
+     *
+     * @param candidates  is the list of objects to get the candidates from
+     * @param targetField is the field to get the candidates for
+     * @return a list of candidates of the given type
+     */
+    static List<Object> getCandidatesOfType(List<Object> candidates, TargetField targetField) {
+        return candidates.stream().filter(o ->
+                o != targetField.getValue() &&
+                        o.getClass().getTypeName().equals(targetField.getFieldTypeQualifiedName())
+        ).toList();
+    }
+
+    /**
+     * Select a random field to mutate from the given type
+     *
+     * @param type is the type to select the field from
+     * @return a random field to mutate
+     */
+    static CtField<?> selectReferenceField(CtTypeReference<?> type) {
+        TypeGraph typeGraph = SpoonManager.getTypeGraph();
+        List<CtField<?>> fields = typeGraph.getOutgoingFields(type).stream().filter(
+                f -> !f.getType().isPrimitive() && !SpoonQueries.isBoxedPrimitive(f.getType())
+        ).toList();
+        if (fields.isEmpty()) return null;
+        return fields.get(Utils.nextInt(fields.size()));
+    }
+
+    /**
+     * Get all the possible candidates for the given type
+     *
+     * @param candidates is the list of objects to get the candidates from
+     * @param type       is the type to get the candidates for
+     * @return a list of candidates of the given type
+     */
+    static List<Object> getCandidatesOfType(List<Object> candidates, CtTypeReference<?> type) {
+        return candidates.stream().filter(o -> o.getClass().getTypeName().equals(type.getQualifiedName())).toList();
+    }
+
+    /**
+     * Get a random reference of the given type from the given list of references
+     *
+     * @param references is the list of references to get the random reference from
+     * @param type       is the type of the reference to get
+     * @return a random reference of the given type
+     */
+    static Object getRandomReferenceOfType(List<Object> references, CtTypeReference<?> type) {
+        List<Object> objectsOfType = getCandidatesOfType(references, type);
+        if (objectsOfType.isEmpty()) return null;
+        return objectsOfType.get(Utils.nextInt(objectsOfType.size()));
+    }
+
+    /**
+     * This record represents a field of an object to mutate
+     */
+    record TargetField(Object target, CtField<?> field) {
+
+        CtTypeReference<?> getFieldType() {
+            return field.getType();
+        }
+
+        String getFieldTypeQualifiedName() {
+            return field.getType().getQualifiedName();
+        }
+
+        String getTargetTypeName() {
+            return target.getClass().getTypeName();
+        }
+
+        Object getValue() {
+            Object currentValue = null;
+            try {
+                Field f = target.getClass().getDeclaredField(field.getSimpleName());
+                f.setAccessible(true);
+                currentValue = f.get(target);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                return null;
+            }
+            return currentValue;
+        }
+
+        void setValue(Object newValue) {
+            try {
+                Field f = target.getClass().getDeclaredField(field.getSimpleName());
+                f.setAccessible(true);
+                f.set(target, newValue);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                // Do nothing
+                e.printStackTrace();
+            }
+        }
+
+    }
+
 }

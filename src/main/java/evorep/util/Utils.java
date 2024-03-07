@@ -7,8 +7,19 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Utils {
+
+    private static final Random r = new Random();
+
+    public static int nextInt(int bound) {
+        return r.nextInt(bound);
+    }
+
+    public static boolean nextBoolean() {
+        return r.nextBoolean();
+    }
 
     public static File createDirectory(String path) {
         File binDir = new File(path);

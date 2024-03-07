@@ -12,33 +12,27 @@ import spoon.reflect.reference.CtTypeReference;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class TypesGraph {
+public class TypeGraph {
 
     CtTypeReference<?> rootType;
     Map<CtTypeReference<?>, List<Edge>> adjacencyList = new HashMap<>();
 
-    private TypesGraph(CtTypeReference<?> rootType) {
+    public TypeGraph(CtTypeReference<?> rootType) {
         this.rootType = rootType;
+        populateGraph();
+    }
+
+    private void populateGraph() {
         addNode(rootType);
-    }
-
-    public void addNode(CtTypeReference<?> node) {
-        if (!adjacencyList.containsKey(node)) {
-            adjacencyList.put(node, new LinkedList<>());
-        }
-    }
-
-    public static TypesGraph createTypesGraph(CtTypeReference rootType) {
-        TypesGraph graph = new TypesGraph(rootType);
 
         Set<CtTypeReference> visited = new HashSet<>();
-        visited.add(rootType);
         LinkedList<CtTypeReference> workList = new LinkedList<>();
+        visited.add(rootType);
         workList.add(rootType);
 
         while (!workList.isEmpty()) {
             CtTypeReference currentType = workList.removeFirst();
-            graph.addNode(currentType);
+            addNode(currentType);
 
             CtType<?> declaration = currentType.getDeclaration();
             if (declaration == null)
@@ -48,14 +42,18 @@ public class TypesGraph {
             for (CtField<?> field : fields) {
                 CtTypeReference fieldType = field.getType();
                 if (fieldType != null) {
-                    graph.addEdge(currentType, fieldType, field);
+                    addEdge(currentType, fieldType, field);
                     if (visited.add(fieldType))
                         workList.add(fieldType);
                 }
             }
-
         }
-        return graph;
+    }
+
+    public void addNode(CtTypeReference<?> node) {
+        if (!adjacencyList.containsKey(node)) {
+            adjacencyList.put(node, new LinkedList<>());
+        }
     }
 
     public void addEdge(CtTypeReference<?> source, CtTypeReference<?> destination, CtField<?> label) {
@@ -180,8 +178,9 @@ public class TypesGraph {
 
     /**
      * Get all the possible paths of length k from the source node to any other node in the graph.
+     *
      * @param source the source node
-     * @param k the length of the paths
+     * @param k      the length of the paths
      * @return the list of all the possible paths of length k from the source node to any other node in the graph
      */
     public List<List<CtField<?>>> getAllPaths(CtTypeReference<?> source, int k) {
@@ -218,6 +217,14 @@ public class TypesGraph {
 
     public CtTypeReference<?> getRoot() {
         return rootType;
+    }
+
+    public Set<CtTypeReference<?>> getAllNodes() {
+        return adjacencyList.keySet();
+    }
+
+    public Set<CtTypeReference<?>> getUserDefinedTypes() {
+        return adjacencyList.keySet().stream().filter(SpoonQueries::isUserDefined).collect(Collectors.toSet());
     }
 
     public String toString() {

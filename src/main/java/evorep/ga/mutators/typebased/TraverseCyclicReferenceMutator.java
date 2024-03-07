@@ -31,7 +31,7 @@ public class TraverseCyclicReferenceMutator implements Mutator {
         CtVariableRead<?> chosenInitialField = SpoonQueries.getNonTraversedCyclicFieldReads(blockGene).stream().findAny().get();
 
         CtTypeReference<?> cyclicNode = chosenInitialField.getVariable().getType();
-        List<CtField<?>> loopFields = SpoonManager.getTypesGraph().getSelfCyclicFieldsOfNode(cyclicNode);
+        List<CtField<?>> loopFields = SpoonManager.getTypeGraph().getSelfCyclicFieldsOfNode(cyclicNode);
         CtField<?> chosenLoopField = loopFields.stream().findAny().get();
 
         Processor<CtBlock<?>> p = new TraverseCyclicReferenceProcessor(chosenInitialField, chosenLoopField);
