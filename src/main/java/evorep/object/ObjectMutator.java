@@ -17,20 +17,20 @@ import java.util.*;
  */
 public class ObjectMutator {
 
-
     /**
      * Perform a random mutation on the given object
      *
      * @param rootObject is the object to mutate
      */
-    public static void mutate(Object rootObject) {
+    public static boolean mutate(Object rootObject) {
         List<Object> candidates = collectCandidatesForMutation(rootObject);
         TargetField targetField = selectTargetField(candidates);
         if (targetField == null)
-            System.out.println("No target field found for mutation");
+            return false;
 
         Object newFieldValue = getNewValueForField(targetField, candidates);
         targetField.setValue(newFieldValue);
+        return true;
     }
 
     /**
@@ -66,7 +66,6 @@ public class ObjectMutator {
         }
         return visited.stream().toList();
     }
-
 
     /**
      * Select a random field to mutate from the given list of candidates
@@ -119,10 +118,8 @@ public class ObjectMutator {
      * @return a list of candidates of the given type
      */
     static List<Object> getCandidatesOfType(List<Object> candidates, TargetField targetField) {
-        return candidates.stream().filter(o ->
-                o != targetField.getValue() &&
-                        o.getClass().getTypeName().equals(targetField.getFieldTypeQualifiedName())
-        ).toList();
+        return candidates.stream().filter(o -> o != targetField.getValue() &&
+                o.getClass().getTypeName().equals(targetField.getFieldTypeQualifiedName())).toList();
     }
 
     /**
@@ -134,9 +131,9 @@ public class ObjectMutator {
     static CtField<?> selectReferenceField(CtTypeReference<?> type) {
         TypeGraph typeGraph = SpoonManager.getTypeGraph();
         List<CtField<?>> fields = typeGraph.getOutgoingFields(type).stream().filter(
-                f -> !f.getType().isPrimitive() && !SpoonQueries.isBoxedPrimitive(f.getType())
-        ).toList();
-        if (fields.isEmpty()) return null;
+                f -> !f.getType().isPrimitive() && !SpoonQueries.isBoxedPrimitive(f.getType())).toList();
+        if (fields.isEmpty())
+            return null;
         return fields.get(Utils.nextInt(fields.size()));
     }
 
@@ -160,7 +157,8 @@ public class ObjectMutator {
      */
     static Object getRandomReferenceOfType(List<Object> references, CtTypeReference<?> type) {
         List<Object> objectsOfType = getCandidatesOfType(references, type);
-        if (objectsOfType.isEmpty()) return null;
+        if (objectsOfType.isEmpty())
+            return null;
         return objectsOfType.get(Utils.nextInt(objectsOfType.size()));
     }
 

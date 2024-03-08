@@ -3,8 +3,6 @@ package evorep;
 import evorep.config.ToolConfig;
 import evorep.ga.GeneticAlgorithm;
 import evorep.ga.Population;
-import evorep.ga.mutators.MutatorManager;
-import evorep.object.ObjectGeneratorManager;
 import evorep.spoon.SpoonManager;
 import spoon.reflect.declaration.CtMethod;
 
@@ -18,14 +16,8 @@ public class EvoRep {
 
     private static void initialize() {
         ToolConfig.parseConfigurationFile();
-        MutatorManager.initialize();
-        printObjectGenerationStart();
-        ObjectGeneratorManager.generate();
     }
 
-    public static void printObjectGenerationStart() {
-        System.out.println("\n==============================  Object Generation Started  ==============================\n");
-    }
 
     public static void printStart() {
         System.out.println("\n==============================  Search Started  ==============================\n");
@@ -47,7 +39,7 @@ public class EvoRep {
             population = ga.selectFittest(population);
             generation++;
         }
-        printResults(population, generation);
+        printResults(population, generation - 1);
     }
 
     private static CtMethod getRepOKMethod() {

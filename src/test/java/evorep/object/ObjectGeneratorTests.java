@@ -22,7 +22,7 @@ public class ObjectGeneratorTests {
         ToolConfig.className = "SortedList";
         ToolConfig.testSuiteClassName = "SortedListTestSuite";
         // Initialise Spoon
-        SpoonManager.initialize(SOURCE_PATH, SOURCE_PATH, null, ToolConfig.className, 17);
+        SpoonManager.initialize(SOURCE_PATH, null, ToolConfig.className, ToolConfig.testSuiteClassName, 17);
         // Get the test suite class
         testSuiteClass = SpoonQueries.getClass(CLASS_NAME);
     }
@@ -34,7 +34,7 @@ public class ObjectGeneratorTests {
 
     @Test
     public void testGenerateObjectsSortedList() {
-        ObjectGeneratorManager.generateObjects(testSuiteClass);
+        ObjectGeneratorManager.generateObjects(SpoonManager.createClassLoader());
         assertEquals(3, ObjectCollector.positiveObjects.size());
         assertEquals(3, ObjectCollector.negativeObjects.size());
     }

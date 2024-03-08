@@ -2,10 +2,14 @@ package evorep.spoon;
 
 import evorep.config.ToolConfig;
 import evorep.ga.Individual;
+import evorep.ga.mutators.MutatorManager;
+import evorep.object.Instrumenter;
 import evorep.spoon.typesgraph.TypeGraph;
 import evorep.util.Utils;
 import spoon.Launcher;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -19,42 +23,49 @@ import java.util.concurrent.*;
 public class SpoonManager {
 
     private final static String DEFAULT_BIN_PATH = "./bin";
-
+    private static File outputBinDirectory;
     private static Launcher launcher;
     private static CtClass<?> targetClass;
-    private static TypeGraph typesGraph;
+    private static CtClass<?> testSuiteClass;
 
-    private static File outputBinDirectory;
-    private static URLClassLoader urlClassLoader;
+    private static TypeGraph typesGraph;
+    private static URL outputBinURL;
 
     private SpoonManager() {
     }
 
     public static void initialize() {
-        initialize(ToolConfig.srcPath, ToolConfig.testSrcPath, ToolConfig.binPath, ToolConfig.className, ToolConfig.srcJavaVersion);
+        initialize(ToolConfig.srcPath, ToolConfig.binPath, ToolConfig.className, ToolConfig.testSuiteClassName, ToolConfig.srcJavaVersion);
     }
 
     public static void initialize(String srcPath, String binPath, String fullClassName, int srcJavaVersion) {
         try {
             initializeOutputDirectories(binPath);
-            initializeLauncher(srcPath, null, srcJavaVersion);
+            initializeLauncher(srcPath, srcJavaVersion);
             initializeFactories();
-            initializeClass(fullClassName);
+            initializeTargetClass(fullClassName);
             initializeRepOKMethod();
             initializeTypeGraph();
+            initializeMutatorManager();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void initialize(String srcPath, String testSrcPath, String binPath, String fullClassName, int srcJavaVersion) {
+    private static void initializeMutatorManager() {
+        MutatorManager.initialize();
+    }
+
+    public static void initialize(String srcPath, String binPath, String fullClassName, String testSuiteClassName, int srcJavaVersion) {
         try {
             initializeOutputDirectories(binPath);
-            initializeLauncher(srcPath, testSrcPath, srcJavaVersion);
+            initializeLauncher(srcPath, srcJavaVersion);
             initializeFactories();
-            initializeClass(fullClassName);
+            initializeTargetClass(fullClassName);
+            initializeTestSuiteClass(testSuiteClassName);
             initializeRepOKMethod();
             initializeTypeGraph();
+            initializeMutatorManager();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,31 +75,52 @@ public class SpoonManager {
         if (binPath == null)
             binPath = DEFAULT_BIN_PATH;
         outputBinDirectory = Utils.createDirectory(binPath);
-        URL outputBinURL = Utils.createURL(outputBinDirectory);
-        urlClassLoader = new URLClassLoader(new URL[]{outputBinURL});
+        outputBinURL = Utils.createURL(outputBinDirectory);
     }
 
-    private static void initializeLauncher(String srcPath, String testSrcPath, int srcJavaVersion) {
+    private static void initializeLauncher(String srcPath, int srcJavaVersion) {
         launcher = new Launcher();
         launcher.setBinaryOutputDirectory(outputBinDirectory);
         launcher.addInputResource(srcPath);
-        if (testSrcPath != null)
-            launcher.addInputResource(testSrcPath);
         launcher.getEnvironment().setComplianceLevel(srcJavaVersion);
         launcher.getEnvironment().setShouldCompile(true);
         launcher.getEnvironment().setAutoImports(true);
-        //launcher.getEnvironment().setSourceClasspath(new String[]{System.getProperty("java.class.path")});
+        // launcher.getEnvironment().setSourceClasspath(new
+        // String[]{System.getProperty("java.class.path")});
         launcher.buildModel();
         launcher.getModelBuilder().compile();
     }
-
 
     private static void initializeFactories() {
         SpoonFactory.initialize(launcher);
     }
 
-    private static void initializeClass(String fullClassName) {
-        targetClass = launcher.getFactory().Class().get(fullClassName);
+    private static void initializeTargetClass(String targetClassName) {
+        targetClass = launcher.getFactory().Class().get(targetClassName);
+    }
+
+    private static void initializeTestSuiteClass(String testSuiteClassName) {
+        testSuiteClass = launcher.getFactory().Class().get(testSuiteClassName);
+        instrumentTestSuite();
+        compileModel();
+    }
+
+    private static void instrumentTestSuite() {
+        testSuiteClass.getMethods().forEach(method -> {
+            // Check if the method contains the test annotation
+            if (isTestMethod(method)) {
+                Instrumenter.instrumentMethod(method);
+            }
+        });
+    }
+
+    private static boolean isTestMethod(CtMethod<?> method) {
+        for (CtAnnotation<?> annotation : method.getAnnotations()) {
+            if (annotation.getName().equals("Test")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void initializeRepOKMethod() {
@@ -101,6 +133,10 @@ public class SpoonManager {
 
     public static CtClass<?> getTargetClass() {
         return targetClass;
+    }
+
+    public static CtClass<?> getTestSuiteClass() {
+        return testSuiteClass;
     }
 
     public static TypeGraph getTypeGraph() {
@@ -117,12 +153,12 @@ public class SpoonManager {
         try {
             compiles = launcher.getModelBuilder().compile();
         } catch (Exception e) {
-            //e.printStackTrace();
+            // e.printStackTrace();
         }
         return compiles;
     }
 
-    public static boolean runIndividual(Individual individual) {
+/*    public static boolean runIndividual(Individual individual) {
         SpoonHelper.putIndividualIntoTheEnvironment(individual);
         boolean repOKResult = false;
         try {
@@ -134,11 +170,11 @@ public class SpoonManager {
             throw new RuntimeException(e);
         }
         return repOKResult;
-    }
+    }*/
 
-    public static void runTestSuite(String testSuiteFullyQualifiedName) {
+    public static void runTestSuite(String testSuiteFullyQualifiedName, URLClassLoader classLoader) {
         try {
-            Class<?> testClass = urlClassLoader.loadClass(testSuiteFullyQualifiedName);
+            Class<?> testClass = classLoader.loadClass(testSuiteFullyQualifiedName);
             List<Method> testMethods = getRunnableTests(testClass);
             Object testObject = testClass.getDeclaredConstructor().newInstance();
             int testsExecuted = 0;
@@ -178,7 +214,7 @@ public class SpoonManager {
         return testMethods;
     }
 
-    public static boolean runRepOK(Method repOK, Object instance) {
+    public static int runRepOK(Individual individual, Method repOK, Object instance) {
         // Create an ExecutorService with a single thread
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -195,20 +231,26 @@ public class SpoonManager {
             result = future.get(300, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             // Handle timeout exception
+            //e.printStackTrace();
+            return -1;
         } catch (Exception e) {
             // Handle other exceptions
             //e.printStackTrace();
+            //System.err.println("\nThe individual was:\n\n" + individual.toString());
+            return -1;
         } finally {
             // Shutdown the executor
             executor.shutdown();
         }
-        return result;
+        if (result)
+            return 1;
+        return 0;
     }
 
-    public static Class<?> loadClass() {
+    public static Class<?> loadClass(URLClassLoader classLoader) {
         Class<?> aClass = null;
         try {
-            aClass = urlClassLoader.loadClass(targetClass.getQualifiedName());
+            aClass = classLoader.loadClass(targetClass.getQualifiedName());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -225,4 +267,7 @@ public class SpoonManager {
         return method;
     }
 
+    public static URLClassLoader createClassLoader() {
+        return new URLClassLoader(new URL[]{outputBinURL});
+    }
 }
