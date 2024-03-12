@@ -11,9 +11,11 @@ public class FitnessFunctions {
 
     private static final float WORST_FITNESS_VALUE = -1000;
 
+    private static final int MAX_LENGTH = 5000;
+
     public static void invalidInstancesFitness(Individual individual) {
         individual.setFitness(WORST_FITNESS_VALUE);
-        if (!SpoonManager.compileIndividual(individual)) {
+        if (individual.toString().length() > MAX_LENGTH || !SpoonManager.compileIndividual(individual)) {
             return;
         }
         URLClassLoader classLoader = SpoonManager.createClassLoader();
@@ -29,7 +31,7 @@ public class FitnessFunctions {
                 return;
         }
 
-        float fitness = ObjectCollector.negativeObjects.size() * -1;
+        double fitness = ObjectCollector.negativeObjects.size() * -1;
 
         for (Object invalidInstance : ObjectCollector.negativeObjects) {
             int result = SpoonManager.runRepOK(individual, repOKMethod, invalidInstance);
@@ -40,6 +42,8 @@ public class FitnessFunctions {
                 fitness = fitness + 1;
             }
         }
+
+        fitness -= (float) individual.toString().length() / MAX_LENGTH;
 
         //System.out.println("For Invalid instances fitness is: " + fitness);
 
