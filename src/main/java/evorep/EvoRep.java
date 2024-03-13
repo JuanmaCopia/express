@@ -58,5 +58,8 @@ public class EvoRep {
         System.out.println("Best solution: " + population.getFittest().toString());
         System.out.println("Fitness: " + population.getFittest().getFitness());
         System.out.println("\n=================================================================================\n");
+
+/*        Individual fittest = population.getFittest();
+        FitnessFunctions.invalidInstancesFitness(fittest);*/
     }
 }

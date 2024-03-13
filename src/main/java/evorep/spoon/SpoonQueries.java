@@ -330,6 +330,15 @@ public class SpoonQueries {
         return nonTraversedCyclicVarReads;
     }
 
+    public static List<CtField<?>> getIntegerFieldsOfRoot() {
+        TypeGraph typeGraph = SpoonManager.getTypeGraph();
+        List<CtField<?>> rootFields = typeGraph.getOutgoingFields(typeGraph.getRoot());
+        return rootFields.stream().filter(
+                field -> field.getType().isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER) ||
+                        field.getType().isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER_PRIMITIVE)
+        ).toList();
+    }
+
     public static List<CtLocalVariable<?>> getLocalVariablesMathingPrefix(CtBlock<?> code, String varPrefix) {
         return code.getElements(var -> var.getSimpleName().startsWith(varPrefix));
     }
@@ -400,4 +409,7 @@ public class SpoonQueries {
         return (CtLocalVariable<?>) varWrite.getVariable().getDeclaration();
     }
 
+    public static List<CtLocalVariable<?>> getVisitedSetLocalVars(CtBlock<?> block) {
+        return getLocalVariablesMathingPrefix(block, LocalVarHelper.SET_VAR_NAME);
+    }
 }

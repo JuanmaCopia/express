@@ -40,23 +40,19 @@ public class FitnessFunctions {
 
         for (Object invalidInstance : ObjectCollector.negativeObjects) {
             int result = SpoonManager.runRepOK(individual, repOKMethod, invalidInstance);
-            if (result == -1)
+            if (result == -1) {
+                //System.err.println("Run repok exception on invalid object!");
                 return;
-            else if (result == 0) {
-                // System.out.println("RepOK failed!");
+            } else if (result == 0) {
                 fitness = fitness + 1;
+            } else {
+                //System.err.println("Could not kill: " + invalidInstance.toString());
             }
         }
 
         fitness -= (float) individual.toString().length() / MAX_LENGTH;
 
-        // System.out.println("For Invalid instances fitness is: " + fitness);
-
         individual.setFitness(fitness);
-
-        // System.out.println("Individual:\n" + individual);
-
-        // System.out.println("\n ------------------------------------------ \n");
     }
 
     /*

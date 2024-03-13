@@ -25,7 +25,7 @@ public class LocalVarHelper {
     public static String getCurrentVarName(CtBlock<?> code) {
         return CURRENT_VAR_NAME + getNextId(code, CURRENT_VAR_NAME);
     }
-
+    
     public static String getVisitedSetVarName(CtBlock<?> code) {
         return SET_VAR_NAME + getNextId(code, SET_VAR_NAME);
     }
