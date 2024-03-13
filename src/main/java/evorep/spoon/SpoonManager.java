@@ -25,8 +25,8 @@ public class SpoonManager {
     private final static String DEFAULT_BIN_PATH = "./bin";
     private static File outputBinDirectory;
     private static Launcher launcher;
-    private static CtClass<?> targetClass;
-    private static CtClass<?> testSuiteClass;
+    private static String targetClassName;
+    private static String testSuiteClassName;
 
     private static TypeGraph typesGraph;
     private static URL outputBinURL;
@@ -95,18 +95,18 @@ public class SpoonManager {
         SpoonFactory.initialize(launcher);
     }
 
-    private static void initializeTargetClass(String targetClassName) {
-        targetClass = launcher.getFactory().Class().get(targetClassName);
+    private static void initializeTargetClass(String fullName) {
+        targetClassName = fullName;
     }
 
-    private static void initializeTestSuiteClass(String testSuiteClassName) {
-        testSuiteClass = launcher.getFactory().Class().get(testSuiteClassName);
+    private static void initializeTestSuiteClass(String fullTestSuiteClassName) {
+        testSuiteClassName = fullTestSuiteClassName;
         instrumentTestSuite();
         compileModel();
     }
 
     private static void instrumentTestSuite() {
-        testSuiteClass.getMethods().forEach(method -> {
+        getTestSuiteClass().getMethods().forEach(method -> {
             // Check if the method contains the test annotation
             if (isTestMethod(method)) {
                 Instrumenter.instrumentMethod(method);
@@ -124,19 +124,23 @@ public class SpoonManager {
     }
 
     private static void initializeRepOKMethod() {
-        targetClass.addMethod(SpoonFactory.createRepOK("repOK"));
+        getTargetClass().addMethod(SpoonFactory.createRepOK("repOK"));
     }
 
     private static void initializeTypeGraph() {
-        typesGraph = new TypeGraph(targetClass.getReference());
+        typesGraph = new TypeGraph(getTargetClass().getReference());
     }
 
     public static CtClass<?> getTargetClass() {
-        return targetClass;
+        return launcher.getFactory().Class().get(targetClassName);
     }
 
     public static CtClass<?> getTestSuiteClass() {
-        return testSuiteClass;
+        return launcher.getFactory().Class().get(testSuiteClassName);
+    }
+
+    public static CtClass<?> getClass(String className) {
+        return launcher.getFactory().Class().get(className);
     }
 
     public static TypeGraph getTypeGraph() {
@@ -157,20 +161,6 @@ public class SpoonManager {
         }
         return compiles;
     }
-
-/*    public static boolean runIndividual(Individual individual) {
-        SpoonHelper.putIndividualIntoTheEnvironment(individual);
-        boolean repOKResult = false;
-        try {
-            Class<?> aClass = urlClassLoader.loadClass(targetClass.getQualifiedName());
-            Method repOKMethod = aClass.getMethod(individual.getChromosome().getSimpleName());
-            repOKResult = runRepOK(repOKMethod, aClass.getDeclaredConstructor().newInstance());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-        return repOKResult;
-    }*/
 
     public static void runTestSuite(String testSuiteFullyQualifiedName, URLClassLoader classLoader) {
         try {
@@ -247,10 +237,10 @@ public class SpoonManager {
         return 0;
     }
 
-    public static Class<?> loadClass(URLClassLoader classLoader) {
+    public static Class<?> loadTargetClass(URLClassLoader classLoader) {
         Class<?> aClass = null;
         try {
-            aClass = classLoader.loadClass(targetClass.getQualifiedName());
+            aClass = classLoader.loadClass(targetClassName);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

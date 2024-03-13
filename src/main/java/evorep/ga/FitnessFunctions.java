@@ -22,12 +22,17 @@ public class FitnessFunctions {
 
         ObjectGeneratorManager.generateObjects(classLoader);
 
-        Class aClass = SpoonManager.loadClass(classLoader);
+        Class aClass = SpoonManager.loadTargetClass(classLoader);
         Method repOKMethod = SpoonManager.loadMethod(aClass, individual.getChromosome().getSimpleName());
+
+        if (ObjectCollector.positiveObjects.isEmpty() || ObjectCollector.negativeObjects.isEmpty()) {
+            System.err.println("ObjectCollector is empty!");
+            throw new IllegalStateException("ObjectCollector is empty!");
+        }
 
         for (Object validInstance : ObjectCollector.positiveObjects) {
             int result = SpoonManager.runRepOK(individual, repOKMethod, validInstance);
-            if (result < 1)
+            if (result != 1)
                 return;
         }
 
@@ -35,38 +40,39 @@ public class FitnessFunctions {
 
         for (Object invalidInstance : ObjectCollector.negativeObjects) {
             int result = SpoonManager.runRepOK(individual, repOKMethod, invalidInstance);
-            if (result < 0)
+            if (result == -1)
                 return;
             else if (result == 0) {
-                //System.out.println("RepOK failed!");
+                // System.out.println("RepOK failed!");
                 fitness = fitness + 1;
             }
         }
 
         fitness -= (float) individual.toString().length() / MAX_LENGTH;
 
-        //System.out.println("For Invalid instances fitness is: " + fitness);
+        // System.out.println("For Invalid instances fitness is: " + fitness);
 
         individual.setFitness(fitness);
 
+        // System.out.println("Individual:\n" + individual);
 
-        //System.out.println("Individual:\n" + individual);
-
-
-        //System.out.println("\n ------------------------------------------ \n");
+        // System.out.println("\n ------------------------------------------ \n");
     }
 
-    /*    public float calcFitness(Individual individual) {
-        String goal = SpoonHelper.getFalseFitnessString();
-        String individualString = SpoonHelper.getStatementsString(individual.getChromosome());
-
-        float fitness = new LevenshteinDistance().apply(goal, individualString) * -1;
-
-        if (!SpoonManager.compileIndividual(individual)) {
-            return WORST_FITNESS_VALUE;
-        }
-
-        individual.setFitness(fitness);
-        return fitness;
-    }*/
+    /*
+     * public float calcFitness(Individual individual) {
+     * String goal = SpoonHelper.getFalseFitnessString();
+     * String individualString =
+     * SpoonHelper.getStatementsString(individual.getChromosome());
+     *
+     * float fitness = new LevenshteinDistance().apply(goal, individualString) * -1;
+     *
+     * if (!SpoonManager.compileIndividual(individual)) {
+     * return WORST_FITNESS_VALUE;
+     * }
+     *
+     * individual.setFitness(fitness);
+     * return fitness;
+     * }
+     */
 }
