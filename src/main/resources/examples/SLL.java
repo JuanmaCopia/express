@@ -80,7 +80,7 @@ public class SLL {
         StringBuilder sb = new StringBuilder();
         sb.append("size: ").append(size).append("| ");
         Node current = head;
-        if current == null) {
+        if (current == null) {
             return sb.append("NULL").toString();
         }
         Set<Node> visited = new HashSet<Node>();
