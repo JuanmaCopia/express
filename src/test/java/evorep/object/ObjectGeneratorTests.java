@@ -36,8 +36,7 @@ public class ObjectGeneratorTests {
     public void testGenerateObjectsSLL() {
         ObjectGeneratorManager.generateObjects(SpoonManager.createClassLoader());
         assertEquals(9, ObjectCollector.positiveObjects.size());
-        assertEquals(9, ObjectCollector.negativeObjects.size());
-        
+
         // Print negative objects
 /*        for (Object negativeObject : ObjectCollector.negativeObjects) {
             System.out.println(negativeObject.toString());

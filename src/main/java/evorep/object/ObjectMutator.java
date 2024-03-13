@@ -29,6 +29,8 @@ public class ObjectMutator {
             return false;
 
         Object newFieldValue = getNewValueForField(targetField, candidates);
+        if (newFieldValue == null && targetField.getValue() == null)
+            return false;
         targetField.setValue(newFieldValue);
         return true;
     }
@@ -103,7 +105,7 @@ public class ObjectMutator {
      */
     static Object getNewValueForField(TargetField targetField, List<Object> candidates) {
         List<Object> possibleChoices = getCandidatesOfType(candidates, targetField);
-        if (possibleChoices.isEmpty() || Utils.nextInt(2) == 0)
+        if (possibleChoices.isEmpty() || (Utils.nextInt(2) == 0 && targetField.getValue() != null))
             return null;
         return possibleChoices.get(new Random().nextInt(possibleChoices.size()));
     }
