@@ -2,7 +2,7 @@ package evorep;
 
 import evorep.ga.mutators.MutatorManager;
 import evorep.spoon.SpoonManager;
-import evorep.spoon.typesgraph.TypesGraph;
+import evorep.spoon.typesgraph.TypeGraph;
 import spoon.reflect.declaration.CtClass;
 
 public class Example {
@@ -19,7 +19,7 @@ public class Example {
     public static void main(String[] args) {
         initialize();
         CtClass<?> targetClass = SpoonManager.getTargetClass();
-        TypesGraph graph = TypesGraph.createTypesGraph(targetClass.getReference());
-        System.out.println(graph.toString());
+        TypeGraph graph = new TypeGraph(targetClass.getReference());
+        System.out.println(graph);
     }
 }

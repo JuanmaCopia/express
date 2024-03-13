@@ -27,7 +27,7 @@ public class TraverseWorklistMutator implements Mutator {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
         CtVariableRead<?> chosenInitialField = SpoonQueries.getNonTraversedCyclicFieldReads(blockGene).stream().findAny().get();
-        List<CtField<?>> loopFields = SpoonManager.getTypesGraph().getSelfCyclicFieldsOfNode(chosenInitialField.getType());
+        List<CtField<?>> loopFields = SpoonManager.getTypeGraph().getSelfCyclicFieldsOfNode(chosenInitialField.getType());
 
         Processor<CtBlock<?>> p = new TraverseWorklistProcessor(chosenInitialField, loopFields);
         p.process(blockGene);

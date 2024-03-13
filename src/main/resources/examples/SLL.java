@@ -76,6 +76,27 @@ public class SLL {
      * }
      */
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("size: ").append(size).append("| ");
+        Node current = head;
+        if current == null) {
+            return sb.append("NULL").toString();
+        }
+        Set<Node> visited = new HashSet<Node>();
+        while (current != null) {
+            if (!visited.add(current)) {
+                sb.append("ALIAS TO: ").append(current.toString());
+                return sb.toString();
+            }
+            sb.append(current.toString()).append(" -> ");
+            current = current.next;
+        }
+
+        sb.append("NULL");
+        return sb.toString();
+    }
+
     private class Node {
         int data;
         Node next;

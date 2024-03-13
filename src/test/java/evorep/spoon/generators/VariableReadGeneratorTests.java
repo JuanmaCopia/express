@@ -1,9 +1,9 @@
 package evorep.spoon.generators;
 
-import evorep.spoon.scope.Scope;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
+import evorep.spoon.scope.Scope;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import spoon.SpoonAPI;
@@ -94,7 +94,6 @@ public class VariableReadGeneratorTests {
         while (variableWrites.size() < 4)
             variableWrites.add(ReferenceExpressionGenerator.generateRandomVarWriteOfRefType(currentVar, true).toString());
 
-        System.err.println(variableWrites.toString());
         assertTrue(variableWrites.containsAll(possibleNodeVarAccess));
     }
 
@@ -110,7 +109,6 @@ public class VariableReadGeneratorTests {
         while (variableWrites.size() < 4)
             variableWrites.add(ReferenceExpressionGenerator.generateRandomVarReadOfType(currentVar, nextField.getType(), true).toString());
 
-        System.err.println(variableWrites.toString());
         assertTrue(variableWrites.containsAll(possibleNodeVarAccess));
     }
 
@@ -126,7 +124,6 @@ public class VariableReadGeneratorTests {
         while (variableWrites.size() < 4)
             variableWrites.add(ReferenceExpressionGenerator.generateRandomVarWriteOfType(currentVar, nextField.getType(), true).toString());
 
-        System.err.println(variableWrites.toString());
         assertTrue(variableWrites.containsAll(possibleNodeVarAccess));
     }
 
@@ -144,7 +141,6 @@ public class VariableReadGeneratorTests {
     @Test
     void generateAllVarWritesOfNodeTest() {
         Set<String> variableWrites = new HashSet<>();
-        System.err.println(scope.getAllVariables().toString());
         ReferenceExpressionGenerator.generateAllVarWritesOfType(scope.getAllVariables(), nodeClass.getReference()).forEach(
                 varWrite -> variableWrites.add(varWrite.toString())
         );

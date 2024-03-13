@@ -22,8 +22,8 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtBlock<?>> {
 
     @Override
     public void process(CtBlock<?> ctBlock) {
-        CtLocalVariable<?> visitedSet = SpoonFactory.createVisitedSetDeclaration(initialField.getType());
-        CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(initialField.getType());
+        CtLocalVariable<?> visitedSet = SpoonFactory.createVisitedSetDeclaration(initialField.getType(), ctBlock);
+        CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(initialField.getType(), ctBlock);
 
         CtTypeReference<?> subtypeOfWorklist = worklist.getType().getActualTypeArguments().get(0);
 

@@ -12,8 +12,9 @@ import spoon.reflect.declaration.CtMethod;
 public class SpoonHelper {
 
     public static void putIndividualIntoTheEnvironment(Individual individual) {
-        SpoonManager.getTargetClass().removeMethod(individual.getChromosome());
-        SpoonManager.getTargetClass().addMethod(individual.getChromosome());
+        CtClass<?> targetClass = SpoonManager.getTargetClass();
+        targetClass.removeMethod(individual.getChromosome());
+        targetClass.addMethod(individual.getChromosome());
     }
 
     public static Scope getScope(Individual individual, CtCodeElement gene) {

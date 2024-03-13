@@ -29,8 +29,8 @@ public class MultipleReferenceTraversalProcessor extends AbstractProcessor<CtBlo
 
         CtTypeReference<?> nodeType = initialField.getType();
 
-        CtLocalVariable<?> visitedSetDeclaration = SpoonFactory.createVisitedSetDeclaration(nodeType);
-        CtLocalVariable<?> workListDeclaration = SpoonFactory.createWorkListDeclaration(nodeType);
+        CtLocalVariable<?> visitedSetDeclaration = SpoonFactory.createVisitedSetDeclaration(nodeType, ctBlock);
+        CtLocalVariable<?> workListDeclaration = SpoonFactory.createWorkListDeclaration(nodeType, ctBlock);
         CtInvocation<?> addInitialToListCall = SpoonFactory.createInvocation(workListDeclaration, "add", nodeType, initialField);
 
 

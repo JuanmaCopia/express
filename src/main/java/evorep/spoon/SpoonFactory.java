@@ -1,5 +1,6 @@
 package evorep.spoon;
 
+import evorep.ga.helper.LocalVarHelper;
 import org.apache.commons.lang3.ClassUtils;
 import spoon.Launcher;
 import spoon.reflect.code.*;
@@ -272,11 +273,11 @@ public class SpoonFactory {
         return variableWrite;
     }
 
-    public static CtLocalVariable<?> createVisitedSetDeclaration(CtTypeReference<?> subType) {
+    public static CtLocalVariable<?> createVisitedSetDeclaration(CtTypeReference<?> subType, CtBlock<?> code) {
         CtTypeReference<?> setType = createTypeWithSubtypeReference(Set.class, subType);
         CtTypeReference<?> hashSetType = createTypeWithSubtypeReference(HashSet.class, subType);
         CtConstructorCall<?> hashSetConstructorCall = createConstructorCall(hashSetType);
-        return createLocalVariable("visited", setType, hashSetConstructorCall);
+        return createLocalVariable(LocalVarHelper.getVisitedSetVarName(code), setType, hashSetConstructorCall);
     }
 
     public static CtTypeReference<?> createTypeWithSubtypeReference(Class<?> type, CtTypeReference<?> subtype) {
@@ -300,6 +301,14 @@ public class SpoonFactory {
         CtInvocation<?> addInvocation = SpoonFactory.createInvocation(setVariable, "add", elemType, argument);
         CtUnaryOperator<Boolean> condition = (CtUnaryOperator<Boolean>) SpoonFactory
                 .createUnaryExpression(addInvocation, UnaryOperatorKind.NOT);
+        CtReturn<?> returnStatement = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
+        return SpoonFactory.createIfThenStatement(condition, returnStatement);
+    }
+
+    public static CtIf createVisitedSizeCheck(CtVariable<?> setVariable, CtVariableRead<?> integerField) {
+        CtInvocation<?> addInvocation = SpoonFactory.createInvocation(setVariable, "size");
+        CtBinaryOperator<Boolean> condition = (CtBinaryOperator<Boolean>) SpoonFactory
+                .createBinaryExpression(addInvocation, integerField, BinaryOperatorKind.NE);
         CtReturn<?> returnStatement = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
         return SpoonFactory.createIfThenStatement(condition, returnStatement);
     }
@@ -329,11 +338,11 @@ public class SpoonFactory {
         return ifStatement;
     }
 
-    public static CtLocalVariable<?> createWorkListDeclaration(CtTypeReference<?> subType) {
+    public static CtLocalVariable<?> createWorkListDeclaration(CtTypeReference<?> subType, CtBlock<?> code) {
         CtTypeReference<?> listType = createTypeWithSubtypeReference(LinkedList.class, subType);
         CtTypeReference<?> linkedListType = createTypeWithSubtypeReference(LinkedList.class, subType);
         CtConstructorCall<?> hashSetConstructorCall = createConstructorCall(linkedListType);
-        return createLocalVariable("worklist", listType, hashSetConstructorCall);
+        return createLocalVariable(LocalVarHelper.getWorklistVarName(code), listType, hashSetConstructorCall);
     }
 
     public static CtContinue createContinueStatement() {
