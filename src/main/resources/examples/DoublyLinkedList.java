@@ -3,12 +3,25 @@ package examples;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DLL {
+class DoublyLinkedList {
 
     Node head;
     Node tail;
     int size;
 
+
+    public void addNode(int data) {
+        Node newNode = new Node(data);
+        if (head == null) {
+            head = tail = newNode;
+        } else {
+            tail.next = newNode;
+            newNode.prev = tail;
+            tail = newNode;
+        }
+        size++;
+    }
+    
     public boolean repOKStructure() {
         if (head == null) {
             return tail == null;
@@ -16,7 +29,7 @@ public class DLL {
         if (tail == null) {
             return false;
         }
-        if (head.back != null) {
+        if (head.prev != null) {
             return false;
         }
         if (tail.next != null) {
@@ -31,7 +44,7 @@ public class DLL {
                 return false;
             }
             /* Handle current: */
-            if (current_0.back != null && current_0.back.next != current_0) {
+            if (current_0.prev != null && current_0.prev.next != current_0) {
                 return false;
             }
             if (current_0 == tail && current_0.next != null) {
@@ -40,14 +53,20 @@ public class DLL {
             /* End of Handle current: */
             current_0 = current_0.next;
         }
+        // Visited Check
+        if (visited.size() != size)
+            return false;
         return true;
     }
 
-    private class Node {
+    //A node class for doubly linked list
+    class Node {
         int data;
+        Node prev;
         Node next;
-        Node back;
+
+        public Node(int data) {
+            this.data = data;
+        }
     }
-
-
 }
