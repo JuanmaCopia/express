@@ -3,15 +3,21 @@ package examples;
 import java.util.HashSet;
 import java.util.Set;
 
-class DoublyLinkedList {
+public class DoublyLinkedList {
 
-    Node head;
-    Node tail;
-    int size;
+    public Node head;
+    public Node tail;
+    public int size;
 
+    public DoublyLinkedList() {
+        head = null;
+        tail = null;
+        size = 0;
+    }
 
     public void addNode(int data) {
-        Node newNode = new Node(data);
+        Node newNode = new Node();
+        newNode.data = data;
         if (head == null) {
             head = tail = newNode;
         } else {
@@ -21,7 +27,7 @@ class DoublyLinkedList {
         }
         size++;
     }
-    
+
     public boolean repOKStructure() {
         if (head == null) {
             return tail == null;
@@ -59,14 +65,13 @@ class DoublyLinkedList {
         return true;
     }
 
-    //A node class for doubly linked list
-    class Node {
-        int data;
-        Node prev;
-        Node next;
+    public static class Node {
+        public int data;
+        public Node prev;
+        public Node next;
 
-        public Node(int data) {
-            this.data = data;
+        public Node() {
         }
+
     }
 }
