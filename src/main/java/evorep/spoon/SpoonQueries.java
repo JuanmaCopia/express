@@ -311,8 +311,10 @@ public class SpoonQueries {
     }
 
     public static CtStatement getEndHandleCurrentComment(CtBlock<?> block) {
-        return (CtStatement) block.getElements(e -> e instanceof CtComment).stream()
-                .filter(SpoonQueries::isEndOfHandleCurrent).findAny().orElse(null);
+        List<CtElement> handleCurrentEndComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isEndOfHandleCurrent).toList();
+        if (handleCurrentEndComments.isEmpty())
+            return null;
+        return (CtStatement) handleCurrentEndComments.get(RandomUtils.nextInt(handleCurrentEndComments.size()));
     }
 
     public static List<CtVariableRead<?>> getNonTraversedCyclicFieldReads(CtBlock<?> code) {
@@ -412,4 +414,11 @@ public class SpoonQueries {
     public static List<CtLocalVariable<?>> getVisitedSetLocalVars(CtBlock<?> block) {
         return getLocalVariablesMathingPrefix(block, LocalVarHelper.SET_VAR_NAME);
     }
+
+    public static List<CtLocalVariable<?>> getVisitedSetLocalVarsOfType(CtBlock<?> block, CtTypeReference<?> type) {
+        return getLocalVariablesMathingPrefix(block, LocalVarHelper.SET_VAR_NAME).stream().filter(
+                var -> var.getType().getActualTypeArguments().get(0).isSubtypeOf(type)).toList();
+    }
+
+
 }

@@ -29,17 +29,11 @@ public class DoublyLinkedList {
     }
 
     public boolean repOKStructure() {
-        if (head == null) {
-            return tail == null;
+        if (head == null && tail != null) {
+            return false
         }
-        if (tail == null) {
-            return false;
-        }
-        if (head.prev != null) {
-            return false;
-        }
-        if (tail.next != null) {
-            return false;
+        if (head != null && tail == null) {
+            return false
         }
         Set<Node> visited = new HashSet<Node>();
         /* Initialize root element: */

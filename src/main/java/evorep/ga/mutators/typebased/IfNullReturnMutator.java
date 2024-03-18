@@ -30,7 +30,7 @@ public class IfNullReturnMutator implements Mutator {
 
         CtIf ifStatement = SpoonFactory.createIfThenStatement(
                 (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(chosenVarRead, null, operator),
-                SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(RandomUtils.nextBoolean()))
+                SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false))
         );
 
         blockGene.insertBegin(ifStatement);
