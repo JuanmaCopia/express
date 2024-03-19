@@ -16,7 +16,7 @@ import spoon.reflect.declaration.CtMethod;
 
 import java.util.List;
 
-public class SizeCheckMutator implements Mutator {
+public class AddSizeCheckMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
@@ -26,7 +26,7 @@ public class SizeCheckMutator implements Mutator {
             return false;
         }
 
-        return !SpoonQueries.getIntegerFieldsOfRoot().isEmpty();
+        return !SpoonQueries.getIntegerFieldsOfRoot().isEmpty() && !SpoonQueries.containsSizeCheck(block);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class SizeCheckMutator implements Mutator {
         Processor<CtBlock<?>> p = new SizeCheckProcessor(setVar, intFieldRead);
         p.process(blockGene);
 
-        //System.err.println("SizeCheckMutator: " + blockGene.toString());
+        //System.err.println("\nSizeCheckMutator: \n" + blockGene.toString());
     }
 
 

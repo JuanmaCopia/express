@@ -1,18 +1,15 @@
 package evorep.spoon.generators;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
 import evorep.spoon.scope.Scope;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtVariable;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class BooleanExpressionGenerator {
 
@@ -62,8 +59,10 @@ public class BooleanExpressionGenerator {
 
     public static CtExpression<Boolean> generateRandomFieldAccessNullComparison(CtVariable<?> var) {
         BinaryOperatorKind operator = RandomUtils.nextBoolean() ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE;
-        CtExpression<?> fieldRead = ReferenceExpressionGenerator.generateAllFieldReads(var, false).stream().findAny()
-                .get();
+
+        List<CtVariableRead<?>> fieldReads = ReferenceExpressionGenerator.generateAllFieldReads(var, false);
+        CtExpression<?> fieldRead = fieldReads.get(RandomUtils.nextInt(fieldReads.size()));
+
         CtExpression<?> nullExpression = SpoonFactory.parseToExpression(null);
         return (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(fieldRead, nullExpression, operator);
     }

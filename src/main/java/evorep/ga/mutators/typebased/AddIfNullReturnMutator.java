@@ -10,7 +10,7 @@ import spoon.reflect.declaration.CtMethod;
 
 import java.util.List;
 
-public class IfNullReturnMutator implements Mutator {
+public class AddIfNullReturnMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
@@ -30,10 +30,11 @@ public class IfNullReturnMutator implements Mutator {
 
         CtIf ifStatement = SpoonFactory.createIfThenStatement(
                 (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(chosenVarRead, null, operator),
-                SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(RandomUtils.nextBoolean()))
+                SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false))
         );
 
-        blockGene.insertBegin(ifStatement);
+        CtStatement endOfInitialChecksComment = SpoonQueries.getEndOfInitialChecksComment(blockGene);
+        endOfInitialChecksComment.insertBefore(ifStatement);
     }
 
 

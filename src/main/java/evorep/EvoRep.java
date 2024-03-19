@@ -24,7 +24,7 @@ public class EvoRep {
     }
 
     public static void startSearch() {
-        GeneticAlgorithm ga = new GeneticAlgorithm(ToolConfig.maxPopulation, 1.0, 1.0);
+        GeneticAlgorithm ga = new GeneticAlgorithm(ToolConfig.maxPopulation, 1.0, 1.0, 3);
         //Population population = ga.initPopulationBasedOnTypeGraph(getRepOKMethod());
         Population population = ga.initPopulation(getRepOKMethod());
         ga.evalPopulation(population);

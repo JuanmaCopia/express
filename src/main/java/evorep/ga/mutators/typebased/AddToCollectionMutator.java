@@ -2,6 +2,7 @@ package evorep.ga.mutators.typebased;
 
 import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
+import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
@@ -35,13 +36,13 @@ public class AddToCollectionMutator implements Mutator {
         List<CtLocalVariable<?>> traversalCollections = SpoonQueries.getWorklistDeclared(blockGene);
         traversalCollections.addAll(SpoonQueries.getVisitedSetDeclared(blockGene));
 
-        CtLocalVariable<?> chosenCollection = traversalCollections.stream().findAny().get();
+        CtLocalVariable<?> chosenCollection = traversalCollections.get(RandomUtils.nextInt(traversalCollections.size()));
         CtTypeReference<?> collectionSubtype = chosenCollection.getType().getActualTypeArguments().get(0);
 
         TypeGraph typesGraph = SpoonManager.getTypeGraph();
         List<CtField<?>> candidateFields = typesGraph.getOutgoingFields(typesGraph.getRoot());
         candidateFields = SpoonQueries.filterFieldsByType(candidateFields, collectionSubtype);
-        CtField<?> chosenField = candidateFields.stream().findAny().get();
+        CtField<?> chosenField = candidateFields.get(RandomUtils.nextInt(candidateFields.size()));
 
         CtInvocation<?> addToCollectionCall = SpoonFactory.createInvocation(chosenCollection, "add", collectionSubtype, chosenField);
 

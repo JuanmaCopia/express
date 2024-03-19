@@ -59,10 +59,19 @@ public class GeneticAlgorithm {
      */
     private final double crossoverRate;
 
-    public GeneticAlgorithm(int maxPopulationSize, double mutationRate, double crossoverRate) {
+    /**
+     * Elitism is the concept that the strongest members of the population
+     * should be preserved from generation to generation. If an individual is
+     * one of the elite, it will not be mutated or crossover.
+     */
+    private final int elitismCount;
+
+    public GeneticAlgorithm(int maxPopulationSize, double mutationRate, double crossoverRate, int elitismCount) {
         this.maxPopulationSize = maxPopulationSize;
         this.mutationRate = mutationRate;
         this.crossoverRate = crossoverRate;
+        this.elitismCount = elitismCount;
+
     }
 
     /**
@@ -131,11 +140,20 @@ public class GeneticAlgorithm {
      * @return The mutated population
      */
     public Population mutatePopulation(Population population) {
-        Population newPopulation = new Population(population);
+        Population newPopulation = new Population();
 
-        for (Individual individual : population.getIndividuals()) {
-            individual = mutateIndividual(individual);
-            newPopulation.addIndividual(individual);
+        for (int i = 0; i < population.size(); i++) {
+            Individual individual = population.removeFittest();
+            if (i < elitismCount) {
+                Individual mutant = mutateIndividual(individual);
+                newPopulation.addIndividual(individual);
+                newPopulation.addIndividual(mutant);
+            } else if (Math.random() < mutationRate) {
+                Individual mutant = mutateIndividual(individual);
+                newPopulation.addIndividual(mutant);
+            } else {
+                newPopulation.addIndividual(individual);
+            }
         }
 
         return newPopulation;

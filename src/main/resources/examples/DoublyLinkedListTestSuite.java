@@ -2,55 +2,55 @@ package examples;
 
 import org.junit.jupiter.api.Test;
 
-public class DoublyLinkedListTest {
+public class DoublyLinkedListTestSuite {
 
     @Test
-    void test0() {
+    public void test0() {
         DoublyLinkedList doublyLinkedList = new DoublyLinkedList();
     }
 
     @Test
-    void test1() {
+    public void test1() {
         DoublyLinkedList doublyLinkedList = new DoublyLinkedList();
         doublyLinkedList.addNode(5);
     }
 
     @Test
-    void test2() {
+    public void test2() {
         DoublyLinkedList doublyLinkedList = new DoublyLinkedList();
         doublyLinkedList.addNode(1);
         doublyLinkedList.addNode(2);
     }
 
     @Test
-    void test3() {
-        DoublyLinkedList doublyLinkedList = new DoublyLinkedList();
-        doublyLinkedList.addNode(1);
-        doublyLinkedList.addNode(2);
-        doublyLinkedList.addNode(3);
-    }
-
-    @Test
-    void test4() {
+    public void test3() {
         DoublyLinkedList doublyLinkedList = new DoublyLinkedList();
         doublyLinkedList.addNode(1);
         doublyLinkedList.addNode(2);
         doublyLinkedList.addNode(3);
-        doublyLinkedList.addNode(4);
     }
 
     @Test
-    void test5() {
+    public void test4() {
         DoublyLinkedList doublyLinkedList = new DoublyLinkedList();
         doublyLinkedList.addNode(1);
         doublyLinkedList.addNode(2);
         doublyLinkedList.addNode(3);
         doublyLinkedList.addNode(4);
+    }
+
+    @Test
+    public void test5() {
+        DoublyLinkedList doublyLinkedList = new DoublyLinkedList();
+        doublyLinkedList.addNode(1);
+        doublyLinkedList.addNode(2);
+        doublyLinkedList.addNode(3);
+        doublyLinkedList.addNode(4);
         doublyLinkedList.addNode(4);
     }
 
     @Test
-    void test6() {
+    public void test6() {
         DoublyLinkedList doublyLinkedList = new DoublyLinkedList();
         doublyLinkedList.addNode(1);
         doublyLinkedList.addNode(2);
@@ -61,7 +61,7 @@ public class DoublyLinkedListTest {
     }
 
     @Test
-    void test7() {
+    public void test7() {
         DoublyLinkedList doublyLinkedList = new DoublyLinkedList();
         doublyLinkedList.addNode(1);
         doublyLinkedList.addNode(2);

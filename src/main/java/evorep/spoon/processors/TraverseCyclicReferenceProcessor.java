@@ -10,16 +10,17 @@ public class TraverseCyclicReferenceProcessor extends AbstractProcessor<CtBlock<
 
     CtVariableRead<?> initialField;
     CtField<?> loopField;
+    CtLocalVariable<?> visitedSet;
 
-    public TraverseCyclicReferenceProcessor(CtVariableRead<?> initialField, CtField<?> loopField) {
+    public TraverseCyclicReferenceProcessor(CtVariableRead<?> initialField, CtField<?> loopField, CtLocalVariable<?> visitedSet) {
         super();
         this.initialField = initialField;
         this.loopField = loopField;
+        this.visitedSet = visitedSet;
     }
 
     @Override
     public void process(CtBlock<?> ctBlock) {
-        CtLocalVariable<?> visitedSet = SpoonFactory.createVisitedSetDeclaration(initialField.getType(), ctBlock);
         CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(ctBlock), initialField.getType(), initialField);
 
         CtExpression<Boolean> whileCondition = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(currentDeclaration, null, BinaryOperatorKind.NE);

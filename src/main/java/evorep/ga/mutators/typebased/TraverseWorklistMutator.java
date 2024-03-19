@@ -2,6 +2,7 @@ package evorep.ga.mutators.typebased;
 
 import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
+import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
 import evorep.spoon.processors.TraverseWorklistProcessor;
@@ -26,7 +27,9 @@ public class TraverseWorklistMutator implements Mutator {
     public void mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        CtVariableRead<?> chosenInitialField = SpoonQueries.getNonTraversedCyclicFieldReads(blockGene).stream().findAny().get();
+        List<CtVariableRead<?>> varReads = SpoonQueries.getNonTraversedCyclicFieldReads(blockGene);
+        CtVariableRead<?> chosenInitialField = varReads.get(RandomUtils.nextInt(varReads.size()));
+        
         List<CtField<?>> loopFields = SpoonManager.getTypeGraph().getSelfCyclicFieldsOfNode(chosenInitialField.getType());
 
         Processor<CtBlock<?>> p = new TraverseWorklistProcessor(chosenInitialField, loopFields);
