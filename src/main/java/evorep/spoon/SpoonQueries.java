@@ -277,7 +277,7 @@ public class SpoonQueries {
         assert i < statements.size();
         CtBlock<?> handleBlock = SpoonFactory.createBlock();
         i++;
-        while (i < statements.size() && !isEndOfHandleCurrent(statements.get(i))) {
+        while (i < statements.size() && !isEndOfHandleCurrentComment(statements.get(i))) {
             handleBlock.addStatement(statements.get(i).clone());
             i++;
         }
@@ -290,7 +290,7 @@ public class SpoonQueries {
         return comment.getContent().equals("Handle current:");
     }
 
-    public static boolean isEndOfHandleCurrent(CtElement element) {
+    public static boolean isEndOfHandleCurrentComment(CtElement element) {
         if (!(element instanceof CtComment comment))
             return false;
         // System.out.println("The content of the comment is:" + comment.getContent());
@@ -322,7 +322,7 @@ public class SpoonQueries {
             newBody.addStatement(statement.clone());
         }
 
-        while (!isEndOfHandleCurrent(loopBody.getStatement(i))) {
+        while (!isEndOfHandleCurrentComment(loopBody.getStatement(i))) {
             i++;
         }
 
@@ -334,7 +334,7 @@ public class SpoonQueries {
     }
 
     public static CtStatement getEndHandleCurrentComment(CtBlock<?> block) {
-        List<CtElement> handleCurrentEndComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isEndOfHandleCurrent).toList();
+        List<CtElement> handleCurrentEndComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isEndOfHandleCurrentComment).toList();
         if (handleCurrentEndComments.isEmpty())
             return null;
         return (CtStatement) handleCurrentEndComments.get(RandomUtils.nextInt(handleCurrentEndComments.size()));
@@ -472,6 +472,11 @@ public class SpoonQueries {
 
     public static CtComment getEndOfInitialChecksComment(CtBlock<?> block) {
         List<CtComment> comments = block.getElements(SpoonQueries::isEndOfInitialChecksComment);
+        return comments.get(0);
+    }
+
+    public static CtComment getEndOfHandleCurrentComment(CtBlock<?> block) {
+        List<CtComment> comments = block.getElements(SpoonQueries::isEndOfHandleCurrentComment);
         return comments.get(0);
     }
 }

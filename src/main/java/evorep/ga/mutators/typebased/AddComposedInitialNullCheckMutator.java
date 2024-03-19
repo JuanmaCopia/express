@@ -2,7 +2,6 @@ package evorep.ga.mutators.typebased;
 
 import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
-import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.*;
@@ -12,10 +11,6 @@ import java.util.List;
 
 public class AddComposedInitialNullCheckMutator implements Mutator {
 
-    public static CtExpression<Boolean> generateNullComparisonClause(CtVariableRead<?> varRead) {
-        BinaryOperatorKind operator = RandomUtils.nextBoolean() ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE;
-        return (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(varRead, null, operator);
-    }
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
@@ -33,8 +28,8 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
         CtVariableRead<?> var1 = chosenVarReads.get(0);
         CtVariableRead<?> var2 = chosenVarReads.get(1);
 
-        CtExpression<Boolean> clause1 = generateNullComparisonClause(var1);
-        CtExpression<Boolean> clause2 = generateNullComparisonClause(var2);
+        CtExpression<Boolean> clause1 = SpoonFactory.generateNullComparisonClause(var1);
+        CtExpression<Boolean> clause2 = SpoonFactory.generateNullComparisonClause(var2);
 
         CtExpression<Boolean> condition = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(
                 clause1, clause2, BinaryOperatorKind.AND);

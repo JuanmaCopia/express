@@ -423,10 +423,21 @@ public class SpoonFactory {
     }
 
     public static CtIf createIfReturnFalse(CtExpression<Boolean> condition) {
-        CtIf ifStatement = coreFactory.createIf();
-        ifStatement.setCondition(condition);
-        ifStatement.setThenStatement(createReturnStatement(createLiteral(false)));
-        return ifStatement;
+        return createIfThenStatement(condition, createReturnStatement(createLiteral(false)));
     }
+
+    public static CtExpression<Boolean> generateNullComparisonClause(CtVariableRead<?> varRead) {
+        BinaryOperatorKind operator = RandomUtils.nextBoolean() ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE;
+        return (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(varRead, null, operator);
+    }
+
+    public static CtExpression<Boolean> generateNullComparisonClause(CtVariableRead<?> varRead, BinaryOperatorKind operator) {
+        return (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(varRead, null, operator);
+    }
+
+    public static CtExpression<Boolean> generateNotEqualComparisonClause(CtVariableRead<?> varRead, CtVariableRead<?> varRead2) {
+        return (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(varRead, varRead2, BinaryOperatorKind.NE);
+    }
+
 
 }

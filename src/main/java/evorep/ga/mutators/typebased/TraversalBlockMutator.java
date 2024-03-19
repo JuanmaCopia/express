@@ -36,7 +36,7 @@ public class TraversalBlockMutator implements Mutator {
 
         switch (getChoice(handleBlock)) {
             case 0 -> addIf(handleBlock, currentDeclaration, scope);
-            case 1 -> mutateIf(handleBlock, currentDeclaration, scope);
+            //case 1 -> mutateIf(handleBlock, currentDeclaration, scope);
             //case 2 -> removeIf(handleBlock);
             default -> throw new RuntimeException("Invalid choice");
         }
@@ -52,7 +52,7 @@ public class TraversalBlockMutator implements Mutator {
         filteredChoices.add(0);
         List<CtIf> ifs = handleBlock.getElements(Objects::nonNull);
         if (!ifs.isEmpty()) {
-            filteredChoices.add(1);
+            //filteredChoices.add(1);
             //filteredChoices.add(2);
         }
         return RandomUtils.getRandomInteger(filteredChoices);

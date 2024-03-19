@@ -20,9 +20,10 @@ public class MutatorManager {
         mutators.add(new AddIfNullReturnMutator());
         mutators.add(new TraverseCyclicReferenceMutator());
         mutators.add(new TraverseWorklistMutator());
-        mutators.add(new TraversalBlockMutator());
+        //mutators.add(new TraversalBlockMutator());
         mutators.add(new AddSizeCheckMutator());
         mutators.add(new AddComposedInitialNullCheckMutator());
+        mutators.add(new AddComposedIfToTraversalMutator());
     }
 
     public static Individual mutate(Individual individual) {
