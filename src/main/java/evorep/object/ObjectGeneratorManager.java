@@ -1,6 +1,5 @@
 package evorep.object;
 
-import com.google.gson.Gson;
 import evorep.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
 
@@ -19,6 +18,9 @@ import java.util.HashMap;
  * @author Facundo Molina <facundo.molina@imdea.org>
  */
 public class ObjectGeneratorManager {
+
+
+    final static int MUTANTS_PER_VALID_INSTANCE = 6;
 
 
     /**
@@ -43,19 +45,16 @@ public class ObjectGeneratorManager {
      * Generate the negative objects by randomly mutating the positive objects.
      */
     private static void generateNegativeObjects() {
-        Gson gson = new Gson();
-        //System.out.println("Generating negative objects");
+        //Gson gson = new Gson();
         for (Object positiveObject : ObjectCollector.positiveObjects) {
-            // Create a deep copy of the positive object
-            //System.out.println("Copying object...");
-            Object copy = deepCopy(positiveObject);
-            //Object copy = gson.fromJson(gson.toJson(positiveObject), positiveObject.getClass());
-            //System.out.println("Done!");
-            // Mutate the negative object
-            boolean wasMutated = ObjectMutator.mutate(copy);
-            // Add the negative object to the list of negative objects
-            if (wasMutated)
-                ObjectCollector.negativeObjects.add(copy);
+            for (int i = 0; i < MUTANTS_PER_VALID_INSTANCE; i++) {
+                Object copy = deepCopy(positiveObject);
+                //Object copy = gson.fromJson(gson.toJson(positiveObject), positiveObject.getClass());
+                boolean wasMutated = ObjectMutator.mutate(copy);
+                if (wasMutated)
+                    ObjectCollector.negativeObjects.add(copy);
+            }
+
         }
     }
 

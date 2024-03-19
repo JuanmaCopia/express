@@ -63,6 +63,7 @@ public class SpoonFactory {
         CtMethod<Boolean> newMethod = createMethod(ModifierKind.PUBLIC, typeFactory.BOOLEAN_PRIMITIVE, name);
 
         CtBlock<Boolean> block = coreFactory.createBlock();
+        block.addStatement(createComment("End of Initial Checks"));
         block.addStatement(createReturnStatement(codeFactory.createLiteral(true)));
         newMethod.setBody(block);
         return newMethod;
@@ -419,6 +420,13 @@ public class SpoonFactory {
 
     public static CtComment createComment(String content) {
         return coreFactory.createComment().setContent(content);
+    }
+
+    public static CtIf createIfReturnFalse(CtExpression<Boolean> condition) {
+        CtIf ifStatement = coreFactory.createIf();
+        ifStatement.setCondition(condition);
+        ifStatement.setThenStatement(createReturnStatement(createLiteral(false)));
+        return ifStatement;
     }
 
 }

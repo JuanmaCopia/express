@@ -2,7 +2,6 @@ package evorep.spoon;
 
 import evorep.ga.Individual;
 import evorep.ga.helper.LocalVarHelper;
-import evorep.spoon.generators.ReferenceExpressionGenerator;
 import evorep.spoon.typesgraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
@@ -10,7 +9,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SpoonQueries {
 
@@ -192,31 +190,50 @@ public class SpoonQueries {
 
     public static List<CtVariableRead<?>> getCandidateVarReadsForNullCheck(CtBlock<?> block) {
         TypeGraph typesGraph = SpoonManager.getTypeGraph();
-
         List<CtVariable<?>> referenceFields = typesGraph.getOutgoingReferenceFields(typesGraph.getRoot());
-
-        List<CtCodeElement> candidateFieldReads = ReferenceExpressionGenerator
-                .generateAllVarReadsOfReferenceType(referenceFields);
-        Set<String> candidateFieldStrings = new HashSet<>();
+        List<CtVariableRead<?>> varReads = new ArrayList<>();
+        for (CtVariable<?> field : referenceFields) {
+            varReads.add(SpoonFactory.createVariableRead(field));
+        }
+        //List<CtCodeElement> candidateFieldReads = ReferenceExpressionGenerator.generateAllVarReadsOfReferenceType(referenceFields);
+/*        Set<String> candidateFieldStrings = new HashSet<>();
         for (CtCodeElement element : candidateFieldReads) {
             candidateFieldStrings.add(element.toString());
         }
 
-        List<CtIf> ifStatements = block.getStatements().stream().filter(e -> e instanceof CtIf).map(e -> (CtIf) e)
-                .toList();
+        List<CtIf> ifStatements = getInitialCheckStatements(block).stream().filter(SpoonQueries::isNullCheck).map(e -> (CtIf) e).toList();
         for (CtIf ifStatement : ifStatements) {
-            if (ifStatement.getCondition() instanceof CtBinaryOperator<?> binaryOperator) {
-                if (binaryOperator.getKind().equals(BinaryOperatorKind.EQ)) {
-                    if (binaryOperator.getLeftHandOperand() instanceof CtVariableRead<?> varRead &&
-                            binaryOperator.getRightHandOperand().toString().equals("null")) {
-                        if (candidateFieldStrings.contains(varRead.toString())) {
-                            candidateFieldReads.remove(varRead);
-                        }
-                    }
-                }
+            CtVariableRead<?> varRead = (CtVariableRead<?>) ((CtBinaryOperator<?>) ifStatement.getCondition()).getLeftHandOperand();
+            if (candidateFieldStrings.contains(varRead.toString())) {
+                candidateFieldReads.remove(varRead);
             }
+        }*/
+        return varReads;
+    }
+
+    public static List<CtStatement> getInitialCheckStatements(CtBlock<?> block) {
+        List<CtStatement> statements = new ArrayList<>();
+        for (CtStatement statement : block.getStatements()) {
+            if (isEndOfInitialChecksComment(statement))
+                return statements;
+            statements.add(statement);
         }
-        return candidateFieldReads.stream().map(e -> (CtVariableRead<?>) e).collect(Collectors.toList());
+        return statements;
+    }
+
+    public static List<CtIf> getInitialSingleNullChecks(CtBlock<?> block) {
+        List<CtStatement> statements = getInitialCheckStatements(block);
+        return statements.stream().filter(SpoonQueries::isNullCheck).map(e -> (CtIf) e).toList();
+    }
+
+    public static boolean isNullComparison(CtExpression<?> expr) {
+        if (!(expr instanceof CtBinaryOperator<?> binaryOperator))
+            return false;
+        if (!(binaryOperator.getKind().equals(BinaryOperatorKind.EQ) || binaryOperator.getKind().equals(BinaryOperatorKind.NE)))
+            return false;
+        if (!(binaryOperator.getLeftHandOperand() instanceof CtVariableRead<?> varRead))
+            return false;
+        return binaryOperator.getRightHandOperand().toString().equals("null");
     }
 
     public static List<CtLocalVariable<?>> getWorklistDeclared(CtBlock<?> block) {
@@ -248,13 +265,7 @@ public class SpoonQueries {
     public static boolean isNullCheck(CtStatement statement) {
         if (!(statement instanceof CtIf ifStatement))
             return false;
-        if (!(ifStatement.getCondition() instanceof CtBinaryOperator<?> binaryOperator))
-            return false;
-        if (!binaryOperator.getKind().equals(BinaryOperatorKind.EQ))
-            return false;
-        if (!(binaryOperator.getLeftHandOperand() instanceof CtVariableRead<?> varRead))
-            return false;
-        return binaryOperator.getRightHandOperand().toString().equals("null");
+        return isNullComparison(ifStatement.getCondition());
     }
 
     public static CtBlock<?> getBlockOfHandleCurrent(CtBlock<?> block) {
@@ -284,6 +295,18 @@ public class SpoonQueries {
             return false;
         // System.out.println("The content of the comment is:" + comment.getContent());
         return comment.getContent().equals("End of Handle current:");
+    }
+
+    public static boolean isEndOfInitialChecksComment(CtElement element) {
+        if (!(element instanceof CtComment comment))
+            return false;
+        return comment.getContent().equals("End of Initial Checks");
+    }
+
+    public static boolean isSizeCheckComment(CtElement element) {
+        if (!(element instanceof CtComment comment))
+            return false;
+        return comment.getContent().equals("Size check:");
     }
 
     public static CtBlock<?> generateMutatedBody(CtBlock<?> loopBody, CtBlock<?> newBlock) {
@@ -420,5 +443,35 @@ public class SpoonQueries {
                 var -> var.getType().getActualTypeArguments().get(0).isSubtypeOf(type)).toList();
     }
 
+    public static boolean containsSizeCheck(CtBlock<?> block) {
+        return !block.getElements(SpoonQueries::isSizeCheckComment).isEmpty();
+    }
 
+    public static List<CtVariableRead<?>> chooseNVarReads(List<CtVariableRead<?>> varReads, int n) {
+        List<CtVariableRead<?>> chosenVarReads = new ArrayList<>();
+        List<Integer> indices = generateRandomIntegers(varReads.size() - 1, n);
+        for (int index : indices) {
+            chosenVarReads.add(varReads.get(index));
+        }
+        return chosenVarReads;
+    }
+
+    public static List<Integer> generateRandomIntegers(int max, int n) {
+        if (n > max + 1) {
+            throw new IllegalArgumentException("Cannot generate more distinct integers than the range allows.");
+        }
+
+        List<Integer> numbers = new ArrayList<>();
+        for (int i = 0; i <= max; i++) {
+            numbers.add(i);
+        }
+
+        Collections.shuffle(numbers);
+        return numbers.subList(0, n);
+    }
+
+    public static CtComment getEndOfInitialChecksComment(CtBlock<?> block) {
+        List<CtComment> comments = block.getElements(SpoonQueries::isEndOfInitialChecksComment);
+        return comments.get(0);
+    }
 }

@@ -35,6 +35,7 @@ public class DoublyLinkedList {
         if (head != null && tail == null) {
             return false
         }
+        /* End of Initial Checks */
         Set<Node> visited = new HashSet<Node>();
         /* Initialize root element: */
         Node current_0 = head;
@@ -53,7 +54,7 @@ public class DoublyLinkedList {
             /* End of Handle current: */
             current_0 = current_0.next;
         }
-        // Visited Check
+        /* Size check */
         if (visited.size() != size)
             return false;
         return true;
