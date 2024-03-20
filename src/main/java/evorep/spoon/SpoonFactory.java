@@ -428,15 +428,15 @@ public class SpoonFactory {
 
     public static CtExpression<Boolean> generateNullComparisonClause(CtVariableRead<?> varRead) {
         BinaryOperatorKind operator = RandomUtils.nextBoolean() ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE;
-        return (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(varRead, null, operator);
+        return (CtExpression<Boolean>) createBinaryExpression(varRead, parseToExpression(null), operator);
     }
 
     public static CtExpression<Boolean> generateNullComparisonClause(CtVariableRead<?> varRead, BinaryOperatorKind operator) {
-        return (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(varRead, null, operator);
+        return (CtExpression<Boolean>) createBinaryExpression(varRead, parseToExpression(null), operator);
     }
 
     public static CtExpression<Boolean> generateNotEqualComparisonClause(CtVariableRead<?> varRead, CtVariableRead<?> varRead2) {
-        return (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(varRead, varRead2, BinaryOperatorKind.NE);
+        return (CtExpression<Boolean>) createBinaryExpression(varRead, varRead2, BinaryOperatorKind.NE);
     }
 
 

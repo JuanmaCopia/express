@@ -9,7 +9,7 @@ import java.net.URLClassLoader;
 
 public class FitnessFunctions {
 
-    private static final float WORST_FITNESS_VALUE = -1000;
+    public static final double WORST_FITNESS_VALUE = -10000.0;
 
     private static final int MAX_LENGTH = 5000;
 

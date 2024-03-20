@@ -42,15 +42,15 @@ import java.util.Set;
  */
 public class GeneticAlgorithm {
 
-    private final int maxPopulationSize;
+    public static final int MIN_POPULATION_SIZE = 1;
 
+    private final int maxPopulationSize;
     /**
      * Mutation rate is the fractional probability than an individual gene will
      * mutate randomly in a given generation. The range is 0.0-1.0, but is
      * generally small (on the order of 0.1 or less).
      */
     private final double mutationRate;
-
     /**
      * Crossover rate is the fractional probability that two individuals will
      * "mate" with each other, sharing genetic information, and creating
@@ -58,7 +58,6 @@ public class GeneticAlgorithm {
      * rance is 0.0-1.0 but small.
      */
     private final double crossoverRate;
-
     /**
      * Elitism is the concept that the strongest members of the population
      * should be preserved from generation to generation. If an individual is
@@ -142,18 +141,19 @@ public class GeneticAlgorithm {
     public Population mutatePopulation(Population population) {
         Population newPopulation = new Population();
 
-        for (int i = 0; i < population.size(); i++) {
-            Individual individual = population.removeFittest();
+        int i = 0;
+        for (Individual individual : population.getIndividuals()) {
             if (i < elitismCount) {
                 Individual mutant = mutateIndividual(individual);
                 newPopulation.addIndividual(individual);
                 newPopulation.addIndividual(mutant);
-            } else if (Math.random() < mutationRate) {
+            } else if (Math.random() < mutationRate && individual.getFitness() > FitnessFunctions.WORST_FITNESS_VALUE) {
                 Individual mutant = mutateIndividual(individual);
                 newPopulation.addIndividual(mutant);
             } else {
                 newPopulation.addIndividual(individual);
             }
+            i++;
         }
 
         return newPopulation;
@@ -167,13 +167,17 @@ public class GeneticAlgorithm {
 
 
     public Population selectFittest(Population population) {
-        Population newPopulation = new Population();
+        Population survivors = new Population();
         int i = 0;
         while (i < maxPopulationSize && population.size() > 0) {
-            newPopulation.addIndividual(population.removeFittest());
+            Individual fittest = population.removeFittest();
+            if (survivors.size() < MIN_POPULATION_SIZE)
+                survivors.addIndividual(fittest);
+            else if (fittest.getFitness() > FitnessFunctions.WORST_FITNESS_VALUE)
+                survivors.addIndividual(fittest);
             i++;
         }
-        return newPopulation;
+        return survivors;
     }
 
 

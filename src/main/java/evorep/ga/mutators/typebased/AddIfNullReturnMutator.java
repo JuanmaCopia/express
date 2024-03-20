@@ -26,13 +26,8 @@ public class AddIfNullReturnMutator implements Mutator {
         List<CtVariableRead<?>> variableReads = SpoonQueries.getCandidateVarReadsForNullCheck(blockGene);
         CtVariableRead<?> chosenVarRead = variableReads.get(RandomUtils.nextInt(variableReads.size()));
 
-        BinaryOperatorKind operator = RandomUtils.nextBoolean() ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE;
-
-        CtIf ifStatement = SpoonFactory.createIfThenStatement(
-                (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(chosenVarRead, null, operator),
-                SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false))
-        );
-
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(SpoonFactory.generateNullComparisonClause(chosenVarRead));
+        
         CtStatement endOfInitialChecksComment = SpoonQueries.getEndOfInitialChecksComment(blockGene);
         endOfInitialChecksComment.insertBefore(ifStatement);
     }

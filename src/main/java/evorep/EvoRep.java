@@ -48,6 +48,7 @@ public class EvoRep {
 
     public static void printGeneration(int generation, Population population) {
         System.out.println("\n\n------------------   Generation " + generation + "   ------------------\n");
+        System.out.println("Population size: " + population.size());
         System.out.println("Fittest: " + population.getFittest().getFitness());
         System.out.println("\n" + population.getFittest().toString());
     }
