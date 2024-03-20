@@ -193,21 +193,13 @@ public class SpoonQueries {
         List<CtVariable<?>> referenceFields = typesGraph.getOutgoingReferenceFields(typesGraph.getRoot());
         List<CtVariableRead<?>> varReads = new ArrayList<>();
         for (CtVariable<?> field : referenceFields) {
-            varReads.add(SpoonFactory.createVariableRead(field));
-        }
-        //List<CtCodeElement> candidateFieldReads = ReferenceExpressionGenerator.generateAllVarReadsOfReferenceType(referenceFields);
-/*        Set<String> candidateFieldStrings = new HashSet<>();
-        for (CtCodeElement element : candidateFieldReads) {
-            candidateFieldStrings.add(element.toString());
+            CtVariableRead<?> varRead = SpoonFactory.createVariableRead(field);
+            varReads.add(varRead);
+            for (CtVariable<?> subField : typesGraph.getOutgoingReferenceFields(field.getType())) {
+                varReads.add(SpoonFactory.createFieldRead(varRead, subField));
+            }
         }
 
-        List<CtIf> ifStatements = getInitialCheckStatements(block).stream().filter(SpoonQueries::isNullCheck).map(e -> (CtIf) e).toList();
-        for (CtIf ifStatement : ifStatements) {
-            CtVariableRead<?> varRead = (CtVariableRead<?>) ((CtBinaryOperator<?>) ifStatement.getCondition()).getLeftHandOperand();
-            if (candidateFieldStrings.contains(varRead.toString())) {
-                candidateFieldReads.remove(varRead);
-            }
-        }*/
         return varReads;
     }
 
