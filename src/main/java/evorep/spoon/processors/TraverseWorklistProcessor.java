@@ -75,5 +75,6 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtBlock<?>> {
         lastStatement.insertBefore(addToWorklistCall);
         lastStatement.insertBefore(SpoonFactory.createComment("Cycle over cyclic references:"));
         lastStatement.insertBefore(whileStatement);
+        lastStatement.insertBefore(SpoonFactory.createComment("End of traversal"));
     }
 }

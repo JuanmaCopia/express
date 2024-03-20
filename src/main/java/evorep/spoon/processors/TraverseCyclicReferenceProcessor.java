@@ -47,5 +47,6 @@ public class TraverseCyclicReferenceProcessor extends AbstractProcessor<CtBlock<
         lastStatement.insertBefore(currentDeclaration);
         lastStatement.insertBefore(SpoonFactory.createComment("Cycle over cyclic references:"));
         lastStatement.insertBefore(whileStatement);
+        lastStatement.insertBefore(SpoonFactory.createComment("End of traversal"));
     }
 }
