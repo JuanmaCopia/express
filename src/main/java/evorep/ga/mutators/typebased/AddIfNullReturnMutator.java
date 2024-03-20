@@ -20,16 +20,22 @@ public class AddIfNullReturnMutator implements Mutator {
     }
 
     @Override
-    public void mutate(Individual individual, CtCodeElement gene) {
+    public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
         List<CtVariableRead<?>> variableReads = SpoonQueries.getCandidateVarReadsForNullCheck(blockGene);
         CtVariableRead<?> chosenVarRead = variableReads.get(RandomUtils.nextInt(variableReads.size()));
 
-        CtIf ifStatement = SpoonFactory.createIfReturnFalse(SpoonFactory.generateNullComparisonClause(chosenVarRead));
+        CtExpression<Boolean> condition = SpoonFactory.generateNullComparisonClause(chosenVarRead);
+        if (SpoonQueries.checkAlreadyExist(condition, blockGene))
+            return false;
+
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
         
         CtStatement endOfInitialChecksComment = SpoonQueries.getEndOfInitialChecksComment(blockGene);
         endOfInitialChecksComment.insertBefore(ifStatement);
+
+        return true;
     }
 
 

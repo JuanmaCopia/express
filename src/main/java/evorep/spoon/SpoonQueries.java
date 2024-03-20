@@ -479,4 +479,14 @@ public class SpoonQueries {
         List<CtComment> comments = block.getElements(SpoonQueries::isEndOfHandleCurrentComment);
         return comments.get(0);
     }
+
+    public static boolean checkAlreadyExist(CtElement condition, CtBlock<?> block) {
+        List<CtIf> ifs = block.getElements(Objects::nonNull);
+        for (CtIf ifStatement : ifs) {
+            if (ifStatement.getCondition().toString().equals(condition.toString())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

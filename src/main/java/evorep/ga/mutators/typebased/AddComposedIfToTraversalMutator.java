@@ -22,18 +22,23 @@ public class AddComposedIfToTraversalMutator implements Mutator {
     }
 
     @Override
-    public void mutate(Individual individual, CtCodeElement gene) {
+    public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> block = (CtBlock<?>) gene;
         CtWhile chosenLoop = (CtWhile) RandomUtils.getRandomElement(block.getElements(SpoonQueries::isTraversalLoop));
         CtBlock<?> loopBody = (CtBlock<?>) chosenLoop.getBody();
-        
+
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getCurrentVarDeclaration(chosenLoop);
 
         CtExpression<Boolean> composedCondition = generateComposedCondition(currentDeclaration);
+        if (SpoonQueries.checkAlreadyExist(composedCondition, loopBody))
+            return false;
+
+
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(composedCondition);
 
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(loopBody);
         endOfHandleCurrentComment.insertBefore(ifStatement);
+        return true;
     }
 
     private CtExpression<Boolean> generateComposedCondition(CtLocalVariable<?> currentDeclaration) {

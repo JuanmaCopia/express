@@ -25,7 +25,7 @@ public class TraversalBlockMutator implements Mutator {
     }
 
     @Override
-    public void mutate(Individual individual, CtCodeElement gene) {
+    public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> block = (CtBlock<?>) gene;
         CtWhile chosenLoop = (CtWhile) RandomUtils.getRandomElement(block.getElements(SpoonQueries::isTraversalLoop));
         CtBlock<?> loopBody = (CtBlock<?>) chosenLoop.getBody();
@@ -44,6 +44,7 @@ public class TraversalBlockMutator implements Mutator {
         CtBlock<?> mutatedBody = SpoonQueries.generateMutatedBody(loopBody, handleBlock);
         chosenLoop.setBody(mutatedBody);
 
+        return true;
     }
 
 

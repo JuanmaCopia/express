@@ -14,11 +14,12 @@ public class VariableWriteMutator implements Mutator {
     }
 
     @Override
-    public void mutate(Individual individual, CtCodeElement gene) {
+    public boolean mutate(Individual individual, CtCodeElement gene) {
         Scope scope = SpoonHelper.getScope(individual, gene);
         CtVariableWrite<?> varWrite = (CtVariableWrite<?>) gene;
         CtCodeElement mutatedGene = ReferenceExpressionGenerator.generateRandomVarWriteOfType(scope.getLocalVariables(), varWrite.getType());
         gene.replace(mutatedGene);
+        return true;
     }
 
 }

@@ -15,13 +15,14 @@ public class VariableReadMutator implements Mutator {
     }
 
     @Override
-    public void mutate(Individual individual, CtCodeElement gene) {
+    public boolean mutate(Individual individual, CtCodeElement gene) {
         Scope scope = SpoonHelper.getScope(individual, gene);
         CtVariableRead<?> varRead = (CtVariableRead<?>) gene;
         CtCodeElement mutatedGene = ReferenceExpressionGenerator.generateRandomVarReadOfType(scope.getAllVariables(),
                 varRead.getType());
         if (mutatedGene != null)
             gene.replace(mutatedGene);
+        return true;
     }
 
 }

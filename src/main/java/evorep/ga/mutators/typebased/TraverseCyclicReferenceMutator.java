@@ -28,7 +28,7 @@ public class TraverseCyclicReferenceMutator implements Mutator {
     }
 
     @Override
-    public void mutate(Individual individual, CtCodeElement gene) {
+    public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
         List<CtVariableRead<?>> varReads = SpoonQueries.getNonTraversedCyclicFieldReads(blockGene);
@@ -48,6 +48,8 @@ public class TraverseCyclicReferenceMutator implements Mutator {
 
         Processor<CtBlock<?>> p = new TraverseCyclicReferenceProcessor(chosenInitialField, chosenLoopField, chosenSetVar);
         p.process(blockGene);
+
+        return true;
     }
 
 

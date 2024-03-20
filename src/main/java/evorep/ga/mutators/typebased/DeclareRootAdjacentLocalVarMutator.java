@@ -21,7 +21,7 @@ public class DeclareRootAdjacentLocalVarMutator implements Mutator {
     }
 
     @Override
-    public void mutate(Individual individual, CtCodeElement gene) {
+    public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
         CtField<?> chosenField = SpoonQueries.getCandidateFields(blockGene).stream().findAny().get();
         CtLocalVariable<?> varDeclaration = SpoonFactory.createLocalVariable(
@@ -30,6 +30,8 @@ public class DeclareRootAdjacentLocalVarMutator implements Mutator {
                 chosenField
         );
         blockGene.insertBegin(varDeclaration);
+
+        return true;
     }
 
 

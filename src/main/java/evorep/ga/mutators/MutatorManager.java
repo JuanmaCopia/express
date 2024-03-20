@@ -32,9 +32,16 @@ public class MutatorManager {
         if (gene == null)
             return mutant;
         Mutator mutator = selectMutator(mutators, individual, gene);
+        boolean wasMutated = false;
         if (mutator != null)
-            mutator.mutate(mutant, gene);
-        return mutant;
+            wasMutated = mutator.mutate(mutant, gene);
+
+        if (wasMutated) {
+            mutant.setFitnessAsOutdated();
+            return mutant;
+        }
+
+        return null;
     }
 
     private static CtCodeElement selectGene(Individual individual) {

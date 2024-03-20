@@ -30,7 +30,7 @@ public class AddSizeCheckMutator implements Mutator {
     }
 
     @Override
-    public void mutate(Individual individual, CtCodeElement gene) {
+    public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
         List<CtLocalVariable<?>> visitedSetVars = SpoonQueries.getVisitedSetLocalVars(blockGene);
@@ -43,7 +43,7 @@ public class AddSizeCheckMutator implements Mutator {
         Processor<CtBlock<?>> p = new SizeCheckProcessor(setVar, intFieldRead);
         p.process(blockGene);
 
-        //System.err.println("\nSizeCheckMutator: \n" + blockGene.toString());
+        return true;
     }
 
 

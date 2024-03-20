@@ -7,6 +7,6 @@ public interface Mutator {
 
     boolean isApplicable(Individual individual, CtCodeElement gene);
 
-    void mutate(Individual individual, CtCodeElement gene);
+    boolean mutate(Individual individual, CtCodeElement gene);
 
 }

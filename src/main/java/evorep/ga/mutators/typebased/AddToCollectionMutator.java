@@ -30,7 +30,7 @@ public class AddToCollectionMutator implements Mutator {
     }
 
     @Override
-    public void mutate(Individual individual, CtCodeElement gene) {
+    public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
         List<CtLocalVariable<?>> traversalCollections = SpoonQueries.getWorklistDeclared(blockGene);
@@ -45,8 +45,9 @@ public class AddToCollectionMutator implements Mutator {
         CtField<?> chosenField = candidateFields.get(RandomUtils.nextInt(candidateFields.size()));
 
         CtInvocation<?> addToCollectionCall = SpoonFactory.createInvocation(chosenCollection, "add", collectionSubtype, chosenField);
-
         chosenCollection.insertAfter(addToCollectionCall);
+
+        return true;
     }
 
 

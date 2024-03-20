@@ -144,12 +144,14 @@ public class GeneticAlgorithm {
         int i = 0;
         for (Individual individual : population.getIndividuals()) {
             if (i < elitismCount) {
-                Individual mutant = mutateIndividual(individual);
                 newPopulation.addIndividual(individual);
-                newPopulation.addIndividual(mutant);
+                Individual mutant = MutatorManager.mutate(individual);
+                if (mutant != null)
+                    newPopulation.addIndividual(mutant);
             } else if (Math.random() < mutationRate && individual.getFitness() > FitnessFunctions.WORST_FITNESS_VALUE) {
-                Individual mutant = mutateIndividual(individual);
-                newPopulation.addIndividual(mutant);
+                Individual mutant = MutatorManager.mutate(individual);
+                if (mutant != null)
+                    newPopulation.addIndividual(mutant);
             } else {
                 newPopulation.addIndividual(individual);
             }
@@ -158,13 +160,6 @@ public class GeneticAlgorithm {
 
         return newPopulation;
     }
-
-    private Individual mutateIndividual(Individual individual) {
-        Individual mutant = MutatorManager.mutate(individual);
-        mutant.setFitnessAsOutdated();
-        return mutant;
-    }
-
 
     public Population selectFittest(Population population) {
         Population survivors = new Population();

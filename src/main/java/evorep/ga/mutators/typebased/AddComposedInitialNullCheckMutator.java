@@ -20,7 +20,7 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
     }
 
     @Override
-    public void mutate(Individual individual, CtCodeElement gene) {
+    public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
         List<CtVariableRead<?>> variableReads = SpoonQueries.getCandidateVarReadsForNullCheck(blockGene);
@@ -34,12 +34,15 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
         CtExpression<Boolean> condition = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(
                 clause1, clause2, BinaryOperatorKind.AND);
 
+        if (SpoonQueries.checkAlreadyExist(condition, blockGene))
+            return false;
+
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
 
         CtStatement endOfInitialChecksComment = SpoonQueries.getEndOfInitialChecksComment(blockGene);
         endOfInitialChecksComment.insertBefore(ifStatement);
 
-        //System.err.println(blockGene.toString());
+        return true;
     }
 
 
