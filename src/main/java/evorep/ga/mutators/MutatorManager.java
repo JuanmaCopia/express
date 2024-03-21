@@ -19,7 +19,7 @@ public class MutatorManager {
         mutators.add(new AddIfNullReturnMutator());
         mutators.add(new TraverseCyclicReferenceMutator());
         mutators.add(new TraverseWorklistMutator());
-        //mutators.add(new AddSizeCheckMutator());
+        mutators.add(new AddSizeCheckMutator());
         mutators.add(new AddComposedInitialNullCheckMutator());
         mutators.add(new AddComposedIfToTraversalMutator());
         mutators.add(new CheckVisitedFieldEndOfTraversalMutator());

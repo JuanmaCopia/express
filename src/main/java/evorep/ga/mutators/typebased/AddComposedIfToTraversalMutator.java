@@ -18,7 +18,9 @@ public class AddComposedIfToTraversalMutator implements Mutator {
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
             return false;
-        return !block.getElements(SpoonQueries::isTraversalLoop).isEmpty();
+        if (block.getElements(SpoonQueries::isTraversalLoop).isEmpty())
+            return false;
+        return true;
     }
 
     @Override
@@ -30,7 +32,7 @@ public class AddComposedIfToTraversalMutator implements Mutator {
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getCurrentVarDeclaration(chosenLoop);
 
         CtExpression<Boolean> composedCondition = generateComposedCondition(currentDeclaration);
-        if (SpoonQueries.checkAlreadyExist(composedCondition, loopBody))
+        if (composedCondition == null || SpoonQueries.checkAlreadyExist(composedCondition, loopBody))
             return false;
 
 
@@ -45,6 +47,8 @@ public class AddComposedIfToTraversalMutator implements Mutator {
         TypeGraph typeGraph = SpoonManager.getTypeGraph();
         List<CtField<?>> cyclicFields = typeGraph.getSelfCyclicFieldsOfNode(currentDeclaration.getType());
 
+        if (cyclicFields.size() < 2)
+            return null;
         List<Integer> chosenIndices = SpoonQueries.generateRandomIntegers(cyclicFields.size() - 1, 2);
         CtField<?> chosenField = cyclicFields.get(chosenIndices.get(0));
         CtField<?> chosenField2 = cyclicFields.get(chosenIndices.get(1));
