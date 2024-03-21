@@ -29,7 +29,7 @@ public class TraverseCyclicReferenceProcessor extends AbstractProcessor<CtBlock<
         CtBlock<?> whileBody = SpoonFactory.createBlock();
 
         // Add visited check
-        CtIf ifStatement = SpoonFactory.createVisitedCheck(visitedSet, currentDeclaration);
+        CtIf ifStatement = SpoonFactory.createVisitedCheck(visitedSet, currentDeclaration, true);
         whileBody.addStatement(ifStatement);
 
         whileBody.addStatement(SpoonFactory.createComment("Handle current:"));

@@ -29,8 +29,6 @@ public class ObjectMutator {
             return false;
 
         Object newFieldValue = getNewValueForField(targetField, candidates);
-        if (newFieldValue == null && targetField.getValue() == null)
-            return false;
         targetField.setValue(newFieldValue);
         return true;
     }
@@ -104,9 +102,21 @@ public class ObjectMutator {
      * @return a new value for the given field
      */
     static Object getNewValueForField(TargetField targetField, List<Object> candidates) {
-        List<Object> possibleChoices = getCandidatesOfType(candidates, targetField);
-        if (possibleChoices.isEmpty() || (Utils.nextInt(2) == 0 && targetField.getValue() != null))
-            return null;
+        List<Object> possibleChoices = new ArrayList<>(getCandidatesOfType(candidates, targetField));
+
+        // Remove its current value from the possible choices
+        Object currentValue = targetField.getValue();
+        possibleChoices.remove(currentValue);
+
+        // Add a fresh object to the possible choices
+        Object freshObject = ObjectHelper.createNewInstance(targetField.getFieldClass());
+        if (freshObject != null)
+            possibleChoices.add(freshObject);
+
+        // Add null to the possible choices
+        if (currentValue != null)
+            possibleChoices.add(null);
+        
         return possibleChoices.get(new Random().nextInt(possibleChoices.size()));
     }
 
@@ -169,8 +179,25 @@ public class ObjectMutator {
      */
     record TargetField(Object target, CtField<?> field) {
 
+        public Object getTarget() {
+            return target;
+        }
+
+        public CtField<?> getField() {
+            return field;
+        }
+
         CtTypeReference<?> getFieldType() {
             return field.getType();
+        }
+
+        Class<?> getFieldClass() {
+            try {
+                Field f = target.getClass().getDeclaredField(field.getSimpleName());
+                return f.getType();
+            } catch (NoSuchFieldException e) {
+                return null;
+            }
         }
 
         String getFieldTypeQualifiedName() {

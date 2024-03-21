@@ -520,7 +520,13 @@ public class SpoonQueries {
         for (CtIf ifStatement : ifs) {
             if (ifStatement.getCondition().toString().equals(condition.toString())) {
                 return true;
+            } else if (condition instanceof CtBinaryOperator<?> binaryOperator) {
+                if (ifStatement.getCondition() instanceof CtBinaryOperator<?> ifBinaryOperator) {
+                    if (areBinaryOperationsEqual(binaryOperator, ifBinaryOperator))
+                        return true;
+                }
             }
+
         }
         return false;
     }
@@ -566,6 +572,20 @@ public class SpoonQueries {
         if (visitedSets.isEmpty())
             return null;
         return visitedSets.get(0);
+    }
+
+    public static boolean areBinaryOperationsEqual(CtBinaryOperator<?> condition1, CtBinaryOperator<?> condition2) {
+        if (!condition1.getKind().equals(condition2.getKind()))
+            return false;
+        CtExpression<?> leftOperand1 = condition1.getLeftHandOperand();
+        CtExpression<?> rightOperand1 = condition1.getRightHandOperand();
+        CtExpression<?> leftOperand2 = condition2.getLeftHandOperand();
+        CtExpression<?> rightOperand2 = condition2.getRightHandOperand();
+        if (!leftOperand1.toString().equals(leftOperand2.toString()) && !leftOperand1.toString().equals(rightOperand2.toString()))
+            return false;
+        if (!rightOperand1.toString().equals(leftOperand2.toString()) && !rightOperand1.toString().equals(rightOperand2.toString()))
+            return false;
+        return true;
     }
 
 

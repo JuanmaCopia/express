@@ -35,9 +35,22 @@ public class CheckVisitedFieldEndOfTraversalMutator implements Mutator {
             System.err.println("\n\nchosenTraversalStatements:\n\n" + chosenTraversalStatements.toString());
             return false;
         }
-        CtIf ifStatement = SpoonFactory.createVisitedCheck(visitedSetVar, chosenVarRead);
+
+        CtExpression<Boolean> nullComparisonClause = SpoonFactory.generateNullComparisonClause(chosenVarRead, BinaryOperatorKind.NE);
+        CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(visitedSetVar, chosenVarRead);
+        CtExpression<Boolean> conjuntion = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(nullComparisonClause, addToSetInvocation, BinaryOperatorKind.AND);
+
+        if (SpoonQueries.checkAlreadyExist(conjuntion, blockGene))
+            return false;
+
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(conjuntion);
 
         CtComment endOfTraversalComment = SpoonQueries.getEndOfTraversalComment(chosenTraversalStatements);
+        if (endOfTraversalComment == null) {
+            System.err.println("ERROR: endOfTraversalComment is null.");
+            System.err.println("\n\nchosenTraversalStatements:\n\n" + chosenTraversalStatements.toString());
+            return false;
+        }
         endOfTraversalComment.insertBefore(ifStatement);
 
         /*System.err.println("CheckVisitedFieldEndOfTraversalMutator:\n" + ifStatement);

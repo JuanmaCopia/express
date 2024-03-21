@@ -45,7 +45,7 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtBlock<?>> {
         whileBody.insertEnd(assignRemoveFirst);
 
         // Add visited check
-        CtIf ifStatement = SpoonFactory.createVisitedCheck(visitedSet, currentDeclaration);
+        CtIf ifStatement = SpoonFactory.createVisitedCheck(visitedSet, currentDeclaration, true);
         whileBody.insertEnd(ifStatement);
 
         // Create comment: // Handle current:

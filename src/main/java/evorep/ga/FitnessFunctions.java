@@ -14,8 +14,16 @@ public class FitnessFunctions {
     private static final int MAX_LENGTH = 5000;
 
     public static void invalidInstancesFitness(Individual individual) {
+/*        System.out.println("\n\n ========================== Fitness evaluated ======================== \n\n");
+        System.out.println("Individual:\n" + individual.toString());
+        System.out.println("");*/
+
+
         individual.setFitness(WORST_FITNESS_VALUE);
         if (individual.toString().length() > MAX_LENGTH || !SpoonManager.compileIndividual(individual)) {
+/*            System.out.println("Individual is too long or could not compile!");
+            System.out.println("\nFitness: " + individual.getFitness());
+            System.out.println("\n\n ===================================================================== \n\n");*/
             return;
         }
         URLClassLoader classLoader = SpoonManager.createClassLoader();
@@ -32,8 +40,12 @@ public class FitnessFunctions {
 
         for (Object validInstance : ObjectCollector.positiveObjects) {
             int result = SpoonManager.runRepOK(individual, repOKMethod, validInstance);
-            if (result != 1)
+            if (result != 1) {
+/*                System.out.println("Returned false on positive object!");
+                System.out.println("\nFitness: " + individual.getFitness());
+                System.out.println("\n\n ===================================================================== \n\n");*/
                 return;
+            }
         }
 
         double fitness = ObjectCollector.negativeObjects.size() * -1;
@@ -41,7 +53,9 @@ public class FitnessFunctions {
         for (Object invalidInstance : ObjectCollector.negativeObjects) {
             int result = SpoonManager.runRepOK(individual, repOKMethod, invalidInstance);
             if (result == -1) {
-                //System.err.println("Run repok exception on invalid object!");
+/*                System.out.println("Run repok exception on invalid object!");
+                System.out.println("\nFitness: " + individual.getFitness());
+                System.out.println("\n\n ===================================================================== \n\n");*/
                 return;
             } else if (result == 0) {
                 fitness = fitness + 1;
@@ -50,9 +64,13 @@ public class FitnessFunctions {
             }
         }
 
-        fitness -= (float) individual.toString().length() / MAX_LENGTH;
+        fitness -= (double) individual.toString().length() / MAX_LENGTH;
 
         individual.setFitness(fitness);
+/*        System.out.println("Fitness last point");
+        System.out.println("\nFitness: " + individual.getFitness());
+        System.out.println("\n\n ===================================================================== \n\n");*/
+
     }
 
     /*

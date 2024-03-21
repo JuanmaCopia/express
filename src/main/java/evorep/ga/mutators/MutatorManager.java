@@ -16,12 +16,10 @@ public class MutatorManager {
 
     public static void initialize() {
         mutators = new HashSet<>();
-        //mutators.add(new DeclareRootAdjacentLocalVarMutator());
         mutators.add(new AddIfNullReturnMutator());
         mutators.add(new TraverseCyclicReferenceMutator());
         mutators.add(new TraverseWorklistMutator());
-        //mutators.add(new TraversalBlockMutator());
-        mutators.add(new AddSizeCheckMutator());
+        //mutators.add(new AddSizeCheckMutator());
         mutators.add(new AddComposedInitialNullCheckMutator());
         mutators.add(new AddComposedIfToTraversalMutator());
         mutators.add(new CheckVisitedFieldEndOfTraversalMutator());

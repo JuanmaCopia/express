@@ -129,7 +129,7 @@ public class GeneticAlgorithm {
      * @return boolean True if termination condition met, otherwise, false
      */
     public boolean isTerminationConditionMet(Population population) {
-        return population.getFittest().getFitness() == 0.0;
+        return population.getFittest().getFitness() > -1.0;
     }
 
     /**

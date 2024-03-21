@@ -297,22 +297,17 @@ public class SpoonFactory {
         return localVariable;
     }
 
-    public static CtIf createVisitedCheck(CtVariable<?> setVariable, Object argument) {
-        CtTypeReference<?> elemType = setVariable.getReference().getType().getActualTypeArguments().get(0);
-        CtInvocation<?> addInvocation = SpoonFactory.createInvocation(setVariable, "add", elemType, argument);
-        CtUnaryOperator<Boolean> condition = (CtUnaryOperator<Boolean>) SpoonFactory
-                .createUnaryExpression(addInvocation, UnaryOperatorKind.NOT);
+    public static CtIf createVisitedCheck(CtVariable<?> setVariable, Object argument, boolean negate) {
+        CtExpression<?> condition = SpoonFactory.createAddToSetInvocation(setVariable, argument);
+        if (negate)
+            condition = SpoonFactory.createUnaryExpression(condition, UnaryOperatorKind.NOT);
         CtReturn<?> returnStatement = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
-        return SpoonFactory.createIfThenStatement(condition, returnStatement);
+        return SpoonFactory.createIfThenStatement((CtExpression<Boolean>) condition, returnStatement);
     }
 
-    public static CtIf createVisitedCheck(CtVariable<?> setVariable, CtVariableRead<?> argument) {
+    public static CtExpression<Boolean> createAddToSetInvocation(CtVariable<?> setVariable, Object argument) {
         CtTypeReference<?> elemType = setVariable.getReference().getType().getActualTypeArguments().get(0);
-        CtInvocation<?> addInvocation = SpoonFactory.createInvocation(setVariable, "add", elemType, argument);
-        CtUnaryOperator<Boolean> condition = (CtUnaryOperator<Boolean>) SpoonFactory
-                .createUnaryExpression(addInvocation, UnaryOperatorKind.NOT);
-        CtReturn<?> returnStatement = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
-        return SpoonFactory.createIfThenStatement(condition, returnStatement);
+        return SpoonFactory.createInvocation(setVariable, "add", elemType, argument);
     }
 
     public static CtIf createVisitedSizeCheck(CtVariable<?> setVariable, CtVariableRead<?> integerField) {
