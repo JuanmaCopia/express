@@ -16,14 +16,14 @@ public class AddIfNullReturnMutator implements Mutator {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
             return false;
 
-        return !SpoonQueries.getCandidateVarReadsForNullCheck(block).isEmpty();
+        return !SpoonQueries.getCandidateVarReadsForNullCheck(block, 2).isEmpty();
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        List<CtVariableRead<?>> variableReads = SpoonQueries.getCandidateVarReadsForNullCheck(blockGene);
+        List<CtVariableRead<?>> variableReads = SpoonQueries.getCandidateVarReadsForNullCheck(blockGene, 2);
         CtVariableRead<?> chosenVarRead = variableReads.get(RandomUtils.nextInt(variableReads.size()));
 
         CtExpression<Boolean> condition = SpoonFactory.generateNullComparisonClause(chosenVarRead);
@@ -31,10 +31,10 @@ public class AddIfNullReturnMutator implements Mutator {
             return false;
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
-        
+
         CtStatement endOfInitialChecksComment = SpoonQueries.getEndOfInitialChecksComment(blockGene);
         endOfInitialChecksComment.insertBefore(ifStatement);
-
+        
         return true;
     }
 

@@ -188,7 +188,7 @@ public class SpoonQueries {
         return candidateFields;
     }
 
-    public static List<CtVariableRead<?>> getCandidateVarReadsForNullCheck(CtBlock<?> block) {
+/*    public static List<CtVariableRead<?>> getCandidateVarReadsForNullCheck(CtBlock<?> block) {
         TypeGraph typesGraph = SpoonManager.getTypeGraph();
         List<CtVariable<?>> referenceFields = typesGraph.getOutgoingReferenceFields(typesGraph.getRoot());
         List<CtVariableRead<?>> varReads = new ArrayList<>();
@@ -198,6 +198,20 @@ public class SpoonQueries {
             for (CtVariable<?> subField : typesGraph.getOutgoingReferenceFields(field.getType())) {
                 varReads.add(SpoonFactory.createFieldRead(varRead, subField));
             }
+        }
+
+        return varReads;
+    }*/
+
+    public static List<CtVariableRead<?>> getCandidateVarReadsForNullCheck(CtBlock<?> block, int depth) {
+        TypeGraph typesGraph = SpoonManager.getTypeGraph();
+        List<List<CtField<?>>> paths = typesGraph.getAllPaths(typesGraph.getRoot(), depth);
+        List<CtVariableRead<?>> varReads = new ArrayList<>();
+
+        for (List<CtField<?>> path : paths) {
+            CtVariableRead<?> varRead = SpoonFactory.createFieldRead(path);
+            if (!varRead.getType().isPrimitive())
+                varReads.add(varRead);
         }
 
         return varReads;
@@ -301,6 +315,18 @@ public class SpoonQueries {
         return comment.getContent().equals("Size check:");
     }
 
+    public static boolean isBeginOfTraversalComment(CtElement element) {
+        if (!(element instanceof CtComment comment))
+            return false;
+        return comment.getContent().equals("Begin of traversal");
+    }
+
+    public static boolean isEndOfTraversalComment(CtElement element) {
+        if (!(element instanceof CtComment comment))
+            return false;
+        return comment.getContent().equals("End of traversal");
+    }
+
     public static CtBlock<?> generateMutatedBody(CtBlock<?> loopBody, CtBlock<?> newBlock) {
         CtBlock<?> newBody = SpoonFactory.createBlock();
         int i = 0;
@@ -358,6 +384,15 @@ public class SpoonQueries {
 
     public static List<CtLocalVariable<?>> getLocalVariablesMathingPrefix(CtBlock<?> code, String varPrefix) {
         return code.getElements(var -> var.getSimpleName().startsWith(varPrefix));
+    }
+
+    public static List<CtLocalVariable<?>> getLocalVariablesMathingPrefix(List<CtStatement> statements, String varPrefix) {
+        List<CtLocalVariable<?>> setVars = new ArrayList<>();
+        for (CtStatement statement : statements) {
+            if (statement instanceof CtLocalVariable<?> var && var.getSimpleName().startsWith(varPrefix))
+                setVars.add(var);
+        }
+        return setVars;
     }
 
     public static List<CtVariable<?>> getLocalVariablesFromElement(CtElement element) {
@@ -472,6 +507,14 @@ public class SpoonQueries {
         return comments.get(0);
     }
 
+    public static CtComment getEndOfTraversalComment(List<CtStatement> statements) {
+        for (CtStatement statement : statements) {
+            if (isEndOfTraversalComment(statement))
+                return (CtComment) statement;
+        }
+        return null;
+    }
+
     public static boolean checkAlreadyExist(CtElement condition, CtBlock<?> block) {
         List<CtIf> ifs = block.getElements(Objects::nonNull);
         for (CtIf ifStatement : ifs) {
@@ -481,4 +524,49 @@ public class SpoonQueries {
         }
         return false;
     }
+
+    public static List<List<CtStatement>> getTraversalBlocks(CtBlock<?> block) {
+        //System.out.println("\nThe block is:\n" + block.toString());
+        List<List<CtStatement>> traversalBlocks = new ArrayList<>();
+        List<CtStatement> currentTraversal = null;
+        for (CtStatement statement : block.getStatements()) {
+            //System.out.println("\nCurrent Statement: " + statement.toString());
+            if (currentTraversal != null) {
+                //System.out.println("Adding statement to current traversal.");
+                currentTraversal.add(statement);
+            }
+            if (isBeginOfTraversalComment(statement)) {
+                //System.out.println("Begin of traversal comment found.");
+                currentTraversal = new ArrayList<>();
+                currentTraversal.add(statement);
+                traversalBlocks.add(currentTraversal);
+            }
+            if (isEndOfTraversalComment(statement)) {
+                //System.out.println("End of traversal comment found.");
+                currentTraversal = null;
+            }
+        }
+
+        // Print each Statement List
+/*        if (traversalBlocks.isEmpty())
+            System.out.println("No traversal blocks found.");
+        else
+            System.out.println("Traversal blocks found.");
+        for (List<CtStatement> traversalBlock : traversalBlocks) {
+            System.out.println("\nTraversal Block:");
+            for (CtStatement statement : traversalBlock) {
+                System.out.println(statement.toString());
+            }
+        }*/
+        return traversalBlocks;
+    }
+
+    public static CtLocalVariable<?> getVisitedSet(List<CtStatement> statements) {
+        List<CtLocalVariable<?>> visitedSets = getLocalVariablesMathingPrefix(statements, LocalVarHelper.SET_VAR_NAME);
+        if (visitedSets.isEmpty())
+            return null;
+        return visitedSets.get(0);
+    }
+
+
 }

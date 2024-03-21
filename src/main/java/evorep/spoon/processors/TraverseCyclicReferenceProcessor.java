@@ -42,6 +42,7 @@ public class TraverseCyclicReferenceProcessor extends AbstractProcessor<CtBlock<
         CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, whileBody);
 
         CtStatement lastStatement = ctBlock.getLastStatement();
+        lastStatement.insertBefore(SpoonFactory.createComment("Begin of traversal"));
         lastStatement.insertBefore(visitedSet);
         lastStatement.insertBefore(SpoonFactory.createComment("Initialize root element:"));
         lastStatement.insertBefore(currentDeclaration);

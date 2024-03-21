@@ -144,7 +144,7 @@ public class TypeGraphTest {
     public void allPathsTest() {
         CtTypeReference<?> rootType = SpoonQueries.getClass("BinTree").getReference();
         TypeGraph graph = new TypeGraph(rootType);
-        int maxLength = 3;
+        int maxLength = 2;
         List<List<CtField<?>>> allPaths = graph.getAllPaths(rootType, maxLength);
         assertEquals(5, allPaths.size());
     }

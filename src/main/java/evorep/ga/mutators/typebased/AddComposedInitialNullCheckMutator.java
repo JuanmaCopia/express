@@ -16,14 +16,14 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
             return false;
 
-        return SpoonQueries.getCandidateVarReadsForNullCheck(block).size() > 1;
+        return SpoonQueries.getCandidateVarReadsForNullCheck(block, 1).size() > 1;
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        List<CtVariableRead<?>> variableReads = SpoonQueries.getCandidateVarReadsForNullCheck(blockGene);
+        List<CtVariableRead<?>> variableReads = SpoonQueries.getCandidateVarReadsForNullCheck(blockGene, 1);
         List<CtVariableRead<?>> chosenVarReads = SpoonQueries.chooseNVarReads(variableReads, 2);
         CtVariableRead<?> var1 = chosenVarReads.get(0);
         CtVariableRead<?> var2 = chosenVarReads.get(1);

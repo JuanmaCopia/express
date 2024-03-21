@@ -297,7 +297,16 @@ public class SpoonFactory {
         return localVariable;
     }
 
-    public static CtIf createVisitedCheck(CtVariable<?> setVariable, CtVariable<?> argument) {
+    public static CtIf createVisitedCheck(CtVariable<?> setVariable, Object argument) {
+        CtTypeReference<?> elemType = setVariable.getReference().getType().getActualTypeArguments().get(0);
+        CtInvocation<?> addInvocation = SpoonFactory.createInvocation(setVariable, "add", elemType, argument);
+        CtUnaryOperator<Boolean> condition = (CtUnaryOperator<Boolean>) SpoonFactory
+                .createUnaryExpression(addInvocation, UnaryOperatorKind.NOT);
+        CtReturn<?> returnStatement = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
+        return SpoonFactory.createIfThenStatement(condition, returnStatement);
+    }
+
+    public static CtIf createVisitedCheck(CtVariable<?> setVariable, CtVariableRead<?> argument) {
         CtTypeReference<?> elemType = setVariable.getReference().getType().getActualTypeArguments().get(0);
         CtInvocation<?> addInvocation = SpoonFactory.createInvocation(setVariable, "add", elemType, argument);
         CtUnaryOperator<Boolean> condition = (CtUnaryOperator<Boolean>) SpoonFactory

@@ -24,6 +24,7 @@ public class MutatorManager {
         mutators.add(new AddSizeCheckMutator());
         mutators.add(new AddComposedInitialNullCheckMutator());
         mutators.add(new AddComposedIfToTraversalMutator());
+        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
     }
 
     public static Individual mutate(Individual individual) {

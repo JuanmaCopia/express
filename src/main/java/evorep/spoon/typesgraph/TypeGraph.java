@@ -191,7 +191,7 @@ public class TypeGraph {
     }
 
     private void getAllPaths(CtTypeReference<?> source, List<CtField<?>> currentPath, List<List<CtField<?>>> paths, int k) {
-        if (k == 1) {
+        if (k == 0) {
             return;
         }
         List<Edge> adjacent = adjacencyList.get(source);
