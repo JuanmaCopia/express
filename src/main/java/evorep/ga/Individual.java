@@ -1,23 +1,25 @@
 package evorep.ga;
 
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtMethod;
+import evorep.spoon.SpoonFactory;
+import evorep.spoon.SpoonManager;
+import spoon.reflect.declaration.CtClass;
 
 public class Individual implements Comparable<Individual> {
 
-    private final CtMethod chromosome;
+    private static int individualId = 0;
+
+    private final CtClass<?> chromosome;
     private double fitness = -1;
     private boolean isFitnessUpdated = false;
 
+    public Individual() {
+        this.chromosome = SpoonFactory.createPreconditionClass("Precondition" + individualId++, SpoonManager.targetMethod.getParameters());
+    }
 
-    /**
-     * Initializes individual with an specific chromosome.
-     * A chromosome is a list of statements.
-     *
-     * @param repOK The repOK method
-     */
-    public Individual(CtMethod repOK) {
-        chromosome = repOK.clone();
+    public Individual(CtClass<?> chromosome, double fitness) {
+        this.chromosome = chromosome;
+        this.fitness = fitness;
+        this.isFitnessUpdated = true;
     }
 
 
@@ -26,29 +28,24 @@ public class Individual implements Comparable<Individual> {
      *
      * @return The individual's chromosome
      */
-    public CtMethod getChromosome() {
+    public CtClass<?> getChromosome() {
         return this.chromosome;
     }
 
+    /**
+     * Check if the individual needs to have its fitness recalculated
+     *
+     * @return True if the individual needs its fitness recalculated, otherwise, false
+     */
     public boolean needsFitnessUpdate() {
         return !isFitnessUpdated;
     }
 
+    /**
+     * Set individual's fitness as outdated
+     */
     public void setFitnessAsOutdated() {
         isFitnessUpdated = false;
-    }
-
-    public CtStatement getLastGene() {
-        return this.chromosome.getBody().getLastStatement();
-    }
-
-    /**
-     * Gets individual's chromosome length
-     *
-     * @return The individual's chromosome length
-     */
-    public int getChromosomeLength() {
-        return chromosome.getBody().getStatements().size();
     }
 
     /**
@@ -70,10 +67,13 @@ public class Individual implements Comparable<Individual> {
         isFitnessUpdated = true;
     }
 
+    /**
+     * Clone the individual
+     *
+     * @return The cloned individual
+     */
     public Individual clone() {
-        Individual clone = new Individual(chromosome);
-        clone.setFitness(fitness);
-        return clone;
+        return new Individual(chromosome, fitness);
     }
 
     /**
@@ -88,6 +88,12 @@ public class Individual implements Comparable<Individual> {
         return chromosome.toString();
     }
 
+    /**
+     * Compare individuals by fitness
+     *
+     * @param other The individual to compare to
+     * @return -1 if this individual is fitter, 1 if the other individual is fitter, 0 if they are equally fit
+     */
     @Override
     public int compareTo(Individual other) {
         if (this.getFitness() > other.getFitness())

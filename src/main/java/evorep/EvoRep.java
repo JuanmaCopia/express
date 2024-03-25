@@ -3,8 +3,8 @@ package evorep;
 import evorep.config.ToolConfig;
 import evorep.ga.GeneticAlgorithm;
 import evorep.ga.Population;
+import evorep.object.ObjectGeneratorManager;
 import evorep.spoon.SpoonManager;
-import spoon.reflect.declaration.CtMethod;
 
 public class EvoRep {
 
@@ -16,6 +16,8 @@ public class EvoRep {
 
     private static void initialize() {
         ToolConfig.parseConfigurationFile();
+        SpoonManager.initialize();
+        ObjectGeneratorManager.generateObjects();
     }
 
 
@@ -24,11 +26,11 @@ public class EvoRep {
     }
 
     public static void startSearch() {
-        GeneticAlgorithm ga = new GeneticAlgorithm(ToolConfig.maxPopulation, 1.0, 1.0, 3);
-        //Population population = ga.initPopulationBasedOnTypeGraph(getRepOKMethod());
-        Population population = ga.initPopulation(getRepOKMethod());
+        GeneticAlgorithm ga = new GeneticAlgorithm(ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
+
+        Population population = ga.initPopulation(SpoonManager.preconditionClass);
         ga.evalPopulation(population);
-        population = ga.selectFittest(population);
+        population = ga.selectSurvivors(population);
 
         int generation = 1;
         while (!ga.isTerminationConditionMet(population) && generation <= ToolConfig.maxGenerations) {
@@ -36,14 +38,10 @@ public class EvoRep {
             //population = ga.crossoverPopulation(population);
             population = ga.mutatePopulation(population);
             ga.evalPopulation(population);
-            population = ga.selectFittest(population);
+            population = ga.selectSurvivors(population);
             generation++;
         }
         printResults(population, generation - 1);
-    }
-
-    private static CtMethod getRepOKMethod() {
-        return SpoonManager.getTargetClass().getMethod("repOK");
     }
 
     public static void printGeneration(int generation, Population population) {
@@ -59,8 +57,5 @@ public class EvoRep {
         System.out.println("Best solution: " + population.getFittest().toString());
         System.out.println("Fitness: " + population.getFittest().getFitness());
         System.out.println("\n=================================================================================\n");
-
-/*        Individual fittest = population.getFittest();
-        FitnessFunctions.invalidInstancesFitness(fittest);*/
     }
 }

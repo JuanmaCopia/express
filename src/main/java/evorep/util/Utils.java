@@ -5,6 +5,7 @@ import spoon.reflect.declaration.CtField;
 
 import java.io.File;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -19,6 +20,10 @@ public class Utils {
 
     public static boolean nextBoolean() {
         return r.nextBoolean();
+    }
+
+    public static URLClassLoader createClassLoader(URL outputBinURL) {
+        return new URLClassLoader(new URL[]{outputBinURL});
     }
 
     public static File createDirectory(String path) {

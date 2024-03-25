@@ -4,9 +4,8 @@ import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
-import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
-import evorep.spoon.typesgraph.TypeGraph;
+import evorep.typegraph.TypeGraph;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtInvocation;
@@ -39,7 +38,7 @@ public class AddToCollectionMutator implements Mutator {
         CtLocalVariable<?> chosenCollection = traversalCollections.get(RandomUtils.nextInt(traversalCollections.size()));
         CtTypeReference<?> collectionSubtype = chosenCollection.getType().getActualTypeArguments().get(0);
 
-        TypeGraph typesGraph = SpoonManager.getTypeGraph();
+        TypeGraph typesGraph = TypeGraph.getInstance();
         List<CtField<?>> candidateFields = typesGraph.getOutgoingFields(typesGraph.getRoot());
         candidateFields = SpoonQueries.filterFieldsByType(candidateFields, collectionSubtype);
         CtField<?> chosenField = candidateFields.get(RandomUtils.nextInt(candidateFields.size()));

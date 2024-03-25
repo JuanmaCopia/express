@@ -1,7 +1,8 @@
-package evorep.spoon.typesgraph;
+package evorep.typegraph;
 
 
 import evorep.spoon.SpoonFactory;
+import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtField;
@@ -14,15 +15,12 @@ import java.util.stream.Collectors;
 
 public class TypeGraph {
 
+    private static TypeGraph instance;
     CtTypeReference<?> rootType;
     Map<CtTypeReference<?>, List<Edge>> adjacencyList = new HashMap<>();
 
-    public TypeGraph(CtTypeReference<?> rootType) {
+    protected TypeGraph(CtTypeReference<?> rootType) {
         this.rootType = rootType;
-        populateGraph();
-    }
-
-    private void populateGraph() {
         addNode(rootType);
 
         Set<CtTypeReference> visited = new HashSet<>();
@@ -48,6 +46,13 @@ public class TypeGraph {
                 }
             }
         }
+    }
+
+    public static TypeGraph getInstance() {
+        if (instance == null) {
+            instance = new TypeGraph(SpoonManager.targetClass.getReference());
+        }
+        return instance;
     }
 
     public void addNode(CtTypeReference<?> node) {
@@ -92,15 +97,6 @@ public class TypeGraph {
         return adjacencyList.get(source).stream().map(edge -> edge.getDestination()).collect(Collectors.toList());
     }
 
-    /*public List<CtTypeReference<?>> getNodesWithSelfCycles() {
-        List<CtTypeReference<?>> nodesWithCycles = new LinkedList<>();
-        for (CtTypeReference<?> node : adjacencyList.keySet()) {
-            if (nodeHasCycle(node))
-                nodesWithCycles.add(node);
-        }
-        return nodesWithCycles;
-    }
-*/
     public Set<CtTypeReference<?>> getNodesWithSelfCycles() {
         Set<CtTypeReference> visited = new HashSet<>();
         LinkedList<CtTypeReference> workList = new LinkedList<>();
@@ -237,7 +233,7 @@ public class TypeGraph {
     }
 
 
-    static class Edge {
+    public static class Edge {
         private final CtTypeReference<?> destination;
         private final CtField<?> label;
 

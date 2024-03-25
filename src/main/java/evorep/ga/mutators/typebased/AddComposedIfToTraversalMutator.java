@@ -4,9 +4,8 @@ import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
-import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
-import evorep.spoon.typesgraph.TypeGraph;
+import evorep.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -44,7 +43,7 @@ public class AddComposedIfToTraversalMutator implements Mutator {
     }
 
     private CtExpression<Boolean> generateComposedCondition(CtLocalVariable<?> currentDeclaration) {
-        TypeGraph typeGraph = SpoonManager.getTypeGraph();
+        TypeGraph typeGraph = TypeGraph.getInstance();
         List<CtField<?>> cyclicFields = typeGraph.getSelfCyclicFieldsOfNode(currentDeclaration.getType());
 
         if (cyclicFields.size() < 2)

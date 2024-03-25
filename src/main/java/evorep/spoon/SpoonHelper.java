@@ -5,27 +5,20 @@ import evorep.spoon.scope.Scope;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 
 public class SpoonHelper {
 
     public static void putIndividualIntoTheEnvironment(Individual individual) {
-        CtClass<?> targetClass = SpoonManager.getTargetClass();
+/*        CtClass<?> targetClass = SpoonManager.targetClass;
         targetClass.removeMethod(individual.getChromosome());
-        targetClass.addMethod(individual.getChromosome());
+        targetClass.addMethod(individual.getChromosome());*/
     }
 
     public static Scope getScope(Individual individual, CtCodeElement gene) {
         putIndividualIntoTheEnvironment(individual);
         return new Scope(gene);
-    }
-
-    public static String getFalseFitnessString() {
-        CtClass<?> clazz = SpoonManager.getTargetClass();
-        CtMethod<?> method = clazz.getMethodsByName("repOKStructure").get(0);
-        return getStatementsString(method);
     }
 
     public static String getStatementsString(CtMethod method) {

@@ -1,6 +1,6 @@
 package evorep.ga;
 
-import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtClass;
 
 import java.util.HashSet;
 import java.util.PriorityQueue;
@@ -22,12 +22,11 @@ public class Population {
         presentIndividuals = new HashSet<>(initialPopulation.presentIndividuals);
     }
 
-    public Population(int populationSize, CtMethod repOK) {
+    public Population(int populationSize, CtClass<?> preconditionClass) {
         population = new PriorityQueue<>();
 
         for (int i = 0; i < populationSize; i++) {
-            Individual individual = new Individual(repOK);
-            //MutatorManager.initialMutation(individual);
+            Individual individual = new Individual();
             addIndividual(individual);
         }
     }
@@ -51,12 +50,10 @@ public class Population {
         return fittest;
     }
 
-    public boolean addIndividual(Individual individual) {
+    public void addIndividual(Individual individual) {
         if (presentIndividuals.add(individual.toString())) {
             population.add(individual);
-            return true;
         }
-        return false;
     }
 
     /**

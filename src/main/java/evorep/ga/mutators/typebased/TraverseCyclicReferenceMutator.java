@@ -4,9 +4,9 @@ import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
-import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
 import evorep.spoon.processors.TraverseCyclicReferenceProcessor;
+import evorep.typegraph.TypeGraph;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
@@ -35,7 +35,7 @@ public class TraverseCyclicReferenceMutator implements Mutator {
         CtVariableRead<?> chosenInitialField = varReads.get(RandomUtils.nextInt(varReads.size()));
 
         CtTypeReference<?> cyclicNode = chosenInitialField.getVariable().getType();
-        List<CtField<?>> loopFields = SpoonManager.getTypeGraph().getSelfCyclicFieldsOfNode(cyclicNode);
+        List<CtField<?>> loopFields = TypeGraph.getInstance().getSelfCyclicFieldsOfNode(cyclicNode);
         CtField<?> chosenLoopField = loopFields.get(RandomUtils.nextInt(loopFields.size()));
 
         List<CtLocalVariable<?>> setVars = SpoonQueries.getVisitedSetLocalVarsOfType(blockGene, cyclicNode);

@@ -1,5 +1,6 @@
 package evorep.spoon;
 
+import evorep.config.ToolConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.SpoonAPI;
@@ -21,7 +22,14 @@ public class SpoonQueriesTests {
 
     @BeforeEach
     void setUp() {
-        SpoonManager.initialize("./src/test/resources", "./target/class-test", "SLL", 17);
+        // Initialize ToolConfig
+        ToolConfig.className = "SLL";
+        ToolConfig.testSuiteClassName = "SLLTestSuite";
+        ToolConfig.srcPath = "./src/test/resources";
+        ToolConfig.srcJavaVersion = 17;
+        // Initialise Spoon
+        SpoonManager.initialize();
+
         launcher = SpoonFactory.getLauncher();
         sllClass = SpoonQueries.getClass("SLL");
         method = sllClass.getMethodsByName(METHOD_NAME).get(0);

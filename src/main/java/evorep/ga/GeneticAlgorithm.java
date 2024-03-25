@@ -1,45 +1,8 @@
 package evorep.ga;
 
 import evorep.ga.mutators.MutatorManager;
-import evorep.spoon.SpoonFactory;
-import evorep.spoon.SpoonManager;
-import evorep.spoon.processors.MultipleReferenceTraversalProcessor;
-import evorep.spoon.typesgraph.TypeGraph;
-import evorep.util.Utils;
-import spoon.processing.Processor;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.declaration.CtClass;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-/**
- * The GeneticAlgorithm class is our main abstraction for managing the
- * operations of the genetic algorithm. This class is meant to be
- * problem-specific, meaning that (for instance) the "calcFitness" method may
- * need to change from problem to problem.
- * <p>
- * This class concerns itself mostly with population-level operations, but also
- * problem-specific operations such as calculating fitness, testing for
- * termination criteria, and managing mutation and crossover operations (which
- * generally need to be problem-specific as well).
- * <p>
- * Generally, GeneticAlgorithm might be better suited as an abstract class or an
- * interface, rather than a concrete class as below. A GeneticAlgorithm
- * interface would require implementation of methods such as
- * "isTerminationConditionMet", "calcFitness", "mutatePopulation", etc, and a
- * concrete class would be defined to solve a particular problem domain. For
- * instance, the concrete class "TravelingSalesmanGeneticAlgorithm" would
- * implement the "GeneticAlgorithm" interface. This is not the approach we've
- * chosen, however, so that we can keep each chapter's examples as simple and
- * concrete as possible.
- *
- * @author bkanber
- */
 public class GeneticAlgorithm {
 
     public static final int MIN_POPULATION_SIZE = 1;
@@ -76,48 +39,19 @@ public class GeneticAlgorithm {
     /**
      * Initialize population
      *
-     * @param repOK The repOK method
+     * @param preconditionClass The class containing the precondition method
      * @return population The initial population generated
      */
-    public Population initPopulation(CtMethod repOK) {
-        return new Population(this.maxPopulationSize, repOK);
+    public Population initPopulation(CtClass<?> preconditionClass) {
+        return new Population(this.maxPopulationSize, preconditionClass);
     }
 
-    public Population initPopulationBasedOnTypeGraph(CtMethod repOK) {
-        Population population = new Population();
 
-        TypeGraph typesGraph = SpoonManager.getTypeGraph();
-        Set<CtTypeReference<?>> nodesWithCycles = typesGraph.getNodesWithSelfCycles();
-        for (CtTypeReference<?> node : nodesWithCycles) {
-            List<CtField<?>> cyclicFields = typesGraph.getSelfCyclicFieldsOfNode(node);
-            List<List<CtField<?>>> simplePaths = typesGraph.getSimplePaths(typesGraph.getRoot(), node);
-            for (List<CtField<?>> path : simplePaths) {
-                CtVariableRead<?> initialField = SpoonFactory.createFieldRead(path);
-                List<List<CtField<?>>> allCominations = new LinkedList<>();
-                for (int i = 1; i <= cyclicFields.size(); i++) {
-                    allCominations.addAll(Utils.generateCombinations(cyclicFields, i));
-                }
-                for (List<CtField<?>> combination : allCominations) {
-                    Individual individual = new Individual(repOK);
-                    CtBlock<?> repOKBody = individual.getChromosome().getBody();
-                    Processor<CtBlock<?>> p = new MultipleReferenceTraversalProcessor(initialField, combination);
-                    p.process(repOKBody);
-                    population.addIndividual(individual);
-                }
-            }
-        }
-
-        if (population.size() < maxPopulationSize) {
-            int remaining = maxPopulationSize - population.size();
-            for (int i = 0; i < remaining; i++) {
-                Individual individual = new Individual(repOK);
-                population.addIndividual(individual);
-            }
-        }
-
-        return population;
-    }
-
+    /**
+     * Evaluate the fitness of the population
+     *
+     * @param population The population to evaluate
+     */
     public void evalPopulation(Population population) {
         population.getIndividuals().stream().filter(Individual::needsFitnessUpdate).forEach(FitnessFunctions::invalidInstancesFitness);
     }
@@ -161,7 +95,13 @@ public class GeneticAlgorithm {
         return newPopulation;
     }
 
-    public Population selectFittest(Population population) {
+    /**
+     * Select the survivors of the population
+     *
+     * @param population The population to select survivors from
+     * @return The new population of survivors
+     */
+    public Population selectSurvivors(Population population) {
         Population survivors = new Population();
         int i = 0;
         while (i < maxPopulationSize && population.size() > 0) {

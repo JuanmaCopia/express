@@ -4,10 +4,7 @@ import evorep.ga.helper.LocalVarHelper;
 import org.apache.commons.lang3.ClassUtils;
 import spoon.Launcher;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
@@ -59,22 +56,71 @@ public class SpoonFactory {
 
     // ==================== Methods for creating new elements ====================
 
-    public static CtMethod<Boolean> createRepOK(String name) {
-        CtMethod<Boolean> newMethod = createMethod(ModifierKind.PUBLIC, typeFactory.BOOLEAN_PRIMITIVE, name);
+    public static CtClass<?> createPreconditionClass(String name, List<CtParameter<?>> parameters) {
+        CtClass<?> preconditionClass = coreFactory.createClass();
+        preconditionClass.setSimpleName(name);
 
-        CtBlock<Boolean> block = coreFactory.createBlock();
-        block.addStatement(createComment("End of Initial Checks"));
-        block.addStatement(createReturnStatement(codeFactory.createLiteral(true)));
-        newMethod.setBody(block);
-        return newMethod;
+        List<CtMethod<Boolean>> subPreconditions = createSubPreconditions(parameters);
+        for (CtMethod<?> subPrecondition : subPreconditions)
+            preconditionClass.addMethod(subPrecondition);
+
+        Set<ModifierKind> modifiers = new HashSet<>();
+        modifiers.add(ModifierKind.PUBLIC);
+        modifiers.add(ModifierKind.STATIC);
+
+        CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.BOOLEAN_PRIMITIVE, "precondition", parameters);
+
+        CtBlock<?> body = createBlock();
+        for (CtMethod<?> subPrecondition : subPreconditions) {
+            CtInvocation<?> subPreconditionInvocation = createStaticInvocation(preconditionClass.getReference(), subPrecondition.getSimpleName());
+            CtExpression<Boolean> preconditionNegation = (CtExpression<Boolean>) createUnaryExpression(subPreconditionInvocation, UnaryOperatorKind.NOT);
+            CtIf ifStatement = createIfThenStatement(preconditionNegation, createReturnStatement(codeFactory.createLiteral(false)));
+            body.addStatement(ifStatement);
+        }
+        body.addStatement(createReturnStatement(codeFactory.createLiteral(true)));
+        preconditionMethod.setBody(body);
+
+        preconditionClass.addMethod(preconditionMethod);
+        return preconditionClass;
     }
 
-    public static CtMethod<Boolean> createMethod(ModifierKind modifier, CtTypeReference<?> returnType,
-                                                 String name) {
+    private static List<CtMethod<Boolean>> createSubPreconditions(List<CtParameter<?>> parameters) {
+        List<CtMethod<Boolean>> subPreconditions = new ArrayList<>();
+        subPreconditions.add(createSubPreconditionMethod("initialChecks", parameters));
+        subPreconditions.add(createSubPreconditionMethod("structureCheck", parameters));
+        subPreconditions.add(createSubPreconditionMethod("primitiveCheck", parameters));
+        return subPreconditions;
+    }
+
+
+    public static CtMethod<Boolean> createSubPreconditionMethod(String name, List<CtParameter<?>> parameters) {
+        Set<ModifierKind> modifiers = new HashSet<>();
+        modifiers.add(ModifierKind.PUBLIC);
+        modifiers.add(ModifierKind.STATIC);
+
+        CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.BOOLEAN_PRIMITIVE, name, parameters);
+
+        preconditionMethod.setBody(createReturnTrueBlock());
+        return preconditionMethod;
+    }
+
+    public static CtBlock<?> createReturnTrueBlock() {
+        CtBlock<Boolean> block = coreFactory.createBlock();
+        block.addStatement(createComment("Return true"));
+        block.addStatement(createReturnStatement(codeFactory.createLiteral(true)));
+        return block;
+    }
+
+    public static CtMethod<Boolean> createMethod(
+            Set<ModifierKind> modifiers,
+            CtTypeReference<?> returnType,
+            String name, List<CtParameter<?>> parameters
+    ) {
         CtMethod<Boolean> newMethod = coreFactory.createMethod();
-        newMethod.addModifier(modifier);
+        newMethod.setModifiers(modifiers);
         newMethod.setType(returnType);
         newMethod.setSimpleName(name);
+        newMethod.setParameters(parameters);
         return newMethod;
     }
 
@@ -180,6 +226,12 @@ public class SpoonFactory {
 
     public static CtConstructorCall<?> createConstructorCall(CtTypeReference<?> type) {
         return codeFactory.createConstructorCall(type);
+    }
+
+    public static CtInvocation<?> createStaticInvocation(CtTypeReference<?> targetClassRef, String methodName) {
+        CtMethod<?> staticMethod = targetClassRef.getTypeDeclaration().getMethodsByName(methodName).get(0);
+        CtExecutableReference<?> staticMethodRef = factory.Executable().createReference(staticMethod);
+        return factory.Code().createInvocation(null, staticMethodRef);
     }
 
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName) {

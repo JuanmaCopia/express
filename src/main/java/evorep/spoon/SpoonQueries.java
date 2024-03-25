@@ -1,8 +1,7 @@
 package evorep.spoon;
 
-import evorep.ga.Individual;
 import evorep.ga.helper.LocalVarHelper;
-import evorep.spoon.typesgraph.TypeGraph;
+import evorep.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
@@ -96,10 +95,6 @@ public class SpoonQueries {
         return statement.map(new PotentialVariableDeclarationFunction()).list();
     }
 
-    public static List<CtVariable<?>> getAllReachableVariablesFromIndividual(Individual individual) {
-        return getAllReachableVariables(individual.getLastGene());
-    }
-
     public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
                                                                           Class<?> type) {
         return getAllReachableLocalVariablesOfType(statement, SpoonFactory.getTypeFactory().createReference(type));
@@ -154,7 +149,7 @@ public class SpoonQueries {
     public static Set<CtTypeReference<?>> getCandidateCyclicTypes(
             CtBlock<?> block,
             String varNamePrefix) {
-        Set<CtTypeReference<?>> selfCyclicTypes = SpoonManager.getTypeGraph().getNodesWithSelfCycles();
+        Set<CtTypeReference<?>> selfCyclicTypes = TypeGraph.getInstance().getNodesWithSelfCycles();
         List<CtLocalVariable<?>> localVars = SpoonQueries.getDeclaredLocalVars(block);
 
         Set<CtTypeReference<?>> candidateTypes = new HashSet<>();
@@ -173,7 +168,7 @@ public class SpoonQueries {
 
     public static Set<CtField<?>> getCandidateFields(
             CtBlock<?> block) {
-        TypeGraph typesGraph = SpoonManager.getTypeGraph();
+        TypeGraph typesGraph = TypeGraph.getInstance();
         CtTypeReference<?> root = typesGraph.getRoot();
 
         List<CtField<?>> fields = typesGraph.getOutgoingUserDefinedFields(root);
@@ -189,7 +184,7 @@ public class SpoonQueries {
     }
 
 /*    public static List<CtVariableRead<?>> getCandidateVarReadsForNullCheck(CtBlock<?> block) {
-        TypeGraph typesGraph = SpoonManager.getTypeGraph();
+        TypeGraph typesGraph = TypeGraph.getInstance();
         List<CtVariable<?>> referenceFields = typesGraph.getOutgoingReferenceFields(typesGraph.getRoot());
         List<CtVariableRead<?>> varReads = new ArrayList<>();
         for (CtVariable<?> field : referenceFields) {
@@ -204,7 +199,7 @@ public class SpoonQueries {
     }*/
 
     public static List<CtVariableRead<?>> getCandidateVarReadsForNullCheck(CtBlock<?> block, int depth) {
-        TypeGraph typesGraph = SpoonManager.getTypeGraph();
+        TypeGraph typesGraph = TypeGraph.getInstance();
         List<List<CtField<?>>> paths = typesGraph.getAllPaths(typesGraph.getRoot(), depth);
         List<CtVariableRead<?>> varReads = new ArrayList<>();
 
@@ -243,7 +238,7 @@ public class SpoonQueries {
     }
 
     public static List<CtLocalVariable<?>> getWorklistDeclared(CtBlock<?> block) {
-        Set<CtTypeReference<?>> cyclicNodes = SpoonManager.getTypeGraph().getNodesWithSelfCycles();
+        Set<CtTypeReference<?>> cyclicNodes = TypeGraph.getInstance().getNodesWithSelfCycles();
         return block.getElements(var -> isWorklist(var, cyclicNodes));
     }
 
@@ -253,7 +248,7 @@ public class SpoonQueries {
     }
 
     public static List<CtLocalVariable<?>> getVisitedSetDeclared(CtBlock<?> block) {
-        Set<CtTypeReference<?>> cyclicNodes = SpoonManager.getTypeGraph().getNodesWithSelfCycles();
+        Set<CtTypeReference<?>> cyclicNodes = TypeGraph.getInstance().getNodesWithSelfCycles();
         return block.getElements(var -> isVisitedSet(var, cyclicNodes));
     }
 
@@ -361,7 +356,7 @@ public class SpoonQueries {
     public static List<CtVariableRead<?>> getNonTraversedCyclicFieldReads(CtBlock<?> code) {
         List<CtVariableRead<?>> nonTraversedCyclicVarReads = new LinkedList<>();
 
-        TypeGraph typeGraph = SpoonManager.getTypeGraph();
+        TypeGraph typeGraph = TypeGraph.getInstance();
         Set<CtVariableRead<?>> cyclicVarReads = typeGraph.getReacheableCyclicFieldReads();
 
         List<CtLocalVariable<?>> currentVars = getLocalVariablesMathingPrefix(code, LocalVarHelper.CURRENT_VAR_NAME);
@@ -374,7 +369,7 @@ public class SpoonQueries {
     }
 
     public static List<CtField<?>> getIntegerFieldsOfRoot() {
-        TypeGraph typeGraph = SpoonManager.getTypeGraph();
+        TypeGraph typeGraph = TypeGraph.getInstance();
         List<CtField<?>> rootFields = typeGraph.getOutgoingFields(typeGraph.getRoot());
         return rootFields.stream().filter(
                 field -> field.getType().isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER) ||

@@ -1,5 +1,6 @@
-package evorep.spoon.typesgraph;
+package evorep.typegraph;
 
+import evorep.config.ToolConfig;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
@@ -30,7 +31,11 @@ public class TypeGraphTest {
     }
 
     private static void initializeSpoon() {
-        SpoonManager.initialize(SOURCE_PATH, null, CLASS_NAME, 17);
+        ToolConfig.className = CLASS_NAME;
+        ToolConfig.srcPath = SOURCE_PATH;
+        ToolConfig.srcJavaVersion = 17;
+        SpoonManager.initialize();
+
         launcher = SpoonFactory.getLauncher();
     }
 
@@ -41,10 +46,10 @@ public class TypeGraphTest {
 
     @Test
     void createTypeGraphTest() {
-        CtTypeReference<?> rootType = targetClass.getReference();
+        CtTypeReference<?> rootType = SpoonQueries.getClass("SLL").getReference();
         TypeGraph graph = new TypeGraph(rootType);
 
-        List<TypeGraph.Edge> adjOfSLL = graph.getOutgoingEdges(rootType);
+        List<TypeGraph.Edge> adjOfSLL = graph.getOutgoingEdges(graph.getRoot());
         assertEquals(2, adjOfSLL.size());
 
         TypeGraph.Edge headEdge = adjOfSLL.get(0);

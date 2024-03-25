@@ -1,5 +1,6 @@
 package evorep.spoon.processors;
 
+import evorep.config.ToolConfig;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
@@ -20,7 +21,14 @@ class ProcessorsTests {
 
     @BeforeEach
     void setUp() {
-        SpoonManager.initialize("./src/test/resources", "./target/class-test", "Node", 17);
+        // Initialize ToolConfig
+        ToolConfig.className = "Node";
+        ToolConfig.testSuiteClassName = "SLLTestSuite";
+        ToolConfig.srcPath = "./src/test/resources";
+        ToolConfig.srcJavaVersion = 17;
+        // Initialise Spoon
+        SpoonManager.initialize();
+        
         launcher = SpoonFactory.getLauncher();
         nodeClass = SpoonQueries.getClass("Node");
     }

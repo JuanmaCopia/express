@@ -4,9 +4,8 @@ import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
-import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
-import evorep.spoon.typesgraph.TypeGraph;
+import evorep.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -26,7 +25,7 @@ public class AddIfNullReturnMutator implements Mutator {
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        TypeGraph typesGraph = SpoonManager.getTypeGraph();
+        TypeGraph typesGraph = TypeGraph.getInstance();
         List<List<CtField<?>>> paths = typesGraph.getAllPaths(typesGraph.getRoot(), 2);
         List<CtField<?>> chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
         CtVariableRead<?> chosenVarRead = SpoonFactory.createFieldRead(chosenPath);
