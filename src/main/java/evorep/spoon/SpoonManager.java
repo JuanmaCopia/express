@@ -8,10 +8,12 @@ import evorep.util.Utils;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.LinkedList;
 
 public class SpoonManager {
 
@@ -20,10 +22,9 @@ public class SpoonManager {
     public static Launcher launcher;
     public static CtClass<?> targetClass;
     public static CtMethod<?> targetMethod;
-    public static CtClass<?> testSuiteClass;
-    public static CtClass<?> preconditionClass;
 
-    public static String preconditionName;
+    public static LinkedList<CtParameter<?>> preconditionParameters;
+    public static CtClass<?> testSuiteClass;
     public static URL outputBinURL;
     public static URLClassLoader classLoader;
 
@@ -34,12 +35,22 @@ public class SpoonManager {
             initializeLauncher();
             initializeFactories();
             initializeTarget();
+            initializePreconditionParameters();
             initializeTestSuiteClass();
             initializeMutatorManager();
             compileModel();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void initializePreconditionParameters() {
+        preconditionParameters = new LinkedList<>(SpoonManager.targetMethod.getParameters());
+        CtClass<?> targetClass = SpoonManager.targetClass;
+        CtParameter<?> thisParameter = targetClass.getFactory().Core().createParameter();
+        thisParameter.setType(targetClass.getReference());
+        thisParameter.setSimpleName("rootObject");
+        preconditionParameters.addFirst(thisParameter);
     }
 
     private static void initializeOutputDirectories() {

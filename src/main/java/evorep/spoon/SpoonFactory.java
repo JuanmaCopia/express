@@ -1,5 +1,6 @@
 package evorep.spoon;
 
+import evorep.config.ToolConfig;
 import evorep.ga.helper.LocalVarHelper;
 import org.apache.commons.lang3.ClassUtils;
 import spoon.Launcher;
@@ -68,7 +69,7 @@ public class SpoonFactory {
         modifiers.add(ModifierKind.PUBLIC);
         modifiers.add(ModifierKind.STATIC);
 
-        CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.BOOLEAN_PRIMITIVE, "precondition", parameters);
+        CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.BOOLEAN_PRIMITIVE, ToolConfig.preconditionMethodName, parameters);
 
         CtBlock<?> body = createBlock();
         for (CtMethod<?> subPrecondition : subPreconditions) {
@@ -122,6 +123,12 @@ public class SpoonFactory {
         newMethod.setSimpleName(name);
         newMethod.setParameters(parameters);
         return newMethod;
+    }
+
+    public static CtClass<?> createClass(String name) {
+        CtClass<?> clazz = coreFactory.createClass();
+        clazz.setSimpleName(name);
+        return clazz;
     }
 
     public static CtReturn createReturnStatement(CtExpression returnExpression) {

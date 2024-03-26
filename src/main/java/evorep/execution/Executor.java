@@ -9,9 +9,7 @@ import java.util.concurrent.*;
 
 public class Executor {
 
-    public static int runPrecondition(Object[] args) {
-        Method precondition = Reflection.loadPreconditionMethod();
-
+    public static int runPrecondition(Method precondition, Object[] args) {
         // Create an ExecutorService with a single thread
         ExecutorService executor = Executors.newSingleThreadExecutor();
 

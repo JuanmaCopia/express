@@ -1,7 +1,6 @@
 package evorep.ga;
 
 import evorep.ga.mutators.MutatorManager;
-import spoon.reflect.declaration.CtClass;
 
 public class GeneticAlgorithm {
 
@@ -36,14 +35,11 @@ public class GeneticAlgorithm {
 
     }
 
-    /**
-     * Initialize population
-     *
-     * @param preconditionClass The class containing the precondition method
-     * @return population The initial population generated
-     */
-    public Population initPopulation(CtClass<?> preconditionClass) {
-        return new Population(this.maxPopulationSize, preconditionClass);
+    public Population initPopulation() {
+        Population initialPopulation = new Population();
+        Individual individual = new Individual(0);
+        initialPopulation.addIndividual(individual);
+        return initialPopulation;
     }
 
 
@@ -78,17 +74,13 @@ public class GeneticAlgorithm {
         int i = 0;
         for (Individual individual : population.getIndividuals()) {
             if (i < elitismCount) {
-                newPopulation.addIndividual(individual);
-                Individual mutant = MutatorManager.mutate(individual);
-                if (mutant != null)
-                    newPopulation.addIndividual(mutant);
+                Individual clone = new Individual(individual, newPopulation.getNextID());
+                if (MutatorManager.mutate(clone))
+                    newPopulation.addIndividual(clone);
             } else if (Math.random() < mutationRate && individual.getFitness() > FitnessFunctions.WORST_FITNESS_VALUE) {
-                Individual mutant = MutatorManager.mutate(individual);
-                if (mutant != null)
-                    newPopulation.addIndividual(mutant);
-            } else {
-                newPopulation.addIndividual(individual);
+                MutatorManager.mutate(individual);
             }
+            newPopulation.addIndividual(individual);
             i++;
         }
 

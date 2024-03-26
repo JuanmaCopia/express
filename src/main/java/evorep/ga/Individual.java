@@ -1,27 +1,42 @@
 package evorep.ga;
 
+import evorep.config.ToolConfig;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 
 public class Individual implements Comparable<Individual> {
 
-    private static int individualId = 0;
-
     private final CtClass<?> chromosome;
-    private double fitness = -1;
-    private boolean isFitnessUpdated = false;
+    private double fitness;
+    private boolean isFitnessUpdated;
+    private int id;
 
-    public Individual() {
-        this.chromosome = SpoonFactory.createPreconditionClass("Precondition" + individualId++, SpoonManager.targetMethod.getParameters());
+    public Individual(int id) {
+        this.chromosome = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + id, SpoonManager.preconditionParameters);
+        this.isFitnessUpdated = false;
+        this.id = id;
     }
 
-    public Individual(CtClass<?> chromosome, double fitness) {
-        this.chromosome = chromosome;
-        this.fitness = fitness;
-        this.isFitnessUpdated = true;
+    public Individual(Individual individual, int newId) {
+        CtClass<?> newChromosome = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + newId, SpoonManager.preconditionParameters);
+        for (CtMethod<?> method : individual.getChromosome().getMethods()) {
+            if (!method.getSimpleName().equals(ToolConfig.preconditionMethodName)) {
+                CtBlock<?> body = method.getBody().clone();
+                newChromosome.getMethod(method.getSimpleName()).setBody(body);
+            }
+        }
+        this.chromosome = newChromosome;
+        this.fitness = individual.getFitness();
+        this.isFitnessUpdated = individual.needsFitnessUpdate();
+        this.id = newId;
     }
 
+    public int getId() {
+        return id;
+    }
 
     /**
      * Gets individual's chromosome
@@ -68,15 +83,6 @@ public class Individual implements Comparable<Individual> {
     }
 
     /**
-     * Clone the individual
-     *
-     * @return The cloned individual
-     */
-    public Individual clone() {
-        return new Individual(chromosome, fitness);
-    }
-
-    /**
      * Display the chromosome as a string.
      *
      * @return string representation of the chromosome
@@ -85,7 +91,11 @@ public class Individual implements Comparable<Individual> {
     public String toString() {
         if (chromosome == null)
             return "Empty individual";
-        return chromosome.toString();
+        StringBuilder sb = new StringBuilder();
+        for (CtMethod<?> method : chromosome.getMethods()) {
+            sb.append(method.toString());
+        }
+        return sb.toString();
     }
 
     /**

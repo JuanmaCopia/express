@@ -25,22 +25,16 @@ public class MutatorManager {
         mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
     }
 
-    public static Individual mutate(Individual individual) {
-        Individual mutant = individual.clone();
-        CtCodeElement gene = selectGene(mutant);
-        if (gene == null)
-            return mutant;
-        Mutator mutator = selectMutator(mutators, individual, gene);
-        boolean wasMutated = false;
-        if (mutator != null)
-            wasMutated = mutator.mutate(mutant, gene);
-
-        if (wasMutated) {
-            mutant.setFitnessAsOutdated();
-            return mutant;
+    public static boolean mutate(Individual individual) {
+        CtCodeElement gene = selectGene(individual);
+        if (gene != null) {
+            Mutator mutator = selectMutator(mutators, individual, gene);
+            if (mutator != null && mutator.mutate(individual, gene)) {
+                individual.setFitnessAsOutdated();
+                return true;
+            }
         }
-
-        return null;
+        return false;
     }
 
     private static CtCodeElement selectGene(Individual individual) {

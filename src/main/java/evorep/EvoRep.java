@@ -28,7 +28,7 @@ public class EvoRep {
     public static void startSearch() {
         GeneticAlgorithm ga = new GeneticAlgorithm(ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
 
-        Population population = ga.initPopulation(SpoonManager.preconditionClass);
+        Population population = ga.initPopulation();
         ga.evalPopulation(population);
         population = ga.selectSurvivors(population);
 

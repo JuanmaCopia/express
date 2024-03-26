@@ -16,6 +16,10 @@ public class ToolConfig {
 
     public static int srcJavaVersion;
 
+    // Output Settings
+    public static String preconditionClassName;
+    public static String preconditionMethodName;
+
     // Search Settings
     public static int maxPopulation;
     public static int maxGenerations;
@@ -45,6 +49,10 @@ public class ToolConfig {
             testSuiteClassName = properties.getProperty("evorep.test_suite_class_name");
             srcJavaVersion = Integer.parseInt(properties.getProperty("evorep.src_java_version"));
 
+            // Output Settings
+            preconditionClassName = properties.getProperty("evorep.precondition_class_name");
+            preconditionMethodName = properties.getProperty("evorep.precondition_method_name");
+
             // Search Settings
             maxPopulation = Integer.parseInt(properties.getProperty("evorep.search.max_population"));
             maxGenerations = Integer.parseInt(properties.getProperty("evorep.search.max_generations"));
@@ -67,6 +75,9 @@ public class ToolConfig {
             System.out.println("\tevorep.method_name = " + methodName);
             System.out.println("\tevorep.test_suite_class_name = " + testSuiteClassName);
             System.out.println("\tevorep.src_java_version = " + srcJavaVersion);
+            System.out.println("\nOutput Settings:");
+            System.out.println("\tevorep.precondition_class_name = " + preconditionClassName);
+            System.out.println("\tevorep.precondition_method_name = " + preconditionMethodName);
             System.out.println("\nSearch Settings:");
             System.out.println("\tevorep.search.max_population = " + maxPopulation);
             System.out.println("\tevorep.search.max_generations = " + maxGenerations);

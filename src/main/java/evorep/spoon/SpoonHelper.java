@@ -7,13 +7,14 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
 
 public class SpoonHelper {
 
     public static void putIndividualIntoTheEnvironment(Individual individual) {
-/*        CtClass<?> targetClass = SpoonManager.targetClass;
-        targetClass.removeMethod(individual.getChromosome());
-        targetClass.addMethod(individual.getChromosome());*/
+        CtPackage ctPackage = SpoonManager.targetClass.getPackage();
+        ctPackage.removeType(individual.getChromosome());
+        ctPackage.addType(individual.getChromosome());
     }
 
     public static Scope getScope(Individual individual, CtCodeElement gene) {

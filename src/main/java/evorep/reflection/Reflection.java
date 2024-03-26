@@ -1,7 +1,5 @@
 package evorep.reflection;
 
-import evorep.spoon.SpoonManager;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
@@ -9,17 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Reflection {
-
-
-    /**
-     * Load the precondition class
-     *
-     * @return the precondition class
-     */
-    public static Method loadPreconditionMethod() {
-        Class<?> preconditionClass = loadClass(SpoonManager.classLoader, SpoonManager.preconditionClass.getQualifiedName());
-        return loadMethod(preconditionClass, SpoonManager.preconditionName);
-    }
 
 
     /**
