@@ -60,6 +60,10 @@ public class DoublyLinkedList {
         return true;
     }
 
+    public void mymethod() {
+
+    }
+
     public static class Node {
         public int data;
         public Node prev;

@@ -1,14 +1,13 @@
-package evorep.ga.mutators.typebased;
+package evorep.ga.mutators.initialcheck;
 
 import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
-import evorep.typegraph.TypeGraph;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
 
@@ -18,24 +17,24 @@ public class AddIfNullReturnMutator implements Mutator {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
             return false;
 
-        return !SpoonQueries.getCandidateVarReadsForNullCheck(block, 2).isEmpty();
+        return !SpoonQueries.getCandidateVarReadsForNullCheck(2).isEmpty();
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        TypeGraph typesGraph = TypeGraph.getInstance();
-        List<List<CtField<?>>> paths = typesGraph.getAllPaths(typesGraph.getRoot(), 2);
-        List<CtField<?>> chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
-        CtVariableRead<?> chosenVarRead = SpoonFactory.createFieldRead(chosenPath);
+        List<List<CtVariable<?>>> paths = SpoonQueries.getCandidateVarReadsForNullCheck(2);
+        List<CtVariable<?>> chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
+        CtVariableRead<?> chosenVarRead = SpoonFactory.createFieldReadOfRootObject(chosenPath);
 
         CtExpression<Boolean> condition = null;
         if (chosenPath.size() == 1) {
             condition = SpoonFactory.generateNullComparisonClause(chosenVarRead);
         } else if (chosenPath.size() == 2) {
+            CtVariableRead<?> owner = SpoonFactory.createFieldReadOfRootObject(chosenPath.get(0));
             condition = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(
-                    SpoonFactory.generateNullComparisonClause(SpoonFactory.createFieldRead(chosenPath.get(0)), BinaryOperatorKind.NE),
+                    SpoonFactory.generateNullComparisonClause(owner, BinaryOperatorKind.NE),
                     SpoonFactory.generateNullComparisonClause(chosenVarRead),
                     BinaryOperatorKind.AND);
         }
@@ -44,11 +43,10 @@ public class AddIfNullReturnMutator implements Mutator {
             return false;
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
-        CtStatement endOfInitialChecksComment = SpoonQueries.getEndOfInitialChecksComment(blockGene);
-        endOfInitialChecksComment.insertBefore(ifStatement);
+        blockGene.getLastStatement().insertBefore(ifStatement);
 
-        //System.err.println("\nAddIfNullReturnMutator:\n" + ifStatement);
-        //System.err.println("\nFinal Block:\n\n" + blockGene);
+        /*System.err.println("\nAddIfNullReturnMutator:\n" + ifStatement);
+        System.err.println("\nFinal Block:\n\n" + blockGene);*/
         return true;
     }
 

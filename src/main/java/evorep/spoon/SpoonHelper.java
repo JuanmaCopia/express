@@ -17,6 +17,11 @@ public class SpoonHelper {
         ctPackage.addType(individual.getChromosome());
     }
 
+    public static void removeIndividualFromEnvironment(Individual individual) {
+        CtPackage ctPackage = SpoonManager.targetClass.getPackage();
+        ctPackage.removeType(individual.getChromosome());
+    }
+
     public static Scope getScope(Individual individual, CtCodeElement gene) {
         putIndividualIntoTheEnvironment(individual);
         return new Scope(gene);

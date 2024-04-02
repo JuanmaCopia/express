@@ -1,4 +1,4 @@
-package evorep.ga.mutators.typebased;
+package evorep.ga.mutators.structurecheck;
 
 import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
@@ -11,8 +11,8 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
 
@@ -36,8 +36,8 @@ public class AddSizeCheckMutator implements Mutator {
         List<CtLocalVariable<?>> visitedSetVars = SpoonQueries.getVisitedSetLocalVars(blockGene);
         CtLocalVariable<?> setVar = visitedSetVars.get(RandomUtils.nextInt(visitedSetVars.size()));
 
-        List<CtField<?>> integerFields = SpoonQueries.getIntegerFieldsOfRoot();
-        CtField<?> chosenIntegerField = integerFields.get(RandomUtils.nextInt(integerFields.size()));
+        List<CtVariable<?>> integerFields = SpoonQueries.getIntegerFieldsOfRoot();
+        CtVariable<?> chosenIntegerField = integerFields.get(RandomUtils.nextInt(integerFields.size()));
         CtVariableRead<?> intFieldRead = SpoonFactory.createVariableRead(chosenIntegerField);
 
         Processor<CtBlock<?>> p = new SizeCheckProcessor(setVar, intFieldRead);

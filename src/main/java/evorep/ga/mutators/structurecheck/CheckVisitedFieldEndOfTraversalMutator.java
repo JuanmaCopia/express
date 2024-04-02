@@ -1,4 +1,4 @@
-package evorep.ga.mutators.typebased;
+package evorep.ga.mutators.structurecheck;
 
 import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
@@ -7,6 +7,7 @@ import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
 
@@ -26,8 +27,9 @@ public class CheckVisitedFieldEndOfTraversalMutator implements Mutator {
         List<List<CtStatement>> traversalBlocks = SpoonQueries.getTraversalBlocks(blockGene);
         List<CtStatement> chosenTraversalStatements = traversalBlocks.get(RandomUtils.nextInt(traversalBlocks.size()));
 
-        List<CtVariableRead<?>> varReads = SpoonQueries.getCandidateVarReadsForNullCheck(blockGene, 1);
-        CtVariableRead<?> chosenVarRead = varReads.get(RandomUtils.nextInt(varReads.size()));
+        List<List<CtVariable<?>>> varPath = SpoonQueries.getCandidateVarReadsForNullCheck(1);
+        List<CtVariable<?>> chosenVarPath = varPath.get(RandomUtils.nextInt(varPath.size()));
+        CtVariableRead<?> chosenVarRead = SpoonFactory.createFieldReadOfRootObject(chosenVarPath);
 
         CtLocalVariable<?> visitedSetVar = SpoonQueries.getVisitedSet(chosenTraversalStatements);
         if (visitedSetVar == null) {

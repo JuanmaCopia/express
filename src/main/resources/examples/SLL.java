@@ -36,6 +36,10 @@ public class SLL {
     }
     // ======== End of Implementation ========
 
+    public void mymethod() {
+        
+    }
+
     public boolean repOKStructure() {
         if (head == null) {
             return true;

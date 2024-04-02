@@ -4,17 +4,17 @@ import evorep.ga.helper.LocalVarHelper;
 import evorep.spoon.SpoonFactory;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 
 public class TraverseWorklistProcessor extends AbstractProcessor<CtBlock<?>> {
 
-    List<CtField<?>> loopFields;
+    List<CtVariable<?>> loopFields;
     CtVariableRead<?> initialField;
 
-    public TraverseWorklistProcessor(CtVariableRead<?> initialField, List<CtField<?>> loopFields) {
+    public TraverseWorklistProcessor(CtVariableRead<?> initialField, List<CtVariable<?>> loopFields) {
         super();
         this.loopFields = loopFields;
         this.initialField = initialField;
@@ -55,7 +55,7 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtBlock<?>> {
         whileBody.insertEnd(SpoonFactory.createComment("End of Handle current:"));
 
         // Create worklist.add(current.<loopField>); for each loopField
-        for (CtField<?> loopField : loopFields) {
+        for (CtVariable<?> loopField : loopFields) {
             CtFieldRead<?> loopFieldRead = SpoonFactory.createFieldRead(currentDeclaration, loopField);
             CtExpression<Boolean> fieldNullComp = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(loopFieldRead, null, BinaryOperatorKind.NE);
 

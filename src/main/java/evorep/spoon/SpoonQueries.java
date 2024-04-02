@@ -166,16 +166,16 @@ public class SpoonQueries {
         return block.getElements(Objects::nonNull);
     }
 
-    public static Set<CtField<?>> getCandidateFields(
+    public static Set<CtVariable<?>> getCandidateFields(
             CtBlock<?> block) {
         TypeGraph typesGraph = TypeGraph.getInstance();
         CtTypeReference<?> root = typesGraph.getRoot();
 
-        List<CtField<?>> fields = typesGraph.getOutgoingUserDefinedFields(root);
+        List<CtVariable<?>> fields = typesGraph.getOutgoingUserDefinedFields(root);
         List<CtLocalVariable<?>> localVars = SpoonQueries.getDeclaredLocalVars(block);
 
-        Set<CtField<?>> candidateFields = new HashSet<>();
-        for (CtField<?> field : fields) {
+        Set<CtVariable<?>> candidateFields = new HashSet<>();
+        for (CtVariable<?> field : fields) {
             if (localVars.stream().noneMatch(var -> var.getAssignment() instanceof CtVariableRead varRead &&
                     varRead.getVariable().getSimpleName().equals(field.getSimpleName())))
                 candidateFields.add(field);
@@ -198,18 +198,20 @@ public class SpoonQueries {
         return varReads;
     }*/
 
-    public static List<CtVariableRead<?>> getCandidateVarReadsForNullCheck(CtBlock<?> block, int depth) {
+    public static List<List<CtVariable<?>>> getCandidateVarReadsForNullCheck(int depth) {
         TypeGraph typesGraph = TypeGraph.getInstance();
-        List<List<CtField<?>>> paths = typesGraph.getAllPaths(typesGraph.getRoot(), depth);
-        List<CtVariableRead<?>> varReads = new ArrayList<>();
+        List<List<CtVariable<?>>> paths = typesGraph.getAllPaths(typesGraph.getRoot(), depth);
+        List<List<CtVariable<?>>> referencePaths = new ArrayList<>();
 
-        for (List<CtField<?>> path : paths) {
-            CtVariableRead<?> varRead = SpoonFactory.createFieldRead(path);
-            if (!varRead.getType().isPrimitive())
-                varReads.add(varRead);
+        for (List<CtVariable<?>> path : paths) {
+            if (!path.get(path.size() - 1).getType().isPrimitive())
+                referencePaths.add(path);
         }
 
-        return varReads;
+        if (referencePaths.isEmpty())
+            throw new RuntimeException("No reference paths found.");
+
+        return referencePaths;
     }
 
     public static List<CtStatement> getInitialCheckStatements(CtBlock<?> block) {
@@ -368,9 +370,9 @@ public class SpoonQueries {
         return nonTraversedCyclicVarReads;
     }
 
-    public static List<CtField<?>> getIntegerFieldsOfRoot() {
+    public static List<CtVariable<?>> getIntegerFieldsOfRoot() {
         TypeGraph typeGraph = TypeGraph.getInstance();
-        List<CtField<?>> rootFields = typeGraph.getOutgoingFields(typeGraph.getRoot());
+        List<CtVariable<?>> rootFields = typeGraph.getOutgoingFields(typeGraph.getRoot());
         return rootFields.stream().filter(
                 field -> field.getType().isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER) ||
                         field.getType().isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER_PRIMITIVE)
@@ -469,13 +471,13 @@ public class SpoonQueries {
         return !block.getElements(SpoonQueries::isSizeCheckComment).isEmpty();
     }
 
-    public static List<CtVariableRead<?>> chooseNVarReads(List<CtVariableRead<?>> varReads, int n) {
-        List<CtVariableRead<?>> chosenVarReads = new ArrayList<>();
-        List<Integer> indices = generateRandomIntegers(varReads.size() - 1, n);
+    public static List<List<CtVariable<?>>> chooseNVariablePaths(List<List<CtVariable<?>>> varPaths, int n) {
+        List<List<CtVariable<?>>> chosenPaths = new ArrayList<>();
+        List<Integer> indices = generateRandomIntegers(varPaths.size() - 1, n);
         for (int index : indices) {
-            chosenVarReads.add(varReads.get(index));
+            chosenPaths.add(varPaths.get(index));
         }
-        return chosenVarReads;
+        return chosenPaths;
     }
 
     public static List<Integer> generateRandomIntegers(int max, int n) {

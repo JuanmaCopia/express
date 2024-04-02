@@ -4,15 +4,15 @@ import evorep.ga.helper.LocalVarHelper;
 import evorep.spoon.SpoonFactory;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtVariable;
 
 public class TraverseCyclicReferenceProcessor extends AbstractProcessor<CtBlock<?>> {
 
     CtVariableRead<?> initialField;
-    CtField<?> loopField;
+    CtVariable<?> loopField;
     CtLocalVariable<?> visitedSet;
 
-    public TraverseCyclicReferenceProcessor(CtVariableRead<?> initialField, CtField<?> loopField, CtLocalVariable<?> visitedSet) {
+    public TraverseCyclicReferenceProcessor(CtVariableRead<?> initialField, CtVariable<?> loopField, CtLocalVariable<?> visitedSet) {
         super();
         this.initialField = initialField;
         this.loopField = loopField;

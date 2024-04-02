@@ -3,7 +3,7 @@ package evorep.object;
 import evorep.spoon.SpoonQueries;
 import evorep.typegraph.TypeGraph;
 import evorep.util.Utils;
-import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.reflect.Field;
@@ -78,7 +78,7 @@ public class ObjectMutator {
         CtTypeReference<?> targetType = userDefTypes.get(new Random().nextInt(userDefTypes.size()));
 
         Object targetObject = getRandomReferenceOfType(candidates, targetType);
-        CtField<?> fieldToMutate = selectReferenceField(targetType);
+        CtVariable<?> fieldToMutate = selectReferenceField(targetType);
         int i = 0;
         while ((targetObject == null || fieldToMutate == null) && i < maxAttempts) {
             targetType = userDefTypes.get(new Random().nextInt(userDefTypes.size()));
@@ -139,9 +139,9 @@ public class ObjectMutator {
      * @param type is the type to select the field from
      * @return a random field to mutate
      */
-    static CtField<?> selectReferenceField(CtTypeReference<?> type) {
+    static CtVariable<?> selectReferenceField(CtTypeReference<?> type) {
         TypeGraph typeGraph = TypeGraph.getInstance();
-        List<CtField<?>> fields = typeGraph.getOutgoingFields(type).stream().filter(
+        List<CtVariable<?>> fields = typeGraph.getOutgoingFields(type).stream().filter(
                 f -> !f.getType().isPrimitive() && !SpoonQueries.isBoxedPrimitive(f.getType())).toList();
         if (fields.isEmpty())
             return null;
@@ -176,13 +176,13 @@ public class ObjectMutator {
     /**
      * This record represents a field of an object to mutate
      */
-    record TargetField(Object target, CtField<?> field) {
+    record TargetField(Object target, CtVariable<?> field) {
 
         public Object getTarget() {
             return target;
         }
 
-        public CtField<?> getField() {
+        public CtVariable<?> getField() {
             return field;
         }
 

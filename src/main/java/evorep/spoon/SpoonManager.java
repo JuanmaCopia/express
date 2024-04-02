@@ -2,7 +2,6 @@ package evorep.spoon;
 
 import evorep.config.ToolConfig;
 import evorep.ga.Individual;
-import evorep.ga.mutators.MutatorManager;
 import evorep.instrumentation.Instrumentation;
 import evorep.util.Utils;
 import spoon.Launcher;
@@ -14,10 +13,13 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.LinkedList;
+import java.util.logging.Logger;
 
 public class SpoonManager {
 
     private final static String DEFAULT_BIN_PATH = "./bin";
+
+    private static final Logger logger = Logger.getLogger(SpoonManager.class.getName());
     public static File outputBinDirectory;
     public static Launcher launcher;
     public static CtClass<?> targetClass;
@@ -34,10 +36,11 @@ public class SpoonManager {
             initializeOutputDirectories();
             initializeLauncher();
             initializeFactories();
+            //buildAndCompileModel();
+
             initializeTarget();
             initializePreconditionParameters();
             initializeTestSuiteClass();
-            initializeMutatorManager();
             compileModel();
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,7 +48,10 @@ public class SpoonManager {
     }
 
     private static void initializePreconditionParameters() {
-        preconditionParameters = new LinkedList<>(SpoonManager.targetMethod.getParameters());
+        if (SpoonManager.targetMethod == null)
+            preconditionParameters = new LinkedList<>();
+        else
+            preconditionParameters = new LinkedList<>(SpoonManager.targetMethod.getParameters());
         CtClass<?> targetClass = SpoonManager.targetClass;
         CtParameter<?> thisParameter = targetClass.getFactory().Core().createParameter();
         thisParameter.setType(targetClass.getReference());
@@ -64,16 +70,25 @@ public class SpoonManager {
 
     private static void initializeLauncher() {
         launcher = new Launcher();
-        launcher.setBinaryOutputDirectory(outputBinDirectory);
         launcher.addInputResource(ToolConfig.srcPath);
+        launcher.setBinaryOutputDirectory(outputBinDirectory);
         launcher.getEnvironment().setComplianceLevel(ToolConfig.srcJavaVersion);
         launcher.getEnvironment().setShouldCompile(true);
         launcher.getEnvironment().setAutoImports(true);
         // launcher.getEnvironment().setSourceClasspath(new
         // String[]{System.getProperty("java.class.path")});
         launcher.buildModel();
-        launcher.getModelBuilder().compile();
+        if (!launcher.getModelBuilder().compile())
+            throw new RuntimeException("Model does not compile!!");
+
     }
+
+/*    private static void buildAndCompileModel() {
+        launcher.addInputResource(ToolConfig.srcPath);
+        launcher.buildModel();
+        if (!launcher.getModelBuilder().compile())
+            throw new RuntimeException("Model does not compile!!");
+    }*/
 
     private static void initializeFactories() {
         SpoonFactory.initialize(launcher);
@@ -82,6 +97,8 @@ public class SpoonManager {
     private static void initializeTarget() {
         targetClass = launcher.getFactory().Class().get(ToolConfig.className);
         targetMethod = targetClass.getMethod(ToolConfig.methodName);
+        if (targetMethod == null)
+            logger.warning("Target Method not found or not set");
     }
 
     private static void initializeTestSuiteClass() {
@@ -89,18 +106,20 @@ public class SpoonManager {
         Instrumentation.instrumentTestSuite(testSuiteClass);
     }
 
-    private static void initializeMutatorManager() {
-        MutatorManager.initialize();
-    }
-
-
     public static CtClass<?> getCtClass(String className) {
         return launcher.getFactory().Class().get(className);
     }
 
     public static boolean compileIndividual(Individual individual) {
         SpoonHelper.putIndividualIntoTheEnvironment(individual);
-        return compileModel();
+        if (!compileModel()) {
+            SpoonHelper.removeIndividualFromEnvironment(individual);
+            return false;
+            /*System.err.println("\n Individual not compiling: \n");
+            System.err.println(individual.getChromosome().toString());
+            throw new RuntimeException("The individual does not compile!!!");*/
+        }
+        return true;
     }
 
     public static boolean compileModel() {
@@ -108,7 +127,7 @@ public class SpoonManager {
         try {
             compiles = launcher.getModelBuilder().compile();
         } catch (Exception e) {
-            // e.printStackTrace();
+            e.printStackTrace();
         }
         return compiles;
     }

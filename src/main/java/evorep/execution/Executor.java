@@ -10,12 +10,10 @@ import java.util.concurrent.*;
 public class Executor {
 
     public static int runPrecondition(Method precondition, Object[] args) {
-        // Create an ExecutorService with a single thread
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        // Create a Callable<Boolean> to invoke the method
         Callable<Boolean> task = () -> {
-            return (boolean) precondition.invoke(args);
+            return (boolean) precondition.invoke(null, args);
         };
 
         boolean result = false;
@@ -26,11 +24,11 @@ public class Executor {
             result = future.get(300, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             // Handle timeout exception
-            //e.printStackTrace();
+            e.printStackTrace();
             return -1;
         } catch (Exception e) {
             // Handle other exceptions
-            //e.printStackTrace();
+            e.printStackTrace();
             //System.err.println("\nThe individual was:\n\n" + individual.toString());
             return -1;
         } finally {

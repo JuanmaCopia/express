@@ -57,10 +57,19 @@ public class SpoonFactory {
 
     // ==================== Methods for creating new elements ====================
 
-    public static CtClass<?> createPreconditionClass(String name, List<CtParameter<?>> parameters) {
+    public static CtClass<?> createPreconditionClass(String name) {
         CtClass<?> preconditionClass = coreFactory.createClass();
         preconditionClass.setSimpleName(name);
+        Set<ModifierKind> modifiers = new HashSet<>();
+        modifiers.add(ModifierKind.PUBLIC);
+        preconditionClass.setModifiers(modifiers);
+        CtPackage ctPackage = SpoonManager.targetClass.getPackage();
+        ctPackage.removeType(preconditionClass);
+        ctPackage.addType(preconditionClass);
+        return preconditionClass;
+    }
 
+    public static void createSubPreconditions(CtClass<?> preconditionClass, List<CtParameter<?>> parameters) {
         List<CtMethod<Boolean>> subPreconditions = createSubPreconditions(parameters);
         for (CtMethod<?> subPrecondition : subPreconditions)
             preconditionClass.addMethod(subPrecondition);
@@ -70,10 +79,11 @@ public class SpoonFactory {
         modifiers.add(ModifierKind.STATIC);
 
         CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.BOOLEAN_PRIMITIVE, ToolConfig.preconditionMethodName, parameters);
+        CtExpression<?>[] args = createArgumentsFromParameters(preconditionMethod);
 
         CtBlock<?> body = createBlock();
         for (CtMethod<?> subPrecondition : subPreconditions) {
-            CtInvocation<?> subPreconditionInvocation = createStaticInvocation(preconditionClass.getReference(), subPrecondition.getSimpleName());
+            CtInvocation<?> subPreconditionInvocation = createStaticInvocation(typeFactory.createReference(preconditionClass), subPrecondition.getSimpleName(), args);
             CtExpression<Boolean> preconditionNegation = (CtExpression<Boolean>) createUnaryExpression(subPreconditionInvocation, UnaryOperatorKind.NOT);
             CtIf ifStatement = createIfThenStatement(preconditionNegation, createReturnStatement(codeFactory.createLiteral(false)));
             body.addStatement(ifStatement);
@@ -82,12 +92,41 @@ public class SpoonFactory {
         preconditionMethod.setBody(body);
 
         preconditionClass.addMethod(preconditionMethod);
-        return preconditionClass;
+    }
+
+    public static CtVariableRead<?> createFieldReadOfRootObject(List<CtVariable<?>> path) {
+        List<CtVariable<?>> pathCopy = new ArrayList<>(path);
+        CtVariable<?> rootVar = getRootObjectVar();
+        pathCopy.add(0, rootVar);
+        return createFieldRead(pathCopy);
+    }
+
+    public static CtVariableRead<?> createFieldReadOfRootObject(CtVariable<?> var) {
+        CtVariable<?> rootVar = getRootObjectVar();
+        return createFieldRead(rootVar, var);
+    }
+
+
+    public static CtVariable<?> getRootObjectVar() {
+        return SpoonManager.preconditionParameters.get(0);
+    }
+
+    public static CtMethod<?> getMethodByName(CtClass<?> clazz, String methodName) {
+        return clazz.getMethods().stream().filter(m -> m.getSimpleName().equals(methodName)).findFirst().get();
+    }
+
+    public static CtExpression<?>[] createArgumentsFromParameters(CtMethod<?> method) {
+        List<CtParameter<?>> params = method.getParameters();
+        CtExpression<?>[] args = new CtExpression<?>[params.size()];
+        for (int i = 0; i < args.length; i++) {
+            args[i] = createVariableRead(params.get(i));
+        }
+        return args;
     }
 
     private static List<CtMethod<Boolean>> createSubPreconditions(List<CtParameter<?>> parameters) {
         List<CtMethod<Boolean>> subPreconditions = new ArrayList<>();
-        subPreconditions.add(createSubPreconditionMethod("initialChecks", parameters));
+        subPreconditions.add(createSubPreconditionMethod("initialCheck", parameters));
         subPreconditions.add(createSubPreconditionMethod("structureCheck", parameters));
         subPreconditions.add(createSubPreconditionMethod("primitiveCheck", parameters));
         return subPreconditions;
@@ -193,7 +232,7 @@ public class SpoonFactory {
         return block;
     }
 
-    public static CtVariableRead<?> createFieldRead(List<CtField<?>> path) {
+    public static CtVariableRead<?> createFieldRead(List<CtVariable<?>> path) {
         CtVariableRead<?> fieldRead = createFieldRead(path.get(0));
         for (int i = 1; i < path.size(); i++)
             fieldRead = createFieldRead(fieldRead, path.get(i));
@@ -235,10 +274,10 @@ public class SpoonFactory {
         return codeFactory.createConstructorCall(type);
     }
 
-    public static CtInvocation<?> createStaticInvocation(CtTypeReference<?> targetClassRef, String methodName) {
+    public static CtInvocation<?> createStaticInvocation(CtTypeReference<?> targetClassRef, String methodName, CtExpression<?>[] args) {
         CtMethod<?> staticMethod = targetClassRef.getTypeDeclaration().getMethodsByName(methodName).get(0);
         CtExecutableReference<?> staticMethodRef = factory.Executable().createReference(staticMethod);
-        return factory.Code().createInvocation(null, staticMethodRef);
+        return factory.Code().createInvocation(null, staticMethodRef, args);
     }
 
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName) {

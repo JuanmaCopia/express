@@ -1,4 +1,4 @@
-package evorep.ga.mutators.typebased;
+package evorep.ga.mutators.initialcheck;
 
 import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
@@ -6,6 +6,7 @@ import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
 
@@ -16,17 +17,17 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
             return false;
 
-        return SpoonQueries.getCandidateVarReadsForNullCheck(block, 1).size() > 1;
+        return SpoonQueries.getCandidateVarReadsForNullCheck(1).size() > 1;
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        List<CtVariableRead<?>> variableReads = SpoonQueries.getCandidateVarReadsForNullCheck(blockGene, 1);
-        List<CtVariableRead<?>> chosenVarReads = SpoonQueries.chooseNVarReads(variableReads, 2);
-        CtVariableRead<?> var1 = chosenVarReads.get(0);
-        CtVariableRead<?> var2 = chosenVarReads.get(1);
+        List<List<CtVariable<?>>> variableReads = SpoonQueries.getCandidateVarReadsForNullCheck(1);
+        List<List<CtVariable<?>>> chosenVarReads = SpoonQueries.chooseNVariablePaths(variableReads, 2);
+        CtVariableRead<?> var1 = SpoonFactory.createFieldReadOfRootObject(chosenVarReads.get(0));
+        CtVariableRead<?> var2 = SpoonFactory.createFieldReadOfRootObject(chosenVarReads.get(1));
 
         CtExpression<Boolean> clause1 = SpoonFactory.generateNullComparisonClause(var1);
         CtExpression<Boolean> clause2 = SpoonFactory.generateNullComparisonClause(var2);
@@ -38,10 +39,10 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
             return false;
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
+        blockGene.getLastStatement().insertBefore(ifStatement);
 
-        CtStatement endOfInitialChecksComment = SpoonQueries.getEndOfInitialChecksComment(blockGene);
-        endOfInitialChecksComment.insertBefore(ifStatement);
-
+        /*System.err.println("\nAddComposedInitialNullCheckMutator:\n" + ifStatement);
+        System.err.println("\nFinal Block:\n\n" + blockGene);*/
         return true;
     }
 

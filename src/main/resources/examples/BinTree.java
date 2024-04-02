@@ -36,6 +36,10 @@ public class BinTree {
         return true;
     }
 
+    public void mymethod() {
+
+    }
+
     class BTNode {
         int data;
         BTNode left;

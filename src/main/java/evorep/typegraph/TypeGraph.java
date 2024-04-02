@@ -37,7 +37,7 @@ public class TypeGraph {
                 continue; // Type is not declared in the current project
 
             List<CtField<?>> fields = declaration.getFields();
-            for (CtField<?> field : fields) {
+            for (CtVariable<?> field : fields) {
                 CtTypeReference fieldType = field.getType();
                 if (fieldType != null) {
                     addEdge(currentType, fieldType, field);
@@ -61,7 +61,7 @@ public class TypeGraph {
         }
     }
 
-    public void addEdge(CtTypeReference<?> source, CtTypeReference<?> destination, CtField<?> label) {
+    public void addEdge(CtTypeReference<?> source, CtTypeReference<?> destination, CtVariable<?> label) {
         Edge newEdge = new Edge(destination, label);
         if (!adjacencyList.containsKey(source)) {
             List<Edge> adj = new LinkedList<>();
@@ -76,7 +76,7 @@ public class TypeGraph {
         return adjacencyList.get(source);
     }
 
-    public List<CtField<?>> getOutgoingFields(CtTypeReference<?> source) {
+    public List<CtVariable<?>> getOutgoingFields(CtTypeReference<?> source) {
         return adjacencyList.get(source).stream().map(Edge::getLabel).collect(Collectors.toList());
     }
 
@@ -84,12 +84,12 @@ public class TypeGraph {
         return adjacencyList.get(source).stream().map(Edge::getLabel).filter(SpoonQueries::isReferenceType).collect(Collectors.toList());
     }
 
-    public List<CtField<?>> getOutgoingUserDefinedFields(CtTypeReference<?> source) {
+    public List<CtVariable<?>> getOutgoingUserDefinedFields(CtTypeReference<?> source) {
         return adjacencyList.get(source).stream().map(Edge::getLabel).filter(SpoonQueries::isUserDefined).collect(Collectors.toList());
     }
 
 
-    public List<CtField<?>> getOutgoingPrimitiveFields(CtTypeReference<?> source) {
+    public List<CtVariable<?>> getOutgoingPrimitiveFields(CtTypeReference<?> source) {
         return adjacencyList.get(source).stream().map(Edge::getLabel).filter(SpoonQueries::isPrimitiveType).collect(Collectors.toList());
     }
 
@@ -115,7 +115,7 @@ public class TypeGraph {
                 continue; // Type is not declared in the current project
 
             List<CtField<?>> fields = declaration.getFields();
-            for (CtField<?> field : fields) {
+            for (CtVariable<?> field : fields) {
                 CtTypeReference fieldType = field.getType();
                 if (fieldType != null) {
                     if (visited.add(fieldType))
@@ -136,7 +136,7 @@ public class TypeGraph {
         return false;
     }
 
-    public List<CtField<?>> getSelfCyclicFieldsOfNode(CtTypeReference<?> node) {
+    public List<CtVariable<?>> getSelfCyclicFieldsOfNode(CtTypeReference<?> node) {
         return getSelfCyclesOfNode(node).stream().map(edge -> edge.getLabel()).collect(Collectors.toList());
     }
 
@@ -150,14 +150,14 @@ public class TypeGraph {
         return selfCycles;
     }
 
-    public List<List<CtField<?>>> getSimplePaths(CtTypeReference<?> source, CtTypeReference<?> destination) {
-        List<List<CtField<?>>> paths = new LinkedList<>();
-        List<CtField<?>> currentPath = new LinkedList<>();
+    public List<List<CtVariable<?>>> getSimplePaths(CtTypeReference<?> source, CtTypeReference<?> destination) {
+        List<List<CtVariable<?>>> paths = new LinkedList<>();
+        List<CtVariable<?>> currentPath = new LinkedList<>();
         getSimplePaths(source, destination, currentPath, paths);
         return paths;
     }
 
-    private void getSimplePaths(CtTypeReference<?> source, CtTypeReference<?> destination, List<CtField<?>> currentPath, List<List<CtField<?>>> paths) {
+    private void getSimplePaths(CtTypeReference<?> source, CtTypeReference<?> destination, List<CtVariable<?>> currentPath, List<List<CtVariable<?>>> paths) {
         if (source.equals(destination)) {
             paths.add(new LinkedList<>(currentPath));
             return;
@@ -179,14 +179,14 @@ public class TypeGraph {
      * @param k      the length of the paths
      * @return the list of all the possible paths of length k from the source node to any other node in the graph
      */
-    public List<List<CtField<?>>> getAllPaths(CtTypeReference<?> source, int k) {
-        List<List<CtField<?>>> paths = new LinkedList<>();
-        List<CtField<?>> currentPath = new LinkedList<>();
+    public List<List<CtVariable<?>>> getAllPaths(CtTypeReference<?> source, int k) {
+        List<List<CtVariable<?>>> paths = new LinkedList<>();
+        List<CtVariable<?>> currentPath = new LinkedList<>();
         getAllPaths(source, currentPath, paths, k);
         return paths;
     }
 
-    private void getAllPaths(CtTypeReference<?> source, List<CtField<?>> currentPath, List<List<CtField<?>>> paths, int k) {
+    private void getAllPaths(CtTypeReference<?> source, List<CtVariable<?>> currentPath, List<List<CtVariable<?>>> paths, int k) {
         if (k == 0) {
             return;
         }
@@ -203,8 +203,8 @@ public class TypeGraph {
         Set<CtVariableRead<?>> reacheableCyclicFieldReads = new HashSet<>();
         Set<CtTypeReference<?>> nodesWithCycles = getNodesWithSelfCycles();
         for (CtTypeReference<?> node : nodesWithCycles) {
-            List<List<CtField<?>>> simplePaths = getSimplePaths(rootType, node);
-            for (List<CtField<?>> path : simplePaths) {
+            List<List<CtVariable<?>>> simplePaths = getSimplePaths(rootType, node);
+            for (List<CtVariable<?>> path : simplePaths) {
                 reacheableCyclicFieldReads.add(SpoonFactory.createFieldRead(path));
             }
         }
@@ -235,9 +235,9 @@ public class TypeGraph {
 
     public static class Edge {
         private final CtTypeReference<?> destination;
-        private final CtField<?> label;
+        private final CtVariable<?> label;
 
-        public Edge(CtTypeReference<?> destination, CtField<?> label) {
+        public Edge(CtTypeReference<?> destination, CtVariable<?> label) {
             this.destination = destination;
             this.label = label;
         }
@@ -246,7 +246,7 @@ public class TypeGraph {
             return destination;
         }
 
-        public CtField<?> getLabel() {
+        public CtVariable<?> getLabel() {
             return label;
         }
 

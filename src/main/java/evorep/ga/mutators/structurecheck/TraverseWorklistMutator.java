@@ -1,4 +1,4 @@
-package evorep.ga.mutators.typebased;
+package evorep.ga.mutators.structurecheck;
 
 import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
@@ -10,8 +10,8 @@ import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class TraverseWorklistMutator implements Mutator {
         List<CtVariableRead<?>> varReads = SpoonQueries.getNonTraversedCyclicFieldReads(blockGene);
         CtVariableRead<?> chosenInitialField = varReads.get(RandomUtils.nextInt(varReads.size()));
 
-        List<CtField<?>> loopFields = TypeGraph.getInstance().getSelfCyclicFieldsOfNode(chosenInitialField.getType());
+        List<CtVariable<?>> loopFields = TypeGraph.getInstance().getSelfCyclicFieldsOfNode(chosenInitialField.getType());
 
         Processor<CtBlock<?>> p = new TraverseWorklistProcessor(chosenInitialField, loopFields);
         p.process(blockGene);

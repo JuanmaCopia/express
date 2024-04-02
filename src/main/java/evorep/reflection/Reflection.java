@@ -34,13 +34,16 @@ public class Reflection {
      * @return the method
      */
     public static Method loadMethod(Class<?> clazz, String methodName) {
-        Method method = null;
         try {
-            method = clazz.getMethod(methodName);
+            Method[] methods = clazz.getMethods();
+            for (Method m : methods) {
+                if (m.getName().equals(methodName))
+                    return m;
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return method;
+        return null;
     }
 
     /**

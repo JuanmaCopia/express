@@ -1,4 +1,4 @@
-package evorep.ga.mutators.typebased;
+package evorep.ga.mutators.structurecheck;
 
 import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
@@ -7,8 +7,8 @@ import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
 import evorep.typegraph.TypeGraph;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
 
@@ -44,13 +44,13 @@ public class AddComposedIfToTraversalMutator implements Mutator {
 
     private CtExpression<Boolean> generateComposedCondition(CtLocalVariable<?> currentDeclaration) {
         TypeGraph typeGraph = TypeGraph.getInstance();
-        List<CtField<?>> cyclicFields = typeGraph.getSelfCyclicFieldsOfNode(currentDeclaration.getType());
+        List<CtVariable<?>> cyclicFields = typeGraph.getSelfCyclicFieldsOfNode(currentDeclaration.getType());
 
         if (cyclicFields.size() < 2)
             return null;
         List<Integer> chosenIndices = SpoonQueries.generateRandomIntegers(cyclicFields.size() - 1, 2);
-        CtField<?> chosenField = cyclicFields.get(chosenIndices.get(0));
-        CtField<?> chosenField2 = cyclicFields.get(chosenIndices.get(1));
+        CtVariable<?> chosenField = cyclicFields.get(chosenIndices.get(0));
+        CtVariable<?> chosenField2 = cyclicFields.get(chosenIndices.get(1));
         CtVariableRead<?> fieldRead1 = SpoonFactory.createFieldRead(currentDeclaration, chosenField);
         CtVariableRead<?> fieldRead2 = SpoonFactory.createFieldRead(fieldRead1, chosenField2);
 

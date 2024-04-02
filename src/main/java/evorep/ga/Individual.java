@@ -15,17 +15,24 @@ public class Individual implements Comparable<Individual> {
     private int id;
 
     public Individual(int id) {
-        this.chromosome = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + id, SpoonManager.preconditionParameters);
+        this.chromosome = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + id);
+        SpoonFactory.createSubPreconditions(chromosome, SpoonManager.preconditionParameters);
         this.isFitnessUpdated = false;
         this.id = id;
     }
 
     public Individual(Individual individual, int newId) {
-        CtClass<?> newChromosome = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + newId, SpoonManager.preconditionParameters);
+        CtClass<?> newChromosome = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + newId);
+        SpoonFactory.createSubPreconditions(newChromosome, SpoonManager.preconditionParameters);
         for (CtMethod<?> method : individual.getChromosome().getMethods()) {
             if (!method.getSimpleName().equals(ToolConfig.preconditionMethodName)) {
                 CtBlock<?> body = method.getBody().clone();
-                newChromosome.getMethod(method.getSimpleName()).setBody(body);
+                CtMethod<?> subPrecond = SpoonFactory.getMethodByName(newChromosome, method.getSimpleName());
+                if (subPrecond == null) {
+                    System.err.println("\n\nChromosome is: " + newChromosome.toString() + "\n\n");
+                    System.err.println("Method: " + method.getSimpleName() + " Not Found!");
+                }
+                subPrecond.setBody(body);
             }
         }
         this.chromosome = newChromosome;
@@ -91,11 +98,7 @@ public class Individual implements Comparable<Individual> {
     public String toString() {
         if (chromosome == null)
             return "Empty individual";
-        StringBuilder sb = new StringBuilder();
-        for (CtMethod<?> method : chromosome.getMethods()) {
-            sb.append(method.toString());
-        }
-        return sb.toString();
+        return chromosome.toString();
     }
 
     /**

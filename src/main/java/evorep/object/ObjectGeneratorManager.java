@@ -4,6 +4,8 @@ import evorep.config.ToolConfig;
 import evorep.execution.Executor;
 import evorep.spoon.SpoonManager;
 
+import java.util.logging.Logger;
+
 /**
  * This class allows to generate a set of positive and negative objects from a given test suite.
  * Positive objects are objects that can be built from the current implementation of the class under test.
@@ -14,12 +16,16 @@ import evorep.spoon.SpoonManager;
  */
 public class ObjectGeneratorManager {
 
+    private static final Logger logger = Logger.getLogger(SpoonManager.class.getName());
+
     /**
      * Generate the set of positive and negative objects.
      */
     public static void generateObjects() {
         generatePositiveObjects();
         generateNegativeObjects();
+        logger.info("Positive Objects Generated: " + ObjectCollector.positiveObjects.size());
+        logger.info("Negative Objects Generated: " + ObjectCollector.negativeObjects.size());
     }
 
     public static void generatePositiveObjects() {

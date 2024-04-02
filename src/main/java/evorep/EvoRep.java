@@ -2,16 +2,27 @@ package evorep;
 
 import evorep.config.ToolConfig;
 import evorep.ga.GeneticAlgorithm;
+import evorep.ga.InitialCheckGA;
 import evorep.ga.Population;
+import evorep.ga.StructureCheckGA;
+import evorep.ga.mutators.Mutator;
+import evorep.ga.mutators.initialcheck.AddComposedInitialNullCheckMutator;
+import evorep.ga.mutators.initialcheck.AddIfNullReturnMutator;
+import evorep.ga.mutators.structurecheck.*;
 import evorep.object.ObjectGeneratorManager;
 import evorep.spoon.SpoonManager;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class EvoRep {
 
     public static void main(String[] args) {
         initialize();
         printStart();
-        startSearch();
+        Population population = startInitialCheckSearch();
+        //population = startStructureCheckSearch(population);
+        printResults(population);
     }
 
     private static void initialize() {
@@ -25,35 +36,29 @@ public class EvoRep {
         System.out.println("\n==============================  Search Started  ==============================\n");
     }
 
-    public static void startSearch() {
-        GeneticAlgorithm ga = new GeneticAlgorithm(ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
-
-        Population population = ga.initPopulation();
-        ga.evalPopulation(population);
-        population = ga.selectSurvivors(population);
-
-        int generation = 1;
-        while (!ga.isTerminationConditionMet(population) && generation <= ToolConfig.maxGenerations) {
-            printGeneration(generation, population);
-            //population = ga.crossoverPopulation(population);
-            population = ga.mutatePopulation(population);
-            ga.evalPopulation(population);
-            population = ga.selectSurvivors(population);
-            generation++;
-        }
-        printResults(population, generation - 1);
+    public static Population startInitialCheckSearch() {
+        Set<Mutator> mutators = new HashSet<>();
+        mutators.add(new AddIfNullReturnMutator());
+        mutators.add(new AddComposedInitialNullCheckMutator());
+        GeneticAlgorithm ga = new InitialCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
+        return ga.startSearch(ga.initPopulation());
     }
 
-    public static void printGeneration(int generation, Population population) {
-        System.out.println("\n\n------------------   Generation " + generation + "   ------------------\n");
-        System.out.println("Population size: " + population.size());
-        System.out.println("Fittest: " + population.getFittest().getFitness());
-        System.out.println("\n" + population.getFittest().toString());
+    public static Population startStructureCheckSearch(Population population) {
+        Set<Mutator> mutators = new HashSet<>();
+        mutators.add(new TraverseWorklistMutator());
+        mutators.add(new TraverseCyclicReferenceMutator());
+        mutators.add(new AddComposedIfToTraversalMutator());
+        mutators.add(new AddSizeCheckMutator());
+        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
+        GeneticAlgorithm ga = new StructureCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
+        return ga.startSearch(population);
     }
 
-    public static void printResults(Population population, int generation) {
+
+    public static void printResults(Population population) {
         System.out.println("\n\n==============================  Search Finished  ==============================\n");
-        System.out.println("Number of generations: " + generation);
+        System.out.println("Number of generations: " + population.getGenerationNumber());
         System.out.println("Best solution: " + population.getFittest().toString());
         System.out.println("Fitness: " + population.getFittest().getFitness());
         System.out.println("\n=================================================================================\n");

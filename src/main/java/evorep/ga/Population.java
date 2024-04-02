@@ -8,6 +8,7 @@ import java.util.PriorityQueue;
 public class Population {
     private PriorityQueue<Individual> population;
     private HashSet<String> presentIndividuals = new HashSet<>();
+    private int generationNumber = 1;
 
     private boolean[] presentIDs = new boolean[ToolConfig.maxPopulation + ToolConfig.elitismCount];
 
@@ -49,6 +50,7 @@ public class Population {
     public int getNextID() {
         for (int i = 0; i < presentIDs.length; i++) {
             if (!presentIDs[i]) {
+
                 return i;
             }
         }
@@ -64,5 +66,17 @@ public class Population {
         return population.size();
     }
 
+
+    public void increaseGeneration() {
+        generationNumber++;
+    }
+
+    public int getGenerationNumber() {
+        return generationNumber;
+    }
+
+    public void setGenerationNumber(int generationNumber) {
+        this.generationNumber = generationNumber;
+    }
 
 }
