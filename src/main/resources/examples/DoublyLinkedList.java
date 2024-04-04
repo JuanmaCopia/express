@@ -30,10 +30,10 @@ public class DoublyLinkedList {
 
     public boolean repOKStructure() {
         if (head == null && tail != null) {
-            return false
+            return false;
         }
         if (head != null && tail == null) {
-            return false
+            return false;
         }
         /* End of Initial Checks */
         Set<Node> visited = new HashSet<Node>();
@@ -62,6 +62,25 @@ public class DoublyLinkedList {
 
     public void mymethod() {
 
+    }
+
+    @Override
+    public String toString() {
+        if (head == null) {
+            return "Empty list";
+        }
+        HashSet<Node> visited = new HashSet<>();
+        StringBuilder sb = new StringBuilder();
+        Node current = head;
+        while (current != null) {
+            if (!visited.add(current)) {
+                sb.append(" Cycle!");
+                break;
+            }
+            sb.append(current.data).append(" ");
+            current = current.next;
+        }
+        return sb.toString().trim(); // Trim any trailing whitespace
     }
 
     public static class Node {

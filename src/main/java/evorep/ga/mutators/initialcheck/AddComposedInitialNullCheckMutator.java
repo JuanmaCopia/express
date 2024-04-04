@@ -5,7 +5,6 @@ import evorep.ga.mutators.Mutator;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
@@ -14,7 +13,9 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
 
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
+        if (!(gene instanceof CtBlock<?> block))
+            return false;
+        if (block != individual.getInitialCheck())
             return false;
 
         return SpoonQueries.getCandidateVarReadsForNullCheck(1).size() > 1;

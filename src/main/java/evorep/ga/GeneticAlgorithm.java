@@ -2,8 +2,8 @@ package evorep.ga;
 
 import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtMethod;
 
 import java.util.List;
 import java.util.Set;
@@ -49,7 +49,7 @@ public abstract class GeneticAlgorithm {
 
     public Population initPopulation() {
         Population initialPopulation = new Population();
-        Individual individual = new Individual(0);
+        Individual individual = new Individual();
         initialPopulation.addIndividual(individual);
         return initialPopulation;
     }
@@ -60,7 +60,7 @@ public abstract class GeneticAlgorithm {
      * @param population The population to evaluate
      */
     void evalPopulation(Population population) {
-        population.getIndividuals().stream().filter(Individual::needsFitnessUpdate).forEach(FitnessFunctions::invalidInstancesFitness);
+        population.getIndividuals().stream().filter(Individual::isFitnessUpdated).forEach(FitnessFunctions::invalidInstancesFitness);
     }
 
     /**
@@ -88,7 +88,7 @@ public abstract class GeneticAlgorithm {
         for (Individual individual : population.getIndividuals()) {
             newPopulation.addIndividual(individual);
             if (i < elitismCount) {
-                Individual clone = new Individual(individual, newPopulation.getNextID());
+                Individual clone = new Individual(individual);
                 if (mutateIndividual(clone, mutators)) {
                     newPopulation.addIndividual(clone);
                 }
@@ -139,7 +139,7 @@ public abstract class GeneticAlgorithm {
         return selectPrecondition(individual).getElements(e -> isMutableCodeElement(individual, e, mutators));
     }
 
-    abstract CtMethod<?> selectPrecondition(Individual individual);
+    abstract CtBlock<?> selectPrecondition(Individual individual);
 
     /**
      * Select the survivors of the population

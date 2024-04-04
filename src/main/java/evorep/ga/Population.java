@@ -1,7 +1,5 @@
 package evorep.ga;
 
-import evorep.config.ToolConfig;
-
 import java.util.HashSet;
 import java.util.PriorityQueue;
 
@@ -9,8 +7,6 @@ public class Population {
     private PriorityQueue<Individual> population;
     private HashSet<String> presentIndividuals = new HashSet<>();
     private int generationNumber = 1;
-
-    private boolean[] presentIDs = new boolean[ToolConfig.maxPopulation + ToolConfig.elitismCount];
 
     /**
      * Initializes blank population of individuals
@@ -36,25 +32,13 @@ public class Population {
     public Individual removeFittest() {
         Individual fittest = population.poll();
         presentIndividuals.remove(fittest.toString());
-        presentIDs[fittest.getId()] = false;
         return fittest;
     }
 
     public void addIndividual(Individual individual) {
         if (presentIndividuals.add(individual.toString())) {
             population.add(individual);
-            presentIDs[individual.getId()] = true;
         }
-    }
-
-    public int getNextID() {
-        for (int i = 0; i < presentIDs.length; i++) {
-            if (!presentIDs[i]) {
-
-                return i;
-            }
-        }
-        throw new RuntimeException("No more IDs available");
     }
 
     /**

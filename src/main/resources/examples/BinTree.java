@@ -40,10 +40,27 @@ public class BinTree {
 
     }
 
+    private String toStringHelper(BTNode node) {
+        if (node == null) {
+            return "Empty tree";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(toStringHelper(node.left));
+        sb.append(node.data).append(" ");
+        sb.append(toStringHelper(node.right));
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return toStringHelper(root).trim(); // Trim any trailing whitespace
+    }
+
     class BTNode {
         int data;
         BTNode left;
         BTNode right;
+
     }
 
 }

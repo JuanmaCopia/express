@@ -1,65 +1,52 @@
 package evorep.ga;
 
-import evorep.config.ToolConfig;
 import evorep.spoon.SpoonFactory;
-import evorep.spoon.SpoonManager;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtMethod;
 
 public class Individual implements Comparable<Individual> {
 
-    private final CtClass<?> chromosome;
+    private final CtBlock<?> initialCheck;
+    private final CtBlock<?> structureCheck;
+    private final CtBlock<?> primitiveCheck;
+    public int id;
+
+    public String className;
     private double fitness;
     private boolean isFitnessUpdated;
-    private int id;
 
-    public Individual(int id) {
-        this.chromosome = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + id);
-        SpoonFactory.createSubPreconditions(chromosome, SpoonManager.preconditionParameters);
-        this.isFitnessUpdated = false;
-        this.id = id;
+    public Individual() {
+        initialCheck = SpoonFactory.createReturnTrueBlock();
+        structureCheck = SpoonFactory.createReturnTrueBlock();
+        primitiveCheck = SpoonFactory.createReturnTrueBlock();
     }
 
-    public Individual(Individual individual, int newId) {
-        CtClass<?> newChromosome = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + newId);
-        SpoonFactory.createSubPreconditions(newChromosome, SpoonManager.preconditionParameters);
-        for (CtMethod<?> method : individual.getChromosome().getMethods()) {
-            if (!method.getSimpleName().equals(ToolConfig.preconditionMethodName)) {
-                CtBlock<?> body = method.getBody().clone();
-                CtMethod<?> subPrecond = SpoonFactory.getMethodByName(newChromosome, method.getSimpleName());
-                if (subPrecond == null) {
-                    System.err.println("\n\nChromosome is: " + newChromosome.toString() + "\n\n");
-                    System.err.println("Method: " + method.getSimpleName() + " Not Found!");
-                }
-                subPrecond.setBody(body);
-            }
-        }
-        this.chromosome = newChromosome;
-        this.fitness = individual.getFitness();
-        this.isFitnessUpdated = individual.needsFitnessUpdate();
-        this.id = newId;
+    public Individual(Individual individual) {
+        initialCheck = individual.initialCheck.clone();
+        structureCheck = individual.structureCheck.clone();
+        primitiveCheck = individual.primitiveCheck.clone();
+        fitness = individual.fitness;
+        isFitnessUpdated = individual.isFitnessUpdated;
     }
 
-    public int getId() {
-        return id;
+    public CtBlock<?> getInitialCheck() {
+        return initialCheck;
     }
 
-    /**
-     * Gets individual's chromosome
-     *
-     * @return The individual's chromosome
-     */
-    public CtClass<?> getChromosome() {
-        return this.chromosome;
+    public CtBlock<?> getStructureCheck() {
+        return structureCheck;
     }
+
+    public CtBlock<?> getPrimitiveCheck() {
+        return primitiveCheck;
+    }
+
 
     /**
      * Check if the individual needs to have its fitness recalculated
      *
      * @return True if the individual needs its fitness recalculated, otherwise, false
      */
-    public boolean needsFitnessUpdate() {
+    public boolean isFitnessUpdated() {
         return !isFitnessUpdated;
     }
 
@@ -96,9 +83,11 @@ public class Individual implements Comparable<Individual> {
      */
     @Override
     public String toString() {
-        if (chromosome == null)
-            return "Empty individual";
-        return chromosome.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Initial Check: ").append(initialCheck.toString()).append("\n");
+        sb.append("Structure Check: ").append(structureCheck.toString()).append("\n");
+        sb.append("Primitive Check: ").append(primitiveCheck.toString()).append("\n");
+        return sb.toString();
     }
 
     /**

@@ -57,19 +57,21 @@ public class SpoonFactory {
 
     // ==================== Methods for creating new elements ====================
 
-    public static CtClass<?> createPreconditionClass(String name) {
+    public static CtClass<?> createPreconditionClass(String className) {
         CtClass<?> preconditionClass = coreFactory.createClass();
-        preconditionClass.setSimpleName(name);
+        preconditionClass.setSimpleName(className);
         Set<ModifierKind> modifiers = new HashSet<>();
         modifiers.add(ModifierKind.PUBLIC);
         preconditionClass.setModifiers(modifiers);
         CtPackage ctPackage = SpoonManager.targetClass.getPackage();
-        ctPackage.removeType(preconditionClass);
         ctPackage.addType(preconditionClass);
+
+        createSubPreconditions(preconditionClass, SpoonManager.preconditionParameters);
+
         return preconditionClass;
     }
 
-    public static void createSubPreconditions(CtClass<?> preconditionClass, List<CtParameter<?>> parameters) {
+    private static void createSubPreconditions(CtClass<?> preconditionClass, List<CtParameter<?>> parameters) {
         List<CtMethod<Boolean>> subPreconditions = createSubPreconditions(parameters);
         for (CtMethod<?> subPrecondition : subPreconditions)
             preconditionClass.addMethod(subPrecondition);
@@ -110,11 +112,7 @@ public class SpoonFactory {
     public static CtVariable<?> getRootObjectVar() {
         return SpoonManager.preconditionParameters.get(0);
     }
-
-    public static CtMethod<?> getMethodByName(CtClass<?> clazz, String methodName) {
-        return clazz.getMethods().stream().filter(m -> m.getSimpleName().equals(methodName)).findFirst().get();
-    }
-
+    
     public static CtExpression<?>[] createArgumentsFromParameters(CtMethod<?> method) {
         List<CtParameter<?>> params = method.getParameters();
         CtExpression<?>[] args = new CtExpression<?>[params.size()];

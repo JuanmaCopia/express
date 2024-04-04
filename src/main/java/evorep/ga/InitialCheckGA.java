@@ -1,8 +1,7 @@
 package evorep.ga;
 
 import evorep.ga.mutators.Mutator;
-import evorep.spoon.SpoonFactory;
-import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.code.CtBlock;
 
 import java.util.Set;
 
@@ -24,8 +23,8 @@ public class InitialCheckGA extends GeneticAlgorithm {
     }
 
     @Override
-    CtMethod<?> selectPrecondition(Individual individual) {
-        return SpoonFactory.getMethodByName(individual.getChromosome(), "initialCheck");
+    CtBlock<?> selectPrecondition(Individual individual) {
+        return individual.getInitialCheck();
     }
 
 

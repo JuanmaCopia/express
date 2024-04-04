@@ -24,7 +24,6 @@ public class SpoonManager {
     public static Launcher launcher;
     public static CtClass<?> targetClass;
     public static CtMethod<?> targetMethod;
-
     public static LinkedList<CtParameter<?>> preconditionParameters;
     public static CtClass<?> testSuiteClass;
     public static URL outputBinURL;
@@ -39,7 +38,7 @@ public class SpoonManager {
             //buildAndCompileModel();
 
             initializeTarget();
-            initializePreconditionParameters();
+            initializePrecondition();
             initializeTestSuiteClass();
             compileModel();
         } catch (Exception e) {
@@ -47,7 +46,7 @@ public class SpoonManager {
         }
     }
 
-    private static void initializePreconditionParameters() {
+    private static void initializePrecondition() {
         if (SpoonManager.targetMethod == null)
             preconditionParameters = new LinkedList<>();
         else
@@ -57,6 +56,7 @@ public class SpoonManager {
         thisParameter.setType(targetClass.getReference());
         thisParameter.setSimpleName("rootObject");
         preconditionParameters.addFirst(thisParameter);
+        //preconditionClass = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName);
     }
 
     private static void initializeOutputDirectories() {
@@ -72,6 +72,7 @@ public class SpoonManager {
         launcher = new Launcher();
         launcher.addInputResource(ToolConfig.srcPath);
         launcher.setBinaryOutputDirectory(outputBinDirectory);
+        //launcher.setSourceOutputDirectory(outputBinDirectory);
         launcher.getEnvironment().setComplianceLevel(ToolConfig.srcJavaVersion);
         launcher.getEnvironment().setShouldCompile(true);
         launcher.getEnvironment().setAutoImports(true);
@@ -82,13 +83,6 @@ public class SpoonManager {
             throw new RuntimeException("Model does not compile!!");
 
     }
-
-/*    private static void buildAndCompileModel() {
-        launcher.addInputResource(ToolConfig.srcPath);
-        launcher.buildModel();
-        if (!launcher.getModelBuilder().compile())
-            throw new RuntimeException("Model does not compile!!");
-    }*/
 
     private static void initializeFactories() {
         SpoonFactory.initialize(launcher);
@@ -106,19 +100,14 @@ public class SpoonManager {
         Instrumentation.instrumentTestSuite(testSuiteClass);
     }
 
-    public static CtClass<?> getCtClass(String className) {
-        return launcher.getFactory().Class().get(className);
-    }
-
     public static boolean compileIndividual(Individual individual) {
-        SpoonHelper.putIndividualIntoTheEnvironment(individual);
+        CtClass<?> addedClass = SpoonHelper.putIndividualIntoTheEnvironment(individual);
         if (!compileModel()) {
-            SpoonHelper.removeIndividualFromEnvironment(individual);
+            SpoonHelper.removeClassFromEnvironment(addedClass);
+            //throw new RuntimeException("The individual does not compile!!!");
             return false;
-            /*System.err.println("\n Individual not compiling: \n");
-            System.err.println(individual.getChromosome().toString());
-            throw new RuntimeException("The individual does not compile!!!");*/
         }
+        SpoonHelper.removeClassFromEnvironment(addedClass);
         return true;
     }
 
@@ -126,6 +115,7 @@ public class SpoonManager {
         boolean compiles = false;
         try {
             compiles = launcher.getModelBuilder().compile();
+            //launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
         } catch (Exception e) {
             e.printStackTrace();
         }

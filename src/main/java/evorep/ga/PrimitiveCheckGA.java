@@ -1,7 +1,7 @@
 package evorep.ga;
 
 import evorep.ga.mutators.Mutator;
-import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.code.CtBlock;
 
 import java.util.Set;
 
@@ -11,7 +11,7 @@ public class PrimitiveCheckGA extends GeneticAlgorithm {
     }
 
     @Override
-    CtMethod<?> selectPrecondition(Individual individual) {
-        return individual.getChromosome().getMethod("primitiveCheck");
+    CtBlock<?> selectPrecondition(Individual individual) {
+        return individual.getPrimitiveCheck();
     }
 }

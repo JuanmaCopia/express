@@ -6,7 +6,6 @@ import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
@@ -14,7 +13,9 @@ import java.util.List;
 public class AddIfNullReturnMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
+        if (!(gene instanceof CtBlock<?> block))
+            return false;
+        if (block != individual.getInitialCheck())
             return false;
 
         return !SpoonQueries.getCandidateVarReadsForNullCheck(2).isEmpty();
