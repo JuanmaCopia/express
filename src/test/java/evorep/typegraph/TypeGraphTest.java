@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import spoon.SpoonAPI;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
@@ -54,13 +54,13 @@ public class TypeGraphTest {
 
         TypeGraph.Edge headEdge = adjOfSLL.get(0);
         CtTypeReference<?> nodeType = headEdge.getDestination();
-        CtField<?> headField = headEdge.getLabel();
+        CtVariable<?> headField = headEdge.getLabel();
         assertEquals("Node", nodeType.getSimpleName());
         assertEquals("head", headField.getSimpleName());
 
         TypeGraph.Edge sizeEdge = adjOfSLL.get(1);
         CtTypeReference<?> intType = sizeEdge.getDestination();
-        CtField<?> sizeField = sizeEdge.getLabel();
+        CtVariable<?> sizeField = sizeEdge.getLabel();
         assertEquals("int", intType.getSimpleName());
         assertEquals("size", sizeField.getSimpleName());
 
@@ -69,13 +69,13 @@ public class TypeGraphTest {
 
         TypeGraph.Edge dataEdge = adjOfNode.get(0);
         CtTypeReference<?> dataType = dataEdge.getDestination();
-        CtField<?> dataField = dataEdge.getLabel();
+        CtVariable<?> dataField = dataEdge.getLabel();
         assertEquals("int", dataType.getSimpleName());
         assertEquals("data", dataField.getSimpleName());
 
         TypeGraph.Edge nextEdge = adjOfNode.get(1);
         CtTypeReference<?> nextType = nextEdge.getDestination();
-        CtField<?> nextField = nextEdge.getLabel();
+        CtVariable<?> nextField = nextEdge.getLabel();
         assertEquals("Node", nextType.getSimpleName());
         assertEquals("next", nextField.getSimpleName());
     }
@@ -90,13 +90,13 @@ public class TypeGraphTest {
 
         TypeGraph.Edge rootEdge = adjOfBinTree.get(0);
         CtTypeReference<?> btNodeType = rootEdge.getDestination();
-        CtField<?> rootField = rootEdge.getLabel();
+        CtVariable<?> rootField = rootEdge.getLabel();
         assertEquals("BTNode", btNodeType.getSimpleName());
         assertEquals("root", rootField.getSimpleName());
 
         TypeGraph.Edge sizeEdge = adjOfBinTree.get(1);
         CtTypeReference<?> intType = sizeEdge.getDestination();
-        CtField<?> sizeField = sizeEdge.getLabel();
+        CtVariable<?> sizeField = sizeEdge.getLabel();
         assertEquals("int", intType.getSimpleName());
         assertEquals("size", sizeField.getSimpleName());
 
@@ -105,19 +105,19 @@ public class TypeGraphTest {
 
         TypeGraph.Edge dataEdge = adjOfBTNode.get(0);
         CtTypeReference<?> dataType = dataEdge.getDestination();
-        CtField<?> dataField = dataEdge.getLabel();
+        CtVariable<?> dataField = dataEdge.getLabel();
         assertEquals("int", dataType.getSimpleName());
         assertEquals("data", dataField.getSimpleName());
 
         TypeGraph.Edge leftEdge = adjOfBTNode.get(1);
         CtTypeReference<?> leftType = leftEdge.getDestination();
-        CtField<?> leftField = leftEdge.getLabel();
+        CtVariable<?> leftField = leftEdge.getLabel();
         assertEquals("BTNode", leftType.getSimpleName());
         assertEquals("left", leftField.getSimpleName());
 
         TypeGraph.Edge rightEdge = adjOfBTNode.get(2);
         CtTypeReference<?> rightType = rightEdge.getDestination();
-        CtField<?> rightField = rightEdge.getLabel();
+        CtVariable<?> rightField = rightEdge.getLabel();
         assertEquals("BTNode", rightType.getSimpleName());
         assertEquals("right", rightField.getSimpleName());
 
@@ -135,11 +135,11 @@ public class TypeGraphTest {
 
         System.out.println("Chosen node: " + randomNode);
 
-        List<List<CtField<?>>> simplePaths = graph.getSimplePaths(rootType, randomNode);
+        List<List<CtVariable<?>>> simplePaths = graph.getSimplePaths(rootType, randomNode);
 
         System.out.println("Simple paths from root to chose node: " + simplePaths.toString());
 
-        List<CtField<?>> cyclicFields = graph.getSelfCyclicFieldsOfNode(randomNode);
+        List<CtVariable<?>> cyclicFields = graph.getSelfCyclicFieldsOfNode(randomNode);
 
         System.out.println("Cyclic fields of chosen node: " + cyclicFields.toString());
 
@@ -150,7 +150,7 @@ public class TypeGraphTest {
         CtTypeReference<?> rootType = SpoonQueries.getClass("BinTree").getReference();
         TypeGraph graph = new TypeGraph(rootType);
         int maxLength = 2;
-        List<List<CtField<?>>> allPaths = graph.getAllPaths(rootType, maxLength);
+        List<List<CtVariable<?>>> allPaths = graph.getAllPaths(rootType, maxLength);
         assertEquals(5, allPaths.size());
     }
 }

@@ -7,6 +7,7 @@ import evorep.util.Utils;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 
 import java.io.File;
@@ -28,7 +29,7 @@ public class SpoonManager {
     public static CtClass<?> testSuiteClass;
     public static URL outputBinURL;
     public static URLClassLoader classLoader;
-
+    private static int compilationId = 0;
 
     public static void initialize() {
         try {
@@ -101,14 +102,10 @@ public class SpoonManager {
     }
 
     public static boolean compileIndividual(Individual individual) {
-        CtClass<?> addedClass = SpoonHelper.putIndividualIntoTheEnvironment(individual);
-        if (!compileModel()) {
-            SpoonHelper.removeClassFromEnvironment(addedClass);
-            //throw new RuntimeException("The individual does not compile!!!");
-            return false;
-        }
-        SpoonHelper.removeClassFromEnvironment(addedClass);
-        return true;
+        CtClass<?> addedClass = putIndividualIntoTheEnvironment(individual);
+        boolean compiles = compileModel();
+        removeClassFromEnvironment(addedClass);
+        return compiles;
     }
 
     public static boolean compileModel() {
@@ -120,6 +117,27 @@ public class SpoonManager {
             e.printStackTrace();
         }
         return compiles;
+    }
+
+    public static CtClass<?> putIndividualIntoTheEnvironment(Individual individual) {
+        CtClass<?> preconditionClass = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + compilationId++);
+
+        CtMethod<?> initialChecks = preconditionClass.getMethodsByName("initialCheck").get(0);
+        CtMethod<?> structureChecks = preconditionClass.getMethodsByName("structureCheck").get(0);
+        CtMethod<?> primitiveChecks = preconditionClass.getMethodsByName("primitiveCheck").get(0);
+        initialChecks.setBody(individual.getInitialCheck());
+        structureChecks.setBody(individual.getStructureCheck());
+        primitiveChecks.setBody(individual.getPrimitiveCheck());
+
+        CtPackage ctPackage = SpoonManager.targetClass.getPackage();
+        ctPackage.addType(preconditionClass);
+        individual.className = preconditionClass.getQualifiedName();
+        return preconditionClass;
+    }
+
+    public static void removeClassFromEnvironment(CtClass<?> ctClass) {
+        CtPackage ctPackage = SpoonManager.targetClass.getPackage();
+        ctPackage.removeType(ctClass);
     }
 
 }

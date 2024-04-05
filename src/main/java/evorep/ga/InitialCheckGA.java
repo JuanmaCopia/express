@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class InitialCheckGA extends GeneticAlgorithm {
 
-    private static int MAX_GEN_WITH_NO_IMPROVEMENT = 300;
+    private static final int MAX_GEN_WITH_NO_IMPROVEMENT = 70;
 
     int generationsWithNoImprovement = 0;
 

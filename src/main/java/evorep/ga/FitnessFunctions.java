@@ -18,7 +18,6 @@ public class FitnessFunctions {
     private static int id = 0;
 
     public static void invalidInstancesFitness(Individual individual) {
-        individual.id = id++;
 
         //logger.info("FF: Evaluating fitness for:\n" + individual.toString());
 
