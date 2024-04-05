@@ -1,10 +1,8 @@
 package evorep.typegraph;
 
 
-import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
-import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
@@ -199,16 +197,16 @@ public class TypeGraph {
         }
     }
 
-    public Set<CtVariableRead<?>> getReacheableCyclicFieldReads() {
-        Set<CtVariableRead<?>> reacheableCyclicFieldReads = new HashSet<>();
+    public List<List<CtVariable<?>>> getPathsToCyclicFields() {
+        List<List<CtVariable<?>>> pathsToCyclicFields = new ArrayList<>();
         Set<CtTypeReference<?>> nodesWithCycles = getNodesWithSelfCycles();
         for (CtTypeReference<?> node : nodesWithCycles) {
             List<List<CtVariable<?>>> simplePaths = getSimplePaths(rootType, node);
             for (List<CtVariable<?>> path : simplePaths) {
-                reacheableCyclicFieldReads.add(SpoonFactory.createFieldRead(path));
+                pathsToCyclicFields.add(path);
             }
         }
-        return reacheableCyclicFieldReads;
+        return pathsToCyclicFields;
     }
 
     public CtTypeReference<?> getRoot() {

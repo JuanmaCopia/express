@@ -324,6 +324,12 @@ public class SpoonQueries {
         return comment.getContent().equals("End of traversal");
     }
 
+    public static boolean isReturnTrueComment(CtElement element) {
+        if (!(element instanceof CtComment comment))
+            return false;
+        return comment.getContent().equals("Return true");
+    }
+
     public static CtBlock<?> generateMutatedBody(CtBlock<?> loopBody, CtBlock<?> newBlock) {
         CtBlock<?> newBody = SpoonFactory.createBlock();
         int i = 0;
@@ -355,19 +361,27 @@ public class SpoonQueries {
         return (CtStatement) handleCurrentEndComments.get(RandomUtils.nextInt(handleCurrentEndComments.size()));
     }
 
-    public static List<CtVariableRead<?>> getNonTraversedCyclicFieldReads(CtBlock<?> code) {
-        List<CtVariableRead<?>> nonTraversedCyclicVarReads = new LinkedList<>();
+    public static CtStatement getReturnTrueComment(CtBlock<?> block) {
+        List<CtElement> returnTrueComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isReturnTrueComment).toList();
+        if (returnTrueComments.isEmpty())
+            return null;
+        return (CtStatement) returnTrueComments.get(RandomUtils.nextInt(returnTrueComments.size()));
+    }
+
+    public static List<List<CtVariable<?>>> getNonUsedInitialPathsToCyclicField(CtBlock<?> code) {
+        List<List<CtVariable<?>>> nonUsedInitialPathsToCyclicField = new LinkedList<>();
 
         TypeGraph typeGraph = TypeGraph.getInstance();
-        Set<CtVariableRead<?>> cyclicVarReads = typeGraph.getReacheableCyclicFieldReads();
+        List<List<CtVariable<?>>> pathsToCyclicFields = typeGraph.getPathsToCyclicFields();
 
         List<CtLocalVariable<?>> currentVars = getLocalVariablesMathingPrefix(code, LocalVarHelper.CURRENT_VAR_NAME);
-        for (CtVariableRead<?> varRead : cyclicVarReads) {
+        for (List<CtVariable<?>> path : pathsToCyclicFields) {
+            CtVariableRead<?> varRead = SpoonFactory.createFieldReadOfRootObject(path);
             if (currentVars.stream().noneMatch(var -> var.getAssignment().equals(varRead)))
-                nonTraversedCyclicVarReads.add(varRead);
+                nonUsedInitialPathsToCyclicField.add(path);
         }
 
-        return nonTraversedCyclicVarReads;
+        return nonUsedInitialPathsToCyclicField;
     }
 
     public static List<CtVariable<?>> getIntegerFieldsOfRoot() {

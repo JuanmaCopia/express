@@ -13,9 +13,7 @@ import java.util.List;
 public class AddIfNullReturnMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        if (!(gene instanceof CtBlock<?> block))
-            return false;
-        if (block != individual.getInitialCheck())
+        if (!(gene instanceof CtBlock<?> block) || block != individual.getInitialCheck())
             return false;
 
         return !SpoonQueries.getCandidateVarReadsForNullCheck(2).isEmpty();
@@ -44,7 +42,8 @@ public class AddIfNullReturnMutator implements Mutator {
             return false;
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
-        blockGene.getLastStatement().insertBefore(ifStatement);
+        CtStatement returnTrueComment = SpoonQueries.getReturnTrueComment(blockGene);
+        returnTrueComment.insertBefore(ifStatement);
 
         /*System.err.println("\nAddIfNullReturnMutator:\n" + ifStatement);
         System.err.println("\nFinal Block:\n\n" + blockGene);*/

@@ -8,7 +8,8 @@ import evorep.ga.StructureCheckGA;
 import evorep.ga.mutators.Mutator;
 import evorep.ga.mutators.initialcheck.AddComposedInitialNullCheckMutator;
 import evorep.ga.mutators.initialcheck.AddIfNullReturnMutator;
-import evorep.ga.mutators.structurecheck.*;
+import evorep.ga.mutators.structurecheck.TraverseCyclicReferenceMutator;
+import evorep.ga.mutators.structurecheck.TraverseWorklistMutator;
 import evorep.object.ObjectGeneratorManager;
 import evorep.spoon.SpoonManager;
 
@@ -21,7 +22,7 @@ public class EvoRep {
         initialize();
         printStart();
         Population population = startInitialCheckSearch();
-        //population = startStructureCheckSearch(population);
+        population = startStructureCheckSearch(population);
         printResults(population);
         saveResults(population);
     }
@@ -49,9 +50,9 @@ public class EvoRep {
         Set<Mutator> mutators = new HashSet<>();
         mutators.add(new TraverseWorklistMutator());
         mutators.add(new TraverseCyclicReferenceMutator());
-        mutators.add(new AddComposedIfToTraversalMutator());
-        mutators.add(new AddSizeCheckMutator());
-        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
+        //mutators.add(new AddComposedIfToTraversalMutator());
+        /*mutators.add(new AddSizeCheckMutator());
+        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());*/
         GeneticAlgorithm ga = new StructureCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
         return ga.startSearch(population);
     }

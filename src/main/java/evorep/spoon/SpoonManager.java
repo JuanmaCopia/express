@@ -52,7 +52,7 @@ public class SpoonManager {
         CtClass<?> targetClass = SpoonManager.targetClass;
         CtParameter<?> thisParameter = targetClass.getFactory().Core().createParameter();
         thisParameter.setType(targetClass.getReference());
-        thisParameter.setSimpleName("rootObject");
+        thisParameter.setSimpleName("_this");
         preconditionParameters.addFirst(thisParameter);
         //preconditionClass = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName);
     }
@@ -115,7 +115,7 @@ public class SpoonManager {
 
     public static CtClass<?> putIndividualIntoTheEnvironment(Individual individual) {
         CtClass<?> preconditionClass = generateIndividualCtClass(individual, compilationId++);
-        addClassToPacakge(preconditionClass);
+        addClassToPackage(preconditionClass);
         individual.setIndividualClassName(preconditionClass.getQualifiedName());
         return preconditionClass;
     }
@@ -137,7 +137,7 @@ public class SpoonManager {
         return preconditionClass;
     }
 
-    public static void addClassToPacakge(CtClass<?> ctClass) {
+    public static void addClassToPackage(CtClass<?> ctClass) {
         targetClass.getPackage().addType(ctClass);
     }
 
@@ -147,7 +147,7 @@ public class SpoonManager {
 
     public static void generateSourcePreconditionSourceFile(Individual individual) {
         CtClass<?> individualCtClass = generateIndividualCtClass(individual, null);
-        addClassToPacakge(individualCtClass);
+        addClassToPackage(individualCtClass);
         try {
             launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
         } catch (Exception e) {

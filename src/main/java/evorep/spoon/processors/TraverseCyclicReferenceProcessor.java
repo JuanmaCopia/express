@@ -1,26 +1,40 @@
 package evorep.spoon.processors;
 
 import evorep.ga.helper.LocalVarHelper;
+import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
+import evorep.spoon.SpoonQueries;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtTypeReference;
+
+import java.util.List;
 
 public class TraverseCyclicReferenceProcessor extends AbstractProcessor<CtBlock<?>> {
 
     CtVariableRead<?> initialField;
     CtVariable<?> loopField;
-    CtLocalVariable<?> visitedSet;
 
-    public TraverseCyclicReferenceProcessor(CtVariableRead<?> initialField, CtVariable<?> loopField, CtLocalVariable<?> visitedSet) {
+    public TraverseCyclicReferenceProcessor(CtVariableRead<?> initialField, CtVariable<?> loopField) {
         super();
         this.initialField = initialField;
         this.loopField = loopField;
-        this.visitedSet = visitedSet;
     }
 
     @Override
     public void process(CtBlock<?> ctBlock) {
+        CtTypeReference<?> cyclicNode = initialField.getVariable().getType();
+        List<CtLocalVariable<?>> setVars = SpoonQueries.getVisitedSetLocalVarsOfType(ctBlock, cyclicNode);
+        CtStatement visitedSetStatement = null;
+        CtVariable<?> setVar = null;
+        if (setVars.isEmpty()) {
+            setVar = SpoonFactory.createVisitedSetDeclaration(cyclicNode, ctBlock);
+            visitedSetStatement = (CtStatement) setVar;
+        } else {
+            setVar = setVars.get(RandomUtils.nextInt(setVars.size()));
+        }
+
         CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(ctBlock), initialField.getType(), initialField);
 
         CtExpression<Boolean> whileCondition = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(currentDeclaration, null, BinaryOperatorKind.NE);
@@ -29,7 +43,7 @@ public class TraverseCyclicReferenceProcessor extends AbstractProcessor<CtBlock<
         CtBlock<?> whileBody = SpoonFactory.createBlock();
 
         // Add visited check
-        CtIf ifStatement = SpoonFactory.createVisitedCheck(visitedSet, currentDeclaration, true);
+        CtIf ifStatement = SpoonFactory.createVisitedCheck(setVar, currentDeclaration, true);
         whileBody.addStatement(ifStatement);
 
         whileBody.addStatement(SpoonFactory.createComment("Handle current:"));
@@ -41,9 +55,10 @@ public class TraverseCyclicReferenceProcessor extends AbstractProcessor<CtBlock<
 
         CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, whileBody);
 
-        CtStatement lastStatement = ctBlock.getLastStatement();
+        CtStatement lastStatement = SpoonQueries.getReturnTrueComment(ctBlock);
         lastStatement.insertBefore(SpoonFactory.createComment("Begin of traversal"));
-        lastStatement.insertBefore(visitedSet);
+        if (visitedSetStatement != null)
+            lastStatement.insertBefore(visitedSetStatement);
         lastStatement.insertBefore(SpoonFactory.createComment("Initialize root element:"));
         lastStatement.insertBefore(currentDeclaration);
         lastStatement.insertBefore(SpoonFactory.createComment("Cycle over cyclic references:"));

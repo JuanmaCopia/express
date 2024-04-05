@@ -6,7 +6,6 @@ import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
 public class CheckVisitedFieldEndOfTraversalMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?>))
+        if (!(gene instanceof CtBlock<?> block) || block != individual.getStructureCheck())
             return false;
 
         return !SpoonQueries.getTraversalBlocks(block).isEmpty();

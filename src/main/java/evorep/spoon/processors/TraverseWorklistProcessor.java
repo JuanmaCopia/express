@@ -2,6 +2,7 @@ package evorep.spoon.processors;
 
 import evorep.ga.helper.LocalVarHelper;
 import evorep.spoon.SpoonFactory;
+import evorep.spoon.SpoonQueries;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtVariable;
@@ -67,7 +68,7 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtBlock<?>> {
         // Create while statement
         CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, whileBody);
 
-        CtStatement lastStatement = ctBlock.getLastStatement();
+        CtStatement lastStatement = SpoonQueries.getReturnTrueComment(ctBlock);
         lastStatement.insertBefore(SpoonFactory.createComment("Begin of traversal"));
         lastStatement.insertBefore(visitedSet);
         lastStatement.insertBefore(worklist);
