@@ -9,7 +9,7 @@ public class Individual implements Comparable<Individual> {
     private final CtBlock<?> structureCheck;
     private final CtBlock<?> primitiveCheck;
 
-    public String className;
+    private String individualClassName;
     private double fitness;
     private boolean isFitnessUpdated;
 
@@ -37,6 +37,14 @@ public class Individual implements Comparable<Individual> {
 
     public CtBlock<?> getPrimitiveCheck() {
         return primitiveCheck;
+    }
+
+    public String getIndividualClassName() {
+        return individualClassName;
+    }
+
+    public void setIndividualClassName(String className) {
+        this.individualClassName = className;
     }
 
 

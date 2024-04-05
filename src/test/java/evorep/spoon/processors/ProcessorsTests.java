@@ -22,13 +22,13 @@ class ProcessorsTests {
     @BeforeEach
     void setUp() {
         // Initialize ToolConfig
-        ToolConfig.className = "Node";
-        ToolConfig.testSuiteClassName = "SLLTestSuite";
-        ToolConfig.srcPath = "./src/test/resources";
-        ToolConfig.srcJavaVersion = 17;
+        ToolConfig.subjectClassName = "Node";
+        ToolConfig.subjectTestSuiteClassName = "SLLTestSuite";
+        ToolConfig.subjectSrcPath = "./src/test/resources";
+        ToolConfig.subjectSrcJavaVersion = 17;
         // Initialise Spoon
         SpoonManager.initialize();
-        
+
         launcher = SpoonFactory.getLauncher();
         nodeClass = SpoonQueries.getClass("Node");
     }

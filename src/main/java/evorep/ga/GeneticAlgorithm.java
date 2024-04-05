@@ -31,11 +31,10 @@ public abstract class GeneticAlgorithm {
      * one of the elite, it will not be mutated or crossover.
      */
     private final int elitismCount;
-    double lastFittest;
+    
     /**
      * Set of mutators to employ in the search
      */
-
     private Set<Mutator> mutators;
 
     public GeneticAlgorithm(Set<Mutator> mutators, int maxPopulationSize, double mutationRate, double crossoverRate, int elitismCount) {
@@ -69,10 +68,7 @@ public abstract class GeneticAlgorithm {
      * @param population
      * @return boolean True if termination condition met, otherwise, false
      */
-    boolean isTerminationConditionMet(Population population) {
-        lastFittest = population.getFittest().getFitness();
-        return lastFittest > -1.0;
-    }
+    abstract boolean isTerminationConditionMet(Population population);
 
     /**
      * Apply mutation to population

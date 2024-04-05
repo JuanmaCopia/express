@@ -10,10 +10,10 @@ public class ObjectGeneratorTests {
     @BeforeAll
     public static void setUp() {
         // Initialize ToolConfig
-        ToolConfig.className = "SLL";
-        ToolConfig.testSuiteClassName = "SLLTestSuite";
-        ToolConfig.srcPath = "./src/test/resources";
-        ToolConfig.srcJavaVersion = 17;
+        ToolConfig.subjectClassName = "SLL";
+        ToolConfig.subjectTestSuiteClassName = "SLLTestSuite";
+        ToolConfig.subjectSrcPath = "./src/test/resources";
+        ToolConfig.subjectSrcJavaVersion = 17;
         // Initialise Spoon
         SpoonManager.initialize();
     }

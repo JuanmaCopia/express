@@ -57,10 +57,10 @@ public class MethodCallGeneratorTest {
 
     private static void initializeSpoon() {
         // Initialize ToolConfig
-        ToolConfig.className = CLASS_NAME;
-        ToolConfig.testSuiteClassName = "SLLTestSuite";
-        ToolConfig.srcPath = SOURCE_PATH;
-        ToolConfig.srcJavaVersion = 17;
+        ToolConfig.subjectClassName = CLASS_NAME;
+        ToolConfig.subjectTestSuiteClassName = "SLLTestSuite";
+        ToolConfig.subjectSrcPath = SOURCE_PATH;
+        ToolConfig.subjectSrcJavaVersion = 17;
         // Initialise Spoon
         SpoonManager.initialize();
 

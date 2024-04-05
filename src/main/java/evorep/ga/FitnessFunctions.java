@@ -27,7 +27,7 @@ public class FitnessFunctions {
             return;
         }
 
-        Class<?> preconditionClass = Reflection.loadClass(SpoonManager.classLoader, individual.className);
+        Class<?> preconditionClass = Reflection.loadClass(SpoonManager.classLoader, individual.getIndividualClassName());
         Method precondition = Reflection.loadMethod(preconditionClass, ToolConfig.preconditionMethodName);
 
         for (Object validInstance : ObjectCollector.positiveObjects) {

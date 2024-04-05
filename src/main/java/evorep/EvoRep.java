@@ -23,6 +23,7 @@ public class EvoRep {
         Population population = startInitialCheckSearch();
         //population = startStructureCheckSearch(population);
         printResults(population);
+        saveResults(population);
     }
 
     private static void initialize() {
@@ -62,5 +63,10 @@ public class EvoRep {
         System.out.println("Best solution: " + population.getFittest().toString());
         System.out.println("Fitness: " + population.getFittest().getFitness());
         System.out.println("\n=================================================================================\n");
+    }
+
+    public static void saveResults(Population population) {
+        SpoonManager.generateSourcePreconditionSourceFile(population.getFittest());
+        System.out.println("\nSource code saved in: " + ToolConfig.outputSrcPath);
     }
 }

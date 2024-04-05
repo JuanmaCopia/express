@@ -31,9 +31,9 @@ public class TypeGraphTest {
     }
 
     private static void initializeSpoon() {
-        ToolConfig.className = CLASS_NAME;
-        ToolConfig.srcPath = SOURCE_PATH;
-        ToolConfig.srcJavaVersion = 17;
+        ToolConfig.subjectClassName = CLASS_NAME;
+        ToolConfig.subjectSrcPath = SOURCE_PATH;
+        ToolConfig.subjectSrcJavaVersion = 17;
         SpoonManager.initialize();
 
         launcher = SpoonFactory.getLauncher();

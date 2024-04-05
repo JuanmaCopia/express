@@ -11,6 +11,11 @@ public class PrimitiveCheckGA extends GeneticAlgorithm {
     }
 
     @Override
+    boolean isTerminationConditionMet(Population population) {
+        return false;
+    }
+
+    @Override
     CtBlock<?> selectPrecondition(Individual individual) {
         return individual.getPrimitiveCheck();
     }

@@ -72,10 +72,10 @@ public class IfGeneratorTests {
 
     private static void initializeSpoon() {
         // Initialize ToolConfig
-        ToolConfig.className = CLASS_NAME;
-        ToolConfig.testSuiteClassName = "SLLTestSuite";
-        ToolConfig.srcPath = "./src/test/resources";
-        ToolConfig.srcJavaVersion = 17;
+        ToolConfig.subjectClassName = CLASS_NAME;
+        ToolConfig.subjectTestSuiteClassName = "SLLTestSuite";
+        ToolConfig.subjectSrcPath = "./src/test/resources";
+        ToolConfig.subjectSrcJavaVersion = 17;
         // Initialise Spoon
         SpoonManager.initialize();
 
