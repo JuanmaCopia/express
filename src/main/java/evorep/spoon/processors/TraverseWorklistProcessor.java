@@ -28,9 +28,10 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtBlock<?>> {
 
         CtTypeReference<?> subtypeOfWorklist = worklist.getType().getActualTypeArguments().get(0);
 
-        CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(ctBlock), subtypeOfWorklist, initialField);
+        CtInvocation<?> addToWorklistCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, initialField);
 
-        CtInvocation<?> addToWorklistCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, currentDeclaration);
+        CtExpression<Boolean> ifCondition = SpoonFactory.generateNullComparisonClause(initialField, BinaryOperatorKind.NE);
+        CtIf initialFieldNullCheck = SpoonFactory.createIfThenStatement(ifCondition, addToWorklistCall);
 
         // create condition: !workList.isEmpty()
         CtInvocation<?> isEmptyMethodCall = SpoonFactory.createInvocation(worklist, "isEmpty");
@@ -42,8 +43,9 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtBlock<?>> {
         // Create current = worklist.removeFirst();
         CtInvocation<?> removeFirstMethodCall = SpoonFactory.createInvocation(worklist, "removeFirst");
 
-        CtAssignment<?, ?> assignRemoveFirst = SpoonFactory.createAssignment(currentDeclaration, removeFirstMethodCall);
-        whileBody.insertEnd(assignRemoveFirst);
+        CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(ctBlock), subtypeOfWorklist, removeFirstMethodCall);
+        //CtAssignment<?, ?> assignRemoveFirst = SpoonFactory.createAssignment(currentDeclaration, removeFirstMethodCall);
+        whileBody.insertEnd(currentDeclaration);
 
         // Add visited check
         CtIf ifStatement = SpoonFactory.createVisitedCheck(visitedSet, currentDeclaration, true);
@@ -73,8 +75,7 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtBlock<?>> {
         lastStatement.insertBefore(visitedSet);
         lastStatement.insertBefore(worklist);
         lastStatement.insertBefore(SpoonFactory.createComment("Initialize root element:"));
-        lastStatement.insertBefore(currentDeclaration);
-        lastStatement.insertBefore(addToWorklistCall);
+        lastStatement.insertBefore(initialFieldNullCheck);
         lastStatement.insertBefore(SpoonFactory.createComment("Cycle over cyclic references:"));
         lastStatement.insertBefore(whileStatement);
         lastStatement.insertBefore(SpoonFactory.createComment("End of traversal"));

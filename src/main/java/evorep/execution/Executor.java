@@ -1,5 +1,6 @@
 package evorep.execution;
 
+import evorep.ga.Individual;
 import evorep.reflection.Reflection;
 
 import java.lang.reflect.Method;
@@ -9,7 +10,7 @@ import java.util.concurrent.*;
 
 public class Executor {
 
-    public static int runPrecondition(Method precondition, Object[] args) {
+    public static int runPrecondition(Individual individual, Method precondition, Object[] args) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         Callable<Boolean> task = () -> {
@@ -28,6 +29,7 @@ public class Executor {
             return -1;
         } catch (Exception e) {
             // Handle other exceptions
+            System.err.println("\nError running precondition:\n\n" + individual.toString());
             e.printStackTrace();
             //System.err.println("\nThe individual was:\n\n" + individual.toString());
             return -1;

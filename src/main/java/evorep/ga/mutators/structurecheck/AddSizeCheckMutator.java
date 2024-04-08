@@ -37,7 +37,7 @@ public class AddSizeCheckMutator implements Mutator {
 
         List<CtVariable<?>> integerFields = SpoonQueries.getIntegerFieldsOfRoot();
         CtVariable<?> chosenIntegerField = integerFields.get(RandomUtils.nextInt(integerFields.size()));
-        CtVariableRead<?> intFieldRead = SpoonFactory.createVariableRead(chosenIntegerField);
+        CtVariableRead<?> intFieldRead = SpoonFactory.createFieldReadOfRootObject(chosenIntegerField);
 
         Processor<CtBlock<?>> p = new SizeCheckProcessor(setVar, intFieldRead);
         p.process(blockGene);

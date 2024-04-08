@@ -1,6 +1,7 @@
 package evorep.ga.mutators.structurecheck;
 
 import evorep.ga.Individual;
+import evorep.ga.helper.LocalVarHelper;
 import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
@@ -16,43 +17,37 @@ public class CheckVisitedFieldEndOfTraversalMutator implements Mutator {
         if (!(gene instanceof CtBlock<?> block) || block != individual.getStructureCheck())
             return false;
 
-        return !SpoonQueries.getTraversalBlocks(block).isEmpty();
+        if (block.getElements(SpoonQueries::isTraversalLoop).isEmpty())
+            return false;
+
+        return true;
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        List<List<CtStatement>> traversalBlocks = SpoonQueries.getTraversalBlocks(blockGene);
-        List<CtStatement> chosenTraversalStatements = traversalBlocks.get(RandomUtils.nextInt(traversalBlocks.size()));
+        CtWhile chosenLoop = (CtWhile) RandomUtils.getRandomElement(blockGene.getElements(SpoonQueries::isTraversalLoop));
+
+        CtLocalVariable<?> visitedSetVar = SpoonQueries.getLocalVarMatchingPrefix(chosenLoop, LocalVarHelper.SET_VAR_NAME);
+        if (visitedSetVar == null) {
+            System.err.println("ERROR: visitedSetVar is null.");
+            return false;
+        }
 
         List<List<CtVariable<?>>> varPath = SpoonQueries.getCandidateVarReadsForNullCheck(1);
         List<CtVariable<?>> chosenVarPath = varPath.get(RandomUtils.nextInt(varPath.size()));
         CtVariableRead<?> chosenVarRead = SpoonFactory.createFieldReadOfRootObject(chosenVarPath);
 
-        CtLocalVariable<?> visitedSetVar = SpoonQueries.getVisitedSet(chosenTraversalStatements);
-        if (visitedSetVar == null) {
-            System.err.println("ERROR: visitedSetVar is null.");
-            System.err.println("\n\nchosenTraversalStatements:\n\n" + chosenTraversalStatements.toString());
-            return false;
-        }
-
         CtExpression<Boolean> nullComparisonClause = SpoonFactory.generateNullComparisonClause(chosenVarRead, BinaryOperatorKind.NE);
         CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(visitedSetVar, chosenVarRead);
-        CtExpression<Boolean> conjuntion = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(nullComparisonClause, addToSetInvocation, BinaryOperatorKind.AND);
+        CtExpression<Boolean> conjunction = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(nullComparisonClause, addToSetInvocation, BinaryOperatorKind.AND);
 
-        if (SpoonQueries.checkAlreadyExist(conjuntion, blockGene))
+        if (SpoonQueries.checkAlreadyExist(conjunction, blockGene))
             return false;
 
-        CtIf ifStatement = SpoonFactory.createIfReturnFalse(conjuntion);
-
-        CtComment endOfTraversalComment = SpoonQueries.getEndOfTraversalComment(chosenTraversalStatements);
-        if (endOfTraversalComment == null) {
-            System.err.println("ERROR: endOfTraversalComment is null.");
-            System.err.println("\n\nchosenTraversalStatements:\n\n" + chosenTraversalStatements.toString());
-            return false;
-        }
-        endOfTraversalComment.insertBefore(ifStatement);
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(conjunction);
+        chosenLoop.insertAfter(ifStatement);
 
         /*System.err.println("CheckVisitedFieldEndOfTraversalMutator:\n" + ifStatement);
         System.err.println("Final Block:\n" + blockGene);*/

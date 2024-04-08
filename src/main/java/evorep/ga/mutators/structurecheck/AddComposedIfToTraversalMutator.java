@@ -1,6 +1,7 @@
 package evorep.ga.mutators.structurecheck;
 
 import evorep.ga.Individual;
+import evorep.ga.helper.LocalVarHelper;
 import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
@@ -27,7 +28,7 @@ public class AddComposedIfToTraversalMutator implements Mutator {
         CtWhile chosenLoop = (CtWhile) RandomUtils.getRandomElement(block.getElements(SpoonQueries::isTraversalLoop));
         CtBlock<?> loopBody = (CtBlock<?>) chosenLoop.getBody();
 
-        CtLocalVariable<?> currentDeclaration = SpoonQueries.getCurrentVarDeclaration(chosenLoop);
+        CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(chosenLoop, LocalVarHelper.CURRENT_VAR_NAME);
 
         CtExpression<Boolean> composedCondition = generateComposedCondition(currentDeclaration);
         if (composedCondition == null || SpoonQueries.checkAlreadyExist(composedCondition, loopBody))

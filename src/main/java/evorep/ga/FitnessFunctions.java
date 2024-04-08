@@ -34,7 +34,7 @@ public class FitnessFunctions {
             Object[] args = new Object[1];
             args[0] = validInstance;
             //logger.info("FF: Running precondition for valid instance: " + validInstance.toString());
-            int result = Executor.runPrecondition(precondition, args);
+            int result = Executor.runPrecondition(individual, precondition, args);
             if (result != 1) {
                 //logger.info("FF: early return 2");
                 return;
@@ -47,7 +47,7 @@ public class FitnessFunctions {
             Object[] args = new Object[1];
             args[0] = invalidInstance;
             //logger.info("FF: Running precondition for invalid instance: " + invalidInstance.toString());
-            int result = Executor.runPrecondition(precondition, args);
+            int result = Executor.runPrecondition(individual, precondition, args);
             if (result == -1) {
                 //logger.info("FF: early return 3");
                 return;

@@ -1,6 +1,7 @@
 package evorep.spoon.processors;
 
 import evorep.spoon.SpoonFactory;
+import evorep.spoon.SpoonQueries;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;
@@ -23,7 +24,7 @@ public class SizeCheckProcessor extends AbstractProcessor<CtBlock<?>> {
     public void process(CtBlock<?> ctBlock) {
         CtIf ifStatement = SpoonFactory.createVisitedSizeCheck(setVar, intField);
 
-        CtStatement lastStatement = ctBlock.getLastStatement();
+        CtStatement lastStatement = SpoonQueries.getReturnTrueComment(ctBlock);
         lastStatement.insertBefore(SpoonFactory.createComment("Size check:"));
         lastStatement.insertBefore(ifStatement);
 
