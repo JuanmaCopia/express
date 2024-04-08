@@ -1,6 +1,8 @@
 package evorep.object;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -140,7 +142,15 @@ public class ObjectHelper {
     public static Object createNewInstance(Class<?> clazz) {
         Object instance = null;
         try {
-            instance = clazz.getDeclaredConstructor().newInstance();
+            Class<?> declaringClass = clazz.getDeclaringClass();
+            if (!Modifier.isStatic(clazz.getModifiers()) && declaringClass != null) {
+                //System.err.println("creating isntance for Declaring class: " + declaringClass.getName());
+                Constructor<?> constructor = clazz.getDeclaredConstructor(declaringClass);
+                Object param = declaringClass.getDeclaredConstructor().newInstance();
+                instance = constructor.newInstance(param);
+            } else {
+                instance = clazz.getDeclaredConstructor().newInstance();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error creating new instance of class: " + clazz.getName());

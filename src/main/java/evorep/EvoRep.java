@@ -1,10 +1,7 @@
 package evorep;
 
 import evorep.config.ToolConfig;
-import evorep.ga.GeneticAlgorithm;
-import evorep.ga.InitialCheckGA;
-import evorep.ga.Population;
-import evorep.ga.StructureCheckGA;
+import evorep.ga.*;
 import evorep.ga.mutators.Mutator;
 import evorep.ga.mutators.initialcheck.AddComposedInitialNullCheckMutator;
 import evorep.ga.mutators.initialcheck.AddIfNullReturnMutator;
@@ -24,6 +21,7 @@ public class EvoRep {
         population = startStructureCheckSearch(population);
         printResults(population);
         saveResults(population);
+        //printNotKilledMutants(population);
     }
 
     private static void initialize() {
@@ -68,5 +66,12 @@ public class EvoRep {
     public static void saveResults(Population population) {
         SpoonManager.generateSourcePreconditionSourceFile(population.getFittest());
         System.out.println("\nSource code saved in: " + ToolConfig.outputSrcPath);
+    }
+
+    public static void printNotKilledMutants(Population population) {
+        System.out.println("\n\n==============================  Unkilled Mutants  ==============================\n");
+        Individual fittest = population.getFittest();
+        FitnessFunctions.printSurvivors(fittest);
+        System.out.println("\n=================================================================================\n");
     }
 }

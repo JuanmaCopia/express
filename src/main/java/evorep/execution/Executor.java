@@ -56,6 +56,7 @@ public class Executor {
                     testsExecuted++;
                 } catch (Exception e) {
                     System.err.println("error running test " + testMethod.getName() + ": " + e.getMessage());
+                    throw new RuntimeException(e);
                 }
             }
         } catch (Exception e) {

@@ -20,10 +20,14 @@ public class FitnessFunctions {
     public static void invalidInstancesFitness(Individual individual) {
 
         //logger.info("FF: Evaluating fitness for:\n" + individual.toString());
+        if (individual.marked) {
+            logger.info("FF: Evaluating fitness for:\n" + individual.toString());
+        }
 
         individual.setFitness(WORST_FITNESS_VALUE);
         if (individual.toString().length() > MAX_LENGTH || !SpoonManager.compileIndividual(individual)) {
-            //logger.info("FF: early return 1");
+            if (individual.marked)
+                logger.info("FF: early return 1");
             return;
         }
 
@@ -36,7 +40,10 @@ public class FitnessFunctions {
             //logger.info("FF: Running precondition for valid instance: " + validInstance.toString());
             int result = Executor.runPrecondition(individual, precondition, args);
             if (result != 1) {
-                //logger.info("FF: early return 2");
+                if (individual.marked) {
+                    logger.info("FF: early return 2");
+                    logger.info("FF: killed valid mutant: " + validInstance.toString());
+                }
                 return;
             }
         }
@@ -49,7 +56,8 @@ public class FitnessFunctions {
             //logger.info("FF: Running precondition for invalid instance: " + invalidInstance.toString());
             int result = Executor.runPrecondition(individual, precondition, args);
             if (result == -1) {
-                //logger.info("FF: early return 3");
+                if (individual.marked)
+                    logger.info("FF: early return 3");
                 return;
             } else if (result == 0) {
                 fitness = fitness + 1;
@@ -58,8 +66,32 @@ public class FitnessFunctions {
 
         fitness -= (double) individual.toString().length() / MAX_LENGTH;
         individual.setFitness(fitness);
-        //logger.info("FF: Given Fitness: " + fitness);
-        //logger.info("FF: final return");
+        if (individual.marked)
+            logger.info("FF: Given Fitness: " + fitness);
+
+    }
+
+
+    public static void printSurvivors(Individual individual) {
+        assert SpoonManager.compileIndividual(individual);
+
+        Class<?> preconditionClass = Reflection.loadClass(SpoonManager.classLoader, individual.getIndividualClassName());
+        Method precondition = Reflection.loadMethod(preconditionClass, ToolConfig.preconditionMethodName);
+
+        for (Object invalidInstance : ObjectCollector.negativeObjects) {
+            Object[] args = new Object[1];
+            args[0] = invalidInstance;
+
+            int result = Executor.runPrecondition(individual, precondition, args);
+            if (result == 1) {
+                System.out.println("\n\nCould not kill:\n" + invalidInstance.toString());
+            } else if (result == -1) {
+                System.out.println("Error with" + invalidInstance.toString());
+                return;
+            }
+        }
+
+
     }
 
 

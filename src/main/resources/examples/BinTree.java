@@ -9,58 +9,104 @@ public class BinTree {
     BTNode root;
     int size;
 
-    public boolean repOKStructure() {
+    public BinTree() {
+        root = null;
+        size = 0;
+    }
+
+    public void addNode(int value) {
+        BTNode newNode = new BTNode();
+        newNode.data = value;
         if (root == null) {
-            return true;
+            root = newNode;
+            size++;
+            return;
         }
-        Set<BTNode> visited = new HashSet<BTNode>();
-        LinkedList<BTNode> worklist = new LinkedList<BTNode>();
-        /* Initialize root element: */
-        BTNode current_0 = root;
-        worklist.add(current_0);
-        /* Cycle over cyclic references: */
+        LinkedList<BTNode> worklist = new LinkedList<>();
+        worklist.add(root);
         while (!worklist.isEmpty()) {
-            current_0 = worklist.removeFirst();
-            if (!visited.add(current_0)) {
-                return false;
+            BTNode current = worklist.removeFirst();
+            if (current.left == null) {
+                current.left = newNode;
+                size++;
+                return;
+            } else {
+                worklist.add(current.left);
             }
-            /* Handle current: */
-            /* End of Handle current: */
-            if (current_0.left != null) {
-                worklist.add(current_0.left);
-            }
-            if (current_0.right != null) {
-                worklist.add(current_0.right);
+            if (current.right == null) {
+                current.right = newNode;
+                size++;
+                return;
+            } else {
+                worklist.add(current.right);
             }
         }
-        return true;
     }
 
     public void mymethod() {
 
     }
 
-    private String toStringHelper(BTNode node) {
-        if (node == null) {
-            return "Empty tree";
+    @Override
+    public String toString() {
+        java.lang.StringBuilder sb = new java.lang.StringBuilder();
+        if (root == null) {
+            return "\nEmpty tree, size: " + size + "\n";
+        } else {
+            sb.append("\nRoot: " + root.data + "\n");
         }
-        StringBuilder sb = new StringBuilder();
-        sb.append(toStringHelper(node.left));
-        sb.append(node.data).append(" ");
-        sb.append(toStringHelper(node.right));
+        Set<BTNode> visited_0 = new HashSet<BTNode>();
+        LinkedList<BTNode> worklist_0 = new LinkedList<BTNode>();
+        worklist_0.add(root);
+        String indent = "  ";
+        while (!worklist_0.isEmpty()) {
+            BTNode current_0 = worklist_0.removeFirst();
+
+            indent += "  ";
+
+            if (current_0.left != null) {
+                sb.append(indent + current_0.left.data + "\n");
+                if (visited_0.add(current_0.left)) {
+                    worklist_0.add(current_0.left);
+                } else {
+                    sb.append(indent + " Cycle!\n");
+                }
+
+            } else {
+                sb.append(indent + "null\n");
+            }
+            if (current_0.right != null) {
+                sb.append(indent + current_0.right.data + "\n");
+                if (visited_0.add(current_0.right)) {
+                    worklist_0.add(current_0.right);
+                } else {
+                    sb.append(indent + " Cycle!\n");
+                }
+
+            } else {
+                sb.append(indent + "null\n");
+            }
+        }
+        sb.append("\n Size: " + size + "\n");
         return sb.toString();
     }
 
-    @Override
-    public String toString() {
-        return toStringHelper(root).trim(); // Trim any trailing whitespace
-    }
-
-    class BTNode {
+    public static class BTNode {
         int data;
         BTNode left;
         BTNode right;
 
+        public BTNode() {
+            this.data = 0;
+            this.left = null;
+            this.right = null;
+        }
     }
+
+/*    public class BTNode {
+        int data;
+        BTNode left;
+        BTNode right;
+    }*/
 
 }

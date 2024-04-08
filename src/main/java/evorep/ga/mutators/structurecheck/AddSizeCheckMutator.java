@@ -42,6 +42,9 @@ public class AddSizeCheckMutator implements Mutator {
         Processor<CtBlock<?>> p = new SizeCheckProcessor(setVar, intFieldRead);
         p.process(blockGene);
 
+        //System.err.println("\nAddSizeCheckMutator:\n\n" + blockGene);
+        //individual.marked = true;
+
         return true;
     }
 

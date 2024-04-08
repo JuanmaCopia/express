@@ -8,7 +8,7 @@ public class Individual implements Comparable<Individual> {
     private final CtBlock<?> initialCheck;
     private final CtBlock<?> structureCheck;
     private final CtBlock<?> primitiveCheck;
-
+    public boolean marked = false;
     private String individualClassName;
     private double fitness;
     private boolean isFitnessUpdated;

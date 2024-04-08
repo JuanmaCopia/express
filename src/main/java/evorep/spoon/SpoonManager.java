@@ -39,6 +39,7 @@ public class SpoonManager {
             initializePrecondition();
             initializeTestSuiteClass();
             compileModel();
+            initializeClassLoader();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,12 +55,14 @@ public class SpoonManager {
         thisParameter.setType(targetClass.getReference());
         thisParameter.setSimpleName("_this");
         preconditionParameters.addFirst(thisParameter);
-        //preconditionClass = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName);
     }
 
     private static void initializeOutputDirectories() {
         outputBinDirectory = Utils.createDirectory(ToolConfig.outputBinPath);
         outputSrcDirectory = Utils.createDirectory(ToolConfig.outputSrcPath);
+    }
+
+    private static void initializeClassLoader() {
         outputBinURL = Utils.createURL(outputBinDirectory);
         classLoader = Utils.createClassLoader(outputBinURL);
     }
@@ -72,12 +75,11 @@ public class SpoonManager {
         launcher.getEnvironment().setComplianceLevel(ToolConfig.subjectSrcJavaVersion);
         launcher.getEnvironment().setShouldCompile(true);
         launcher.getEnvironment().setAutoImports(true);
-        // launcher.getEnvironment().setSourceClasspath(new
-        // String[]{System.getProperty("java.class.path")});
         launcher.buildModel();
-        if (!launcher.getModelBuilder().compile())
-            throw new RuntimeException("Model does not compile!!");
+    }
 
+    private static void instrumentClasses() {
+        Instrumentation.instrumentClasses(launcher.getModel());
     }
 
     private static void initializeFactories() {
