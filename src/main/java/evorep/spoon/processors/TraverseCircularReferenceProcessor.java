@@ -36,14 +36,21 @@ public class TraverseCircularReferenceProcessor extends AbstractProcessor<CtBloc
         }
 
         CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(ctBlock), initialField.getType(), initialField);
+        CtVariableRead<?> currentRead = SpoonFactory.createVariableRead(currentDeclaration);
 
-        CtExpression<Boolean> whileCondition = SpoonFactory.createAddToSetInvocation(setVar, currentDeclaration);
+        CtExpression<Boolean> currentNullComp = SpoonFactory.generateNullComparisonClause(currentRead, BinaryOperatorKind.NE);
+        CtExpression<Boolean> addCurrentToSet = SpoonFactory.createAddToSetInvocation(setVar, currentDeclaration);
+        CtExpression<Boolean> whileCondition = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(currentNullComp, addCurrentToSet, BinaryOperatorKind.AND);
 
         // Create While body
         CtBlock<?> whileBody = SpoonFactory.createBlock();
 
         whileBody.addStatement(SpoonFactory.createComment("Handle current:"));
         whileBody.addStatement(SpoonFactory.createComment("End of Handle current:"));
+
+        CtExpression<Boolean> nullCompLoopField = SpoonFactory.generateNullComparisonClause(SpoonFactory.createFieldRead(currentDeclaration, loopField), BinaryOperatorKind.EQ);
+        CtIf nullCheck = SpoonFactory.createIfReturnFalse(nullCompLoopField);
+        whileBody.addStatement(nullCheck);
 
         CtFieldRead<?> loopFieldRead = SpoonFactory.createFieldRead(currentDeclaration, loopField);
         CtAssignment assignment = SpoonFactory.createAssignment(currentDeclaration, loopFieldRead);
@@ -52,7 +59,7 @@ public class TraverseCircularReferenceProcessor extends AbstractProcessor<CtBloc
         CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, whileBody);
 
         CtExpression<Boolean> finalCheckCondition = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(
-                SpoonFactory.createVariableRead(currentDeclaration), initialField, BinaryOperatorKind.NE);
+                currentRead, initialField, BinaryOperatorKind.NE);
         CtIf finalCheck = SpoonFactory.createIfReturnFalse(finalCheckCondition);
 
 

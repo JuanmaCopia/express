@@ -28,6 +28,10 @@ public class Executor {
             e.printStackTrace();
             return -1;
         } catch (Exception e) {
+            if (individual.marked) {
+                System.err.println("\nError running precondition:\n");
+                e.printStackTrace();
+            }
             // Handle other exceptions
             //System.err.println("\nError running precondition:\n\n" + individual.toString());
             //e.printStackTrace();

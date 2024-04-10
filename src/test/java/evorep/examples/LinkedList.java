@@ -5,7 +5,7 @@
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
-package examples;
+package evorep.examples;
 
 import java.util.*;
 

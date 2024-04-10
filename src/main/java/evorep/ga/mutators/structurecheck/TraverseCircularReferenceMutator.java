@@ -40,7 +40,8 @@ public class TraverseCircularReferenceMutator implements Mutator {
         Processor<CtBlock<?>> p = new TraverseCircularReferenceProcessor(chosenInitialField, chosenLoopField);
         p.process(blockGene);
 
-        //System.err.println("\nTraverseCircularReferenceMutator:\n\n" + blockGene);
+        /*System.err.println("\nTraverseCircularReferenceMutator:\n\n" + blockGene);
+        individual.marked = true;*/
         return true;
     }
 
