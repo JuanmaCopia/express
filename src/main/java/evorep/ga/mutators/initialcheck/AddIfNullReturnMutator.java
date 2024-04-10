@@ -5,6 +5,7 @@ import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
+import evorep.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtVariable;
 
@@ -16,14 +17,14 @@ public class AddIfNullReturnMutator implements Mutator {
         if (!(gene instanceof CtBlock<?> block) || block != individual.getInitialCheck())
             return false;
 
-        return !SpoonQueries.getCandidateVarReadsForNullCheck(2).isEmpty();
+        return !SpoonQueries.getAllReferencePaths(TypeGraph.getInstance().getRoot(), 2).isEmpty();
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        List<List<CtVariable<?>>> paths = SpoonQueries.getCandidateVarReadsForNullCheck(2);
+        List<List<CtVariable<?>>> paths = SpoonQueries.getAllReferencePaths(TypeGraph.getInstance().getRoot(), 2);
         List<CtVariable<?>> chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
         CtVariableRead<?> chosenVarRead = SpoonFactory.createFieldReadOfRootObject(chosenPath);
 

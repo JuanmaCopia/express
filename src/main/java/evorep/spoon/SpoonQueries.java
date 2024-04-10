@@ -145,11 +145,11 @@ public class SpoonQueries {
     public static boolean containsReturnStatement(CtBlock<?> block) {
         return !block.getElements(e -> e instanceof CtReturn).isEmpty();
     }
-    
 
-    public static List<List<CtVariable<?>>> getCandidateVarReadsForNullCheck(int depth) {
+
+    public static List<List<CtVariable<?>>> getAllReferencePaths(CtTypeReference<?> sourceNode, int depth) {
         TypeGraph typesGraph = TypeGraph.getInstance();
-        List<List<CtVariable<?>>> paths = typesGraph.getAllPaths(typesGraph.getRoot(), depth);
+        List<List<CtVariable<?>>> paths = typesGraph.getAllPaths(sourceNode, depth);
         List<List<CtVariable<?>>> referencePaths = new ArrayList<>();
 
         for (List<CtVariable<?>> path : paths) {
@@ -277,19 +277,10 @@ public class SpoonQueries {
     public static boolean isTraversalLoop(CtElement element) {
         if (!(element instanceof CtWhile loop))
             return false;
-        return isCyclicReferenceTraversal(loop) || isWorklistTraversal(loop);
-    }
-
-    public static boolean isCyclicReferenceTraversal(CtWhile loop) {
         String condition = loop.getLoopingExpression().toString();
-        return condition.startsWith(LocalVarHelper.CURRENT_VAR_NAME) && condition.endsWith("!= null");
+        return condition.contains(LocalVarHelper.CURRENT_VAR_NAME);
     }
-
-    public static boolean isWorklistTraversal(CtWhile loop) {
-        String condition = loop.getLoopingExpression().toString();
-        return condition.startsWith("!" + LocalVarHelper.WORKLIST_VAR_NAME) && condition.endsWith(".isEmpty()");
-    }
-
+    
     public static CtLocalVariable<?> getLocalVarMatchingPrefix(CtElement element, String prefix) {
         CtElement matchingElement = getElementMatchingPrefix(element, prefix);
         if (matchingElement instanceof CtLocalVariable<?> var)

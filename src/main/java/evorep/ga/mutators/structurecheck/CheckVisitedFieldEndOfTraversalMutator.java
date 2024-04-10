@@ -6,6 +6,7 @@ import evorep.ga.mutators.Mutator;
 import evorep.spoon.RandomUtils;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
+import evorep.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtVariable;
 
@@ -35,7 +36,7 @@ public class CheckVisitedFieldEndOfTraversalMutator implements Mutator {
             return false;
         }
 
-        List<List<CtVariable<?>>> varPath = SpoonQueries.getCandidateVarReadsForNullCheck(1);
+        List<List<CtVariable<?>>> varPath = SpoonQueries.getAllReferencePaths(TypeGraph.getInstance().getRoot(), 1);
         List<CtVariable<?>> chosenVarPath = varPath.get(RandomUtils.nextInt(varPath.size()));
         CtVariableRead<?> chosenVarRead = SpoonFactory.createFieldReadOfRootObject(chosenVarPath);
 

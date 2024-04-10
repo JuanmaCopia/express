@@ -29,8 +29,8 @@ public class Executor {
             return -1;
         } catch (Exception e) {
             // Handle other exceptions
-            System.err.println("\nError running precondition:\n\n" + individual.toString());
-            e.printStackTrace();
+            //System.err.println("\nError running precondition:\n\n" + individual.toString());
+            //e.printStackTrace();
             //System.err.println("\nThe individual was:\n\n" + individual.toString());
             return -1;
         } finally {

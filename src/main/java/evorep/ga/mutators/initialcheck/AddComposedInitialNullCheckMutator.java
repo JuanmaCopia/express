@@ -4,6 +4,7 @@ import evorep.ga.Individual;
 import evorep.ga.mutators.Mutator;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonQueries;
+import evorep.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtVariable;
 
@@ -15,14 +16,14 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
         if (!(gene instanceof CtBlock<?> block) || block != individual.getInitialCheck())
             return false;
-        return SpoonQueries.getCandidateVarReadsForNullCheck(1).size() > 1;
+        return SpoonQueries.getAllReferencePaths(TypeGraph.getInstance().getRoot(), 1).size() > 1;
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        List<List<CtVariable<?>>> variableReads = SpoonQueries.getCandidateVarReadsForNullCheck(1);
+        List<List<CtVariable<?>>> variableReads = SpoonQueries.getAllReferencePaths(TypeGraph.getInstance().getRoot(), 1);
         List<List<CtVariable<?>>> chosenVarReads = SpoonQueries.chooseNVariablePaths(variableReads, 2);
         CtVariableRead<?> var1 = SpoonFactory.createFieldReadOfRootObject(chosenVarReads.get(0));
         CtVariableRead<?> var2 = SpoonFactory.createFieldReadOfRootObject(chosenVarReads.get(1));
