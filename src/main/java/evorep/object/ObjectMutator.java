@@ -28,7 +28,14 @@ public class ObjectMutator {
             return false;
 
         Object newFieldValue = getNewValueForField(targetField, candidates);
+        //String originalObject = rootObject.toString();
         targetField.setValue(newFieldValue);
+        //String mutatedObject = rootObject.toString();
+
+/*        if (originalObject.equals(mutatedObject.toString())) {
+            ObjectGeneratorManager.logger.warning("object and mutation are equal: " + originalObject + " == " + mutatedObject);
+        }*/
+
         return true;
     }
 
@@ -103,16 +110,13 @@ public class ObjectMutator {
     static Object getNewValueForField(TargetField targetField, List<Object> candidates) {
         List<Object> possibleChoices = new ArrayList<>(getCandidatesOfType(candidates, targetField));
 
-        // Remove its current value from the possible choices
-        Object currentValue = targetField.getValue();
-        possibleChoices.remove(currentValue);
-
         // Add a fresh object to the possible choices
         Object freshObject = ObjectHelper.createNewInstance(targetField.getFieldClass());
         if (freshObject != null)
             possibleChoices.add(freshObject);
 
         // Add null to the possible choices
+        Object currentValue = targetField.getValue();
         if (currentValue != null)
             possibleChoices.add(null);
 

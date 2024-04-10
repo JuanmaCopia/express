@@ -391,7 +391,43 @@ public class LinkedList {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("size: " + size + "\n");
+        sb.append("\nsize: " + size + "\n");
+        if (header == null) {
+            sb.append("header: null\n");
+            return sb.toString();
+        }
+        String headerStr = "header:" + header.toString();
+
+        sb.append("list: [" + headerStr + ", ");
+        Set<Entry> visited = new HashSet<>();
+        visited.add(header);
+        Entry e = header.next;
+        while (e != header) {
+            if (e == null) {
+                sb.append("null!]");
+                return sb.toString();
+            }
+            if (!visited.add(e)) {
+                sb.append("invalidCycle!]");
+                return sb.toString();
+            }
+            sb.append(e.toString() + ", ");
+            e = e.next;
+
+        }
+        sb.append(headerStr + "]");
+
+        for (Entry entry : visited) {
+            String previous = entry.previous == null ? "null" : entry.previous.toString();
+            String next = entry.next == null ? "null" : entry.next.toString();
+            sb.append("\n" + previous + " <- " + entry.toString() + "-> " + next);
+        }
+        return sb.toString();
+    }
+
+    public String toString2() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nsize: " + size + "\n");
         if (header == null) {
             sb.append("header: null\n");
             return sb.toString();

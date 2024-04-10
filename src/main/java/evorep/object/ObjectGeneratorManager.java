@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  */
 public class ObjectGeneratorManager {
 
-    private static final Logger logger = Logger.getLogger(SpoonManager.class.getName());
+    public static final Logger logger = Logger.getLogger(SpoonManager.class.getName());
 
     /**
      * Generate the set of positive and negative objects.
