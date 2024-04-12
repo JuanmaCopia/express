@@ -38,6 +38,11 @@ public abstract class GeneticAlgorithm {
      */
     private Set<Mutator> mutators;
 
+    /**
+     * The fittest individual of the initial population
+     */
+    private Individual initialFittest;
+
     public GeneticAlgorithm(Set<Mutator> mutators, int maxPopulationSize, double mutationRate, double crossoverRate, int elitismCount) {
         this.mutators = mutators;
         this.maxPopulationSize = maxPopulationSize;
@@ -156,12 +161,15 @@ public abstract class GeneticAlgorithm {
                 survivors.addIndividual(fittest);
             i++;
         }
+
+        survivors.addIndividual(new Individual(initialFittest));
         return survivors;
     }
 
 
     public Population startSearch(Population population) {
         evalPopulation(population);
+        initialFittest = new Individual(population.getFittest());
         population = selectSurvivors(population);
 
         while (!isTerminationConditionMet(population)) {
