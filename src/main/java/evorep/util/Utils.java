@@ -4,7 +4,10 @@ import org.apache.commons.math3.util.Combinations;
 import spoon.reflect.declaration.CtField;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -19,6 +22,10 @@ public class Utils {
 
     public static boolean nextBoolean() {
         return r.nextBoolean();
+    }
+
+    public static URLClassLoader createClassLoader(URL outputBinURL) {
+        return new URLClassLoader(new URL[]{outputBinURL});
     }
 
     public static File createDirectory(String path) {
@@ -51,5 +58,14 @@ public class Utils {
         }
 
         return result;
+    }
+
+    public static void saveToFile(String content, String filePath) {
+        try (FileWriter writer = new FileWriter(filePath)) {
+            writer.write(content);
+            System.out.println("Modified source code saved to: " + filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

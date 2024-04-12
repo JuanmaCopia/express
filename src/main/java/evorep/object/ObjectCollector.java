@@ -18,9 +18,4 @@ public class ObjectCollector {
         positiveObjects.add(object);
     }
 
-    public static void clear() {
-        positiveObjects.clear();
-        negativeObjects.clear();
-    }
-
 }

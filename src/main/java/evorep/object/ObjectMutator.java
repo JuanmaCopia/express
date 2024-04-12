@@ -1,10 +1,9 @@
 package evorep.object;
 
-import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
-import evorep.spoon.typesgraph.TypeGraph;
+import evorep.typegraph.TypeGraph;
 import evorep.util.Utils;
-import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.reflect.Field;
@@ -29,7 +28,14 @@ public class ObjectMutator {
             return false;
 
         Object newFieldValue = getNewValueForField(targetField, candidates);
+        //String originalObject = rootObject.toString();
         targetField.setValue(newFieldValue);
+        //String mutatedObject = rootObject.toString();
+
+/*        if (originalObject.equals(mutatedObject.toString())) {
+            ObjectGeneratorManager.logger.warning("object and mutation are equal: " + originalObject + " == " + mutatedObject);
+        }*/
+
         return true;
     }
 
@@ -75,11 +81,11 @@ public class ObjectMutator {
      */
     static TargetField selectTargetField(List<Object> candidates) {
         int maxAttempts = 10;
-        List<CtTypeReference<?>> userDefTypes = SpoonManager.getTypeGraph().getUserDefinedTypes().stream().toList();
+        List<CtTypeReference<?>> userDefTypes = TypeGraph.getInstance().getUserDefinedTypes().stream().toList();
         CtTypeReference<?> targetType = userDefTypes.get(new Random().nextInt(userDefTypes.size()));
 
         Object targetObject = getRandomReferenceOfType(candidates, targetType);
-        CtField<?> fieldToMutate = selectReferenceField(targetType);
+        CtVariable<?> fieldToMutate = selectReferenceField(targetType);
         int i = 0;
         while ((targetObject == null || fieldToMutate == null) && i < maxAttempts) {
             targetType = userDefTypes.get(new Random().nextInt(userDefTypes.size()));
@@ -104,19 +110,16 @@ public class ObjectMutator {
     static Object getNewValueForField(TargetField targetField, List<Object> candidates) {
         List<Object> possibleChoices = new ArrayList<>(getCandidatesOfType(candidates, targetField));
 
-        // Remove its current value from the possible choices
-        Object currentValue = targetField.getValue();
-        possibleChoices.remove(currentValue);
-
         // Add a fresh object to the possible choices
         Object freshObject = ObjectHelper.createNewInstance(targetField.getFieldClass());
         if (freshObject != null)
             possibleChoices.add(freshObject);
 
         // Add null to the possible choices
+        Object currentValue = targetField.getValue();
         if (currentValue != null)
             possibleChoices.add(null);
-        
+
         return possibleChoices.get(new Random().nextInt(possibleChoices.size()));
     }
 
@@ -140,9 +143,9 @@ public class ObjectMutator {
      * @param type is the type to select the field from
      * @return a random field to mutate
      */
-    static CtField<?> selectReferenceField(CtTypeReference<?> type) {
-        TypeGraph typeGraph = SpoonManager.getTypeGraph();
-        List<CtField<?>> fields = typeGraph.getOutgoingFields(type).stream().filter(
+    static CtVariable<?> selectReferenceField(CtTypeReference<?> type) {
+        TypeGraph typeGraph = TypeGraph.getInstance();
+        List<CtVariable<?>> fields = typeGraph.getOutgoingFields(type).stream().filter(
                 f -> !f.getType().isPrimitive() && !SpoonQueries.isBoxedPrimitive(f.getType())).toList();
         if (fields.isEmpty())
             return null;
@@ -177,13 +180,13 @@ public class ObjectMutator {
     /**
      * This record represents a field of an object to mutate
      */
-    record TargetField(Object target, CtField<?> field) {
+    record TargetField(Object target, CtVariable<?> field) {
 
         public Object getTarget() {
             return target;
         }
 
-        public CtField<?> getField() {
+        public CtVariable<?> getField() {
             return field;
         }
 

@@ -1,13 +1,11 @@
 package evorep.spoon;
 
+import evorep.config.ToolConfig;
 import evorep.ga.helper.LocalVarHelper;
 import org.apache.commons.lang3.ClassUtils;
 import spoon.Launcher;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
@@ -59,23 +57,115 @@ public class SpoonFactory {
 
     // ==================== Methods for creating new elements ====================
 
-    public static CtMethod<Boolean> createRepOK(String name) {
-        CtMethod<Boolean> newMethod = createMethod(ModifierKind.PUBLIC, typeFactory.BOOLEAN_PRIMITIVE, name);
+    public static CtClass<?> createPreconditionClass(String className) {
+        CtClass<?> preconditionClass = coreFactory.createClass();
+        preconditionClass.setSimpleName(className);
+        Set<ModifierKind> modifiers = new HashSet<>();
+        modifiers.add(ModifierKind.PUBLIC);
+        preconditionClass.setModifiers(modifiers);
+        CtPackage ctPackage = SpoonManager.targetClass.getPackage();
+        ctPackage.addType(preconditionClass);
 
+        createSubPreconditions(preconditionClass, SpoonManager.preconditionParameters);
+
+        return preconditionClass;
+    }
+
+    private static void createSubPreconditions(CtClass<?> preconditionClass, List<CtParameter<?>> parameters) {
+        List<CtMethod<Boolean>> subPreconditions = createSubPreconditions(parameters);
+        for (CtMethod<?> subPrecondition : subPreconditions)
+            preconditionClass.addMethod(subPrecondition);
+
+        Set<ModifierKind> modifiers = new HashSet<>();
+        modifiers.add(ModifierKind.PUBLIC);
+        modifiers.add(ModifierKind.STATIC);
+
+        CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.BOOLEAN_PRIMITIVE, ToolConfig.preconditionMethodName, parameters);
+        CtExpression<?>[] args = createArgumentsFromParameters(preconditionMethod);
+
+        CtBlock<?> body = createBlock();
+        for (CtMethod<?> subPrecondition : subPreconditions) {
+            CtInvocation<?> subPreconditionInvocation = createStaticInvocation(typeFactory.createReference(preconditionClass), subPrecondition.getSimpleName(), args);
+            CtExpression<Boolean> preconditionNegation = (CtExpression<Boolean>) createUnaryExpression(subPreconditionInvocation, UnaryOperatorKind.NOT);
+            CtIf ifStatement = createIfThenStatement(preconditionNegation, createReturnStatement(codeFactory.createLiteral(false)));
+            body.addStatement(ifStatement);
+        }
+        body.addStatement(createReturnStatement(codeFactory.createLiteral(true)));
+        preconditionMethod.setBody(body);
+
+        preconditionClass.addMethod(preconditionMethod);
+    }
+
+    public static CtVariableRead<?> createFieldReadOfRootObject(List<CtVariable<?>> path) {
+        List<CtVariable<?>> pathCopy = new ArrayList<>(path);
+        CtVariable<?> rootVar = getRootObjectVar();
+        pathCopy.add(0, rootVar);
+        return createFieldRead(pathCopy);
+    }
+
+    public static CtVariableRead<?> createFieldReadOfRootObject(CtVariable<?> var) {
+        CtVariable<?> rootVar = getRootObjectVar();
+        return createFieldRead(rootVar, var);
+    }
+
+
+    public static CtVariable<?> getRootObjectVar() {
+        return SpoonManager.preconditionParameters.get(0);
+    }
+
+    public static CtExpression<?>[] createArgumentsFromParameters(CtMethod<?> method) {
+        List<CtParameter<?>> params = method.getParameters();
+        CtExpression<?>[] args = new CtExpression<?>[params.size()];
+        for (int i = 0; i < args.length; i++) {
+            args[i] = createVariableRead(params.get(i));
+        }
+        return args;
+    }
+
+    private static List<CtMethod<Boolean>> createSubPreconditions(List<CtParameter<?>> parameters) {
+        List<CtMethod<Boolean>> subPreconditions = new ArrayList<>();
+        subPreconditions.add(createSubPreconditionMethod("initialCheck", parameters));
+        subPreconditions.add(createSubPreconditionMethod("structureCheck", parameters));
+        subPreconditions.add(createSubPreconditionMethod("primitiveCheck", parameters));
+        return subPreconditions;
+    }
+
+
+    public static CtMethod<Boolean> createSubPreconditionMethod(String name, List<CtParameter<?>> parameters) {
+        Set<ModifierKind> modifiers = new HashSet<>();
+        modifiers.add(ModifierKind.PUBLIC);
+        modifiers.add(ModifierKind.STATIC);
+
+        CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.BOOLEAN_PRIMITIVE, name, parameters);
+
+        preconditionMethod.setBody(createReturnTrueBlock());
+        return preconditionMethod;
+    }
+
+    public static CtBlock<?> createReturnTrueBlock() {
         CtBlock<Boolean> block = coreFactory.createBlock();
-        block.addStatement(createComment("End of Initial Checks"));
+        block.addStatement(createComment("Return true"));
         block.addStatement(createReturnStatement(codeFactory.createLiteral(true)));
-        newMethod.setBody(block);
+        return block;
+    }
+
+    public static CtMethod<Boolean> createMethod(
+            Set<ModifierKind> modifiers,
+            CtTypeReference<?> returnType,
+            String name, List<CtParameter<?>> parameters
+    ) {
+        CtMethod<Boolean> newMethod = coreFactory.createMethod();
+        newMethod.setModifiers(modifiers);
+        newMethod.setType(returnType);
+        newMethod.setSimpleName(name);
+        newMethod.setParameters(parameters);
         return newMethod;
     }
 
-    public static CtMethod<Boolean> createMethod(ModifierKind modifier, CtTypeReference<?> returnType,
-                                                 String name) {
-        CtMethod<Boolean> newMethod = coreFactory.createMethod();
-        newMethod.addModifier(modifier);
-        newMethod.setType(returnType);
-        newMethod.setSimpleName(name);
-        return newMethod;
+    public static CtClass<?> createClass(String name) {
+        CtClass<?> clazz = coreFactory.createClass();
+        clazz.setSimpleName(name);
+        return clazz;
     }
 
     public static CtReturn createReturnStatement(CtExpression returnExpression) {
@@ -140,7 +230,7 @@ public class SpoonFactory {
         return block;
     }
 
-    public static CtVariableRead<?> createFieldRead(List<CtField<?>> path) {
+    public static CtVariableRead<?> createFieldRead(List<CtVariable<?>> path) {
         CtVariableRead<?> fieldRead = createFieldRead(path.get(0));
         for (int i = 1; i < path.size(); i++)
             fieldRead = createFieldRead(fieldRead, path.get(i));
@@ -180,6 +270,12 @@ public class SpoonFactory {
 
     public static CtConstructorCall<?> createConstructorCall(CtTypeReference<?> type) {
         return codeFactory.createConstructorCall(type);
+    }
+
+    public static CtInvocation<?> createStaticInvocation(CtTypeReference<?> targetClassRef, String methodName, CtExpression<?>[] args) {
+        CtMethod<?> staticMethod = targetClassRef.getTypeDeclaration().getMethodsByName(methodName).get(0);
+        CtExecutableReference<?> staticMethodRef = factory.Executable().createReference(staticMethod);
+        return factory.Code().createInvocation(null, staticMethodRef, args);
     }
 
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName) {
@@ -430,17 +526,21 @@ public class SpoonFactory {
         return createIfThenStatement(condition, createReturnStatement(createLiteral(false)));
     }
 
-    public static CtExpression<Boolean> generateNullComparisonClause(CtVariableRead<?> varRead) {
+    public static CtExpression<Boolean> createNullComparisonClause(CtVariableRead<?> varRead) {
         BinaryOperatorKind operator = RandomUtils.nextBoolean() ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE;
         return (CtExpression<Boolean>) createBinaryExpression(varRead, parseToExpression(null), operator);
     }
 
-    public static CtExpression<Boolean> generateNullComparisonClause(CtVariableRead<?> varRead, BinaryOperatorKind operator) {
+    public static CtExpression<Boolean> createNullComparisonClause(CtVariableRead<?> varRead, BinaryOperatorKind operator) {
         return (CtExpression<Boolean>) createBinaryExpression(varRead, parseToExpression(null), operator);
     }
 
-    public static CtExpression<Boolean> generateNotEqualComparisonClause(CtVariableRead<?> varRead, CtVariableRead<?> varRead2) {
+    public static CtExpression<Boolean> createNotEqualComparisonClause(CtVariableRead<?> varRead, CtVariableRead<?> varRead2) {
         return (CtExpression<Boolean>) createBinaryExpression(varRead, varRead2, BinaryOperatorKind.NE);
+    }
+
+    public static CtExpression<Boolean> createBooleanBinaryExpression(Object left, Object right, BinaryOperatorKind operator) {
+        return (CtExpression<Boolean>) createBinaryExpression(left, right, operator);
     }
 
 

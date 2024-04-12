@@ -1,13 +1,12 @@
 package evorep.ga;
 
-import spoon.reflect.declaration.CtMethod;
-
 import java.util.HashSet;
 import java.util.PriorityQueue;
 
 public class Population {
     private PriorityQueue<Individual> population;
     private HashSet<String> presentIndividuals = new HashSet<>();
+    private int generationNumber = 1;
 
     /**
      * Initializes blank population of individuals
@@ -15,21 +14,6 @@ public class Population {
     public Population() {
         population = new PriorityQueue<>();
         presentIndividuals = new HashSet<>();
-    }
-
-    public Population(Population initialPopulation) {
-        population = new PriorityQueue<>(initialPopulation.population);
-        presentIndividuals = new HashSet<>(initialPopulation.presentIndividuals);
-    }
-
-    public Population(int populationSize, CtMethod repOK) {
-        population = new PriorityQueue<>();
-
-        for (int i = 0; i < populationSize; i++) {
-            Individual individual = new Individual(repOK);
-            //MutatorManager.initialMutation(individual);
-            addIndividual(individual);
-        }
     }
 
     /**
@@ -51,12 +35,10 @@ public class Population {
         return fittest;
     }
 
-    public boolean addIndividual(Individual individual) {
+    public void addIndividual(Individual individual) {
         if (presentIndividuals.add(individual.toString())) {
             population.add(individual);
-            return true;
         }
-        return false;
     }
 
     /**
@@ -68,5 +50,17 @@ public class Population {
         return population.size();
     }
 
+
+    public void increaseGeneration() {
+        generationNumber++;
+    }
+
+    public int getGenerationNumber() {
+        return generationNumber;
+    }
+
+    public void setGenerationNumber(int generationNumber) {
+        this.generationNumber = generationNumber;
+    }
 
 }

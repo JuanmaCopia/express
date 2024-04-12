@@ -1,5 +1,6 @@
 package evorep.spoon.generators;
 
+import evorep.config.ToolConfig;
 import evorep.spoon.SpoonFactory;
 import evorep.spoon.SpoonManager;
 import evorep.spoon.SpoonQueries;
@@ -56,7 +57,13 @@ public class VariableReadGeneratorTests {
     }
 
     private static void initializeSpoon() {
-        SpoonManager.initialize(SOURCE_PATH, null, CLASS_NAME, 17);
+        // Initialize ToolConfig
+        ToolConfig.subjectClassName = CLASS_NAME;
+        ToolConfig.subjectTestSuiteClassName = "SLLTestSuite";
+        ToolConfig.subjectSrcPath = SOURCE_PATH;
+        ToolConfig.subjectSrcJavaVersion = 17;
+        // Initialise Spoon
+        SpoonManager.initialize();
         launcher = SpoonFactory.getLauncher();
     }
 

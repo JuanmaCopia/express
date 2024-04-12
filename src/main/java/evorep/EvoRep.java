@@ -1,21 +1,34 @@
 package evorep;
 
 import evorep.config.ToolConfig;
-import evorep.ga.GeneticAlgorithm;
-import evorep.ga.Population;
+import evorep.ga.*;
+import evorep.ga.fitness.FitnessFunctions;
+import evorep.ga.mutator.Mutator;
+import evorep.ga.mutator.initialcheck.AddComposedInitialNullCheckMutator;
+import evorep.ga.mutator.initialcheck.AddIfNullReturnMutator;
+import evorep.ga.mutator.structurecheck.*;
+import evorep.object.ObjectGeneratorManager;
 import evorep.spoon.SpoonManager;
-import spoon.reflect.declaration.CtMethod;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class EvoRep {
 
     public static void main(String[] args) {
         initialize();
         printStart();
-        startSearch();
+        Population population = startInitialCheckSearch();
+        population = startStructureCheckSearch(population);
+        printResults(population);
+        saveResults(population);
+        printNotKilledMutants(population);
     }
 
     private static void initialize() {
         ToolConfig.parseConfigurationFile();
+        SpoonManager.initialize();
+        ObjectGeneratorManager.generateObjects();
     }
 
 
@@ -23,44 +36,45 @@ public class EvoRep {
         System.out.println("\n==============================  Search Started  ==============================\n");
     }
 
-    public static void startSearch() {
-        GeneticAlgorithm ga = new GeneticAlgorithm(ToolConfig.maxPopulation, 1.0, 1.0, 3);
-        //Population population = ga.initPopulationBasedOnTypeGraph(getRepOKMethod());
-        Population population = ga.initPopulation(getRepOKMethod());
-        ga.evalPopulation(population);
-        population = ga.selectFittest(population);
-
-        int generation = 1;
-        while (!ga.isTerminationConditionMet(population) && generation <= ToolConfig.maxGenerations) {
-            printGeneration(generation, population);
-            //population = ga.crossoverPopulation(population);
-            population = ga.mutatePopulation(population);
-            ga.evalPopulation(population);
-            population = ga.selectFittest(population);
-            generation++;
-        }
-        printResults(population, generation - 1);
+    public static Population startInitialCheckSearch() {
+        Set<Mutator> mutators = new HashSet<>();
+        mutators.add(new AddIfNullReturnMutator());
+        mutators.add(new AddComposedInitialNullCheckMutator());
+        GeneticAlgorithm ga = new InitialCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
+        return ga.startSearch(ga.initPopulation());
     }
 
-    private static CtMethod getRepOKMethod() {
-        return SpoonManager.getTargetClass().getMethod("repOK");
+    public static Population startStructureCheckSearch(Population population) {
+        Set<Mutator> mutators = new HashSet<>();
+        mutators.add(new TraverseWorklistMutator());
+        mutators.add(new TraverseCyclicReferenceMutator());
+        mutators.add(new AddComposedIfToTraversalMutator());
+        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
+        mutators.add(new AddSizeCheckMutator());
+        mutators.add(new AddNullCompToTraversalMutator());
+        mutators.add(new TraverseCircularReferenceMutator());
+        GeneticAlgorithm ga = new StructureCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
+        return ga.startSearch(population);
     }
 
-    public static void printGeneration(int generation, Population population) {
-        System.out.println("\n\n------------------   Generation " + generation + "   ------------------\n");
-        System.out.println("Population size: " + population.size());
-        System.out.println("Fittest: " + population.getFittest().getFitness());
-        System.out.println("\n" + population.getFittest().toString());
-    }
 
-    public static void printResults(Population population, int generation) {
+    public static void printResults(Population population) {
         System.out.println("\n\n==============================  Search Finished  ==============================\n");
-        System.out.println("Number of generations: " + generation);
+        System.out.println("Number of generations: " + population.getGenerationNumber());
         System.out.println("Best solution: " + population.getFittest().toString());
         System.out.println("Fitness: " + population.getFittest().getFitness());
         System.out.println("\n=================================================================================\n");
+    }
 
-/*        Individual fittest = population.getFittest();
-        FitnessFunctions.invalidInstancesFitness(fittest);*/
+    public static void saveResults(Population population) {
+        SpoonManager.generateSourcePreconditionSourceFile(population.getFittest());
+        System.out.println("\nSource code saved in: " + ToolConfig.outputSrcPath);
+    }
+
+    public static void printNotKilledMutants(Population population) {
+        System.out.println("\n\n==============================  Unkilled Mutants  ==============================\n");
+        Individual fittest = population.getFittest();
+        FitnessFunctions.printSurvivors(fittest);
+        System.out.println("\n=================================================================================\n");
     }
 }

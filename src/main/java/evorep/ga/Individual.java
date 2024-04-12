@@ -1,54 +1,67 @@
 package evorep.ga;
 
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtMethod;
+import evorep.spoon.SpoonFactory;
+import spoon.reflect.code.CtBlock;
 
 public class Individual implements Comparable<Individual> {
 
-    private final CtMethod chromosome;
-    private double fitness = -1;
-    private boolean isFitnessUpdated = false;
+    private final CtBlock<?> initialCheck;
+    private final CtBlock<?> structureCheck;
+    private final CtBlock<?> primitiveCheck;
+    public boolean marked = false;
+    private String individualClassName;
+    private double fitness;
+    private boolean isFitnessUpdated;
 
+    public Individual() {
+        initialCheck = SpoonFactory.createReturnTrueBlock();
+        structureCheck = SpoonFactory.createReturnTrueBlock();
+        primitiveCheck = SpoonFactory.createReturnTrueBlock();
+    }
 
-    /**
-     * Initializes individual with an specific chromosome.
-     * A chromosome is a list of statements.
-     *
-     * @param repOK The repOK method
-     */
-    public Individual(CtMethod repOK) {
-        chromosome = repOK.clone();
+    public Individual(Individual individual) {
+        initialCheck = individual.initialCheck.clone();
+        structureCheck = individual.structureCheck.clone();
+        primitiveCheck = individual.primitiveCheck.clone();
+        fitness = individual.fitness;
+        isFitnessUpdated = individual.isFitnessUpdated;
+    }
+
+    public CtBlock<?> getInitialCheck() {
+        return initialCheck;
+    }
+
+    public CtBlock<?> getStructureCheck() {
+        return structureCheck;
+    }
+
+    public CtBlock<?> getPrimitiveCheck() {
+        return primitiveCheck;
+    }
+
+    public String getIndividualClassName() {
+        return individualClassName;
+    }
+
+    public void setIndividualClassName(String className) {
+        this.individualClassName = className;
     }
 
 
     /**
-     * Gets individual's chromosome
+     * Check if the individual needs to have its fitness recalculated
      *
-     * @return The individual's chromosome
+     * @return True if the individual needs its fitness recalculated, otherwise, false
      */
-    public CtMethod getChromosome() {
-        return this.chromosome;
-    }
-
-    public boolean needsFitnessUpdate() {
+    public boolean isFitnessUpdated() {
         return !isFitnessUpdated;
     }
 
+    /**
+     * Set individual's fitness as outdated
+     */
     public void setFitnessAsOutdated() {
         isFitnessUpdated = false;
-    }
-
-    public CtStatement getLastGene() {
-        return this.chromosome.getBody().getLastStatement();
-    }
-
-    /**
-     * Gets individual's chromosome length
-     *
-     * @return The individual's chromosome length
-     */
-    public int getChromosomeLength() {
-        return chromosome.getBody().getStatements().size();
     }
 
     /**
@@ -70,12 +83,6 @@ public class Individual implements Comparable<Individual> {
         isFitnessUpdated = true;
     }
 
-    public Individual clone() {
-        Individual clone = new Individual(chromosome);
-        clone.setFitness(fitness);
-        return clone;
-    }
-
     /**
      * Display the chromosome as a string.
      *
@@ -83,11 +90,19 @@ public class Individual implements Comparable<Individual> {
      */
     @Override
     public String toString() {
-        if (chromosome == null)
-            return "Empty individual";
-        return chromosome.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Initial Check: ").append(initialCheck.toString()).append("\n");
+        sb.append("Structure Check: ").append(structureCheck.toString()).append("\n");
+        sb.append("Primitive Check: ").append(primitiveCheck.toString()).append("\n");
+        return sb.toString();
     }
 
+    /**
+     * Compare individuals by fitness
+     *
+     * @param other The individual to compare to
+     * @return -1 if this individual is fitter, 1 if the other individual is fitter, 0 if they are equally fit
+     */
     @Override
     public int compareTo(Individual other) {
         if (this.getFitness() > other.getFitness())
