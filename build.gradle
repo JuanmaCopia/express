@@ -13,7 +13,7 @@ plugins {
 }
 
 application {
-    mainClass = 'evorep.EvoRep'
+    mainClass = 'evoexpress.EvoExpress'
 }
 
 repositories {
