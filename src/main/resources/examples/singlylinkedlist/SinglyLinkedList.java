@@ -1,12 +1,15 @@
+package examples.singlylinkedlist;
+
 import java.util.HashSet;
 import java.util.Set;
 
-public class SLL {
+public class SinglyLinkedList {
 
     public Node head;
     public int size;
 
-    public SLL() {
+    // ======== Implementation ========
+    public SinglyLinkedList() {
         head = null;
         size = 0;
     }
@@ -31,7 +34,11 @@ public class SLL {
         }
         size++;
     }
+    // ======== End of Implementation ========
 
+    public int size() {
+        return size;
+    }
 
     public boolean repOKStructure() {
         if (head == null) {
@@ -52,11 +59,32 @@ public class SLL {
         return true;
     }
 
+    /*
+     * public boolean repOKStructure() {
+     * if (head == null) {
+     * return true;
+     * }
+     * Set<Node> visited = new HashSet<Node>();
+     * LinkedList<Node> worklist = new LinkedList<Node>();
+     * worklist.add(head);
+     * while (!worklist.isEmpty()) {
+     * Node current = worklist.removeFirst();
+     * if (!visited.add(current)) {
+     * return false;
+     * }
+     * if (current.next != null) {
+     * worklist.add(current.next);
+     * }
+     * }
+     * return true;
+     * }
+     */
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("size: ").append(size).append("| ");
         Node current = head;
-        if current == null) {
+        if (current == null) {
             return sb.append("NULL").toString();
         }
         Set<Node> visited = new HashSet<Node>();
@@ -73,11 +101,6 @@ public class SLL {
         return sb.toString();
     }
 
-    public boolean m() {
-        Node curr = head;
-        return true;
-    }
-
     public static class Node {
         int data;
         Node next;
@@ -89,4 +112,5 @@ public class SLL {
             this.data = data;
         }
     }
+
 }
