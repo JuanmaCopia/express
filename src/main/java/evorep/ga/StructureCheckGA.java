@@ -1,7 +1,8 @@
 package evorep.ga;
 
 import evorep.config.ToolConfig;
-import evorep.ga.mutators.Mutator;
+import evorep.ga.fitness.FitnessFunctions;
+import evorep.ga.mutator.Mutator;
 import spoon.reflect.code.CtBlock;
 
 import java.util.Set;

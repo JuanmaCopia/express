@@ -112,7 +112,7 @@ public class SpoonFactory {
     public static CtVariable<?> getRootObjectVar() {
         return SpoonManager.preconditionParameters.get(0);
     }
-    
+
     public static CtExpression<?>[] createArgumentsFromParameters(CtMethod<?> method) {
         List<CtParameter<?>> params = method.getParameters();
         CtExpression<?>[] args = new CtExpression<?>[params.size()];
@@ -526,17 +526,21 @@ public class SpoonFactory {
         return createIfThenStatement(condition, createReturnStatement(createLiteral(false)));
     }
 
-    public static CtExpression<Boolean> generateNullComparisonClause(CtVariableRead<?> varRead) {
+    public static CtExpression<Boolean> createNullComparisonClause(CtVariableRead<?> varRead) {
         BinaryOperatorKind operator = RandomUtils.nextBoolean() ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE;
         return (CtExpression<Boolean>) createBinaryExpression(varRead, parseToExpression(null), operator);
     }
 
-    public static CtExpression<Boolean> generateNullComparisonClause(CtVariableRead<?> varRead, BinaryOperatorKind operator) {
+    public static CtExpression<Boolean> createNullComparisonClause(CtVariableRead<?> varRead, BinaryOperatorKind operator) {
         return (CtExpression<Boolean>) createBinaryExpression(varRead, parseToExpression(null), operator);
     }
 
-    public static CtExpression<Boolean> generateNotEqualComparisonClause(CtVariableRead<?> varRead, CtVariableRead<?> varRead2) {
+    public static CtExpression<Boolean> createNotEqualComparisonClause(CtVariableRead<?> varRead, CtVariableRead<?> varRead2) {
         return (CtExpression<Boolean>) createBinaryExpression(varRead, varRead2, BinaryOperatorKind.NE);
+    }
+
+    public static CtExpression<Boolean> createBooleanBinaryExpression(Object left, Object right, BinaryOperatorKind operator) {
+        return (CtExpression<Boolean>) createBinaryExpression(left, right, operator);
     }
 
 

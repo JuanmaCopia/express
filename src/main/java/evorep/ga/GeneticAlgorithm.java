@@ -1,6 +1,7 @@
 package evorep.ga;
 
-import evorep.ga.mutators.Mutator;
+import evorep.ga.fitness.FitnessFunctions;
+import evorep.ga.mutator.Mutator;
 import evorep.spoon.RandomUtils;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
@@ -31,7 +32,7 @@ public abstract class GeneticAlgorithm {
      * one of the elite, it will not be mutated or crossover.
      */
     private final int elitismCount;
-    
+
     /**
      * Set of mutators to employ in the search
      */

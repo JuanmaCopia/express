@@ -2,10 +2,11 @@ package evorep;
 
 import evorep.config.ToolConfig;
 import evorep.ga.*;
-import evorep.ga.mutators.Mutator;
-import evorep.ga.mutators.initialcheck.AddComposedInitialNullCheckMutator;
-import evorep.ga.mutators.initialcheck.AddIfNullReturnMutator;
-import evorep.ga.mutators.structurecheck.*;
+import evorep.ga.fitness.FitnessFunctions;
+import evorep.ga.mutator.Mutator;
+import evorep.ga.mutator.initialcheck.AddComposedInitialNullCheckMutator;
+import evorep.ga.mutator.initialcheck.AddIfNullReturnMutator;
+import evorep.ga.mutator.structurecheck.*;
 import evorep.object.ObjectGeneratorManager;
 import evorep.spoon.SpoonManager;
 
@@ -21,7 +22,7 @@ public class EvoRep {
         population = startStructureCheckSearch(population);
         printResults(population);
         saveResults(population);
-        //printNotKilledMutants(population);
+        printNotKilledMutants(population);
     }
 
     private static void initialize() {

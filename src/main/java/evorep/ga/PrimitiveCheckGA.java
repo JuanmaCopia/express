@@ -1,6 +1,6 @@
 package evorep.ga;
 
-import evorep.ga.mutators.Mutator;
+import evorep.ga.mutator.Mutator;
 import spoon.reflect.code.CtBlock;
 
 import java.util.Set;
