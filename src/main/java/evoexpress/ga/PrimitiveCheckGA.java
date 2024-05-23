@@ -1,7 +1,6 @@
 package evoexpress.ga;
 
 import evoexpress.ga.mutator.Mutator;
-import spoon.reflect.code.CtBlock;
 
 import java.util.Set;
 
@@ -14,9 +13,5 @@ public class PrimitiveCheckGA extends GeneticAlgorithm {
     boolean isTerminationConditionMet(Population population) {
         return false;
     }
-
-    @Override
-    CtBlock<?> selectPrecondition(Individual individual) {
-        return individual.getPrimitiveCheck();
-    }
+    
 }

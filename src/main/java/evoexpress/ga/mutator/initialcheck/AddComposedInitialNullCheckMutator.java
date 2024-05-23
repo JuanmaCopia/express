@@ -6,6 +6,7 @@ import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonQueries;
 import evoexpress.typegraph.TypeGraph;
 import spoon.reflect.code.*;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
 
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        if (!(gene instanceof CtBlock<?> block) || block != individual.getInitialCheck())
+        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("initialCheck"))
             return false;
         return SpoonQueries.getAllReferencePaths(TypeGraph.getInstance().getRoot(), 1).size() > 1;
     }

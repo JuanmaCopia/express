@@ -1,8 +1,5 @@
 package evoexpress.spoon;
 
-import evoexpress.ga.Individual;
-import evoexpress.spoon.scope.Scope;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
@@ -10,10 +7,10 @@ import spoon.reflect.declaration.CtMethod;
 
 public class SpoonHelper {
 
-    public static Scope getScope(Individual individual, CtCodeElement gene) {
-        SpoonManager.putIndividualIntoTheEnvironment(individual);
-        return new Scope(gene);
-    }
+//    public static Scope getScope(Individual individual, CtCodeElement gene) {
+//        SpoonManager.putIndividualIntoTheEnvironment(individual);
+//        return new Scope(gene);
+//    }
 
     public static String getStatementsString(CtMethod method) {
         StringBuilder stringBuilder = new StringBuilder();

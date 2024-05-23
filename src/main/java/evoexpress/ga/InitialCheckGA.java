@@ -3,7 +3,6 @@ package evoexpress.ga;
 import evoexpress.config.ToolConfig;
 import evoexpress.ga.fitness.FitnessFunctions;
 import evoexpress.ga.mutator.Mutator;
-import spoon.reflect.code.CtBlock;
 
 import java.util.Set;
 
@@ -30,19 +29,5 @@ public class InitialCheckGA extends GeneticAlgorithm {
             return true;
         return false;
     }
-
-    @Override
-    CtBlock<?> selectPrecondition(Individual individual) {
-        return individual.getInitialCheck();
-    }
-
-    @Override
-    void printGeneration(Population population) {
-        System.out.println("\n\n------------------   InitialCheck: Generation " + population.getGenerationNumber() + "   ------------------\n");
-        System.out.println("Population size: " + population.size());
-        System.out.println("Fittest: " + population.getFittest().getFitness());
-        System.out.println("\n" + population.getFittest().toString());
-    }
-
 
 }

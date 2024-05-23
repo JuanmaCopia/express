@@ -8,6 +8,7 @@ import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonQueries;
 import evoexpress.typegraph.TypeGraph;
 import spoon.reflect.code.*;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 public class AddComposedIfToTraversalMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        if (!(gene instanceof CtBlock<?> block) || block != individual.getStructureCheck())
+        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("structureCheck"))
             return false;
         if (block.getElements(SpoonQueries::isTraversalLoop).isEmpty())
             return false;

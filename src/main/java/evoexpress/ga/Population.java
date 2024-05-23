@@ -4,8 +4,9 @@ import java.util.HashSet;
 import java.util.PriorityQueue;
 
 public class Population {
-    private PriorityQueue<Individual> population;
-    private HashSet<String> presentIndividuals = new HashSet<>();
+
+    private final PriorityQueue<Individual> population;
+    private final HashSet<String> presentIndividuals;
     private int generationNumber = 1;
 
     /**
@@ -25,16 +26,32 @@ public class Population {
         return population;
     }
 
+    /**
+     * Get the fittest individual in the population
+     *
+     * @return The fittest individual in the population
+     */
     public Individual getFittest() {
         return population.peek();
     }
 
+    /**
+     * Remove the fittest individual from the population
+     *
+     * @return The fittest individual in the population
+     */
     public Individual removeFittest() {
+        assert !population.isEmpty();
         Individual fittest = population.poll();
         presentIndividuals.remove(fittest.toString());
         return fittest;
     }
 
+    /**
+     * Add individual to the population
+     *
+     * @param individual The individual to add
+     */
     public void addIndividual(Individual individual) {
         if (presentIndividuals.add(individual.toString())) {
             population.add(individual);
@@ -51,14 +68,20 @@ public class Population {
     }
 
 
-    public void increaseGeneration() {
-        generationNumber++;
-    }
-
+    /**
+     * Get the generation number of the population
+     *
+     * @return The generation number of the population
+     */
     public int getGenerationNumber() {
         return generationNumber;
     }
 
+    /**
+     * Set the generation number of the population
+     *
+     * @param generationNumber The generation number of the population
+     */
     public void setGenerationNumber(int generationNumber) {
         this.generationNumber = generationNumber;
     }

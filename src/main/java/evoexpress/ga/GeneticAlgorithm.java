@@ -3,7 +3,7 @@ package evoexpress.ga;
 import evoexpress.ga.fitness.FitnessFunctions;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.spoon.RandomUtils;
-import spoon.reflect.code.CtBlock;
+import evoexpress.spoon.SpoonManager;
 import spoon.reflect.code.CtCodeElement;
 
 import java.util.List;
@@ -38,11 +38,6 @@ public abstract class GeneticAlgorithm {
      */
     private Set<Mutator> mutators;
 
-    /**
-     * The fittest individual of the initial population
-     */
-    private Individual initialFittest;
-
     public GeneticAlgorithm(Set<Mutator> mutators, int maxPopulationSize, double mutationRate, double crossoverRate, int elitismCount) {
         this.mutators = mutators;
         this.maxPopulationSize = maxPopulationSize;
@@ -55,6 +50,7 @@ public abstract class GeneticAlgorithm {
     public Population initPopulation() {
         Population initialPopulation = new Population();
         Individual individual = new Individual();
+        assert SpoonManager.compileIndividual(individual);
         initialPopulation.addIndividual(individual);
         return initialPopulation;
     }
@@ -88,32 +84,49 @@ public abstract class GeneticAlgorithm {
 
         int i = 0;
         for (Individual individual : population.getIndividuals()) {
-            newPopulation.addIndividual(individual);
             if (i < elitismCount) {
-                Individual clone = new Individual(individual);
-                if (mutateIndividual(clone, mutators)) {
-                    newPopulation.addIndividual(clone);
-                }
-            } else if (Math.random() < mutationRate && individual.getFitness() > FitnessFunctions.WORST_FITNESS_VALUE) {
-                mutateIndividual(individual, mutators);
+                newPopulation.addIndividual(individual);
             }
+            handleMutation(individual, newPopulation);
             i++;
         }
 
         return newPopulation;
     }
 
-    boolean mutateIndividual(Individual individual, Set<Mutator> mutators) {
-        CtCodeElement gene = selectGene(individual, mutators);
-        if (gene != null) {
-            Mutator mutator = selectMutator(mutators, individual, gene);
-            if (mutator.mutate(individual, gene)) {
-                individual.setFitnessAsOutdated();
-                return true;
+    private void handleMutation(Individual individual, Population newPopulation) {
+        if (shouldMutate(individual)) {
+            Individual mutant = mutateIndividual(individual, mutators);
+            if (mutant != null) {
+                newPopulation.addIndividual(mutant);
             }
         }
-        return false;
     }
+
+    private boolean shouldMutate(Individual individual) {
+        return individual.getFitness() > FitnessFunctions.WORST_FITNESS_VALUE && Math.random() < mutationRate;
+    }
+
+    Individual mutateIndividual(Individual individual, Set<Mutator> mutators) {
+        Individual mutant = cloneIndividual(individual);
+        CtCodeElement gene = selectGene(mutant, mutators);
+        Mutator mutator = selectMutator(mutators, mutant, gene);
+        if (mutator != null && mutator.mutate(mutant, gene) && SpoonManager.compileIndividual(mutant)) {
+            return mutant;
+        }
+        return null;
+    }
+
+    private Individual cloneIndividual(Individual individual) {
+        return new Individual(individual);
+    }
+
+//    private Individual cloneIndividual(Individual individual) {
+//        CtClass<?> cls = individual.getCtClass();
+//
+//
+//        return new Individual(cls);
+//    }
 
     CtCodeElement selectGene(Individual individual, Set<Mutator> mutators) {
         List<CtCodeElement> mutableCodeElements = filterMutableCodeElements(individual, mutators);
@@ -123,6 +136,9 @@ public abstract class GeneticAlgorithm {
     }
 
     Mutator selectMutator(Set<Mutator> candidateMutators, Individual individual, CtCodeElement gene) {
+        if (gene == null) {
+            return null;
+        }
         List<Mutator> possibleMutators = candidateMutators.stream()
                 .filter(mutator -> mutator.isApplicable(individual, gene)).toList();
         if (possibleMutators.isEmpty())
@@ -138,10 +154,8 @@ public abstract class GeneticAlgorithm {
     }
 
     List<CtCodeElement> filterMutableCodeElements(Individual individual, Set<Mutator> mutators) {
-        return selectPrecondition(individual).getElements(e -> isMutableCodeElement(individual, e, mutators));
+        return individual.getCtClass().getElements(e -> isMutableCodeElement(individual, e, mutators));
     }
-
-    abstract CtBlock<?> selectPrecondition(Individual individual);
 
     /**
      * Select the survivors of the population
@@ -151,7 +165,7 @@ public abstract class GeneticAlgorithm {
      */
     Population selectSurvivors(Population population) {
         Population survivors = new Population();
-        survivors.setGenerationNumber(population.getGenerationNumber());
+        survivors.setGenerationNumber(population.getGenerationNumber() + 1);
         int i = 0;
         while (i < maxPopulationSize && population.size() > 0) {
             Individual fittest = population.removeFittest();
@@ -162,14 +176,12 @@ public abstract class GeneticAlgorithm {
             i++;
         }
 
-        survivors.addIndividual(new Individual(initialFittest));
         return survivors;
     }
 
 
     public Population startSearch(Population population) {
         evalPopulation(population);
-        initialFittest = new Individual(population.getFittest());
         population = selectSurvivors(population);
 
         while (!isTerminationConditionMet(population)) {
@@ -178,17 +190,16 @@ public abstract class GeneticAlgorithm {
             population = mutatePopulation(population);
             evalPopulation(population);
             population = selectSurvivors(population);
-            population.increaseGeneration();
         }
         //printResults(population, generation - 1);
         return population;
     }
 
     void printGeneration(Population population) {
-        System.out.println("\n\n------------------   Generation " + population.getGenerationNumber() + "   ------------------\n");
+        System.out.println("\n\n------------------   " + this.getClass().getSimpleName() + ": Generation " + population.getGenerationNumber() + "   ------------------\n");
         System.out.println("Population size: " + population.size());
         System.out.println("Fittest: " + population.getFittest().getFitness());
-        System.out.println("\n" + population.getFittest().toString());
+        //System.out.println("\n" + population.getFittest().toString());
     }
 
 }

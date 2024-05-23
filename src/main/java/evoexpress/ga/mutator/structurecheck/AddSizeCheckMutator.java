@@ -11,6 +11,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 public class AddSizeCheckMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        if (!(gene instanceof CtBlock<?> block) || block != individual.getStructureCheck())
+        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("structureCheck"))
             return false;
 
         if (SpoonQueries.getVisitedSetLocalVars(block).isEmpty()) {

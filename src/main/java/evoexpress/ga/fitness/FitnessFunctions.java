@@ -16,23 +16,21 @@ public class FitnessFunctions {
     private static final Logger logger = Logger.getLogger(FitnessFunctions.class.getName());
     private static final int MAX_LENGTH = 50000;
 
-    private static int id = 0;
-
     public static void invalidInstancesFitness(Individual individual) {
 
         //logger.info("FF: Evaluating fitness for:\n" + individual.toString());
         if (individual.marked) {
-            logger.info("FF: Evaluating fitness for:\n" + individual.toString());
+            logger.info("FF: Evaluating fitness for:\n" + individual);
         }
 
         individual.setFitness(WORST_FITNESS_VALUE);
-        if (individual.toString().length() > MAX_LENGTH || !SpoonManager.compileIndividual(individual)) {
+        if (individual.toString().length() > MAX_LENGTH) {
             if (individual.marked)
                 logger.info("FF: early return 1");
             return;
         }
 
-        Class<?> preconditionClass = Reflection.loadClass(SpoonManager.classLoader, individual.getIndividualClassName());
+        Class<?> preconditionClass = Reflection.loadClass(SpoonManager.classLoader, individual.getQualifiedClassName());
         Method precondition = Reflection.loadMethod(preconditionClass, ToolConfig.preconditionMethodName);
 
         for (Object validInstance : ObjectCollector.positiveObjects) {
@@ -76,7 +74,7 @@ public class FitnessFunctions {
     public static void printSurvivors(Individual individual) {
         assert SpoonManager.compileIndividual(individual);
 
-        Class<?> preconditionClass = Reflection.loadClass(SpoonManager.classLoader, individual.getIndividualClassName());
+        Class<?> preconditionClass = Reflection.loadClass(SpoonManager.classLoader, individual.getQualifiedClassName());
         Method precondition = Reflection.loadMethod(preconditionClass, ToolConfig.preconditionMethodName);
 
         for (Object invalidInstance : ObjectCollector.negativeObjects) {

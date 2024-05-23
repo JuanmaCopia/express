@@ -1,52 +1,44 @@
 package evoexpress.ga;
 
+import evoexpress.config.ToolConfig;
 import evoexpress.spoon.SpoonFactory;
-import spoon.reflect.code.CtBlock;
+import evoexpress.spoon.SpoonManager;
+import spoon.reflect.declaration.CtClass;
 
 public class Individual implements Comparable<Individual> {
 
-    private final CtBlock<?> initialCheck;
-    private final CtBlock<?> structureCheck;
-    private final CtBlock<?> primitiveCheck;
-    public boolean marked = false;
-    private String individualClassName;
+    private static long id = 0;
+
+    private final CtClass<?> cls;
+    public boolean marked;
     private double fitness;
     private boolean isFitnessUpdated;
 
     public Individual() {
-        initialCheck = SpoonFactory.createReturnTrueBlock();
-        structureCheck = SpoonFactory.createReturnTrueBlock();
-        primitiveCheck = SpoonFactory.createReturnTrueBlock();
+        cls = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + id++);
     }
 
-    public Individual(Individual individual) {
-        initialCheck = individual.initialCheck.clone();
-        structureCheck = individual.structureCheck.clone();
-        primitiveCheck = individual.primitiveCheck.clone();
-        fitness = individual.fitness;
-        isFitnessUpdated = individual.isFitnessUpdated;
+    public Individual(CtClass<?> cls) {
+        this.cls = cls;
     }
 
-    public CtBlock<?> getInitialCheck() {
-        return initialCheck;
+    public Individual(Individual other) {
+        cls = other.getCtClass().clone();
+        cls.setSimpleName(ToolConfig.preconditionClassName + id++);
+        SpoonManager.addClassToPackage(cls);
     }
 
-    public CtBlock<?> getStructureCheck() {
-        return structureCheck;
+    public CtClass<?> getCtClass() {
+        return cls;
     }
 
-    public CtBlock<?> getPrimitiveCheck() {
-        return primitiveCheck;
+    public String getQualifiedClassName() {
+        return cls.getQualifiedName();
     }
 
-    public String getIndividualClassName() {
-        return individualClassName;
+    public String getSimpleClassName() {
+        return cls.getSimpleName();
     }
-
-    public void setIndividualClassName(String className) {
-        this.individualClassName = className;
-    }
-
 
     /**
      * Check if the individual needs to have its fitness recalculated
@@ -57,12 +49,6 @@ public class Individual implements Comparable<Individual> {
         return !isFitnessUpdated;
     }
 
-    /**
-     * Set individual's fitness as outdated
-     */
-    public void setFitnessAsOutdated() {
-        isFitnessUpdated = false;
-    }
 
     /**
      * Gets individual's fitness
@@ -90,11 +76,7 @@ public class Individual implements Comparable<Individual> {
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Initial Check: ").append(initialCheck.toString()).append("\n");
-        sb.append("Structure Check: ").append(structureCheck.toString()).append("\n");
-        sb.append("Primitive Check: ").append(primitiveCheck.toString()).append("\n");
-        return sb.toString();
+        return cls.toString();
     }
 
     /**

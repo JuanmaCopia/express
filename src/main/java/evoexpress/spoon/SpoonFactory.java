@@ -56,7 +56,7 @@ public class SpoonFactory {
     }
 
     // ==================== Methods for creating new elements ====================
-
+    
     public static CtClass<?> createPreconditionClass(String className) {
         CtClass<?> preconditionClass = coreFactory.createClass();
         preconditionClass.setSimpleName(className);
@@ -67,6 +67,7 @@ public class SpoonFactory {
         ctPackage.addType(preconditionClass);
 
         createSubPreconditions(preconditionClass, SpoonManager.preconditionParameters);
+        SpoonManager.addClassToPackage(preconditionClass);
 
         return preconditionClass;
     }
