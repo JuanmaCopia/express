@@ -1,7 +1,9 @@
 package evoexpress.ga;
 
 import evoexpress.ga.fitness.FitnessFunctions;
+import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
+import evoexpress.ga.population.Population;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonManager;
 import spoon.reflect.code.CtCodeElement;
@@ -199,7 +201,7 @@ public abstract class GeneticAlgorithm {
         System.out.println("\n\n------------------   " + this.getClass().getSimpleName() + ": Generation " + population.getGenerationNumber() + "   ------------------\n");
         System.out.println("Population size: " + population.size());
         System.out.println("Fittest: " + population.getFittest().getFitness());
-        //System.out.println("\n" + population.getFittest().toString());
+        System.out.println("\n" + population.getFittest().toString());
     }
 
 }

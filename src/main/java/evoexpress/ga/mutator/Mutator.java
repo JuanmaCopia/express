@@ -1,6 +1,6 @@
 package evoexpress.ga.mutator;
 
-import evoexpress.ga.Individual;
+import evoexpress.ga.individual.Individual;
 import spoon.reflect.code.CtCodeElement;
 
 public interface Mutator {

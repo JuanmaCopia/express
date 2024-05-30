@@ -1,4 +1,6 @@
-package evoexpress.ga;
+package evoexpress.ga.population;
+
+import evoexpress.ga.individual.Individual;
 
 import java.util.HashSet;
 import java.util.PriorityQueue;

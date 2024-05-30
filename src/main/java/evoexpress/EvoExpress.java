@@ -1,12 +1,16 @@
 package evoexpress;
 
 import evoexpress.config.ToolConfig;
-import evoexpress.ga.*;
+import evoexpress.ga.GeneticAlgorithm;
+import evoexpress.ga.InitialCheckGA;
+import evoexpress.ga.StructureCheckGA;
 import evoexpress.ga.fitness.FitnessFunctions;
+import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.ga.mutator.initialcheck.AddComposedInitialNullCheckMutator;
 import evoexpress.ga.mutator.initialcheck.AddIfNullReturnMutator;
-import evoexpress.ga.mutator.structurecheck.*;
+import evoexpress.ga.mutator.structurecheck.traversal.TraverseWorklistMutator;
+import evoexpress.ga.population.Population;
 import evoexpress.object.ObjectGeneratorManager;
 import evoexpress.spoon.SpoonManager;
 
@@ -47,12 +51,12 @@ public class EvoExpress {
     public static Population startStructureCheckSearch(Population population) {
         Set<Mutator> mutators = new HashSet<>();
         mutators.add(new TraverseWorklistMutator());
-        mutators.add(new TraverseCyclicReferenceMutator());
-        mutators.add(new AddComposedIfToTraversalMutator());
-        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
-        mutators.add(new AddSizeCheckMutator());
-        mutators.add(new AddNullCompToTraversalMutator());
-        mutators.add(new TraverseCircularReferenceMutator());
+//        mutators.add(new TraverseCyclicReferenceMutator());
+//        mutators.add(new AddComposedIfToTraversalMutator());
+//        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
+//        mutators.add(new AddSizeCheckMutator());
+//        mutators.add(new AddNullCompToTraversalMutator());
+//        mutators.add(new TraverseCircularReferenceMutator());
         GeneticAlgorithm ga = new StructureCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
         return ga.startSearch(population);
     }

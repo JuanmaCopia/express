@@ -1,7 +1,7 @@
 package evoexpress.spoon;
 
 import evoexpress.config.ToolConfig;
-import evoexpress.ga.Individual;
+import evoexpress.ga.individual.Individual;
 import evoexpress.instrumentation.Instrumentation;
 import evoexpress.util.Utils;
 import spoon.Launcher;
@@ -9,6 +9,7 @@ import spoon.OutputType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
+import type.precondition.InputTypeData;
 
 import java.io.File;
 import java.net.URL;
@@ -24,7 +25,7 @@ public class SpoonManager {
     public static Launcher launcher;
     public static CtClass<?> targetClass;
     public static CtMethod<?> targetMethod;
-    public static LinkedList<CtParameter<?>> preconditionParameters;
+    public static InputTypeData inputTypeData;
     public static CtClass<?> testSuiteClass;
     public static URL outputBinURL;
     public static URLClassLoader classLoader;
@@ -35,7 +36,7 @@ public class SpoonManager {
             initializeLauncher();
             initializeFactories();
             initializeTarget();
-            initializePrecondition();
+            initializeInputTypeData();
             initializeTestSuiteClass();
             compileModel();
             initializeClassLoader();
@@ -44,7 +45,12 @@ public class SpoonManager {
         }
     }
 
-    private static void initializePrecondition() {
+    private static void initializeInputTypeData() {
+        inputTypeData = new InputTypeData(createParameterList());
+    }
+
+    private static LinkedList<CtParameter<?>> createParameterList() {
+        LinkedList<CtParameter<?>> preconditionParameters;
         if (SpoonManager.targetMethod == null)
             preconditionParameters = new LinkedList<>();
         else
@@ -54,6 +60,7 @@ public class SpoonManager {
         thisParameter.setType(targetClass.getReference());
         thisParameter.setSimpleName("_this");
         preconditionParameters.addFirst(thisParameter);
+        return preconditionParameters;
     }
 
     private static void initializeOutputDirectories() {

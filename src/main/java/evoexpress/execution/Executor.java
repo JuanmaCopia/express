@@ -1,6 +1,6 @@
 package evoexpress.execution;
 
-import evoexpress.ga.Individual;
+import evoexpress.ga.individual.Individual;
 import evoexpress.reflection.Reflection;
 
 import java.lang.reflect.Method;

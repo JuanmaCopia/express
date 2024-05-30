@@ -1,6 +1,7 @@
 package evoexpress.ga;
 
 import evoexpress.ga.mutator.Mutator;
+import evoexpress.ga.population.Population;
 
 import java.util.Set;
 
@@ -13,5 +14,5 @@ public class PrimitiveCheckGA extends GeneticAlgorithm {
     boolean isTerminationConditionMet(Population population) {
         return false;
     }
-    
+
 }

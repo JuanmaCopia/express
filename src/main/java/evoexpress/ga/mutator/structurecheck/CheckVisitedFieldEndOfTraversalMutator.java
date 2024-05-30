@@ -1,15 +1,16 @@
 package evoexpress.ga.mutator.structurecheck;
 
-import evoexpress.ga.Individual;
 import evoexpress.ga.helper.LocalVarHelper;
+import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
+import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
-import evoexpress.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
+import type.typegraph.Path;
+import type.typegraph.TypeGraph;
 
 import java.util.List;
 
@@ -37,9 +38,11 @@ public class CheckVisitedFieldEndOfTraversalMutator implements Mutator {
             return false;
         }
 
-        List<List<CtVariable<?>>> varPath = SpoonQueries.getAllReferencePaths(TypeGraph.getInstance().getRoot(), 1);
-        List<CtVariable<?>> chosenVarPath = varPath.get(RandomUtils.nextInt(varPath.size()));
-        CtVariableRead<?> chosenVarRead = SpoonFactory.createFieldReadOfRootObject(chosenVarPath);
+        TypeGraph typeGraph = SpoonManager.inputTypeData.getTypeGraphOfParameter(SpoonManager.inputTypeData.getInputs().get(0));
+
+        List<Path> varPath = typeGraph.getAllReferencePaths(1);
+        Path chosenVarPath = varPath.get(RandomUtils.nextInt(varPath.size()));
+        CtVariableRead<?> chosenVarRead = chosenVarPath.getVariableRead();
 
         CtExpression<Boolean> nullComparisonClause = SpoonFactory.createNullComparisonClause(chosenVarRead, BinaryOperatorKind.NE);
         CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(visitedSetVar, chosenVarRead);

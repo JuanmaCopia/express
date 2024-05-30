@@ -2,7 +2,7 @@ package evoexpress.ga.fitness;
 
 import evoexpress.config.ToolConfig;
 import evoexpress.execution.Executor;
-import evoexpress.ga.Individual;
+import evoexpress.ga.individual.Individual;
 import evoexpress.object.ObjectCollector;
 import evoexpress.reflection.Reflection;
 import evoexpress.spoon.SpoonManager;

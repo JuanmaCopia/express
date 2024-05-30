@@ -1,9 +1,12 @@
-package evoexpress.ga;
+package evoexpress.ga.individual;
 
 import evoexpress.config.ToolConfig;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
+import type.typegraph.Path;
+
+import java.util.Set;
 
 public class Individual implements Comparable<Individual> {
 
@@ -11,26 +14,40 @@ public class Individual implements Comparable<Individual> {
 
     private final CtClass<?> cls;
     public boolean marked;
+    Set<Path> nonTraversedPathsToCyclicNodes;
     private double fitness;
     private boolean isFitnessUpdated;
 
     public Individual() {
         cls = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + id++);
+        nonTraversedPathsToCyclicNodes = SpoonManager.inputTypeData.getPathsToCyclicNodes();
     }
 
     public Individual(CtClass<?> cls) {
         this.cls = cls;
+        nonTraversedPathsToCyclicNodes = SpoonManager.inputTypeData.getPathsToCyclicNodes();
     }
 
     public Individual(Individual other) {
         cls = other.getCtClass().clone();
         cls.setSimpleName(ToolConfig.preconditionClassName + id++);
+        nonTraversedPathsToCyclicNodes = other.nonTraversedPathsToCyclicNodes;
         SpoonManager.addClassToPackage(cls);
+    }
+
+    // Tracking traversed paths
+    public boolean hasNonTraversedPaths() {
+        return !nonTraversedPathsToCyclicNodes.isEmpty();
+    }
+
+    public Set<Path> getNonTraversedPathsToCyclicNodes() {
+        return nonTraversedPathsToCyclicNodes;
     }
 
     public CtClass<?> getCtClass() {
         return cls;
     }
+
 
     public String getQualifiedClassName() {
         return cls.getQualifiedName();

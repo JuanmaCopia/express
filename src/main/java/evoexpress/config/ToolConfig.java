@@ -21,7 +21,7 @@ public class ToolConfig {
     public static String outputBinPath = "./output/bin";
     public static String outputSrcPath = "./output/src";
     public static String preconditionClassName = "Precondition";
-    public static String preconditionMethodName = "precondition";
+    public static String preconditionMethodName = "type";
 
     // Search Settings
     public static int maxPopulation;

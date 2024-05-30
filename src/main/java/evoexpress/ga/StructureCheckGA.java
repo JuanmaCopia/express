@@ -3,6 +3,7 @@ package evoexpress.ga;
 import evoexpress.config.ToolConfig;
 import evoexpress.ga.fitness.FitnessFunctions;
 import evoexpress.ga.mutator.Mutator;
+import evoexpress.ga.population.Population;
 
 import java.util.Set;
 
@@ -29,5 +30,5 @@ public class StructureCheckGA extends GeneticAlgorithm {
             return true;
         return false;
     }
-    
+
 }

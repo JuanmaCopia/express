@@ -1,13 +1,13 @@
 package evoexpress.ga.mutator.initialcheck;
 
-import evoexpress.ga.Individual;
+import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.spoon.SpoonFactory;
+import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
-import evoexpress.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
+import type.typegraph.Path;
 
 import java.util.List;
 
@@ -17,17 +17,18 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("initialCheck"))
             return false;
-        return SpoonQueries.getAllReferencePaths(TypeGraph.getInstance().getRoot(), 1).size() > 1;
+
+        return SpoonManager.inputTypeData.getAllReferencePaths(1).size() > 1;
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        List<List<CtVariable<?>>> variableReads = SpoonQueries.getAllReferencePaths(TypeGraph.getInstance().getRoot(), 1);
-        List<List<CtVariable<?>>> chosenVarReads = SpoonQueries.chooseNVariablePaths(variableReads, 2);
-        CtVariableRead<?> var1 = SpoonFactory.createFieldReadOfRootObject(chosenVarReads.get(0));
-        CtVariableRead<?> var2 = SpoonFactory.createFieldReadOfRootObject(chosenVarReads.get(1));
+        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(1);
+        List<Path> chosenVarReads = SpoonQueries.chooseNPaths(paths, 2);
+        CtVariableRead<?> var1 = chosenVarReads.get(0).getVariableRead();
+        CtVariableRead<?> var2 = chosenVarReads.get(1).getVariableRead();
 
         CtExpression<Boolean> clause1 = SpoonFactory.createNullComparisonClause(var1);
         CtExpression<Boolean> clause2 = SpoonFactory.createNullComparisonClause(var2);

@@ -1,14 +1,14 @@
 package evoexpress.ga.mutator.initialcheck;
 
-import evoexpress.ga.Individual;
+import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
+import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
-import evoexpress.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
+import type.typegraph.Path;
 
 import java.util.List;
 
@@ -18,22 +18,22 @@ public class AddIfNullReturnMutator implements Mutator {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("initialCheck"))
             return false;
 
-        return !SpoonQueries.getAllReferencePaths(TypeGraph.getInstance().getRoot(), 2).isEmpty();
+        return SpoonManager.inputTypeData.getAllReferencePaths(2).size() > 1;
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        List<List<CtVariable<?>>> paths = SpoonQueries.getAllReferencePaths(TypeGraph.getInstance().getRoot(), 2);
-        List<CtVariable<?>> chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
-        CtVariableRead<?> chosenVarRead = SpoonFactory.createFieldReadOfRootObject(chosenPath);
+        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(1);
+        Path chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
+        CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
 
         CtExpression<Boolean> condition = null;
-        if (chosenPath.size() == 1) {
+        if (chosenPath.depth() == 1) {
             condition = SpoonFactory.createNullComparisonClause(chosenVarRead);
-        } else if (chosenPath.size() == 2) {
-            CtVariableRead<?> owner = SpoonFactory.createFieldReadOfRootObject(chosenPath.get(0));
+        } else if (chosenPath.depth() == 2) {
+            CtVariableRead<?> owner = chosenPath.getVariableReadOwner();
             condition = SpoonFactory.createBooleanBinaryExpression(
                     SpoonFactory.createNullComparisonClause(owner, BinaryOperatorKind.NE),
                     SpoonFactory.createNullComparisonClause(chosenVarRead),

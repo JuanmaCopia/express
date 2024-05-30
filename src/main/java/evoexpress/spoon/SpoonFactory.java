@@ -56,7 +56,7 @@ public class SpoonFactory {
     }
 
     // ==================== Methods for creating new elements ====================
-    
+
     public static CtClass<?> createPreconditionClass(String className) {
         CtClass<?> preconditionClass = coreFactory.createClass();
         preconditionClass.setSimpleName(className);
@@ -66,7 +66,7 @@ public class SpoonFactory {
         CtPackage ctPackage = SpoonManager.targetClass.getPackage();
         ctPackage.addType(preconditionClass);
 
-        createSubPreconditions(preconditionClass, SpoonManager.preconditionParameters);
+        createSubPreconditions(preconditionClass, SpoonManager.inputTypeData.getInputs());
         SpoonManager.addClassToPackage(preconditionClass);
 
         return preconditionClass;
@@ -97,22 +97,22 @@ public class SpoonFactory {
         preconditionClass.addMethod(preconditionMethod);
     }
 
-    public static CtVariableRead<?> createFieldReadOfRootObject(List<CtVariable<?>> path) {
-        List<CtVariable<?>> pathCopy = new ArrayList<>(path);
-        CtVariable<?> rootVar = getRootObjectVar();
-        pathCopy.add(0, rootVar);
-        return createFieldRead(pathCopy);
-    }
-
-    public static CtVariableRead<?> createFieldReadOfRootObject(CtVariable<?> var) {
-        CtVariable<?> rootVar = getRootObjectVar();
-        return createFieldRead(rootVar, var);
-    }
-
-
-    public static CtVariable<?> getRootObjectVar() {
-        return SpoonManager.preconditionParameters.get(0);
-    }
+//    public static CtVariableRead<?> createFieldReadOfRootObject(List<CtVariable<?>> path) {
+//        List<CtVariable<?>> pathCopy = new ArrayList<>(path);
+//        CtVariable<?> rootVar = getRootObjectVar();
+//        pathCopy.add(0, rootVar);
+//        return createFieldRead(pathCopy);
+//    }
+//
+//    public static CtVariableRead<?> createFieldReadOfRootObject(CtVariable<?> var) {
+//        CtVariable<?> rootVar = getRootObjectVar();
+//        return createFieldRead(rootVar, var);
+//    }
+//
+//
+//    public static CtVariable<?> getRootObjectVar() {
+//        return SpoonManager.preconditionParameters.get(0);
+//    }
 
     public static CtExpression<?>[] createArgumentsFromParameters(CtMethod<?> method) {
         List<CtParameter<?>> params = method.getParameters();

@@ -1,38 +1,42 @@
-package evoexpress.ga.mutator.structurecheck;
+package evoexpress.ga.mutator.structurecheck.traversal;
 
-import evoexpress.ga.Individual;
+import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.spoon.RandomUtils;
-import evoexpress.spoon.SpoonFactory;
-import evoexpress.spoon.SpoonQueries;
+import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.processors.traversals.TraverseWorklistProcessor;
-import evoexpress.typegraph.TypeGraph;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
+import type.typegraph.Path;
+import type.typegraph.TypeGraph;
 
 import java.util.List;
+import java.util.Set;
 
 public class TraverseWorklistMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("structureCheck"))
             return false;
-        return !SpoonQueries.getNonUsedInitialPathsToCyclicField(block).isEmpty();
+        return individual.hasNonTraversedPaths();
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        List<List<CtVariable<?>>> paths = SpoonQueries.getNonUsedInitialPathsToCyclicField(blockGene);
-        List<CtVariable<?>> chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
-        CtVariableRead<?> chosenInitialField = SpoonFactory.createFieldReadOfRootObject(chosenPath);
+        Set<Path> paths = individual.getNonTraversedPathsToCyclicNodes();
+        Path chosenPath = paths.stream().toList().get(RandomUtils.nextInt(paths.size()));
+        paths.remove(chosenPath);
 
-        List<CtVariable<?>> loopFields = TypeGraph.getInstance().getSelfCyclicFieldsOfNode(chosenInitialField.getType());
+        CtVariableRead<?> chosenInitialField = chosenPath.getVariableRead();
+
+        TypeGraph typeGraph = SpoonManager.inputTypeData.getTypeGraphOfParameter(chosenPath.get(0));
+        List<CtVariable<?>> loopFields = typeGraph.getCyclicFieldsOfNode(chosenInitialField.getType());
 
         Processor<CtBlock<?>> p = new TraverseWorklistProcessor(chosenInitialField, loopFields);
         p.process(blockGene);

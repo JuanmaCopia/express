@@ -1,15 +1,16 @@
 package evoexpress.ga.mutator.structurecheck;
 
-import evoexpress.ga.Individual;
 import evoexpress.ga.helper.LocalVarHelper;
+import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
+import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
-import evoexpress.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
+import type.typegraph.TypeGraph;
 
 import java.util.List;
 
@@ -44,8 +45,8 @@ public class AddComposedIfToTraversalMutator implements Mutator {
     }
 
     private CtExpression<Boolean> generateComposedCondition(CtLocalVariable<?> currentDeclaration) {
-        TypeGraph typeGraph = TypeGraph.getInstance();
-        List<CtVariable<?>> cyclicFields = typeGraph.getSelfCyclicFieldsOfNode(currentDeclaration.getType());
+        TypeGraph typeGraph = SpoonManager.inputTypeData.getTypeGraphOfParameter(SpoonManager.inputTypeData.getInputs().get(0));
+        List<CtVariable<?>> cyclicFields = typeGraph.getCyclicFieldsOfNode(currentDeclaration.getType());
 
         if (cyclicFields.size() < 2)
             return null;
