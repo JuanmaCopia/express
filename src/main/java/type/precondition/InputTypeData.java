@@ -54,8 +54,8 @@ public class InputTypeData {
 //        }
 //    }
 
-    public List<CtParameter<?>> getInputs() {
-        return inputs;
+    public LinkedList<CtParameter<?>> getInputs() {
+        return new LinkedList<>(inputs);
     }
 
 //    public Map<CtVariable<?>, Set<Path>> getMapParameterToTraversableNodes() {

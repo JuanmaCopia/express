@@ -1,6 +1,7 @@
 package evoexpress.spoon.processors.traversals;
 
 import evoexpress.ga.helper.LocalVarHelper;
+import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
@@ -26,40 +27,52 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
 
     @Override
     public void process(CtClass<?> ctClass) {
-        CtMethod<?> traversalMethod = createTraversalMethod(ctClass);
+        CtMethod<?> structureMethod = ctClass.getMethodsByName(LocalVarHelper.STRUCTURE_METHOD_NAME).get(0);
+        CtBlock<?> structureMethodBody = structureMethod.getBody();
+        CtStatement lastStatement = SpoonQueries.getReturnTrueComment(structureMethod.getBody());
+
+        CtTypeReference<?> cyclicNode = initialField.getVariable().getType();
+        List<CtLocalVariable<?>> setVars = SpoonQueries.getVisitedSetLocalVarsOfType(structureMethodBody, cyclicNode);
+        CtVariable<?> setVar = null;
+        if (setVars.isEmpty()) {
+            setVar = SpoonFactory.createVisitedSetDeclaration(cyclicNode, structureMethodBody);
+            lastStatement.insertBefore((CtStatement) setVar);
+        } else {
+            setVar = setVars.get(RandomUtils.nextInt(setVars.size()));
+        }
+
+        List<CtParameter<?>> parameters = SpoonManager.inputTypeData.getInputs();
+        parameters.add(SpoonFactory.createParameter(setVar.getType(), setVar.getSimpleName()));
+
+        CtMethod<?> traversalMethod = createTraversalMethod(ctClass, parameters);
         ctClass.addMethod(traversalMethod);
 
-        CtMethod<?> structureMethod = ctClass.getMethodsByName(LocalVarHelper.STRUCTURE_METHOD_NAME).get(0);
-        CtExpression<?>[] args = SpoonFactory.createArgumentsFromParameters(structureMethod);
+        CtExpression<?>[] args = SpoonFactory.createArgumentsFromParameters(parameters);
 
         CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(ctClass, traversalMethod.getSimpleName(), args);
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(SpoonFactory.negateExpresion(traversalCall));
 
-        CtStatement lastStatement = SpoonQueries.getReturnTrueComment(structureMethod.getBody());
         lastStatement.insertBefore(ifStatement);
 
     }
 
-    private CtMethod<?> createTraversalMethod(CtClass<?> ctClass) {
+    private CtMethod<?> createTraversalMethod(CtClass<?> ctClass, List<CtParameter<?>> parameters) {
         Set<ModifierKind> modifiers = new HashSet<>();
         modifiers.add(ModifierKind.PRIVATE);
         modifiers.add(ModifierKind.STATIC);
 
         CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().BOOLEAN_PRIMITIVE;
-        List<CtParameter<?>> parameters = SpoonManager.inputTypeData.getInputs();
-
         CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, LocalVarHelper.getTraversalMethodName(ctClass), parameters);
 
-        createTraversalBody(traversalMethod);
+        createTraversalBody(traversalMethod, parameters.get(parameters.size() - 1));
         return traversalMethod;
     }
 
-    private void createTraversalBody(CtMethod<?> traversalMethod) {
+    private void createTraversalBody(CtMethod<?> traversalMethod, CtVariable<?> visitedSet) {
         CtBlock<?> ctBlock = SpoonFactory.createBlock();
         traversalMethod.setBody(ctBlock);
 
-        CtLocalVariable<?> visitedSet = SpoonFactory.createVisitedSetDeclaration(initialField.getType(), ctBlock);
         CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(initialField.getType(), ctBlock);
 
         CtTypeReference<?> subtypeOfWorklist = worklist.getType().getActualTypeArguments().get(0);
@@ -108,7 +121,6 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
 
 
         ctBlock.insertEnd(SpoonFactory.createComment("Begin of traversal"));
-        ctBlock.insertEnd(visitedSet);
         ctBlock.insertEnd(worklist);
         ctBlock.insertEnd(SpoonFactory.createComment("Initialize root element:"));
         ctBlock.insertEnd(initialFieldNullCheck);

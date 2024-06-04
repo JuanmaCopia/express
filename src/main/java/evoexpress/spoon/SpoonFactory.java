@@ -115,10 +115,18 @@ public class SpoonFactory {
 //    }
 
     public static CtExpression<?>[] createArgumentsFromParameters(CtMethod<?> method) {
-        List<CtParameter<?>> params = method.getParameters();
-        CtExpression<?>[] args = new CtExpression<?>[params.size()];
+        List<CtParameter<?>> parameters = method.getParameters();
+        CtExpression<?>[] args = new CtExpression<?>[parameters.size()];
         for (int i = 0; i < args.length; i++) {
-            args[i] = createVariableRead(params.get(i));
+            args[i] = createVariableRead(parameters.get(i));
+        }
+        return args;
+    }
+
+    public static CtExpression<?>[] createArgumentsFromParameters(List<CtParameter<?>> parameters) {
+        CtExpression<?>[] args = new CtExpression<?>[parameters.size()];
+        for (int i = 0; i < args.length; i++) {
+            args[i] = createVariableRead(parameters.get(i));
         }
         return args;
     }
@@ -402,6 +410,13 @@ public class SpoonFactory {
         localVariable.setType(type);
         localVariable.setAssignment(parseToExpression(assignment));
         return localVariable;
+    }
+
+    public static CtParameter<?> createParameter(CtTypeReference<?> typeRef, String name) {
+        CtParameter<?> parameter = coreFactory.createParameter();
+        parameter.setType(typeRef);
+        parameter.setSimpleName(name);
+        return parameter;
     }
 
     public static CtIf createVisitedCheck(CtVariable<?> setVariable, Object argument, boolean negate) {
