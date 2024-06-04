@@ -111,11 +111,13 @@ public abstract class GeneticAlgorithm {
 
     Individual mutateIndividual(Individual individual, Set<Mutator> mutators) {
         Individual mutant = cloneIndividual(individual);
+        SpoonManager.addClassToPackage(mutant.getCtClass());
         CtCodeElement gene = selectGene(mutant, mutators);
         Mutator mutator = selectMutator(mutators, mutant, gene);
         if (mutator != null && mutator.mutate(mutant, gene) && SpoonManager.compileIndividual(mutant)) {
             return mutant;
         }
+        SpoonManager.removeClassFromPackage(mutant.getCtClass());
         return null;
     }
 
@@ -175,6 +177,9 @@ public abstract class GeneticAlgorithm {
                 survivors.addIndividual(fittest);
             else if (fittest.getFitness() > FitnessFunctions.WORST_FITNESS_VALUE)
                 survivors.addIndividual(fittest);
+            else {
+                SpoonManager.removeClassFromPackage(fittest.getCtClass());
+            }
             i++;
         }
 

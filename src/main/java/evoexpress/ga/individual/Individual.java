@@ -6,6 +6,7 @@ import evoexpress.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
 import type.typegraph.Path;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Individual implements Comparable<Individual> {
@@ -31,8 +32,7 @@ public class Individual implements Comparable<Individual> {
     public Individual(Individual other) {
         cls = other.getCtClass().clone();
         cls.setSimpleName(ToolConfig.preconditionClassName + id++);
-        nonTraversedPathsToCyclicNodes = other.nonTraversedPathsToCyclicNodes;
-        SpoonManager.addClassToPackage(cls);
+        nonTraversedPathsToCyclicNodes = new HashSet<>(other.nonTraversedPathsToCyclicNodes);
     }
 
     // Tracking traversed paths

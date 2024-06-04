@@ -2,6 +2,7 @@ package evoexpress.ga.mutator.structurecheck.traversal;
 
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
+import evoexpress.ga.mutator.MutatorHelper;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.processors.traversals.TraverseWorklistProcessor;
@@ -37,10 +38,12 @@ public class TraverseWorklistMutator implements Mutator {
         TypeGraph typeGraph = SpoonManager.inputTypeData.getTypeGraphOfParameter(chosenPath.get(0));
         List<CtVariable<?>> loopFields = typeGraph.getCyclicFieldsOfNode(chosenInitialField.getType());
 
+        loopFields = MutatorHelper.selectRandomVariablesFromList(loopFields);
+
         Processor<CtClass<?>> p = new TraverseWorklistProcessor(chosenInitialField, loopFields);
         p.process(individual.getCtClass());
 
-        System.err.println("\nTraverseWorklistMutator:\n" + individual.getCtClass().toString());
+        //System.err.println("\nTraverseWorklistMutator:\n" + individual.getCtClass().toString());
 
         return true;
     }
