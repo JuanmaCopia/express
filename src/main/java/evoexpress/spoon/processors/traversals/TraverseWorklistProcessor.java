@@ -99,8 +99,8 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         whileBody.insertEnd(currentDeclaration);
 
         // Add visited check
-        CtIf ifStatement = SpoonFactory.createVisitedCheck(visitedSet, currentDeclaration, true);
-        whileBody.insertEnd(ifStatement);
+        //CtIf ifStatement = SpoonFactory.createVisitedCheck(visitedSet, currentDeclaration, true);
+        //whileBody.insertEnd(ifStatement);
 
         // Create comment: // Handle current:
         whileBody.insertEnd(SpoonFactory.createComment("Handle current:"));
@@ -115,6 +115,10 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
 
             CtInvocation<?> addToListCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, loopFieldRead);
             CtIf ifNotNull = SpoonFactory.createIfThenStatement(fieldNullComp, addToListCall);
+
+            CtIf visitedCheck = SpoonFactory.createVisitedCheck(visitedSet, loopFieldRead, true);
+            addToListCall.insertBefore(visitedCheck);
+
             whileBody.insertEnd(ifNotNull);
         }
 
@@ -131,4 +135,5 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         ctBlock.insertEnd(SpoonFactory.createComment("End of traversal"));
         ctBlock.insertEnd(SpoonFactory.createReturnTrueStatement());
     }
+
 }
