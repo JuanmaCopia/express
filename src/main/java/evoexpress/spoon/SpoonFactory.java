@@ -297,6 +297,11 @@ public class SpoonFactory {
         return factory.Code().createInvocation(null, staticMethodRef, args);
     }
 
+    public static CtInvocation<?> createStaticInvocation(CtMethod<?> staticMethod, CtExpression<?>[] args) {
+        CtExecutableReference<?> staticMethodRef = factory.Executable().createReference(staticMethod);
+        return factory.Code().createInvocation(null, staticMethodRef, args);
+    }
+
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName) {
         return createInvocation(target, methodName, new LinkedList<>(), new LinkedList<>());
     }

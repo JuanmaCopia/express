@@ -31,15 +31,7 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         CtBlock<?> structureMethodBody = structureMethod.getBody();
         CtStatement lastStatement = SpoonQueries.getReturnTrueComment(structureMethod.getBody());
 
-        CtTypeReference<?> cyclicNode = initialField.getVariable().getType();
-        List<CtLocalVariable<?>> setVars = SpoonQueries.getVisitedSetLocalVarsOfType(structureMethodBody, cyclicNode);
-        CtVariable<?> setVar = null;
-        if (setVars.isEmpty()) {
-            setVar = SpoonFactory.createVisitedSetDeclaration(cyclicNode, structureMethodBody);
-            lastStatement.insertBefore((CtStatement) setVar);
-        } else {
-            setVar = setVars.get(RandomUtils.nextInt(setVars.size()));
-        }
+        CtVariable<?> setVar = handleVisitedSetVariable(structureMethodBody, lastStatement);
 
         List<CtParameter<?>> parameters = SpoonManager.inputTypeData.getInputs();
         parameters.add(SpoonFactory.createParameter(setVar.getType(), setVar.getSimpleName()));
@@ -48,13 +40,23 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         ctClass.addMethod(traversalMethod);
 
         CtExpression<?>[] args = SpoonFactory.createArgumentsFromParameters(parameters);
-
-        CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(ctClass, traversalMethod.getSimpleName(), args);
+        CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(traversalMethod, args);
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(SpoonFactory.negateExpresion(traversalCall));
-
         lastStatement.insertBefore(ifStatement);
 
+    }
+
+    private CtVariable<?> handleVisitedSetVariable(CtBlock<?> methodBody, CtStatement lastStatement) {
+        CtTypeReference<?> cyclicNode = initialField.getVariable().getType();
+        List<CtLocalVariable<?>> setVars = SpoonQueries.getVisitedSetLocalVarsOfType(methodBody, cyclicNode);
+        CtVariable<?> setVar = null;
+        if (setVars.isEmpty()) {
+            setVar = SpoonFactory.createVisitedSetDeclaration(cyclicNode, methodBody);
+            lastStatement.insertBefore((CtStatement) setVar);
+            return setVar;
+        }
+        return setVars.get(RandomUtils.nextInt(setVars.size()));
     }
 
     private CtMethod<?> createTraversalMethod(CtClass<?> ctClass, List<CtParameter<?>> parameters) {
