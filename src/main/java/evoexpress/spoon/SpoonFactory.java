@@ -150,6 +150,10 @@ public class SpoonFactory {
         return block;
     }
 
+    public static CtReturn<Boolean> createReturnTrueStatement() {
+        return createReturnStatement(codeFactory.createLiteral(true));
+    }
+
     public static CtMethod<Boolean> createMethod(
             Set<ModifierKind> modifiers,
             CtTypeReference<?> returnType,
@@ -279,6 +283,12 @@ public class SpoonFactory {
         return factory.Code().createInvocation(null, staticMethodRef, args);
     }
 
+    public static CtInvocation<?> createStaticInvocation(CtClass<?> targetClass, String methodName, CtExpression<?>[] args) {
+        CtMethod<?> staticMethod = targetClass.getMethodsByName(methodName).get(0);
+        CtExecutableReference<?> staticMethodRef = factory.Executable().createReference(staticMethod);
+        return factory.Code().createInvocation(null, staticMethodRef, args);
+    }
+
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName) {
         return createInvocation(target, methodName, new LinkedList<>(), new LinkedList<>());
     }
@@ -400,6 +410,10 @@ public class SpoonFactory {
             condition = SpoonFactory.createUnaryExpression(condition, UnaryOperatorKind.NOT);
         CtReturn<?> returnStatement = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
         return SpoonFactory.createIfThenStatement((CtExpression<Boolean>) condition, returnStatement);
+    }
+
+    public static CtExpression<Boolean> negateExpresion(CtExpression<Boolean> expression) {
+        return (CtExpression<Boolean>) createUnaryExpression(expression, UnaryOperatorKind.NOT);
     }
 
     public static CtExpression<Boolean> createAddToSetInvocation(CtVariable<?> setVariable, Object argument) {

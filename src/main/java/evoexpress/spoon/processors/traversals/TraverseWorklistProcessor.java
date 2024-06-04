@@ -2,15 +2,18 @@ package evoexpress.spoon.processors.traversals;
 
 import evoexpress.ga.helper.LocalVarHelper;
 import evoexpress.spoon.SpoonFactory;
+import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class TraverseWorklistProcessor extends AbstractProcessor<CtBlock<?>> {
+public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
 
     List<CtVariable<?>> loopFields;
     CtVariableRead<?> initialField;
@@ -22,7 +25,40 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtBlock<?>> {
     }
 
     @Override
-    public void process(CtBlock<?> ctBlock) {
+    public void process(CtClass<?> ctClass) {
+        CtMethod<?> traversalMethod = createTraversalMethod(ctClass);
+        ctClass.addMethod(traversalMethod);
+
+        CtMethod<?> structureMethod = ctClass.getMethodsByName(LocalVarHelper.STRUCTURE_METHOD_NAME).get(0);
+        CtExpression<?>[] args = SpoonFactory.createArgumentsFromParameters(structureMethod);
+
+        CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(ctClass, traversalMethod.getSimpleName(), args);
+
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(SpoonFactory.negateExpresion(traversalCall));
+
+        CtStatement lastStatement = SpoonQueries.getReturnTrueComment(structureMethod.getBody());
+        lastStatement.insertBefore(ifStatement);
+
+    }
+
+    private CtMethod<?> createTraversalMethod(CtClass<?> ctClass) {
+        Set<ModifierKind> modifiers = new HashSet<>();
+        modifiers.add(ModifierKind.PRIVATE);
+        modifiers.add(ModifierKind.STATIC);
+
+        CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().BOOLEAN_PRIMITIVE;
+        List<CtParameter<?>> parameters = SpoonManager.inputTypeData.getInputs();
+
+        CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, LocalVarHelper.getTraversalMethodName(ctClass), parameters);
+
+        createTraversalBody(traversalMethod);
+        return traversalMethod;
+    }
+
+    private void createTraversalBody(CtMethod<?> traversalMethod) {
+        CtBlock<?> ctBlock = SpoonFactory.createBlock();
+        traversalMethod.setBody(ctBlock);
+
         CtLocalVariable<?> visitedSet = SpoonFactory.createVisitedSetDeclaration(initialField.getType(), ctBlock);
         CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(initialField.getType(), ctBlock);
 
@@ -70,14 +106,15 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtBlock<?>> {
         // Create while statement
         CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, whileBody);
 
-        CtStatement lastStatement = SpoonQueries.getReturnTrueComment(ctBlock);
-        lastStatement.insertBefore(SpoonFactory.createComment("Begin of traversal"));
-        lastStatement.insertBefore(visitedSet);
-        lastStatement.insertBefore(worklist);
-        lastStatement.insertBefore(SpoonFactory.createComment("Initialize root element:"));
-        lastStatement.insertBefore(initialFieldNullCheck);
-        lastStatement.insertBefore(SpoonFactory.createComment("Cycle over cyclic references:"));
-        lastStatement.insertBefore(whileStatement);
-        lastStatement.insertBefore(SpoonFactory.createComment("End of traversal"));
+
+        ctBlock.insertEnd(SpoonFactory.createComment("Begin of traversal"));
+        ctBlock.insertEnd(visitedSet);
+        ctBlock.insertEnd(worklist);
+        ctBlock.insertEnd(SpoonFactory.createComment("Initialize root element:"));
+        ctBlock.insertEnd(initialFieldNullCheck);
+        ctBlock.insertEnd(SpoonFactory.createComment("Cycle over cyclic references:"));
+        ctBlock.insertEnd(whileStatement);
+        ctBlock.insertEnd(SpoonFactory.createComment("End of traversal"));
+        ctBlock.insertEnd(SpoonFactory.createReturnTrueStatement());
     }
 }
