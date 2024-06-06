@@ -25,7 +25,7 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(1);
+        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(1).stream().filter(p -> p.depth() >= 1).toList();
         List<Path> chosenVarReads = SpoonQueries.chooseNPaths(paths, 2);
         CtVariableRead<?> var1 = chosenVarReads.get(0).getVariableRead();
         CtVariableRead<?> var2 = chosenVarReads.get(1).getVariableRead();

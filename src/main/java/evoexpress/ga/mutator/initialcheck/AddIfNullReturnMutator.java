@@ -25,7 +25,7 @@ public class AddIfNullReturnMutator implements Mutator {
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(1);
+        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(2).stream().filter(p -> p.depth() >= 1).toList();
         Path chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
         CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
 

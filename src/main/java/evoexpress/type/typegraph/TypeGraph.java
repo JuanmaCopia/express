@@ -114,7 +114,7 @@ public class TypeGraph {
     public List<CtVariable<?>> getCyclicFieldsOfNode(CtTypeReference<?> node) {
         return cyclicFieldsMap.get(node);
     }
-    
+
     public Set<CtTypeReference<?>> getNodesWithSelfCycles() {
         return cyclicFieldsMap.keySet();
     }
@@ -164,6 +164,7 @@ public class TypeGraph {
      */
     public List<Path> getAllPaths(CtTypeReference<?> source, int k) {
         List<Path> paths = new LinkedList<>();
+        paths.add(new Path(rootVariable, new LinkedList<>()));
         List<CtVariable<?>> currentPath = new LinkedList<>();
         getAllPaths(source, currentPath, paths, k);
         return paths;

@@ -87,6 +87,10 @@ public class InputTypeData {
         return allPaths;
     }
 
+    public List<Path> getAllReferencePathsOfType(CtTypeReference<?> type, int depth) {
+        return getAllReferencePaths(depth).stream().filter(p -> p.getTypeReference().equals(type)).toList();
+    }
+
     public List<Path> getIntegerFieldsOfParameters() {
         List<Path> integerFields = new ArrayList<>();
         for (CtVariable<?> p : inputs) {

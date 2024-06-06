@@ -1,6 +1,5 @@
-package evoexpress.ga.mutator.structurecheck;
+package evoexpress.ga.mutator.structurecheck.traversal.inner;
 
-import evoexpress.ga.helper.LocalVarHelper;
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.spoon.RandomUtils;
@@ -8,19 +7,17 @@ import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
 import evoexpress.type.typegraph.Path;
-import evoexpress.type.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 
 public class CheckVisitedFieldEndOfTraversalMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("structureCheck"))
-            return false;
-
-        if (block.getElements(SpoonQueries::isTraversalLoop).isEmpty())
+        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("traverse_"))
             return false;
 
         return true;
@@ -30,19 +27,13 @@ public class CheckVisitedFieldEndOfTraversalMutator implements Mutator {
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        CtWhile chosenLoop = (CtWhile) RandomUtils.getRandomElement(blockGene.getElements(SpoonQueries::isTraversalLoop));
+        CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(blockGene.getParent(CtMethod.class));
+        CtTypeReference<?> setSubType = visitedSetVar.getType().getActualTypeArguments().get(0);
 
-        CtLocalVariable<?> visitedSetVar = SpoonQueries.getLocalVarMatchingPrefix(chosenLoop, LocalVarHelper.SET_VAR_NAME);
-        if (visitedSetVar == null) {
-            System.err.println("ERROR: visitedSetVar is null.");
-            return false;
-        }
+        List<Path> candidates = SpoonManager.inputTypeData.getAllReferencePathsOfType(setSubType, 1).stream().filter(p -> p.depth() >= 1).toList();
 
-        TypeGraph typeGraph = SpoonManager.inputTypeData.getTypeGraphOfParameter(SpoonManager.inputTypeData.getInputs().get(0));
-
-        List<Path> varPath = typeGraph.getAllReferencePaths(1);
-        Path chosenVarPath = varPath.get(RandomUtils.nextInt(varPath.size()));
-        CtVariableRead<?> chosenVarRead = chosenVarPath.getVariableRead();
+        Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
+        CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
 
         CtExpression<Boolean> nullComparisonClause = SpoonFactory.createNullComparisonClause(chosenVarRead, BinaryOperatorKind.NE);
         CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(visitedSetVar, chosenVarRead);
@@ -56,10 +47,12 @@ public class CheckVisitedFieldEndOfTraversalMutator implements Mutator {
             return false;
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(conjunction);
-        chosenLoop.insertAfter(ifStatement);
 
-        /*System.err.println("CheckVisitedFieldEndOfTraversalMutator:\n" + ifStatement);
-        System.err.println("Final Block:\n" + blockGene);*/
+        CtStatement endOfTraversalComment = SpoonQueries.getEndOfTraversalComment(blockGene);
+        endOfTraversalComment.insertBefore(ifStatement);
+
+        System.err.println("CheckVisitedFieldEndOfTraversalMutator:\n" + ifStatement);
+        //System.err.println("Final Block:\n" + blockGene);
         return true;
     }
 

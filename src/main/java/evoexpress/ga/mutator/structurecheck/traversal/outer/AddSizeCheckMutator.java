@@ -1,4 +1,4 @@
-package evoexpress.ga.mutator.structurecheck;
+package evoexpress.ga.mutator.structurecheck.traversal.outer;
 
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
