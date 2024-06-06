@@ -1,6 +1,7 @@
 package evoexpress.type.typegraph;
 
 
+import evoexpress.spoon.SpoonFactory;
 import evoexpress.type.TypeUtils;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
@@ -113,7 +114,7 @@ public class TypeGraph {
     public List<CtVariable<?>> getCyclicFieldsOfNode(CtTypeReference<?> node) {
         return cyclicFieldsMap.get(node);
     }
-
+    
     public Set<CtTypeReference<?>> getNodesWithSelfCycles() {
         return cyclicFieldsMap.keySet();
     }
@@ -122,12 +123,8 @@ public class TypeGraph {
         return adjacencyList.keySet().stream().filter(TypeUtils::isUserDefined).collect(Collectors.toSet());
     }
 
-    public List<Edge> getOutgoingEdgesOfNode(CtTypeReference<?> source) {
-        return adjacencyList.get(source);
-    }
-
     public List<CtVariable<?>> getOutgoingFields(CtTypeReference<?> source) {
-        return getOutgoingEdgesOfNode(source).stream().map(Edge::label).collect(Collectors.toList());
+        return adjacencyList.get(source).stream().map(Edge::label).collect(Collectors.toList());
     }
 
     private List<CtVariable<?>> _getCyclicFieldsOfNode(CtTypeReference<?> node) {
@@ -187,6 +184,19 @@ public class TypeGraph {
 
     public List<Path> getAllReferencePaths(int depth) {
         return getAllPaths(rootType, depth).stream().filter(p -> !p.isPrimitiveOrBoxedPrimitive()).toList();
+    }
+
+    public List<Path> getIntegerFieldsOfRoot() {
+        List<CtVariable<?>> rootFields = getOutgoingFields(rootType);
+        List<CtVariable<?>> integerFields = rootFields.stream().filter(
+                field -> field.getType().isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER) ||
+                        field.getType().isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER_PRIMITIVE)
+        ).toList();
+        List<Path> paths = new LinkedList<>();
+        for (CtVariable<?> field : integerFields) {
+            paths.add(new Path(rootVariable, List.of(field)));
+        }
+        return paths;
     }
 
     public String toString() {

@@ -87,4 +87,16 @@ public class InputTypeData {
         return allPaths;
     }
 
+    public List<Path> getIntegerFieldsOfParameters() {
+        List<Path> integerFields = new ArrayList<>();
+        for (CtVariable<?> p : inputs) {
+            if (TypeUtils.isUserDefined(p.getType())) {
+                integerFields.addAll(typeGraphMap.get(p).getIntegerFieldsOfRoot());
+            } else if (TypeUtils.isInteger(p.getType())) {
+                integerFields.add(new Path(p, new ArrayList<>()));
+            }
+        }
+        return integerFields;
+    }
+
 }

@@ -179,6 +179,13 @@ public class SpoonQueries {
         return (CtStatement) returnTrueComments.get(RandomUtils.nextInt(returnTrueComments.size()));
     }
 
+    public static CtStatement getEndOfTraversalComment(CtBlock<?> block) {
+        List<CtElement> traversalEndComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isEndOfTraversalComment).toList();
+        if (traversalEndComments.isEmpty())
+            return null;
+        return (CtStatement) traversalEndComments.get(RandomUtils.nextInt(traversalEndComments.size()));
+    }
+
 //    public static List<List<CtVariable<?>>> getNonUsedInitialPathsToCyclicField(CtBlock<?> code) {
 //        List<List<CtVariable<?>>> nonUsedInitialPathsToCyclicField = new LinkedList<>();
 //
@@ -193,15 +200,6 @@ public class SpoonQueries {
 //        }
 //
 //        return nonUsedInitialPathsToCyclicField;
-//    }
-
-//    public static List<CtVariable<?>> getIntegerFieldsOfRoot() {
-//        TypeGraph typeGraph = TypeGraph.getInstance();
-//        List<CtVariable<?>> rootFields = typeGraph.getOutgoingFields(typeGraph.getRoot());
-//        return rootFields.stream().filter(
-//                field -> field.getType().isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER) ||
-//                        field.getType().isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER_PRIMITIVE)
-//        ).toList();
 //    }
 
     public static List<CtLocalVariable<?>> getLocalVariablesMathingPrefix(CtBlock<?> code, String varPrefix) {
@@ -251,6 +249,15 @@ public class SpoonQueries {
 
     public static List<CtLocalVariable<?>> getVisitedSetLocalVars(CtBlock<?> block) {
         return getLocalVariablesMathingPrefix(block, LocalVarHelper.SET_VAR_NAME);
+    }
+
+    public static CtVariable<?> getVisitedSetParameter(CtMethod<?> method) {
+        List<CtParameter<?>> parameters = method.getParameters();
+        for (CtParameter<?> parameter : parameters) {
+            if (parameter.getSimpleName().startsWith(LocalVarHelper.SET_VAR_NAME))
+                return parameter;
+        }
+        return null;
     }
 
     public static List<CtLocalVariable<?>> getVisitedSetLocalVarsOfType(CtBlock<?> block, CtTypeReference<?> type) {

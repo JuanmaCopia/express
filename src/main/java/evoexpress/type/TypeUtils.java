@@ -36,4 +36,8 @@ public class TypeUtils {
                 type.equals(SpoonFactory.getTypeFactory().FLOAT) ||
                 type.equals(SpoonFactory.getTypeFactory().DOUBLE));
     }
+
+    public static boolean isInteger(CtTypeReference<?> type) {
+        return type.isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER) || type.isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER_PRIMITIVE);
+    }
 }

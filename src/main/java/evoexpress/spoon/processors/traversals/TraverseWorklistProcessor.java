@@ -80,9 +80,14 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         CtTypeReference<?> subtypeOfWorklist = worklist.getType().getActualTypeArguments().get(0);
 
         CtInvocation<?> addToWorklistCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, initialField);
+        CtInvocation<?> addToSetCall = (CtInvocation<?>) SpoonFactory.createAddToSetInvocation(visitedSet, initialField);
+        CtBlock<?> ifBlock = SpoonFactory.createBlock();
+        ifBlock.insertEnd(addToWorklistCall);
+        ifBlock.insertEnd(addToSetCall);
+
 
         CtExpression<Boolean> ifCondition = SpoonFactory.createNullComparisonClause(initialField, BinaryOperatorKind.NE);
-        CtIf initialFieldNullCheck = SpoonFactory.createIfThenStatement(ifCondition, addToWorklistCall);
+        CtIf initialFieldNullCheck = SpoonFactory.createIfThenStatement(ifCondition, ifBlock);
 
         // create condition: !workList.isEmpty()
         CtInvocation<?> isEmptyMethodCall = SpoonFactory.createInvocation(worklist, "isEmpty");

@@ -9,6 +9,7 @@ import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.ga.mutator.initialcheck.AddComposedInitialNullCheckMutator;
 import evoexpress.ga.mutator.initialcheck.AddIfNullReturnMutator;
+import evoexpress.ga.mutator.structurecheck.AddSizeCheckMutator;
 import evoexpress.ga.mutator.structurecheck.traversal.TraverseWorklistMutator;
 import evoexpress.ga.population.Population;
 import evoexpress.object.ObjectGeneratorManager;
@@ -54,7 +55,7 @@ public class EvoExpress {
 //        mutators.add(new TraverseCyclicReferenceMutator());
 //        mutators.add(new AddComposedIfToTraversalMutator());
 //        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
-//        mutators.add(new AddSizeCheckMutator());
+        mutators.add(new AddSizeCheckMutator());
 //        mutators.add(new AddNullCompToTraversalMutator());
 //        mutators.add(new TraverseCircularReferenceMutator());
         GeneticAlgorithm ga = new StructureCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
