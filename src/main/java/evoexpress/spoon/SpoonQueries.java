@@ -1,12 +1,12 @@
 package evoexpress.spoon;
 
 import evoexpress.ga.helper.LocalVarHelper;
+import evoexpress.type.TypeUtils;
+import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
-import type.TypeUtils;
-import type.typegraph.Path;
 
 import java.util.*;
 

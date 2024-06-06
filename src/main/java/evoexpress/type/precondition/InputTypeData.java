@@ -1,11 +1,11 @@
-package type.precondition;
+package evoexpress.type.precondition;
 
+import evoexpress.type.TypeUtils;
+import evoexpress.type.typegraph.Path;
+import evoexpress.type.typegraph.TypeGraph;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
-import type.TypeUtils;
-import type.typegraph.Path;
-import type.typegraph.TypeGraph;
 
 import java.util.*;
 

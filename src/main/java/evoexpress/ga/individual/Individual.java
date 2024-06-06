@@ -3,8 +3,8 @@ package evoexpress.ga.individual;
 import evoexpress.config.ToolConfig;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
+import evoexpress.type.typegraph.Path;
 import spoon.reflect.declaration.CtClass;
-import type.typegraph.Path;
 
 import java.util.HashSet;
 import java.util.Set;

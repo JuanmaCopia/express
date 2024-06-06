@@ -4,13 +4,13 @@ import evoexpress.config.ToolConfig;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
+import evoexpress.type.typegraph.Path;
+import evoexpress.type.typegraph.TypeGraph;
 import org.junit.jupiter.api.Test;
 import spoon.SpoonAPI;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
-import type.typegraph.Path;
-import type.typegraph.TypeGraph;
 
 import java.util.List;
 import java.util.Set;

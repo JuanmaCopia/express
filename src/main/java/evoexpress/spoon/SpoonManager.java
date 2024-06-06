@@ -3,13 +3,13 @@ package evoexpress.spoon;
 import evoexpress.config.ToolConfig;
 import evoexpress.ga.individual.Individual;
 import evoexpress.instrumentation.Instrumentation;
+import evoexpress.type.precondition.InputTypeData;
 import evoexpress.util.Utils;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
-import type.precondition.InputTypeData;
 
 import java.io.File;
 import java.net.URL;

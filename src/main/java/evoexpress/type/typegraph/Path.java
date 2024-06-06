@@ -1,10 +1,10 @@
-package type.typegraph;
+package evoexpress.type.typegraph;
 
 import evoexpress.spoon.SpoonFactory;
+import evoexpress.type.TypeUtils;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
-import type.TypeUtils;
 
 import java.util.LinkedList;
 import java.util.List;

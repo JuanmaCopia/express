@@ -5,9 +5,9 @@ import evoexpress.ga.mutator.Mutator;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
+import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
-import type.typegraph.Path;
 
 import java.util.List;
 

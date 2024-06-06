@@ -1,11 +1,11 @@
 package evoexpress.object;
 
 import evoexpress.spoon.SpoonManager;
+import evoexpress.type.TypeUtils;
+import evoexpress.type.typegraph.TypeGraph;
 import evoexpress.util.Utils;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
-import type.TypeUtils;
-import type.typegraph.TypeGraph;
 
 import java.lang.reflect.Field;
 import java.util.*;

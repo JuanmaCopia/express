@@ -1,11 +1,11 @@
-package type.typegraph;
+package evoexpress.type.typegraph;
 
 
+import evoexpress.type.TypeUtils;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
-import type.TypeUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;

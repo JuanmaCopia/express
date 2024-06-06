@@ -6,6 +6,8 @@ import evoexpress.ga.mutator.MutatorHelper;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.processors.traversals.TraverseWorklistProcessor;
+import evoexpress.type.typegraph.Path;
+import evoexpress.type.typegraph.TypeGraph;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
@@ -13,8 +15,6 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
-import type.typegraph.Path;
-import type.typegraph.TypeGraph;
 
 import java.util.List;
 import java.util.Set;

@@ -7,10 +7,10 @@ import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
+import evoexpress.type.typegraph.Path;
+import evoexpress.type.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
-import type.typegraph.Path;
-import type.typegraph.TypeGraph;
 
 import java.util.List;
 

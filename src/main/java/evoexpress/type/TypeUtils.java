@@ -1,4 +1,4 @@
-package type;
+package evoexpress.type;
 
 import evoexpress.spoon.SpoonFactory;
 import spoon.reflect.declaration.CtVariable;
