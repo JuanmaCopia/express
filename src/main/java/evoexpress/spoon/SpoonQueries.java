@@ -165,6 +165,12 @@ public class SpoonQueries {
         return comment.getContent().equals("Return true");
     }
 
+    public static boolean isReturnMark1Comment(CtElement element) {
+        if (!(element instanceof CtComment comment))
+            return false;
+        return comment.getContent().equals("Mark1");
+    }
+
     public static CtStatement getEndHandleCurrentComment(CtBlock<?> block) {
         List<CtElement> handleCurrentEndComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isEndOfHandleCurrentComment).toList();
         if (handleCurrentEndComments.isEmpty())
@@ -177,6 +183,13 @@ public class SpoonQueries {
         if (returnTrueComments.isEmpty())
             return null;
         return (CtStatement) returnTrueComments.get(RandomUtils.nextInt(returnTrueComments.size()));
+    }
+
+    public static CtStatement getMark1Comment(CtBlock<?> block) {
+        List<CtElement> returnMark1Comments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isReturnMark1Comment).toList();
+        if (returnMark1Comments.isEmpty())
+            return null;
+        return (CtStatement) returnMark1Comments.get(RandomUtils.nextInt(returnMark1Comments.size()));
     }
 
     public static CtStatement getEndOfTraversalComment(CtBlock<?> block) {

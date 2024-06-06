@@ -29,7 +29,7 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
     public void process(CtClass<?> ctClass) {
         CtMethod<?> structureMethod = ctClass.getMethodsByName(LocalVarHelper.STRUCTURE_METHOD_NAME).get(0);
         CtBlock<?> structureMethodBody = structureMethod.getBody();
-        CtStatement lastStatement = SpoonQueries.getReturnTrueComment(structureMethod.getBody());
+        CtStatement lastStatement = SpoonQueries.getMark1Comment(structureMethod.getBody());
 
         CtVariable<?> setVar = handleVisitedSetVariable(structureMethodBody, lastStatement);
 
@@ -138,6 +138,7 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         ctBlock.insertEnd(SpoonFactory.createComment("Cycle over cyclic references:"));
         ctBlock.insertEnd(whileStatement);
         ctBlock.insertEnd(SpoonFactory.createComment("End of traversal"));
+        ctBlock.insertEnd(SpoonFactory.createComment("Return True"));
         ctBlock.insertEnd(SpoonFactory.createReturnTrueStatement());
     }
 

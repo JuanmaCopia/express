@@ -63,7 +63,7 @@ public abstract class GeneticAlgorithm {
      * @param population The population to evaluate
      */
     void evalPopulation(Population population) {
-        population.getIndividuals().stream().filter(Individual::isFitnessUpdated).forEach(FitnessFunctions::invalidInstancesFitness);
+        population.getIndividuals().stream().filter(Individual::isFitnessUpdated).forEach(FitnessFunctions::invalidInstancesNoLengthFitness);
     }
 
     /**

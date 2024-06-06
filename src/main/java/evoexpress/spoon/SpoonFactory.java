@@ -153,6 +153,7 @@ public class SpoonFactory {
 
     public static CtBlock<?> createReturnTrueBlock() {
         CtBlock<Boolean> block = coreFactory.createBlock();
+        block.addStatement(createComment("Mark1"));
         block.addStatement(createComment("Return true"));
         block.addStatement(createReturnStatement(codeFactory.createLiteral(true)));
         return block;
