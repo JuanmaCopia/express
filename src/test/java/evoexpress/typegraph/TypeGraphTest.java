@@ -163,7 +163,7 @@ public class TypeGraphTest {
         CtTypeReference<?> rootType = SpoonQueries.getClass("BinTree").getReference();
         TypeGraph graph = SpoonManager.inputTypeData.getTypeGraphOfParameter(SpoonManager.inputTypeData.getInputs().get(0));
         int maxLength = 2;
-        List<Path> allPaths = graph.getAllPaths(rootType, maxLength);
+        List<Path> allPaths = graph.getAllPaths(maxLength);
         assertEquals(5, allPaths.size());
     }
 }

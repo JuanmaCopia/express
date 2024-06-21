@@ -51,7 +51,7 @@ public class CheckVisitedFieldEndOfTraversalMutator implements Mutator {
         CtStatement endOfTraversalComment = SpoonQueries.getEndOfTraversalComment(blockGene);
         endOfTraversalComment.insertBefore(ifStatement);
 
-        System.err.println("CheckVisitedFieldEndOfTraversalMutator:\n" + ifStatement);
+        //System.err.println("CheckVisitedFieldEndOfTraversalMutator:\n" + ifStatement);
         //System.err.println("Final Block:\n" + blockGene);
         return true;
     }
