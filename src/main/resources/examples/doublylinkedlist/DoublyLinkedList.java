@@ -71,15 +71,37 @@ public class DoublyLinkedList {
         }
         HashSet<Node> visited = new HashSet<>();
         StringBuilder sb = new StringBuilder();
+        sb.append("head -> [");
         Node current = head;
         while (current != null) {
             if (!visited.add(current)) {
-                sb.append(" Cycle!");
+                sb.append("Cycle!");
                 break;
             }
-            sb.append(current.data).append(" ");
+            sb.append(current.data);
+            if (current.next != null)
+                sb.append(",");
+            else
+                sb.append("]");
             current = current.next;
         }
+
+        visited.clear();
+        sb.append("\ntail -> [");
+        current = tail;
+        while (current != null) {
+            if (!visited.add(current)) {
+                sb.append("Cycle!");
+                break;
+            }
+            sb.append(current.data);
+            if (current.prev != null)
+                sb.append(",");
+            else
+                sb.append("]");
+            current = current.prev;
+        }
+
         return sb.toString().trim(); // Trim any trailing whitespace
     }
 
