@@ -41,7 +41,7 @@ public class AddRandomComparisonToCurrent implements Mutator {
         CtVariableRead<?> chosenPathReadOwner = chosenPathOwner.getVariableRead();
         CtVariableRead<?> currentRead = currentPath.getVariableRead();
 
-        CtExpression<Boolean> clause1 = SpoonFactory.createNullComparisonClause(chosenPathReadOwner);
+        CtExpression<Boolean> clause1 = SpoonFactory.createNullComparisonClause(chosenPathReadOwner, BinaryOperatorKind.NE);
         CtExpression<Boolean> clause2 = SpoonFactory.createBooleanBinaryExpression(chosenPathRead, currentRead, BinaryOperatorKind.NE);
         CtExpression<Boolean> condition = SpoonFactory.createBooleanBinaryExpression(clause1, clause2, BinaryOperatorKind.AND);
 

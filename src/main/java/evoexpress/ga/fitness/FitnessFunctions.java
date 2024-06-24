@@ -31,7 +31,8 @@ public class FitnessFunctions {
         for (Object validInstance : ObjectCollector.positiveObjects) {
             Object[] args = new Object[1];
             args[0] = validInstance;
-            //logger.info("FF: Running precondition for valid instance: " + validInstance.toString());
+            if (individual.marked)
+                logger.info("FF: Running precondition for valid instance: " + validInstance.toString());
             int result = Executor.runPrecondition(individual, precondition, args);
             if (result != 1) {
                 if (individual.marked) {

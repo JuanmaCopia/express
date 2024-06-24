@@ -37,7 +37,8 @@ public class AddSizeCheckMutator implements Mutator {
         Path chosenIntegerField = integerFields.get(RandomUtils.nextInt(integerFields.size()));
         CtVariableRead<?> intFieldRead = chosenIntegerField.getVariableRead();
 
-        Processor<CtBlock<?>> p = new SizeCheckProcessor(setVar, intFieldRead);
+        int maxMinus = 2;
+        Processor<CtBlock<?>> p = new SizeCheckProcessor(setVar, intFieldRead, RandomUtils.nextInt(maxMinus + 1));
         p.process(blockGene);
 
         //System.err.println("\nAddSizeCheckMutator:\n\n" + blockGene);

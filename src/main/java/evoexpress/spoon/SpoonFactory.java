@@ -435,7 +435,7 @@ public class SpoonFactory {
             thenBlock = SpoonFactory.createBreakStatement();
         else
             thenBlock = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
-        
+
         return SpoonFactory.createIfThenStatement((CtExpression<Boolean>) condition, thenBlock);
     }
 
@@ -448,10 +448,14 @@ public class SpoonFactory {
         return SpoonFactory.createInvocation(setVariable, "add", elemType, argument);
     }
 
-    public static CtIf createVisitedSizeCheck(CtVariable<?> setVariable, CtVariableRead<?> integerField) {
-        CtInvocation<?> addInvocation = SpoonFactory.createInvocation(setVariable, "size");
+    public static CtIf createVisitedSizeCheck(CtVariable<?> setVariable, CtVariableRead<?> integerField, int minus) {
+        CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(setVariable, "size");
+        CtExpression<?> sizeMinus = sizeInvocation;
+        if (minus > 0)
+            sizeMinus = createBinaryExpression(sizeInvocation, minus, BinaryOperatorKind.MINUS);
+
         CtBinaryOperator<Boolean> condition = (CtBinaryOperator<Boolean>) SpoonFactory
-                .createBinaryExpression(addInvocation, integerField, BinaryOperatorKind.NE);
+                .createBinaryExpression(sizeMinus, integerField, BinaryOperatorKind.NE);
         CtReturn<?> returnStatement = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
         return SpoonFactory.createIfThenStatement(condition, returnStatement);
     }
