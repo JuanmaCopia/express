@@ -18,11 +18,13 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
 
     List<CtVariable<?>> loopFields;
     CtVariableRead<?> initialField;
+    boolean useBreakInsteadOfReturn;
 
-    public TraverseWorklistProcessor(CtVariableRead<?> initialField, List<CtVariable<?>> loopFields) {
+    public TraverseWorklistProcessor(CtVariableRead<?> initialField, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
         super();
         this.loopFields = loopFields;
         this.initialField = initialField;
+        this.useBreakInsteadOfReturn = useBreakInsteadOfReturn;
     }
 
     @Override
@@ -121,7 +123,7 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
             CtInvocation<?> addToListCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, loopFieldRead);
             CtIf ifNotNull = SpoonFactory.createIfThenStatement(fieldNullComp, addToListCall);
 
-            CtIf visitedCheck = SpoonFactory.createVisitedCheck(visitedSet, loopFieldRead, true);
+            CtIf visitedCheck = SpoonFactory.createVisitedCheck(visitedSet, loopFieldRead, true, useBreakInsteadOfReturn);
             addToListCall.insertBefore(visitedCheck);
 
             whileBody.insertEnd(ifNotNull);

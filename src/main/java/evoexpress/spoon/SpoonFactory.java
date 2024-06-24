@@ -425,12 +425,18 @@ public class SpoonFactory {
         return parameter;
     }
 
-    public static CtIf createVisitedCheck(CtVariable<?> setVariable, Object argument, boolean negate) {
+    public static CtIf createVisitedCheck(CtVariable<?> setVariable, Object argument, boolean negate, boolean useBreak) {
         CtExpression<?> condition = SpoonFactory.createAddToSetInvocation(setVariable, argument);
         if (negate)
             condition = SpoonFactory.createUnaryExpression(condition, UnaryOperatorKind.NOT);
-        CtReturn<?> returnStatement = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
-        return SpoonFactory.createIfThenStatement((CtExpression<Boolean>) condition, returnStatement);
+
+        CtStatement thenBlock;
+        if (useBreak)
+            thenBlock = SpoonFactory.createBreakStatement();
+        else
+            thenBlock = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
+        
+        return SpoonFactory.createIfThenStatement((CtExpression<Boolean>) condition, thenBlock);
     }
 
     public static CtExpression<Boolean> negateExpresion(CtExpression<Boolean> expression) {

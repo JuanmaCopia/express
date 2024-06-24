@@ -40,7 +40,8 @@ public class TraverseWorklistMutator implements Mutator {
 
         loopFields = MutatorHelper.selectRandomVariablesFromList(loopFields);
 
-        Processor<CtClass<?>> p = new TraverseWorklistProcessor(chosenInitialField, loopFields);
+        boolean useBreakInsteadOfReturn = RandomUtils.nextBoolean();
+        Processor<CtClass<?>> p = new TraverseWorklistProcessor(chosenInitialField, loopFields, useBreakInsteadOfReturn);
         p.process(individual.getCtClass());
 
         //System.err.println("\nTraverseWorklistMutator:\n" + individual.getCtClass().toString());
