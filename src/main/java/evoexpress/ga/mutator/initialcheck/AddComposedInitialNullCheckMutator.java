@@ -18,7 +18,7 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("initialCheck"))
             return false;
 
-        return SpoonManager.inputTypeData.getAllReferencePaths(1).size() > 1;
+        return SpoonManager.inputTypeData.getAllReferencePaths(1).stream().filter(p -> p.depth() >= 1).toList().size() > 1;
     }
 
     @Override
@@ -26,6 +26,7 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
         List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(1).stream().filter(p -> p.depth() >= 1).toList();
+
         List<Path> chosenVarReads = SpoonQueries.chooseNPaths(paths, 2);
         CtVariableRead<?> var1 = chosenVarReads.get(0).getVariableRead();
         CtVariableRead<?> var2 = chosenVarReads.get(1).getVariableRead();
