@@ -38,7 +38,8 @@ public class SpoonManager {
             initializeTarget();
             initializeInputTypeData();
             initializeTestSuiteClass();
-            compileModel();
+            if (!compileModel())
+                throw new Exception("Model could not be compiled");
             initializeClassLoader();
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,12 +106,12 @@ public class SpoonManager {
     }
 
     public static boolean compileIndividual(Individual individual) {
-        //CtClass<?> addedClass = putIndividualIntoTheEnvironment(individual);
-        //addClassToPackage(individual.getCtClass());
-//        individual.setIndividualClassName(preconditionClass.getQualifiedName());
+        CtClass<?> indClass = individual.getCtClass();
+        if (targetClass.getPackage().getType(indClass.getSimpleName()) == null)
+            throw new RuntimeException("Individual class not found in the target class package");
         boolean compiles = compileModel();
         if (!compiles)
-            removeClassFromPackage(individual.getCtClass());
+            removeClassFromPackage(indClass);
         return compiles;
     }
 

@@ -52,7 +52,9 @@ public abstract class GeneticAlgorithm {
     public Population initPopulation() {
         Population initialPopulation = new Population();
         Individual individual = new Individual();
-        assert SpoonManager.compileIndividual(individual);
+        SpoonManager.addClassToPackage(individual.getCtClass());
+        if (!SpoonManager.compileIndividual(individual))
+            throw new RuntimeException("Individual could not be compiled");
         initialPopulation.addIndividual(individual);
         return initialPopulation;
     }
