@@ -53,7 +53,7 @@ public class AddRandomComparisonToCurrent implements Mutator {
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(blockGene);
         endOfHandleCurrentComment.insertBefore(ifStatement);
 
-        System.err.println("\nAddNullCompToTraversalMutator:\n\n" + blockGene);
+        //System.err.println("\nAddNullCompToTraversalMutator:\n\n" + blockGene);
         return true;
     }
 

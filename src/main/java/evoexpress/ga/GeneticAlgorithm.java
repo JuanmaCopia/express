@@ -173,9 +173,7 @@ public abstract class GeneticAlgorithm {
         int i = 0;
         while (i < maxPopulationSize && population.size() > 0) {
             Individual fittest = population.removeFittest();
-            if (survivors.size() < MIN_POPULATION_SIZE)
-                survivors.addIndividual(fittest);
-            else if (fittest.getFitness() > FitnessFunctions.WORST_FITNESS_VALUE)
+            if (fittest.getFitness() > FitnessFunctions.WORST_FITNESS_VALUE)
                 survivors.addIndividual(fittest);
             else {
                 SpoonManager.removeClassFromPackage(fittest.getCtClass());
@@ -206,7 +204,7 @@ public abstract class GeneticAlgorithm {
         System.out.println("\n\n------------------   " + this.getClass().getSimpleName() + ": Generation " + population.getGenerationNumber() + "   ------------------\n");
         System.out.println("Population size: " + population.size());
         System.out.println("Fittest: " + population.getFittest().getFitness());
-        System.out.println("\n" + population.getFittest().toString());
+        //System.out.println("\n" + population.getFittest().toString());
     }
 
 }

@@ -24,6 +24,8 @@ public class StructureCheckGA extends GeneticAlgorithm {
         else
             generationsWithNoImprovement = 0;
         lastFittest = population.getFittest().getFitness();
+        if (lastFittest == 0.0)
+            return true;
         if (generationsWithNoImprovement >= MAX_GEN_WITH_NO_IMPROVEMENT)
             return true;
         if (population.getGenerationNumber() >= ToolConfig.maxGenerations)
