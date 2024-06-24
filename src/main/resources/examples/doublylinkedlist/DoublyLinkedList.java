@@ -102,6 +102,8 @@ public class DoublyLinkedList {
             current = current.prev;
         }
 
+        sb.append("\nsize -> " + size);
+
         return sb.toString().trim(); // Trim any trailing whitespace
     }
 

@@ -18,6 +18,10 @@ public class Path {
         this.fields.addFirst(root);
     }
 
+    public Path(List<CtVariable<?>> fields) {
+        this.fields = new LinkedList<>(fields);
+    }
+
     public LinkedList<CtVariable<?>> getFieldChain() {
         return new LinkedList<>(fields);
     }
@@ -49,6 +53,11 @@ public class Path {
     public CtVariableRead<?> getVariableReadOwner() {
         assert fields.size() > 1;
         return SpoonFactory.createFieldRead(new LinkedList(fields.subList(0, fields.size() - 1)));
+    }
+
+    public Path getSubPath() {
+        assert fields.size() > 1;
+        return new Path(new LinkedList<>(fields.subList(0, fields.size() - 1)));
     }
 
 }

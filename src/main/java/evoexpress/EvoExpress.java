@@ -11,6 +11,7 @@ import evoexpress.ga.mutator.initialcheck.AddComposedInitialNullCheckMutator;
 import evoexpress.ga.mutator.initialcheck.AddIfNullReturnMutator;
 import evoexpress.ga.mutator.structurecheck.traversal.TraverseWorklistMutator;
 import evoexpress.ga.mutator.structurecheck.traversal.inner.AddNullCompToTraversalMutator;
+import evoexpress.ga.mutator.structurecheck.traversal.inner.AddRandomComparisonToCurrent;
 import evoexpress.ga.mutator.structurecheck.traversal.inner.CheckVisitedFieldEndOfTraversalMutator;
 import evoexpress.ga.mutator.structurecheck.traversal.outer.AddSizeCheckMutator;
 import evoexpress.ga.population.Population;
@@ -58,6 +59,7 @@ public class EvoExpress {
         mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
         mutators.add(new AddSizeCheckMutator());
         mutators.add(new AddNullCompToTraversalMutator());
+        mutators.add(new AddRandomComparisonToCurrent());
 //        mutators.add(new TraverseCircularReferenceMutator());
         GeneticAlgorithm ga = new StructureCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
         return ga.startSearch(population);
