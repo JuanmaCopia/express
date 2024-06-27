@@ -35,6 +35,11 @@ public abstract class GeneticAlgorithm {
      */
     private final int elitismCount;
 
+    /*
+     * The fittest individual of the initial population
+     */
+    Individual initialFittest;
+
     /**
      * Set of mutators to employ in the search
      */
@@ -53,8 +58,11 @@ public abstract class GeneticAlgorithm {
         Population initialPopulation = new Population();
         Individual individual = new Individual();
         SpoonManager.addClassToPackage(individual.getCtClass());
-        if (!SpoonManager.compileIndividual(individual))
+        if (!SpoonManager.compileIndividual(individual)) {
+            SpoonManager.removeClassFromPackage(individual.getCtClass());
             throw new RuntimeException("Individual could not be compiled");
+        }
+        SpoonManager.removeClassFromPackage(individual.getCtClass());
         initialPopulation.addIndividual(individual);
         return initialPopulation;
     }
@@ -85,7 +93,7 @@ public abstract class GeneticAlgorithm {
     Population mutatePopulation(Population population) {
         Population newPopulation = new Population();
         newPopulation.setGenerationNumber(population.getGenerationNumber());
-
+        newPopulation.addIndividual(initialFittest);
         int i = 0;
         for (Individual individual : population.getIndividuals()) {
             if (i < elitismCount) {
@@ -117,6 +125,7 @@ public abstract class GeneticAlgorithm {
         CtCodeElement gene = selectGene(mutant, mutators);
         Mutator mutator = selectMutator(mutators, mutant, gene);
         if (mutator != null && mutator.mutate(mutant, gene) && SpoonManager.compileIndividual(mutant)) {
+            SpoonManager.removeClassFromPackage(mutant.getCtClass());
             return mutant;
         }
         SpoonManager.removeClassFromPackage(mutant.getCtClass());
@@ -126,13 +135,6 @@ public abstract class GeneticAlgorithm {
     private Individual cloneIndividual(Individual individual) {
         return new Individual(individual);
     }
-
-//    private Individual cloneIndividual(Individual individual) {
-//        CtClass<?> cls = individual.getCtClass();
-//
-//
-//        return new Individual(cls);
-//    }
 
     CtCodeElement selectGene(Individual individual, Set<Mutator> mutators) {
         List<CtCodeElement> mutableCodeElements = filterMutableCodeElements(individual, mutators);
@@ -186,9 +188,9 @@ public abstract class GeneticAlgorithm {
         return survivors;
     }
 
-
     public Population startSearch(Population population) {
         evalPopulation(population);
+        initialFittest = population.getFittest();
         population = selectSurvivors(population);
 
         while (!isTerminationConditionMet(population)) {

@@ -24,11 +24,6 @@ public class Individual implements Comparable<Individual> {
         nonTraversedPathsToCyclicNodes = SpoonManager.inputTypeData.getPathsToCyclicNodes();
     }
 
-    public Individual(CtClass<?> cls) {
-        this.cls = cls;
-        nonTraversedPathsToCyclicNodes = SpoonManager.inputTypeData.getPathsToCyclicNodes();
-    }
-
     public Individual(Individual other) {
         cls = other.getCtClass().clone();
         cls.setSimpleName(ToolConfig.preconditionClassName + id++);

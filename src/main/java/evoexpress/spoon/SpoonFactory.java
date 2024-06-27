@@ -67,8 +67,7 @@ public class SpoonFactory {
         ctPackage.addType(preconditionClass);
 
         createSubPreconditions(preconditionClass, SpoonManager.inputTypeData.getInputs());
-        SpoonManager.addClassToPackage(preconditionClass);
-
+        
         return preconditionClass;
     }
 

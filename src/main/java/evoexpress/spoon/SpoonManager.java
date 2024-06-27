@@ -10,6 +10,7 @@ import spoon.OutputType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 
 import java.io.File;
 import java.net.URL;
@@ -109,10 +110,7 @@ public class SpoonManager {
         CtClass<?> indClass = individual.getCtClass();
         if (targetClass.getPackage().getType(indClass.getSimpleName()) == null)
             throw new RuntimeException("Individual class not found in the target class package");
-        boolean compiles = compileModel();
-        if (!compiles)
-            removeClassFromPackage(indClass);
-        return compiles;
+        return compileModel();
     }
 
     public static boolean compileModel() {
@@ -125,23 +123,12 @@ public class SpoonManager {
         return compiles;
     }
 
-//    public static CtClass<?> putIndividualIntoTheEnvironment(Individual individual) {
-//        CtClass<?> preconditionClass = generateIndividualCtClass(individual, compilationId++);
-//        addClassToPackage(preconditionClass);
-//        individual.setIndividualClassName(preconditionClass.getQualifiedName());
-//        return preconditionClass;
-//    }
-//
-//    private static CtClass<?> generateIndividualCtClass(Individual individual, Integer id) {
-//        return Refactoring.copyType(individual.getClass());
-//    }
-
-    public static void addClassToPackage(CtClass<?> ctClass) {
-        targetClass.getPackage().addType(ctClass);
+    public static void addClassToPackage(CtType<?> ctType) {
+        targetClass.getPackage().addType(ctType);
     }
 
-    public static void removeClassFromPackage(CtClass<?> ctClass) {
-        targetClass.getPackage().removeType(ctClass);
+    public static void removeClassFromPackage(CtType<?> ctType) {
+        targetClass.getPackage().removeType(ctType);
     }
 
     public static void generateSourcePreconditionSourceFile(Individual individual) {

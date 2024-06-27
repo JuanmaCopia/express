@@ -41,6 +41,8 @@ public class ObjectHelper {
 
         Field[] fields = original.getClass().getDeclaredFields();
         for (Field field : fields) {
+            if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()))
+                continue;
             try {
                 field.setAccessible(true);
                 Object fieldValue = field.get(original);
