@@ -28,7 +28,7 @@ import java.util.Set;
  * @author Mark Allen Weiss
  */
 public class AvlTree {
-    private static final int ALLOWED_IMBALANCE = 1;
+    static final int ALLOWED_IMBALANCE = 1;
     /**
      * The tree root.
      */
@@ -129,6 +129,11 @@ public class AvlTree {
      */
     public boolean isEmpty() {
         return root == null;
+    }
+
+    // Only to avoid changing target method for case studies
+    public void size() {
+
     }
 
     /**

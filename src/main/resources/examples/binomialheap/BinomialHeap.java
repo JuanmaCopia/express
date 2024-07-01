@@ -60,7 +60,7 @@ public class BinomialHeap {
         Nodes = null;
         size = 0;
     }
-    
+
 
     // 4. Insert a node with a specific value
 
@@ -255,19 +255,19 @@ public class BinomialHeap {
             if ((Nodes == null) && (fakeNode != null)) {
                 Nodes = fakeNode.reverse(null);
                 // FIX
-                size = Nodes.getSize();
+                size = Nodes.size();
                 // BUG
                 // size--;
             } else {
                 if ((Nodes != null) && (fakeNode == null)) {
                     // FIX
-                    size = Nodes.getSize();
+                    size = Nodes.size();
                     // BUG
                     // size--;
                 } else {
                     unionNodes(fakeNode.reverse(null));
                     // FIX
-                    size = Nodes.getSize();
+                    size = Nodes.size();
                     // BUG
                     // size--;
                 }
@@ -458,7 +458,7 @@ public class BinomialHeap {
         return numberOfNodes;
     }
 
-    public int getSize() {
+    public int size() {
         return size;
     }
 
@@ -507,8 +507,8 @@ public class BinomialHeap {
             return child;
         }
 
-        public int getSize() {
-            return (1 + ((child == null) ? 0 : child.getSize()) + ((sibling == null) ? 0 : sibling.getSize()));
+        public int size() {
+            return (1 + ((child == null) ? 0 : child.size()) + ((sibling == null) ? 0 : sibling.size()));
         }
 
         /* Function reverse */
