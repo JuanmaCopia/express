@@ -97,8 +97,22 @@ public class InputTypeData {
         return allPaths;
     }
 
+    public List<Path> getAllPaths(int depth) {
+        List<Path> allPaths = new ArrayList<>();
+        for (CtVariable<?> p : inputs) {
+            if (TypeUtils.isUserDefined(p.getType())) {
+                allPaths.addAll(typeGraphMap.get(p).getAllPaths(depth));
+            }
+        }
+        return allPaths;
+    }
+
     public List<Path> getAllReferencePathsOfType(CtTypeReference<?> type, int depth) {
         return getAllReferencePaths(depth).stream().filter(p -> p.getTypeReference().equals(type)).toList();
+    }
+
+    public List<Path> getAllPathsOfType(CtTypeReference<?> type, int depth) {
+        return getAllPaths(depth).stream().filter(p -> p.getTypeReference().equals(type)).toList();
     }
 
     public List<Path> getAllReferencePathsOfType(CtVariable<?> initialVariable, CtTypeReference<?> type, int depth) {

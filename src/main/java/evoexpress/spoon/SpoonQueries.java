@@ -199,6 +199,13 @@ public class SpoonQueries {
         return (CtStatement) traversalEndComments.get(RandomUtils.nextInt(traversalEndComments.size()));
     }
 
+    public static CtStatement getBeginOfTraversalComment(CtBlock<?> block) {
+        List<CtElement> matchingComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isBeginOfTraversalComment).toList();
+        if (matchingComments.isEmpty())
+            return null;
+        return (CtStatement) matchingComments.get(RandomUtils.nextInt(matchingComments.size()));
+    }
+
 //    public static List<List<CtVariable<?>>> getNonUsedInitialPathsToCyclicField(CtBlock<?> code) {
 //        List<List<CtVariable<?>>> nonUsedInitialPathsToCyclicField = new LinkedList<>();
 //
@@ -271,6 +278,10 @@ public class SpoonQueries {
                 return parameter;
         }
         return null;
+    }
+
+    public static CtVariable<?> getInitialSizeVariable(CtBlock<?> block) {
+        return getLocalVariablesMathingPrefix(block, LocalVarHelper.SIZE_VAR_NAME).get(0);
     }
 
     public static List<CtLocalVariable<?>> getVisitedSetLocalVarsOfType(CtBlock<?> block, CtTypeReference<?> type) {

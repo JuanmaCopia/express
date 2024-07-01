@@ -67,7 +67,7 @@ public class SpoonFactory {
         ctPackage.addType(preconditionClass);
 
         createSubPreconditions(preconditionClass, SpoonManager.inputTypeData.getInputs());
-        
+
         return preconditionClass;
     }
 
@@ -447,7 +447,7 @@ public class SpoonFactory {
         return SpoonFactory.createInvocation(setVariable, "add", elemType, argument);
     }
 
-    public static CtIf createVisitedSizeCheck(CtVariable<?> setVariable, CtVariableRead<?> integerField, int minus) {
+    public static CtIf createVisitedSizeCheck(CtVariable<?> setVariable, CtExpression<?> integerField, int minus) {
         CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(setVariable, "size");
         CtExpression<?> sizeMinus = sizeInvocation;
         if (minus > 0)
