@@ -18,6 +18,7 @@ public class LocalVarHelper {
     public static final String WORKLIST_VAR_NAME = "worklist_";
     public static final String CURRENT_VAR_NAME = "current_";
     public static final String TRAVERSAL_PREFIX = "traverse_";
+    public static final String SIZE_VAR_NAME = "initialSize_";
 
 
     public static String getVarName(CtBlock<?> code) {
@@ -51,5 +52,9 @@ public class LocalVarHelper {
 
     public static String getTraversalMethodName(CtClass<?> ctClass) {
         return TRAVERSAL_PREFIX + getNextTraversalId(ctClass);
+    }
+
+    public static String getInitialSizeVarName(CtBlock<?> ctBlock) {
+        return SIZE_VAR_NAME;
     }
 }
