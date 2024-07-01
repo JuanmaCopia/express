@@ -111,6 +111,10 @@ public class Schedule {
         }
     }
 
+    public int size() {
+        return numProcesses;
+    }
+
     public void upgradeProcessPrio(int prio, float ratio) {
         if (prio < 1 || prio > MAXPRIO)
             throw new IllegalArgumentException();
@@ -252,29 +256,29 @@ public class Schedule {
         blockQueue = new List();
     }
 
-    public String toString() {
-        if (numProcesses == 0) {
-            return "Schedule={}";
-        } else {
-            StringBuffer buf = new StringBuffer();
-            buf.append("Schedule = {");
-            buf.append(" prioQueue = { ");
-            for (int i = 1; i <= MAXPRIO; i++) {
-                List proc = getPrioQueue(i);
-                buf.append(proc.toString());
-            }
-            buf.append(" }");
-            buf.append(" , ");
-            buf.append(" blockQueue = { ");
-            buf.append(blockQueue.toString());
-            buf.append(" }");
-            buf.append(" currProc = { ");
-            buf.append(curProc == null ? "null" : curProc.toString());
-            buf.append(" }");
-            buf.append(" }");
-            return buf.toString();
-        }
-    }
+//    public String toString() {
+//        if (numProcesses == 0) {
+//            return "Schedule={}";
+//        } else {
+//            StringBuffer buf = new StringBuffer();
+//            buf.append("Schedule = {");
+//            buf.append(" prioQueue = { ");
+//            for (int i = 1; i <= MAXPRIO; i++) {
+//                List proc = getPrioQueue(i);
+//                buf.append(proc.toString());
+//            }
+//            buf.append(" }");
+//            buf.append(" , ");
+//            buf.append(" blockQueue = { ");
+//            buf.append(blockQueue.toString());
+//            buf.append(" }");
+//            buf.append(" currProc = { ");
+//            buf.append(curProc == null ? "null" : curProc.toString());
+//            buf.append(" }");
+//            buf.append(" }");
+//            return buf.toString();
+//        }
+//    }
 
     public boolean pre() {
         return preH() && preP();
