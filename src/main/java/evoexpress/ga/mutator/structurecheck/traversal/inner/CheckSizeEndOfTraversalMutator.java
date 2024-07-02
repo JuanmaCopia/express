@@ -1,5 +1,6 @@
 package evoexpress.ga.mutator.structurecheck.traversal.inner;
 
+import evoexpress.ga.helper.LocalVarHelper;
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.spoon.RandomUtils;
@@ -18,7 +19,8 @@ public class CheckSizeEndOfTraversalMutator implements Mutator {
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("traverse_"))
             return false;
-
+        if (SpoonQueries.getInitialSizeVariable(block) != null)
+            return false;
         return !SpoonManager.inputTypeData.getAllPathsOfType(SpoonFactory.getTypeFactory().integerPrimitiveType(), 2).isEmpty();
     }
 
@@ -27,9 +29,10 @@ public class CheckSizeEndOfTraversalMutator implements Mutator {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
         CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(blockGene.getParent(CtMethod.class));
-        CtVariable<?> initialSizeVar = SpoonQueries.getInitialSizeVariable(blockGene);
 
         CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(visitedSetVar, "size");
+        CtLocalVariable<?> initialSizeVar = SpoonFactory.createLocalVariable(LocalVarHelper.getInitialSizeVarName(), SpoonFactory.getTypeFactory().INTEGER_PRIMITIVE, sizeInvocation);
+
         CtExpression<?> leftExpr = SpoonFactory.createBinaryExpression(sizeInvocation, initialSizeVar, BinaryOperatorKind.MINUS);
 
         List<Path> candidates = SpoonManager.inputTypeData.getAllPathsOfType(SpoonFactory.getTypeFactory().integerPrimitiveType(), 2);
@@ -42,6 +45,8 @@ public class CheckSizeEndOfTraversalMutator implements Mutator {
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
 
+        CtStatement beginOfTraversalComment = SpoonQueries.getBeginOfTraversalComment(blockGene);
+        beginOfTraversalComment.insertAfter(initialSizeVar);
         CtStatement endOfTraversalComment = SpoonQueries.getEndOfTraversalComment(blockGene);
         endOfTraversalComment.insertBefore(ifStatement);
 

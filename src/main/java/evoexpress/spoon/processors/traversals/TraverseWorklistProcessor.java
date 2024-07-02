@@ -77,8 +77,6 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         CtBlock<?> ctBlock = SpoonFactory.createBlock();
         traversalMethod.setBody(ctBlock);
 
-        CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(visitedSet, "size");
-        CtLocalVariable<?> initialSizeVar = SpoonFactory.createLocalVariable(LocalVarHelper.getInitialSizeVarName(ctBlock), SpoonFactory.getTypeFactory().INTEGER_PRIMITIVE, sizeInvocation);
 
         CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(initialField.getType(), ctBlock);
 
@@ -137,7 +135,6 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
 
 
         ctBlock.insertEnd(SpoonFactory.createComment("Begin of traversal"));
-        ctBlock.insertEnd(initialSizeVar);
         ctBlock.insertEnd(worklist);
         ctBlock.insertEnd(SpoonFactory.createComment("Initialize root element:"));
         ctBlock.insertEnd(initialFieldNullCheck);

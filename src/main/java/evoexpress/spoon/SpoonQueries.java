@@ -281,7 +281,10 @@ public class SpoonQueries {
     }
 
     public static CtVariable<?> getInitialSizeVariable(CtBlock<?> block) {
-        return getLocalVariablesMathingPrefix(block, LocalVarHelper.SIZE_VAR_NAME).get(0);
+        List<CtLocalVariable<?>> vars = getLocalVariablesMathingPrefix(block, LocalVarHelper.SIZE_VAR_NAME);
+        if (vars.isEmpty())
+            return null;
+        return vars.get(0);
     }
 
     public static List<CtLocalVariable<?>> getVisitedSetLocalVarsOfType(CtBlock<?> block, CtTypeReference<?> type) {

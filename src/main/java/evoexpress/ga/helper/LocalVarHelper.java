@@ -54,7 +54,7 @@ public class LocalVarHelper {
         return TRAVERSAL_PREFIX + getNextTraversalId(ctClass);
     }
 
-    public static String getInitialSizeVarName(CtBlock<?> ctBlock) {
+    public static String getInitialSizeVarName() {
         return SIZE_VAR_NAME;
     }
 }
