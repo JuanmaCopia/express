@@ -15,12 +15,14 @@ public class InputTypeData {
     Map<CtVariable<?>, TypeGraph> typeGraphMap = new HashMap<>();
 
     Set<Path> pathsToCyclicNodes;
-    //Map<CtVariable<?>, Set<Path>> parametersToTraversableNodes;
+    Set<Path> pathsToArrayNodes;
+
 
     public InputTypeData(List<CtParameter<?>> methodInputs) {
         inputs = methodInputs;
         initializeTypeGraphs();
-        initializeParametersToTraversableNodes();
+        initializePathsToCyclicNodes();
+        initializePathsToArrayNodes();
     }
 
     private void initializeTypeGraphs() {
@@ -32,7 +34,7 @@ public class InputTypeData {
         }
     }
 
-    private void initializeParametersToTraversableNodes() {
+    private void initializePathsToCyclicNodes() {
         pathsToCyclicNodes = new HashSet<>();
         for (CtVariable<?> p : inputs) {
             if (TypeUtils.isUserDefined(p.getType())) {
@@ -41,26 +43,22 @@ public class InputTypeData {
         }
     }
 
+    private void initializePathsToArrayNodes() {
+        pathsToArrayNodes = new HashSet<>();
+        for (CtVariable<?> p : inputs) {
+            if (TypeUtils.isUserDefined(p.getType())) {
+                pathsToArrayNodes.addAll(typeGraphMap.get(p).getPathsToArrayNodes());
+            }
+        }
+    }
+
     public Set<Path> getPathsToCyclicNodes() {
         return new HashSet<>(pathsToCyclicNodes);
     }
 
-//    private void initializeParametersToTraversableNodes() {
-//        parametersToTraversableNodes = new HashMap<>();
-//        for (CtVariable<?> p : inputs) {
-//            if (TypeUtils.isUserDefined(p.getType())) {
-//                parametersToTraversableNodes.put(p, typeGraphMap.get(p).getPathsToCyclicNodes());
-//            }
-//        }
-//    }
-
     public LinkedList<CtParameter<?>> getInputs() {
         return new LinkedList<>(inputs);
     }
-
-//    public Map<CtVariable<?>, Set<Path>> getMapParameterToTraversableNodes() {
-//        return new HashMap<>(parametersToTraversableNodes);
-//    }
 
     public TypeGraph getTypeGraphOfParameter(CtVariable<?> parameter) {
         CtTypeReference<?> type = parameter.getType();
@@ -131,4 +129,7 @@ public class InputTypeData {
         return integerFields;
     }
 
+    public Set<Path> getPathsToArrayNodes() {
+        return new HashSet<>(pathsToArrayNodes);
+    }
 }

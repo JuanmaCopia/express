@@ -5,6 +5,7 @@ import evoexpress.spoon.SpoonFactory;
 import evoexpress.type.TypeUtils;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -19,6 +20,7 @@ public class TypeGraph {
 
     Set<Edge> edges = new HashSet<>();
 
+    Set<Path> pathsToArrayNodes = new HashSet<>();
     Set<Path> pathsToCyclicNodes = new HashSet<>();
     Map<CtTypeReference<?>, List<CtVariable<?>>> cyclicFieldsMap = new HashMap<>();
 
@@ -26,6 +28,7 @@ public class TypeGraph {
     public TypeGraph(CtVariable<?> rootVariable) {
         initializeGraph(rootVariable);
         initializeCyclicFieldsMap();
+        initializePathsToArrayNodes();
     }
 
     private void initializeCyclicFieldsMap() {
@@ -34,6 +37,13 @@ public class TypeGraph {
             List<CtVariable<?>> cyclicFields = _getCyclicFieldsOfNode(node);
             cyclicFieldsMap.put(node, cyclicFields);
             pathsToCyclicNodes.addAll(getSimplePaths(rootType, node));
+        }
+    }
+
+    private void initializePathsToArrayNodes() {
+        Set<CtTypeReference<?>> arrayNodes = getNodes().stream().filter(CtTypeInformation::isArray).collect(Collectors.toSet());
+        for (CtTypeReference<?> node : arrayNodes) {
+            pathsToArrayNodes.addAll(getSimplePaths(rootType, node));
         }
     }
 
@@ -215,6 +225,10 @@ public class TypeGraph {
             builder.append(node.getSimpleName()).append(" -> ").append(adj).append("\n");
         }
         return builder.toString();
+    }
+
+    public Collection<? extends Path> getPathsToArrayNodes() {
+        return pathsToArrayNodes;
     }
 
     public record Edge(CtTypeReference<?> source, CtTypeReference<?> destination, CtVariable<?> label) {

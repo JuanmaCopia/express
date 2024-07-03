@@ -16,28 +16,40 @@ public class Individual implements Comparable<Individual> {
     private final CtClass<?> cls;
     public boolean marked;
     Set<Path> nonTraversedPathsToCyclicNodes;
+    Set<Path> nonTraversedPathsToArrayNodes;
     private double fitness;
     private boolean isFitnessUpdated;
 
     public Individual() {
         cls = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + id++);
         nonTraversedPathsToCyclicNodes = SpoonManager.inputTypeData.getPathsToCyclicNodes();
+        nonTraversedPathsToArrayNodes = SpoonManager.inputTypeData.getPathsToArrayNodes();
     }
 
     public Individual(Individual other) {
         cls = other.getCtClass().clone();
         cls.setSimpleName(ToolConfig.preconditionClassName + id++);
         nonTraversedPathsToCyclicNodes = new HashSet<>(other.nonTraversedPathsToCyclicNodes);
+        nonTraversedPathsToArrayNodes = new HashSet<>(other.nonTraversedPathsToArrayNodes);
     }
 
     // Tracking traversed paths
-    public boolean hasNonTraversedPaths() {
+    public boolean hasNonTraversedPathsToCyclicNodes() {
         return !nonTraversedPathsToCyclicNodes.isEmpty();
+    }
+
+    public boolean hasNonTraversedPathsToArrayNodes() {
+        return !nonTraversedPathsToArrayNodes.isEmpty();
     }
 
     public Set<Path> getNonTraversedPathsToCyclicNodes() {
         return nonTraversedPathsToCyclicNodes;
     }
+
+    public Set<Path> getNonTraversedPathsToArrayNodes() {
+        return nonTraversedPathsToArrayNodes;
+    }
+
 
     public CtClass<?> getCtClass() {
         return cls;
