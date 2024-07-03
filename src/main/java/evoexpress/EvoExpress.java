@@ -2,7 +2,6 @@ package evoexpress;
 
 import evoexpress.config.ToolConfig;
 import evoexpress.ga.GeneticAlgorithm;
-import evoexpress.ga.InitialCheckGA;
 import evoexpress.ga.StructureCheckGA;
 import evoexpress.ga.fitness.FitnessFunctions;
 import evoexpress.ga.individual.Individual;
@@ -27,8 +26,8 @@ public class EvoExpress {
     public static void main(String[] args) {
         initialize();
         printStart();
-        Population population = startInitialCheckSearch();
-        population = startStructureCheckSearch(population);
+        //Population population = startInitialCheckSearch();
+        Population population = startStructureCheckSearch();
         printResults(population);
         saveResults(population);
     }
@@ -44,17 +43,19 @@ public class EvoExpress {
         System.out.println("\n==============================  Search Started  ==============================\n");
     }
 
-    public static Population startInitialCheckSearch() {
-        Set<Mutator> mutators = new HashSet<>();
-        mutators.add(new AddIfNullReturnMutator());
-        mutators.add(new AddComposedInitialNullCheckMutator());
-        GeneticAlgorithm ga = new InitialCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
-        return ga.startSearch(ga.initPopulation());
-    }
+//    public static Population startInitialCheckSearch() {
+//        Set<Mutator> mutators = new HashSet<>();
+//        mutators.add(new AddIfNullReturnMutator());
+//        mutators.add(new AddComposedInitialNullCheckMutator());
+//        GeneticAlgorithm ga = new InitialCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
+//        return ga.startSearch(ga.initPopulation());
+//    }
 
-    public static Population startStructureCheckSearch(Population population) {
+    public static Population startStructureCheckSearch() {
         Set<Mutator> mutators = new HashSet<>();
         mutators.add(new TraverseWorklistMutator());
+        mutators.add(new AddIfNullReturnMutator());
+        mutators.add(new AddComposedInitialNullCheckMutator());
 //        mutators.add(new TraverseCyclicReferenceMutator());
 //        mutators.add(new AddComposedIfToTraversalMutator());
         mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
@@ -64,7 +65,7 @@ public class EvoExpress {
         mutators.add(new CheckSizeEndOfTraversalMutator());
 //        mutators.add(new TraverseCircularReferenceMutator());
         GeneticAlgorithm ga = new StructureCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
-        return ga.startSearch(population);
+        return ga.startSearch(ga.initPopulation());
     }
 
 
