@@ -51,7 +51,7 @@ public class LocalVarHelper {
         return WORKLIST_VAR_NAME + getNextId(code, WORKLIST_VAR_NAME);
     }
 
-    public static String getTraversalMethodName(CtClass<?> ctClass) {
+    public static String getTraversalMethodName() {
         return TRAVERSAL_PREFIX;
     }
 

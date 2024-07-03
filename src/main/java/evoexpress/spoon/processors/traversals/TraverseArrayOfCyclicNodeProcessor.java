@@ -70,12 +70,12 @@ public class TraverseArrayOfCyclicNodeProcessor extends AbstractProcessor<CtClas
         modifiers.add(ModifierKind.STATIC);
 
         CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().BOOLEAN_PRIMITIVE;
-        CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, LocalVarHelper.getTraversalMethodName(ctClass), parameters);
+        CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, LocalVarHelper.getTraversalMethodName(), parameters);
 
         createTraversalBody(traversalMethod, parameters.get(parameters.size() - 2), parameters.get(parameters.size() - 1));
         return traversalMethod;
     }
-    
+
     private void createTraversalBody(CtMethod<?> traversalMethod, CtVariable<?> firstElement, CtVariable<?> visitedSet) {
         CtBlock<?> ctBlock = SpoonFactory.createBlock();
         traversalMethod.setBody(ctBlock);

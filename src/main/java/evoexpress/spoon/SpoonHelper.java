@@ -4,6 +4,9 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
+
+import java.util.List;
 
 public class SpoonHelper {
 
@@ -40,5 +43,15 @@ public class SpoonHelper {
             return;
         }
         throw new IllegalArgumentException(e.getClass() + " " + op.getClass());
+    }
+
+    public static String getStringFromVariableList(List<CtVariable<?>> vars) {
+        StringBuilder sb = new StringBuilder();
+        for (CtVariable<?> var : vars) {
+            sb.append(var.getSimpleName());
+            sb.append("_");
+        }
+        sb.setLength(sb.length() - 1);
+        return sb.toString();
     }
 }
