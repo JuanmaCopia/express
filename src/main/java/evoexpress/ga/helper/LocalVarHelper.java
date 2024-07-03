@@ -52,7 +52,7 @@ public class LocalVarHelper {
     }
 
     public static String getTraversalMethodName(CtClass<?> ctClass) {
-        return TRAVERSAL_PREFIX + getNextTraversalId(ctClass);
+        return TRAVERSAL_PREFIX;
     }
 
     public static String getTraversalArrayMethodName(CtClass<?> ctClass) {

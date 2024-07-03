@@ -36,17 +36,41 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         CtVariable<?> setVar = handleVisitedSetVariable(structureMethodBody, lastStatement);
 
         List<CtParameter<?>> parameters = SpoonManager.inputTypeData.getInputs();
+        parameters.add(SpoonFactory.createParameter(setVar.getType().getActualTypeArguments().get(0), "initialField"));
         parameters.add(SpoonFactory.createParameter(setVar.getType(), setVar.getSimpleName()));
 
-        CtMethod<?> traversalMethod = createTraversalMethod(ctClass, parameters);
+        String methodName = createMethodName(ctClass, loopFields);
+        CtMethod<?> traversalMethod = createTraversalMethod(methodName, ctClass, parameters);
         ctClass.addMethod(traversalMethod);
 
-        CtExpression<?>[] args = SpoonFactory.createArgumentsFromParameters(parameters);
+        CtExpression<?>[] args = createArguments(parameters, setVar);
         CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(traversalMethod, args);
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(SpoonFactory.negateExpresion(traversalCall));
         lastStatement.insertBefore(ifStatement);
 
+    }
+
+    private String createMethodName(CtClass<?> ctClass, List<CtVariable<?>> loopFields) {
+        return LocalVarHelper.getTraversalMethodName(ctClass) + loopFields.get(0).getType().getSimpleName() + "_" + getStringFromVariableList(loopFields);
+    }
+
+    private String getStringFromVariableList(List<CtVariable<?>> vars) {
+        StringBuilder sb = new StringBuilder();
+        for (CtVariable<?> var : vars) {
+            sb.append(var.getSimpleName());
+            sb.append("_");
+        }
+        sb.setLength(sb.length() - 1);
+        return sb.toString();
+    }
+
+    private CtExpression<?>[] createArguments(List<CtParameter<?>> params, CtVariable<?> visitedSetVar) {
+        CtExpression<?>[] args = new CtExpression[params.size()];
+        args[0] = SpoonFactory.createVariableRead(params.get(0));
+        args[1] = initialField;
+        args[2] = SpoonFactory.createVariableRead(visitedSetVar);
+        return args;
     }
 
     private CtVariable<?> handleVisitedSetVariable(CtBlock<?> methodBody, CtStatement lastStatement) {
@@ -61,35 +85,39 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         return setVars.get(RandomUtils.nextInt(setVars.size()));
     }
 
-    private CtMethod<?> createTraversalMethod(CtClass<?> ctClass, List<CtParameter<?>> parameters) {
+    private CtMethod<?> createTraversalMethod(String methodName, CtClass<?> ctClass, List<CtParameter<?>> parameters) {
         Set<ModifierKind> modifiers = new HashSet<>();
         modifiers.add(ModifierKind.PRIVATE);
         modifiers.add(ModifierKind.STATIC);
 
         CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().BOOLEAN_PRIMITIVE;
-        CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, LocalVarHelper.getTraversalMethodName(ctClass), parameters);
+        CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, methodName, parameters);
 
-        createTraversalBody(traversalMethod, parameters.get(parameters.size() - 1));
+        createTraversalBody(traversalMethod, parameters);
         return traversalMethod;
     }
 
-    private void createTraversalBody(CtMethod<?> traversalMethod, CtVariable<?> visitedSet) {
+    private void createTraversalBody(CtMethod<?> traversalMethod, List<CtParameter<?>> params) {
         CtBlock<?> ctBlock = SpoonFactory.createBlock();
         traversalMethod.setBody(ctBlock);
 
+        CtVariable<?> initField = params.get(params.size() - 2);
+        CtVariableRead<?> initFieldRead = SpoonFactory.createVariableRead(initField);
+        CtVariable<?> visitedSet = params.get(params.size() - 1);
 
-        CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(initialField.getType(), ctBlock);
+
+        CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(initField.getType(), ctBlock);
 
         CtTypeReference<?> subtypeOfWorklist = worklist.getType().getActualTypeArguments().get(0);
 
-        CtInvocation<?> addToWorklistCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, initialField);
-        CtInvocation<?> addToSetCall = (CtInvocation<?>) SpoonFactory.createAddToSetInvocation(visitedSet, initialField);
+        CtInvocation<?> addToWorklistCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, initField);
+        CtInvocation<?> addToSetCall = (CtInvocation<?>) SpoonFactory.createAddToSetInvocation(visitedSet, initField);
         CtBlock<?> ifBlock = SpoonFactory.createBlock();
         ifBlock.insertEnd(addToWorklistCall);
         ifBlock.insertEnd(addToSetCall);
 
 
-        CtExpression<Boolean> ifCondition = SpoonFactory.createNullComparisonClause(initialField, BinaryOperatorKind.NE);
+        CtExpression<Boolean> ifCondition = SpoonFactory.createNullComparisonClause(initFieldRead, BinaryOperatorKind.NE);
         CtIf initialFieldNullCheck = SpoonFactory.createIfThenStatement(ifCondition, ifBlock);
 
         // create condition: !workList.isEmpty()
