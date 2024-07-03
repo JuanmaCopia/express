@@ -29,8 +29,8 @@ public class WorklistTraversal {
         return traversalMethod;
     }
 
-    private static String createMethodName(List<CtVariable<?>> loopFields) {
-        return LocalVarHelper.getTraversalMethodName() + loopFields.get(0).getType().getSimpleName() + "_" + SpoonHelper.getStringFromVariableList(loopFields);
+    public static String createMethodName(List<CtVariable<?>> loopFields) {
+        return LocalVarHelper.TRAVERSAL_PREFIX + loopFields.get(0).getType().getSimpleName() + "_" + SpoonHelper.getStringFromVariableList(loopFields);
     }
 
 
@@ -40,7 +40,7 @@ public class WorklistTraversal {
         CtVariable<?> initField = params.get(params.size() - 2);
         CtVariableRead<?> initFieldRead = SpoonFactory.createVariableRead(initField);
         CtVariable<?> visitedSet = params.get(params.size() - 1);
-        
+
         CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(initField.getType(), body);
 
         CtTypeReference<?> subtypeOfWorklist = worklist.getType().getActualTypeArguments().get(0);

@@ -55,9 +55,14 @@ public class LocalVarHelper {
         return TRAVERSAL_PREFIX;
     }
 
-    public static String getTraversalArrayMethodName(CtClass<?> ctClass) {
-        return TRAVERSAL_ARRAY_PREFIX + getNextTraversalId(ctClass);
-    }
+//    public static String getTraversalMethodName(CtClass<?> ctClass) {
+//        return TRAVERSAL_ARRAY_PREFIX + getNextTraversalId(ctClass);
+//    }
+//
+//
+//    public static String getTraversalArrayMethodName(CtClass<?> ctClass) {
+//        return TRAVERSAL_ARRAY_PREFIX + getNextTraversalId(ctClass);
+//    }
 
     public static String getInitialSizeVarName() {
         return SIZE_VAR_NAME;
