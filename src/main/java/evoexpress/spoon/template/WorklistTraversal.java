@@ -1,13 +1,11 @@
 package evoexpress.spoon.template;
 
 import evoexpress.ga.helper.LocalVarHelper;
+import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonHelper;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.HashSet;
@@ -15,6 +13,19 @@ import java.util.List;
 import java.util.Set;
 
 public class WorklistTraversal {
+
+    public static CtMethod<?> obtainTraversalMethod(CtClass<?> ctClass, List<CtParameter<?>> parameters, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
+        CtMethod<?> traversalMethod;
+        List<CtMethod<?>> traversalsOfSameFields = ctClass.getMethods().stream().filter(m -> m.getSimpleName().startsWith(WorklistTraversal.createMethodName(loopFields))).toList();
+        if (!traversalsOfSameFields.isEmpty() && RandomUtils.nextBoolean()) {
+            traversalMethod = traversalsOfSameFields.get(0);
+        } else {
+            traversalMethod = createTraversalMethod(parameters, loopFields, useBreakInsteadOfReturn);
+            traversalMethod.setSimpleName(traversalMethod.getSimpleName() + "_" + LocalVarHelper.getNextTraversalId(ctClass));
+            ctClass.addMethod(traversalMethod);
+        }
+        return traversalMethod;
+    }
 
     public static CtMethod<?> createTraversalMethod(List<CtParameter<?>> parameters, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
         Set<ModifierKind> modifiers = new HashSet<>();

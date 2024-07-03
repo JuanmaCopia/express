@@ -41,22 +41,13 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         parameters.add(SpoonFactory.createParameter(setVar.getType().getActualTypeArguments().get(0), "initialField"));
         parameters.add(SpoonFactory.createParameter(setVar.getType(), setVar.getSimpleName()));
 
-        CtMethod<?> traversalMethod;
-        List<CtMethod<?>> traversalsOfSameFields = ctClass.getMethods().stream().filter(m -> m.getSimpleName().startsWith(WorklistTraversal.createMethodName(loopFields))).toList();
-        if (!traversalsOfSameFields.isEmpty() && RandomUtils.nextBoolean()) {
-            traversalMethod = traversalsOfSameFields.get(0);
-        } else {
-            traversalMethod = WorklistTraversal.createTraversalMethod(parameters, loopFields, useBreakInsteadOfReturn);
-            traversalMethod.setSimpleName(traversalMethod.getSimpleName() + "_" + LocalVarHelper.getNextTraversalId(ctClass));
-            ctClass.addMethod(traversalMethod);
-        }
+        CtMethod<?> traversalMethod = WorklistTraversal.obtainTraversalMethod(ctClass, parameters, loopFields, useBreakInsteadOfReturn);
 
         CtExpression<?>[] args = createArguments(parameters, setVar);
         CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(traversalMethod, args);
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(SpoonFactory.negateExpresion(traversalCall));
         lastStatement.insertBefore(ifStatement);
-
     }
 
     private CtExpression<?>[] createArguments(List<CtParameter<?>> params, CtVariable<?> visitedSetVar) {
