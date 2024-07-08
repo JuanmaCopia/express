@@ -271,6 +271,19 @@ public class SpoonQueries {
         return getLocalVariablesMathingPrefix(block, LocalVarHelper.SET_VAR_NAME);
     }
 
+    public static CtVariable<?> searchVisitedSetInBlock(CtBlock<?> block, CtTypeReference<?> setSubtype) {
+        List<CtLocalVariable<?>> visitedSetVars = getLocalVariablesMathingPrefix(block, LocalVarHelper.SET_VAR_NAME);
+        if (visitedSetVars.isEmpty())
+            return null;
+        for (CtLocalVariable<?> setVar : visitedSetVars) {
+            CtTypeReference<?> subtype = setVar.getType().getActualTypeArguments().get(0);
+            if (subtype.equals(setSubtype)) {
+                return setVar;
+            }
+        }
+        return null;
+    }
+
     public static CtVariable<?> getVisitedSetParameter(CtMethod<?> method) {
         List<CtParameter<?>> parameters = method.getParameters();
         for (CtParameter<?> parameter : parameters) {

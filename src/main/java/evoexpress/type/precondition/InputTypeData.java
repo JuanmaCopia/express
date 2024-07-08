@@ -12,6 +12,7 @@ import java.util.*;
 public class InputTypeData {
 
     List<CtParameter<?>> inputs;
+    List<CtVariable<?>> inputsWithCyclicNodes = new ArrayList<>();
     Map<CtVariable<?>, TypeGraph> typeGraphMap = new HashMap<>();
 
     Set<Path> pathsToCyclicNodes;
@@ -29,7 +30,10 @@ public class InputTypeData {
         for (CtVariable<?> p : inputs) {
             CtTypeReference<?> type = p.getType();
             if (TypeUtils.isUserDefined(type)) {
-                typeGraphMap.put(p, new TypeGraph(p));
+                TypeGraph g = new TypeGraph(p);
+                typeGraphMap.put(p, g);
+                if (!g.getNodesWithCycles().isEmpty())
+                    inputsWithCyclicNodes.add(p);
             }
         }
     }
@@ -54,6 +58,14 @@ public class InputTypeData {
 
     public Set<Path> getPathsToCyclicNodes() {
         return new HashSet<>(pathsToCyclicNodes);
+    }
+
+    public List<CtVariable<?>> getParameters() {
+        return new ArrayList<>(inputs);
+    }
+
+    public List<CtVariable<?>> getParametersWithCyclicNodes() {
+        return new ArrayList<>(inputsWithCyclicNodes);
     }
 
     public LinkedList<CtParameter<?>> getInputs() {

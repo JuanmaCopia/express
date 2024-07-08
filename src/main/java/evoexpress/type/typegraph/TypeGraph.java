@@ -24,11 +24,15 @@ public class TypeGraph {
     Set<Path> pathsToCyclicNodes = new HashSet<>();
     Map<CtTypeReference<?>, List<CtVariable<?>>> cyclicFieldsMap = new HashMap<>();
 
+    List<Path> allSimplePaths = new LinkedList<>();
+    Map<CtTypeReference<?>, List<Path>> typesToPathsMap = new HashMap<>();
+
 
     public TypeGraph(CtVariable<?> rootVariable) {
         initializeGraph(rootVariable);
         initializeCyclicFieldsMap();
         initializePathsToArrayNodes();
+        initializeSimplePaths();
     }
 
     private void initializeCyclicFieldsMap() {
@@ -44,6 +48,29 @@ public class TypeGraph {
         Set<CtTypeReference<?>> arrayNodes = getNodes().stream().filter(CtTypeInformation::isArray).collect(Collectors.toSet());
         for (CtTypeReference<?> node : arrayNodes) {
             pathsToArrayNodes.addAll(getSimplePaths(rootType, node));
+        }
+    }
+
+    private void initializeSimplePaths() {
+        List<CtVariable<?>> currentPath = new LinkedList<>();
+        initializeSimplePaths(rootType, currentPath, allSimplePaths);
+    }
+
+    private void initializeSimplePaths(CtTypeReference<?> currNode, List<CtVariable<?>> currentPath, List<Path> paths) {
+        if (typesToPathsMap.containsKey(currNode)) {
+            Path newPath = new Path(rootVariable, currentPath);
+            paths.add(newPath);
+            typesToPathsMap.get(currNode).add(newPath);
+            return;
+        }
+
+        typesToPathsMap.put(currNode, new LinkedList<>());
+
+        List<TypeGraph.Edge> adjacent = adjacencyList.get(currNode);
+        for (TypeGraph.Edge edge : adjacent) {
+            currentPath.add(edge.label());
+            initializeSimplePaths(edge.destination(), currentPath, paths);
+            currentPath.remove(currentPath.size() - 1);
         }
     }
 
@@ -117,6 +144,10 @@ public class TypeGraph {
         return pathsToCyclicNodes;
     }
 
+    public Set<CtTypeReference<?>> getNodesWithCycles() {
+        return getNodes().stream().filter(this::nodeHasCycle).collect(Collectors.toSet());
+    }
+
     public List<Edge> getOutgoingEdges(CtTypeReference<?> source) {
         return adjacencyList.get(source);
     }
@@ -127,6 +158,15 @@ public class TypeGraph {
 
     public Set<CtTypeReference<?>> getNodesWithSelfCycles() {
         return cyclicFieldsMap.keySet();
+    }
+
+    public List<CtTypeReference<?>> getRefNodesWithAliasing() {
+        List<CtTypeReference<?>> nodesWithAliasing = new LinkedList<>();
+        for (CtTypeReference<?> node : getNodes()) {
+            if (TypeUtils.isReferenceType(node) && typesToPathsMap.get(node).size() > 1)
+                nodesWithAliasing.add(node);
+        }
+        return nodesWithAliasing;
     }
 
     public Set<CtTypeReference<?>> getUserDefinedTypes() {
@@ -165,6 +205,10 @@ public class TypeGraph {
         }
     }
 
+    public List<Path> getAllSimplePaths() {
+        return allSimplePaths;
+    }
+
     /**
      * Get all the possible paths of length k from the source node to any other node in the graph.
      *
@@ -199,6 +243,10 @@ public class TypeGraph {
 
     public List<Path> getAllReferencePaths(int depth) {
         return getAllPaths(depth).stream().filter(p -> !p.isPrimitiveOrBoxedPrimitive()).toList();
+    }
+
+    public List<Path> getAllReferenceSimplePaths(CtTypeReference<?> destination) {
+        return getSimplePaths(rootType, destination).stream().filter(p -> !p.isPrimitiveOrBoxedPrimitive()).toList();
     }
 
     public List<Path> getAllReferencePaths(CtVariable<?> initialVariable, int depth) {

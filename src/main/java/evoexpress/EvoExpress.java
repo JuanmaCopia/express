@@ -5,6 +5,7 @@ import evoexpress.ga.GeneticAlgorithm;
 import evoexpress.ga.StructureCheckGA;
 import evoexpress.ga.fitness.FitnessFunctions;
 import evoexpress.ga.individual.Individual;
+import evoexpress.ga.mutator.DeclareVisitedSetMutator;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.ga.mutator.initialcheck.AddComposedInitialNullCheckMutator;
 import evoexpress.ga.mutator.initialcheck.AddIfNullReturnMutator;
@@ -59,6 +60,7 @@ public class EvoExpress {
         mutators.add(new AddComposedInitialNullCheckMutator());
 //        mutators.add(new TraverseCyclicReferenceMutator());
 //        mutators.add(new AddComposedIfToTraversalMutator());
+        mutators.add(new DeclareVisitedSetMutator());
         mutators.add(new CheckVisitedFieldMutator());
         mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
         mutators.add(new AddSizeCheckMutator());

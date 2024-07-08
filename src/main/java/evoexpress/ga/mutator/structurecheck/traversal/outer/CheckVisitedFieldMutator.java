@@ -33,7 +33,7 @@ public class CheckVisitedFieldMutator implements Mutator {
         List<Path> candidates = SpoonManager.inputTypeData.getAllReferencePathsOfType(setSubType, 1).stream().filter(p -> p.depth() >= 1).toList();
         if (candidates.isEmpty())
             return false;
-        
+
         Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
         CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
 
@@ -53,7 +53,7 @@ public class CheckVisitedFieldMutator implements Mutator {
         CtStatement lastStatement = SpoonQueries.getReturnTrueComment(blockGene);
         lastStatement.insertBefore(ifStatement);
 
-        System.err.println("CheckVisitedFieldMutator:\n" + ifStatement);
+        //System.err.println("CheckVisitedFieldMutator:\n" + ifStatement);
         //System.err.println("Final Block:\n" + blockGene);
         return true;
     }
