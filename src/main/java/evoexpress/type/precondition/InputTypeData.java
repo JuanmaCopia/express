@@ -17,6 +17,7 @@ public class InputTypeData {
 
     Set<Path> pathsToCyclicNodes;
     Set<Path> pathsToArrayNodes;
+    Set<CtTypeReference<?>> nodesWithCycles = new HashSet<>();
 
 
     public InputTypeData(List<CtParameter<?>> methodInputs) {
@@ -32,6 +33,7 @@ public class InputTypeData {
             if (TypeUtils.isUserDefined(type)) {
                 TypeGraph g = new TypeGraph(p);
                 typeGraphMap.put(p, g);
+                nodesWithCycles.addAll(g.getNodesWithCycles());
                 if (!g.getNodesWithCycles().isEmpty())
                     inputsWithCyclicNodes.add(p);
             }
@@ -58,6 +60,10 @@ public class InputTypeData {
 
     public Set<Path> getPathsToCyclicNodes() {
         return new HashSet<>(pathsToCyclicNodes);
+    }
+
+    public Set<CtTypeReference<?>> getNodesWithCycles() {
+        return new HashSet<>(nodesWithCycles);
     }
 
     public List<CtVariable<?>> getParameters() {

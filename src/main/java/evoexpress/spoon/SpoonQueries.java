@@ -284,6 +284,13 @@ public class SpoonQueries {
         return null;
     }
 
+    public static List<CtElement> getIfsInvokingMethod(CtBlock<?> block, String methodName) {
+        return block.getElements(e -> e instanceof CtIf).stream().filter(ifStatement -> {
+            CtIf ifStatement1 = (CtIf) ifStatement;
+            return ifStatement1.getCondition().toString().contains(methodName);
+        }).toList();
+    }
+
     public static CtVariable<?> getVisitedSetParameter(CtMethod<?> method) {
         List<CtParameter<?>> parameters = method.getParameters();
         for (CtParameter<?> parameter : parameters) {

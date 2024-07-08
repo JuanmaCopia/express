@@ -5,6 +5,7 @@ import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.type.typegraph.Path;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.reference.CtTypeReference;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,6 +18,7 @@ public class Individual implements Comparable<Individual> {
     public boolean marked;
     Set<Path> nonTraversedPathsToCyclicNodes;
     Set<Path> nonTraversedPathsToArrayNodes;
+    Set<CtTypeReference<?>> nonTraversedNodesWithCycles;
     private double fitness;
     private boolean isFitnessUpdated;
 
@@ -24,6 +26,7 @@ public class Individual implements Comparable<Individual> {
         cls = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + id++);
         nonTraversedPathsToCyclicNodes = SpoonManager.inputTypeData.getPathsToCyclicNodes();
         nonTraversedPathsToArrayNodes = SpoonManager.inputTypeData.getPathsToArrayNodes();
+        nonTraversedNodesWithCycles = SpoonManager.inputTypeData.getNodesWithCycles();
     }
 
     public Individual(Individual other) {
@@ -31,11 +34,16 @@ public class Individual implements Comparable<Individual> {
         cls.setSimpleName(ToolConfig.preconditionClassName + id++);
         nonTraversedPathsToCyclicNodes = new HashSet<>(other.nonTraversedPathsToCyclicNodes);
         nonTraversedPathsToArrayNodes = new HashSet<>(other.nonTraversedPathsToArrayNodes);
+        nonTraversedNodesWithCycles = new HashSet<>(other.nonTraversedNodesWithCycles);
     }
 
     // Tracking traversed paths
     public boolean hasNonTraversedPathsToCyclicNodes() {
         return !nonTraversedPathsToCyclicNodes.isEmpty();
+    }
+
+    public boolean hasNonTraversedNodesWithCycles() {
+        return !nonTraversedNodesWithCycles.isEmpty();
     }
 
     public boolean hasNonTraversedPathsToArrayNodes() {
@@ -48,6 +56,10 @@ public class Individual implements Comparable<Individual> {
 
     public Set<Path> getNonTraversedPathsToArrayNodes() {
         return nonTraversedPathsToArrayNodes;
+    }
+
+    public Set<CtTypeReference<?>> getNonTraversedNodesWithCycles() {
+        return nonTraversedNodesWithCycles;
     }
 
 
@@ -100,7 +112,11 @@ public class Individual implements Comparable<Individual> {
      */
     @Override
     public String toString() {
-        return cls.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append(cls.toString());
+        sb.append("\nnonTraversedPathsToCyclicNodes: " + nonTraversedPathsToCyclicNodes);
+        sb.append("\nnonTraversedNodesWithCycles: " + nonTraversedNodesWithCycles);
+        return sb.toString();
     }
 
     /**

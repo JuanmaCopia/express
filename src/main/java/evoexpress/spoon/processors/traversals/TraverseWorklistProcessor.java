@@ -8,7 +8,9 @@ import evoexpress.spoon.SpoonQueries;
 import evoexpress.spoon.template.WorklistTraversal;
 import evoexpress.type.typegraph.Path;
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.code.*;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -42,22 +44,8 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         parameters.add(SpoonFactory.createParameter(initialField.getParentPath().getTypeReference(), "parentOfTraversable"));
         parameters.add(SpoonFactory.createParameter(setVar.getType(), setVar.getSimpleName()));
 
-        CtMethod<?> traversalMethod = WorklistTraversal.obtainTraversalMethod(ctClass, initialField, parameters, loopFields, useBreakInsteadOfReturn);
-
-        CtExpression<?>[] args = createArguments(parameters, setVar);
-        CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(traversalMethod, args);
-
-        CtIf ifStatement = SpoonFactory.createIfReturnFalse(SpoonFactory.negateExpresion(traversalCall));
-        lastStatement.insertBefore(ifStatement);
-    }
-
-    private CtExpression<?>[] createArguments(List<CtParameter<?>> params, CtVariable<?> visitedSetVar) {
-
-        CtExpression<?>[] args = new CtExpression[params.size()];
-        args[0] = SpoonFactory.createVariableRead(params.get(0));
-        args[1] = initialField.getParentPath().getVariableRead();
-        args[2] = SpoonFactory.createVariableRead(visitedSetVar);
-        return args;
+        CtMethod<?> traversalMethod = WorklistTraversal.createTraversalMethod(ctClass, initialField, parameters, loopFields, useBreakInsteadOfReturn);
+        ctClass.addMethod(traversalMethod);
     }
 
     private CtVariable<?> handleVisitedSetVariable(CtBlock<?> methodBody, CtStatement lastStatement) {

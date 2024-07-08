@@ -1,7 +1,6 @@
 package evoexpress.spoon.template;
 
 import evoexpress.ga.helper.LocalVarHelper;
-import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonHelper;
 import evoexpress.type.typegraph.Path;
@@ -15,30 +14,15 @@ import java.util.Set;
 
 public class WorklistTraversal {
 
-    public static CtMethod<?> obtainTraversalMethod(CtClass<?> ctClass, Path initialField, List<CtParameter<?>> parameters, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
-        List<CtMethod<?>> traversalsOfSameFields = ctClass.getMethods().stream().filter(
-                m -> m.getSimpleName().startsWith(WorklistTraversal.createMethodName(loopFields)) &&
-                        initialField.getParentPath().getTypeReference().equals(m.getParameters().get(m.getParameters().size() - 2).getType())
-        ).toList();
 
-        CtMethod<?> traversalMethod;
-        if (traversalsOfSameFields.isEmpty()) {
-            traversalMethod = createTraversalMethod(initialField, parameters, loopFields, useBreakInsteadOfReturn);
-            traversalMethod.setSimpleName(traversalMethod.getSimpleName() + "_" + LocalVarHelper.getNextTraversalId(ctClass));
-            ctClass.addMethod(traversalMethod);
-            return traversalMethod;
-        }
-
-        return traversalsOfSameFields.get(RandomUtils.nextInt(traversalsOfSameFields.size()));
-    }
-
-    public static CtMethod<?> createTraversalMethod(Path initialField, List<CtParameter<?>> parameters, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
+    public static CtMethod<?> createTraversalMethod(CtClass<?> ctClass, Path initialField, List<CtParameter<?>> parameters, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
         Set<ModifierKind> modifiers = new HashSet<>();
         modifiers.add(ModifierKind.PRIVATE);
         modifiers.add(ModifierKind.STATIC);
 
         CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().BOOLEAN_PRIMITIVE;
         CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(loopFields), parameters);
+        traversalMethod.setSimpleName(traversalMethod.getSimpleName() + "_" + LocalVarHelper.getNextTraversalId(ctClass));
 
         CtBlock<?> traversalBody = createTraversalBody(initialField, parameters, loopFields, useBreakInsteadOfReturn);
         traversalMethod.setBody(traversalBody);
