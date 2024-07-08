@@ -55,9 +55,13 @@ public class Path {
         return SpoonFactory.createFieldRead(new LinkedList(fields.subList(0, fields.size() - 1)));
     }
 
-    public Path getSubPath() {
+    public Path getParentPath() {
         assert fields.size() > 1;
         return new Path(new LinkedList<>(fields.subList(0, fields.size() - 1)));
     }
 
+
+    public String toString() {
+        return getVariableRead().toString();
+    }
 }

@@ -4,6 +4,7 @@ import evoexpress.ga.helper.LocalVarHelper;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonHelper;
+import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
@@ -14,20 +15,24 @@ import java.util.Set;
 
 public class WorklistTraversal {
 
-    public static CtMethod<?> obtainTraversalMethod(CtClass<?> ctClass, List<CtParameter<?>> parameters, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
+    public static CtMethod<?> obtainTraversalMethod(CtClass<?> ctClass, Path initialField, List<CtParameter<?>> parameters, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
+        List<CtMethod<?>> traversalsOfSameFields = ctClass.getMethods().stream().filter(
+                m -> m.getSimpleName().startsWith(WorklistTraversal.createMethodName(loopFields)) &&
+                        initialField.getParentPath().getTypeReference().equals(m.getParameters().get(m.getParameters().size() - 2).getType())
+        ).toList();
+
         CtMethod<?> traversalMethod;
-        List<CtMethod<?>> traversalsOfSameFields = ctClass.getMethods().stream().filter(m -> m.getSimpleName().startsWith(WorklistTraversal.createMethodName(loopFields))).toList();
-        if (!traversalsOfSameFields.isEmpty() && RandomUtils.nextBoolean()) {
-            traversalMethod = traversalsOfSameFields.get(0);
-        } else {
-            traversalMethod = createTraversalMethod(parameters, loopFields, useBreakInsteadOfReturn);
+        if (traversalsOfSameFields.isEmpty()) {
+            traversalMethod = createTraversalMethod(initialField, parameters, loopFields, useBreakInsteadOfReturn);
             traversalMethod.setSimpleName(traversalMethod.getSimpleName() + "_" + LocalVarHelper.getNextTraversalId(ctClass));
             ctClass.addMethod(traversalMethod);
+            return traversalMethod;
         }
-        return traversalMethod;
+
+        return traversalsOfSameFields.get(RandomUtils.nextInt(traversalsOfSameFields.size()));
     }
 
-    public static CtMethod<?> createTraversalMethod(List<CtParameter<?>> parameters, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
+    public static CtMethod<?> createTraversalMethod(Path initialField, List<CtParameter<?>> parameters, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
         Set<ModifierKind> modifiers = new HashSet<>();
         modifiers.add(ModifierKind.PRIVATE);
         modifiers.add(ModifierKind.STATIC);
@@ -35,7 +40,7 @@ public class WorklistTraversal {
         CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().BOOLEAN_PRIMITIVE;
         CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(loopFields), parameters);
 
-        CtBlock<?> traversalBody = createTraversalBody(parameters, loopFields, useBreakInsteadOfReturn);
+        CtBlock<?> traversalBody = createTraversalBody(initialField, parameters, loopFields, useBreakInsteadOfReturn);
         traversalMethod.setBody(traversalBody);
         return traversalMethod;
     }
@@ -45,19 +50,19 @@ public class WorklistTraversal {
     }
 
 
-    private static CtBlock<?> createTraversalBody(List<CtParameter<?>> params, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
+    private static CtBlock<?> createTraversalBody(Path initialField, List<CtParameter<?>> params, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
         CtBlock<?> body = SpoonFactory.createBlock();
 
-        CtVariable<?> initField = params.get(params.size() - 2);
-        CtVariableRead<?> initFieldRead = SpoonFactory.createVariableRead(initField);
+        CtVariable<?> initFieldParent = params.get(params.size() - 2);
+        CtVariableRead<?> initFieldRead = SpoonFactory.createFieldRead(initFieldParent, initialField.getLast());
         CtVariable<?> visitedSet = params.get(params.size() - 1);
 
-        CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(initField.getType(), body);
+        CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(initFieldRead.getType(), body);
 
         CtTypeReference<?> subtypeOfWorklist = worklist.getType().getActualTypeArguments().get(0);
 
-        CtInvocation<?> addToWorklistCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, initField);
-        CtInvocation<?> addToSetCall = (CtInvocation<?>) SpoonFactory.createAddToSetInvocation(visitedSet, initField);
+        CtInvocation<?> addToWorklistCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, initFieldRead);
+        CtInvocation<?> addToSetCall = (CtInvocation<?>) SpoonFactory.createAddToSetInvocation(visitedSet, initFieldRead);
         CtBlock<?> ifBlock = SpoonFactory.createBlock();
         ifBlock.insertEnd(addToWorklistCall);
         ifBlock.insertEnd(addToSetCall);

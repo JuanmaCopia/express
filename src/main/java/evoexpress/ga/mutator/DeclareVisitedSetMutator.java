@@ -38,12 +38,11 @@ public class DeclareVisitedSetMutator implements Mutator {
 
         if (SpoonQueries.searchVisitedSetInBlock(blockGene, chosenNode) != null)
             return false;
-
-
+        
         CtVariable<?> setVar = SpoonFactory.createVisitedSetDeclaration(chosenNode, blockGene);
         blockGene.insertBegin((CtStatement) setVar);
 
-        System.err.println("DeclareVisitedSetMutator:\n" + setVar);
+        //System.err.println("DeclareVisitedSetMutator:\n" + setVar);
         //System.err.println("Final Block:\n" + blockGene);
         return true;
     }

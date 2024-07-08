@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class StructureCheckGA extends GeneticAlgorithm {
 
-    private static final int MAX_GEN_WITH_NO_IMPROVEMENT = 500;
+    private static final int MAX_GEN_WITH_NO_IMPROVEMENT = 5000;
     int generationsWithNoImprovement = 0;
     double lastFittest = FitnessFunctions.WORST_FITNESS_VALUE;
 

@@ -11,7 +11,6 @@ import evoexpress.type.typegraph.TypeGraph;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
@@ -33,15 +32,13 @@ public class TraverseWorklistMutator implements Mutator {
         Path chosenPath = paths.stream().toList().get(RandomUtils.nextInt(paths.size()));
         paths.remove(chosenPath);
 
-        CtVariableRead<?> chosenInitialField = chosenPath.getVariableRead();
-
         TypeGraph typeGraph = SpoonManager.inputTypeData.getTypeGraphOfParameter(chosenPath.get(0));
-        List<CtVariable<?>> loopFields = typeGraph.getCyclicFieldsOfNode(chosenInitialField.getType());
+        List<CtVariable<?>> loopFields = typeGraph.getCyclicFieldsOfNode(chosenPath.getTypeReference());
 
         loopFields = MutatorHelper.selectRandomVariablesFromList(loopFields);
 
         boolean useBreakInsteadOfReturn = RandomUtils.nextBoolean();
-        Processor<CtClass<?>> p = new TraverseWorklistProcessor(chosenInitialField, loopFields, useBreakInsteadOfReturn);
+        Processor<CtClass<?>> p = new TraverseWorklistProcessor(chosenPath, loopFields, useBreakInsteadOfReturn);
         p.process(individual.getCtClass());
 
         //System.err.println("\nTraverseWorklistMutator:\n" + individual.getCtClass().toString());

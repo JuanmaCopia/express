@@ -35,8 +35,8 @@ public class AddRandomComparisonToCurrent implements Mutator {
                 .toList();
 
         Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
-        Path chosenPathOwner = chosenPath.getSubPath();
-        Path currentPath = chosenPathOwner.getSubPath();
+        Path chosenPathOwner = chosenPath.getParentPath();
+        Path currentPath = chosenPathOwner.getParentPath();
         CtVariableRead<?> chosenPathRead = chosenPath.getVariableRead();
         CtVariableRead<?> chosenPathReadOwner = chosenPathOwner.getVariableRead();
         CtVariableRead<?> currentRead = currentPath.getVariableRead();

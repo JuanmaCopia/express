@@ -106,21 +106,15 @@ public class SpoonManager {
         Instrumentation.instrumentTestSuite(testSuiteClass);
     }
 
-    public static boolean compileIndividual(Individual individual) {
+    public static boolean compileIndividual(Individual individual) throws Exception {
         CtClass<?> indClass = individual.getCtClass();
         if (targetClass.getPackage().getType(indClass.getSimpleName()) == null)
             throw new RuntimeException("Individual class not found in the target class package");
         return compileModel();
     }
 
-    public static boolean compileModel() {
-        boolean compiles = false;
-        try {
-            compiles = launcher.getModelBuilder().compile();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return compiles;
+    public static boolean compileModel() throws Exception {
+        return launcher.getModelBuilder().compile();
     }
 
     public static void addClassToPackage(CtType<?> ctType) {

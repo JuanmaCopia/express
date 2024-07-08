@@ -58,7 +58,15 @@ public abstract class GeneticAlgorithm {
         Population initialPopulation = new Population();
         Individual individual = new Individual();
         SpoonManager.addClassToPackage(individual.getCtClass());
-        if (!SpoonManager.compileIndividual(individual)) {
+        boolean compiles = false;
+        try {
+            compiles = SpoonManager.compileIndividual(individual);
+        } catch (Exception e) {
+            SpoonManager.removeClassFromPackage(individual.getCtClass());
+            System.err.println("Error while compiling individual");
+            System.err.println("Individual: \n" + individual);
+        }
+        if (!compiles) {
             SpoonManager.removeClassFromPackage(individual.getCtClass());
             throw new RuntimeException("Individual could not be compiled");
         }
@@ -124,8 +132,19 @@ public abstract class GeneticAlgorithm {
         SpoonManager.addClassToPackage(mutant.getCtClass());
         CtCodeElement gene = selectGene(mutant, mutators);
         Mutator mutator = selectMutator(mutators, mutant, gene);
-        if (mutator != null && mutator.mutate(mutant, gene) && SpoonManager.compileIndividual(mutant)) {
+        if (mutator != null && mutator.mutate(mutant, gene)) {
+            boolean compiles = false;
+            try {
+                compiles = SpoonManager.compileIndividual(mutant);
+            } catch (Exception e) {
+                SpoonManager.removeClassFromPackage(mutant.getCtClass());
+                System.err.println("Error while compiling individual");
+                System.err.println("Individual: \n" + mutant);
+            }
             SpoonManager.removeClassFromPackage(mutant.getCtClass());
+            if (!compiles) {
+                return null;
+            }
             return mutant;
         }
         SpoonManager.removeClassFromPackage(mutant.getCtClass());

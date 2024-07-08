@@ -6,6 +6,7 @@ import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
 import evoexpress.spoon.template.WorklistTraversal;
+import evoexpress.type.typegraph.Path;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtClass;
@@ -19,10 +20,10 @@ import java.util.List;
 public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
 
     List<CtVariable<?>> loopFields;
-    CtVariableRead<?> initialField;
+    Path initialField;
     boolean useBreakInsteadOfReturn;
 
-    public TraverseWorklistProcessor(CtVariableRead<?> initialField, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
+    public TraverseWorklistProcessor(Path initialField, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
         super();
         this.loopFields = loopFields;
         this.initialField = initialField;
@@ -38,10 +39,10 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         CtVariable<?> setVar = handleVisitedSetVariable(structureMethodBody, lastStatement);
 
         List<CtParameter<?>> parameters = SpoonManager.inputTypeData.getInputs();
-        parameters.add(SpoonFactory.createParameter(setVar.getType().getActualTypeArguments().get(0), "initialField"));
+        parameters.add(SpoonFactory.createParameter(initialField.getParentPath().getTypeReference(), "parentOfTraversable"));
         parameters.add(SpoonFactory.createParameter(setVar.getType(), setVar.getSimpleName()));
 
-        CtMethod<?> traversalMethod = WorklistTraversal.obtainTraversalMethod(ctClass, parameters, loopFields, useBreakInsteadOfReturn);
+        CtMethod<?> traversalMethod = WorklistTraversal.obtainTraversalMethod(ctClass, initialField, parameters, loopFields, useBreakInsteadOfReturn);
 
         CtExpression<?>[] args = createArguments(parameters, setVar);
         CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(traversalMethod, args);
@@ -51,15 +52,16 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
     }
 
     private CtExpression<?>[] createArguments(List<CtParameter<?>> params, CtVariable<?> visitedSetVar) {
+
         CtExpression<?>[] args = new CtExpression[params.size()];
         args[0] = SpoonFactory.createVariableRead(params.get(0));
-        args[1] = initialField;
+        args[1] = initialField.getParentPath().getVariableRead();
         args[2] = SpoonFactory.createVariableRead(visitedSetVar);
         return args;
     }
 
     private CtVariable<?> handleVisitedSetVariable(CtBlock<?> methodBody, CtStatement lastStatement) {
-        CtTypeReference<?> cyclicNode = initialField.getVariable().getType();
+        CtTypeReference<?> cyclicNode = initialField.getTypeReference();
         List<CtLocalVariable<?>> setVars = SpoonQueries.getVisitedSetLocalVarsOfType(methodBody, cyclicNode);
         CtVariable<?> setVar = null;
         if (setVars.isEmpty()) {

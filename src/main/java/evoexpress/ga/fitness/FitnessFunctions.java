@@ -123,7 +123,7 @@ public class FitnessFunctions {
 
 
     public static void printSurvivors(Individual individual) {
-        assert SpoonManager.compileIndividual(individual);
+        //assert SpoonManager.compileIndividual(individual);
 
         Class<?> preconditionClass = Reflection.loadClass(SpoonManager.classLoader, individual.getQualifiedClassName());
         Method precondition = Reflection.loadMethod(preconditionClass, ToolConfig.preconditionMethodName);
