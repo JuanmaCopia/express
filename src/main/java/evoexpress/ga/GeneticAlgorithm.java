@@ -224,9 +224,9 @@ public abstract class GeneticAlgorithm {
     }
 
     void printGeneration(Population population) {
-        System.out.println("\n\n------------------   " + this.getClass().getSimpleName() + ": Generation " + population.getGenerationNumber() + "   ------------------\n");
-        System.out.println("Population size: " + population.size());
-        System.out.println("Fittest: " + population.getFittest().getFitness());
+        System.out.println("\n------------------   " + this.getClass().getSimpleName() + ": Generation " + population.getGenerationNumber() + "   ------------------");
+        System.out.println("  Population size: " + population.size() + "        Fittest: " + population.getFittest().getFitness());
+        //System.out.println("Fittest: " + population.getFittest().getFitness());
         //System.out.println("\n" + population.getFittest().toString());
     }
 

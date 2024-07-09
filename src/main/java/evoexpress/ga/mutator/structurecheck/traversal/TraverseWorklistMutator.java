@@ -17,52 +17,41 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtTypeReference;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class TraverseWorklistMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("structureCheck"))
             return false;
-        return individual.hasNonTraversedPathsToCyclicNodes();
+        return true;
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
-        CtBlock<?> blockGene = (CtBlock<?>) gene;
-        Set<Path> paths = individual.getNonTraversedPathsToCyclicNodes();
-        Path chosenPath = paths.stream().toList().get(RandomUtils.nextInt(paths.size()));
-        paths.remove(chosenPath);
-        individual.getTraversedPathsToCyclicNodes().add(chosenPath);
+        List<Path> pathsToCyclicNodes = new ArrayList<>(SpoonManager.inputTypeData.getPathsToCyclicNodes());
+        List<Path> paths = pathsToCyclicNodes.stream().filter(
+                path -> individual.getNonTraversedNodesWithCycles().contains(path.getTypeReference())
+        ).toList();
 
-        CtTypeReference<?> nodeToTraverse = chosenPath.getTypeReference();
-        Set<CtTypeReference<?>> nonTraversedNodesWithCycles = individual.getNonTraversedNodesWithCycles();
-
-        if (nonTraversedNodesWithCycles.contains(nodeToTraverse)) {
-            nonTraversedNodesWithCycles.remove(nodeToTraverse);
+        Path chosenPath;
+        if (!paths.isEmpty()) {
+            chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
+            individual.setTypeAsTraversed(chosenPath.getTypeReference());
             instantiateTraversalMethod(chosenPath, individual);
+
+        } else {
+            chosenPath = pathsToCyclicNodes.get(RandomUtils.nextInt(pathsToCyclicNodes.size()));
         }
 
-        return addTraversalInvocation(chosenPath, individual);
+        addTraversalInvocation(chosenPath, individual);
+
+        //System.err.println("TraverseWorklistMutator:\n" + individual.getCtClass().toString());
+
+        return true;
     }
-
-//    private void replaceTraversalMethod(Path chosenPath, Individual individual, CtBlock<?> block) {
-//        CtMethod<?> traversal = getTraversalOfNode(individual.getCtClass(), chosenPath.getTypeReference());
-//        String traversalName = traversal.getSimpleName();
-//        removeInvocation(traversalName, block);
-//        individual.getCtClass().removeMethod(traversal);
-//        instantiateTraversalMethod(chosenPath, individual);
-//    }
-
-//    private void removeInvocation(String traversalName, CtBlock<?> block) {
-//        List<CtElement> ifContainingInvocations = SpoonQueries.getIfsInvokingMethod(block, traversalName);
-//        for (CtElement statement : ifContainingInvocations) {
-//            block.removeStatement((CtStatement) statement);
-//        }
-//    }
 
     private void instantiateTraversalMethod(Path chosenPath, Individual individual) {
         TypeGraph typeGraph = SpoonManager.inputTypeData.getTypeGraphOfParameter(chosenPath.get(0));

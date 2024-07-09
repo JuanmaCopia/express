@@ -7,7 +7,6 @@ import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
-import evoexpress.type.typegraph.Path;
 import evoexpress.type.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
@@ -15,10 +14,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ChangeTraverseInitialFieldMutator implements Mutator {
 
@@ -57,45 +53,14 @@ public class ChangeTraverseInitialFieldMutator implements Mutator {
 
         CtVariable<?> chosenField = candidateFields.get(RandomUtils.nextInt(candidateFields.size()));
 
-
         CtFieldRead newFirstElementRead = SpoonFactory.createFieldRead(parentOfFirstElement, chosenField);
         firstElement.setAssignment(newFirstElementRead);
-
-        updateIndividualPaths(individual, typeOfFirstElem, fieldName, chosenField);
-
+        
         //System.err.println("ChangeTraverseInitialFieldMutator: " + chosenField.getSimpleName() + " instead of " + fieldName);
         //System.err.println("Result: \n" + chosenTraversal);
 
         return true;
     }
 
-    private void updateIndividualPaths(Individual individual, CtTypeReference<?> typeOfFirstElem, String fieldName, CtVariable<?> chosenField) {
-        Set<Path> traversedPaths = individual.getTraversedPathsToCyclicNodes();
-        assert !traversedPaths.isEmpty();
 
-        Set<Path> thisTraversalPaths = filterPaths(traversedPaths, typeOfFirstElem, fieldName);
-        assert !thisTraversalPaths.isEmpty();
-        updateNonTraversedPaths(thisTraversalPaths, individual);
-
-        for (Path path : thisTraversalPaths) {
-            path.setLast(chosenField);
-        }
-
-    }
-
-    private void updateNonTraversedPaths(Set<Path> paths, Individual individual) {
-        for (Path path : paths) {
-            individual.getNonTraversedPathsToCyclicNodes().add(path.clone());
-        }
-    }
-
-    public Set<Path> filterPaths(Collection<Path> paths, CtTypeReference<?> type, String fieldName) {
-        Set<Path> filteredPaths = new HashSet<>();
-        for (Path path : paths) {
-            if (path.getTypeReference().equals(type) && path.getLast().toString().equals(fieldName)) {
-                filteredPaths.add(path);
-            }
-        }
-        return filteredPaths;
-    }
 }

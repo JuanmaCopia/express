@@ -3,7 +3,6 @@ package evoexpress.ga.individual;
 import evoexpress.config.ToolConfig;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
-import evoexpress.type.typegraph.Path;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -16,51 +15,23 @@ public class Individual implements Comparable<Individual> {
 
     private final CtClass<?> cls;
     public boolean marked;
-    Set<Path> nonTraversedPathsToCyclicNodes;
-    Set<Path> traversedPathsToCyclicNodes = new HashSet<>();
-    Set<Path> nonTraversedPathsToArrayNodes;
     Set<CtTypeReference<?>> nonTraversedNodesWithCycles;
     private double fitness;
     private boolean isFitnessUpdated;
 
     public Individual() {
         cls = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + id++);
-        nonTraversedPathsToCyclicNodes = SpoonManager.inputTypeData.getPathsToCyclicNodes();
-        nonTraversedPathsToArrayNodes = SpoonManager.inputTypeData.getPathsToArrayNodes();
         nonTraversedNodesWithCycles = SpoonManager.inputTypeData.getNodesWithCycles();
     }
 
     public Individual(Individual other) {
         cls = other.getCtClass().clone();
         cls.setSimpleName(ToolConfig.preconditionClassName + id++);
-        nonTraversedPathsToCyclicNodes = new HashSet<>(other.nonTraversedPathsToCyclicNodes);
-        nonTraversedPathsToArrayNodes = new HashSet<>(other.nonTraversedPathsToArrayNodes);
         nonTraversedNodesWithCycles = new HashSet<>(other.nonTraversedNodesWithCycles);
-    }
-
-    // Tracking traversed paths
-    public boolean hasNonTraversedPathsToCyclicNodes() {
-        return !nonTraversedPathsToCyclicNodes.isEmpty();
     }
 
     public boolean hasNonTraversedNodesWithCycles() {
         return !nonTraversedNodesWithCycles.isEmpty();
-    }
-
-    public boolean hasNonTraversedPathsToArrayNodes() {
-        return !nonTraversedPathsToArrayNodes.isEmpty();
-    }
-
-    public Set<Path> getNonTraversedPathsToCyclicNodes() {
-        return nonTraversedPathsToCyclicNodes;
-    }
-
-    public Set<Path> getTraversedPathsToCyclicNodes() {
-        return traversedPathsToCyclicNodes;
-    }
-
-    public Set<Path> getNonTraversedPathsToArrayNodes() {
-        return nonTraversedPathsToArrayNodes;
     }
 
     public Set<CtTypeReference<?>> getNonTraversedNodesWithCycles() {
@@ -119,8 +90,6 @@ public class Individual implements Comparable<Individual> {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(cls.toString());
-        sb.append("\nnonTraversedPathsToCyclicNodes: " + nonTraversedPathsToCyclicNodes);
-        sb.append("\nnonTraversedNodesWithCycles: " + nonTraversedNodesWithCycles);
         return sb.toString();
     }
 
@@ -137,5 +106,9 @@ public class Individual implements Comparable<Individual> {
         else if (this.getFitness() < other.getFitness())
             return 1;
         return 0;
+    }
+
+    public void setTypeAsTraversed(CtTypeReference<?> typeReference) {
+        nonTraversedNodesWithCycles.remove(typeReference);
     }
 }
