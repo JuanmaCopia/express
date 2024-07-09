@@ -206,6 +206,19 @@ public class SpoonQueries {
         return (CtStatement) matchingComments.get(RandomUtils.nextInt(matchingComments.size()));
     }
 
+    public static CtStatement getEndOfTraversedFieldsComment(CtBlock<?> block) {
+        List<CtElement> matchingComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isEndOfTraversedFieldsComment).toList();
+        if (matchingComments.isEmpty())
+            return null;
+        return (CtStatement) matchingComments.get(RandomUtils.nextInt(matchingComments.size()));
+    }
+
+    public static boolean isEndOfTraversedFieldsComment(CtElement element) {
+        if (!(element instanceof CtComment comment))
+            return false;
+        return comment.getContent().equals("End of Traversed Fields");
+    }
+
     public static CtMethod<?> getTraversalOfNode(CtClass<?> ctClass, CtTypeReference<?> node) {
         Set<CtMethod<?>> traversals = ctClass.getMethods();
         for (CtMethod<?> m : traversals) {
@@ -218,7 +231,7 @@ public class SpoonQueries {
         }
         return null;
     }
-    
+
     public static List<CtMethod<?>> getTraversals(CtClass<?> ctClass) {
         return ctClass.getMethods().stream().filter(method -> method.getSimpleName().startsWith(LocalVarHelper.TRAVERSAL_PREFIX)).toList();
     }
@@ -238,6 +251,51 @@ public class SpoonQueries {
 //
 //        return nonUsedInitialPathsToCyclicField;
 //    }
+
+    public static CtVariable<?> getTraversalSetVariable(CtMethod<?> traversal) {
+        return traversal.getParameters().get(traversal.getParameters().size() - 1);
+    }
+
+    public static CtVariable<?> getTraversalCurrentVariable(CtMethod<?> traversal) {
+        return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var && var.getSimpleName().startsWith(LocalVarHelper.CURRENT_VAR_NAME)).get(0);
+    }
+
+    public static List<CtIf> getTraversalIfsForTraversedFields(CtBlock<?> traversalBody) {
+        List<CtIf> traversalIfs = new LinkedList<>();
+        CtStatement currStatement = getNextStatement(getEndOfHandleCurrentComment(traversalBody));
+        while (!isEndOfTraversedFieldsComment(currStatement)) {
+            assert currStatement instanceof CtIf;
+            traversalIfs.add((CtIf) currStatement);
+            currStatement = getNextStatement(currStatement);
+        }
+        return traversalIfs;
+    }
+
+    public static List<CtVariable<?>> getTraversedFields(List<CtIf> traversedFields) {
+        List<CtVariable<?>> fields = new LinkedList<>();
+        for (CtIf traversedField : traversedFields) {
+            CtBinaryOperator<?> nullComp = (CtBinaryOperator<?>) traversedField.getCondition();
+            CtFieldRead<?> fieldRead = (CtFieldRead<?>) nullComp.getLeftHandOperand();
+            CtVariable<?> field = (CtVariable<?>) fieldRead.getVariable();
+            fields.add(field);
+        }
+        return fields;
+    }
+
+    public static CtStatement getNextStatement(CtStatement statement) {
+        CtElement parent = statement.getParent();
+
+        // Ensure the parent is a block
+        if (parent instanceof CtBlock) {
+            CtBlock<?> block = (CtBlock<?>) parent;
+            int index = block.getStatements().indexOf(statement);
+            if (index != -1 && index < block.getStatements().size() - 1) {
+                return block.getStatements().get(index + 1);
+            }
+        }
+        // No next statement found
+        return null;
+    }
 
     public static List<CtLocalVariable<?>> getLocalVariablesMathingPrefix(CtBlock<?> code, String varPrefix) {
         return code.getElements(var -> var.getSimpleName().startsWith(varPrefix));

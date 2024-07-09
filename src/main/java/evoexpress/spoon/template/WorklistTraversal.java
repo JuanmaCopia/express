@@ -7,6 +7,7 @@ import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -81,18 +82,11 @@ public class WorklistTraversal {
         whileBody.insertEnd(SpoonFactory.createComment("End of Handle current:"));
 
         // Create worklist.add(current.<loopField>); for each loopField
-        for (CtVariable<?> loopField : loopFields) {
-            CtFieldRead<?> loopFieldRead = SpoonFactory.createFieldRead(currentDeclaration, loopField);
-            CtExpression<Boolean> fieldNullComp = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(loopFieldRead, null, BinaryOperatorKind.NE);
-
-            CtInvocation<?> addToListCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, loopFieldRead);
-            CtIf ifNotNull = SpoonFactory.createIfThenStatement(fieldNullComp, addToListCall);
-
-            CtIf visitedCheck = SpoonFactory.createVisitedCheck(visitedSet, loopFieldRead, true, useBreakInsteadOfReturn);
-            addToListCall.insertBefore(visitedCheck);
-
-            whileBody.insertEnd(ifNotNull);
+        for (CtIf ifStatement : createIfsForLoopFields(loopFields, currentDeclaration, visitedSet, useBreakInsteadOfReturn)) {
+            whileBody.insertEnd(ifStatement);
         }
+
+        whileBody.insertEnd(SpoonFactory.createComment("End of Traversed Fields"));
 
         // Create while statement
         CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, whileBody);
@@ -110,5 +104,26 @@ public class WorklistTraversal {
         body.insertEnd(SpoonFactory.createReturnTrueStatement());
 
         return body;
+    }
+
+    public static List<CtIf> createIfsForLoopFields(List<CtVariable<?>> loopFields, CtVariable<?> currentDeclaration, CtVariable<?> visitedSet, boolean useBreakInsteadOfReturn) {
+        List<CtIf> ifs = new ArrayList<>();
+        for (CtVariable<?> loopField : loopFields) {
+            ifs.add(createIfForLoopField(loopField, currentDeclaration, visitedSet, useBreakInsteadOfReturn));
+        }
+        return ifs;
+    }
+
+    public static CtIf createIfForLoopField(CtVariable<?> loopFields, CtVariable<?> currentDeclaration, CtVariable<?> visitedSet, boolean useBreakInsteadOfReturn) {
+        CtFieldRead<?> loopFieldRead = SpoonFactory.createFieldRead(currentDeclaration, loopFields);
+        CtExpression<Boolean> fieldNullComp = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(loopFieldRead, null, BinaryOperatorKind.NE);
+
+        CtInvocation<?> addToListCall = SpoonFactory.createInvocation(visitedSet, "add", visitedSet.getType(), loopFieldRead);
+        CtIf ifNotNull = SpoonFactory.createIfThenStatement(fieldNullComp, addToListCall);
+
+        CtIf visitedCheck = SpoonFactory.createVisitedCheck(visitedSet, loopFieldRead, true, useBreakInsteadOfReturn);
+        addToListCall.insertBefore(visitedCheck);
+
+        return ifNotNull;
     }
 }

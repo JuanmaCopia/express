@@ -16,6 +16,7 @@ import evoexpress.ga.mutator.structurecheck.traversal.inner.CheckSizeEndOfTraver
 import evoexpress.ga.mutator.structurecheck.traversal.inner.CheckVisitedFieldEndOfTraversalMutator;
 import evoexpress.ga.mutator.structurecheck.traversal.outer.AddSizeCheckMutator;
 import evoexpress.ga.mutator.structurecheck.traversal.outer.CheckVisitedFieldMutator;
+import evoexpress.ga.mutator.structurecheck.traversal.trav.ChangeTraversalFieldsMutator;
 import evoexpress.ga.mutator.structurecheck.traversal.trav.ChangeTraverseInitialFieldMutator;
 import evoexpress.ga.population.Population;
 import evoexpress.object.ObjectGeneratorManager;
@@ -61,6 +62,7 @@ public class EvoExpress {
         mutators.add(new AddComposedInitialNullCheckMutator());
 //        mutators.add(new TraverseCyclicReferenceMutator());
 //        mutators.add(new AddComposedIfToTraversalMutator());
+        mutators.add(new ChangeTraversalFieldsMutator());
         mutators.add(new ChangeTraverseInitialFieldMutator());
         mutators.add(new DeclareVisitedSetMutator());
         mutators.add(new CheckVisitedFieldMutator());

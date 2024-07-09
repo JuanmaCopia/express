@@ -1,0 +1,63 @@
+package evoexpress.ga.mutator.structurecheck.traversal.trav;
+
+import evoexpress.ga.individual.Individual;
+import evoexpress.ga.mutator.Mutator;
+import evoexpress.ga.mutator.MutatorHelper;
+import evoexpress.spoon.RandomUtils;
+import evoexpress.spoon.SpoonManager;
+import evoexpress.spoon.SpoonQueries;
+import evoexpress.spoon.template.WorklistTraversal;
+import evoexpress.type.typegraph.TypeGraph;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtTypeReference;
+
+import java.util.List;
+
+public class ChangeTraversalFieldsMutator implements Mutator {
+
+    public boolean isApplicable(Individual individual, CtCodeElement gene) {
+        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("structureCheck"))
+            return false;
+        return !SpoonQueries.getTraversals(individual.getCtClass()).isEmpty();
+    }
+
+    @Override
+    public boolean mutate(Individual individual, CtCodeElement gene) {
+        List<CtMethod<?>> traversals = SpoonQueries.getTraversals(individual.getCtClass());
+        CtMethod<?> chosenTraversal = traversals.get(RandomUtils.nextInt(traversals.size()));
+
+        CtVariable<?> visitedSet = SpoonQueries.getTraversalSetVariable(chosenTraversal);
+        CtVariable<?> currentVar = SpoonQueries.getTraversalCurrentVariable(chosenTraversal);
+        CtTypeReference<?> traversedNode = currentVar.getType();
+
+        TypeGraph typeGraph = SpoonManager.inputTypeData.getTypegraphOfNode(traversedNode);
+        List<CtVariable<?>> loopFields = typeGraph.getCyclicFieldsOfNode(traversedNode);
+        List<CtVariable<?>> newLoopFields = MutatorHelper.selectRandomVariablesFromList(loopFields);
+
+        List<CtIf> newIfs = WorklistTraversal.createIfsForLoopFields(newLoopFields, currentVar, visitedSet, RandomUtils.nextBoolean());
+
+        CtBlock<?> traversalBody = chosenTraversal.getBody();
+
+        List<CtIf> traverseIfs = SpoonQueries.getTraversalIfsForTraversedFields(traversalBody);
+        for (CtIf oldIf : traverseIfs) {
+            oldIf.delete();
+        }
+
+        CtStatement endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(traversalBody);
+        for (CtIf newIf : newIfs) {
+            endOfHandleCurrentComment.insertAfter(newIf);
+        }
+
+        chosenTraversal.setBody(traversalBody);
+
+        //System.err.println("ChangeTraversalFieldsMutator AFTER: \n" + chosenTraversal);
+        return true;
+    }
+
+
+}
