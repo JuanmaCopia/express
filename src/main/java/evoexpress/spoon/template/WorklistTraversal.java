@@ -2,7 +2,6 @@ package evoexpress.spoon.template;
 
 import evoexpress.ga.helper.LocalVarHelper;
 import evoexpress.spoon.SpoonFactory;
-import evoexpress.spoon.SpoonHelper;
 import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
@@ -22,7 +21,7 @@ public class WorklistTraversal {
 
         CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().BOOLEAN_PRIMITIVE;
         CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(loopFields), parameters);
-        traversalMethod.setSimpleName(traversalMethod.getSimpleName() + "_" + LocalVarHelper.getNextTraversalId(ctClass));
+        traversalMethod.setSimpleName(traversalMethod.getSimpleName() + LocalVarHelper.getNextTraversalId(ctClass));
 
         CtBlock<?> traversalBody = createTraversalBody(initialField, parameters, loopFields, useBreakInsteadOfReturn);
         traversalMethod.setBody(traversalBody);
@@ -30,7 +29,7 @@ public class WorklistTraversal {
     }
 
     public static String createMethodName(List<CtVariable<?>> loopFields) {
-        return LocalVarHelper.TRAVERSAL_PREFIX + loopFields.get(0).getType().getSimpleName() + "_" + SpoonHelper.getStringFromVariableList(loopFields);
+        return LocalVarHelper.TRAVERSAL_PREFIX;
     }
 
 
@@ -39,20 +38,22 @@ public class WorklistTraversal {
 
         CtVariable<?> initFieldParent = params.get(params.size() - 2);
         CtVariableRead<?> initFieldRead = SpoonFactory.createFieldRead(initFieldParent, initialField.getLast());
+        CtLocalVariable<?> firstElement = SpoonFactory.createLocalVariable(LocalVarHelper.FIRST_ELEMENT_VAR_NAME, initFieldRead.getType(), initFieldRead);
+        CtVariableRead<?> firstElementRead = SpoonFactory.createVariableRead(firstElement);
         CtVariable<?> visitedSet = params.get(params.size() - 1);
 
-        CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(initFieldRead.getType(), body);
+        CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(firstElementRead.getType(), body);
 
         CtTypeReference<?> subtypeOfWorklist = worklist.getType().getActualTypeArguments().get(0);
 
-        CtInvocation<?> addToWorklistCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, initFieldRead);
-        CtInvocation<?> addToSetCall = (CtInvocation<?>) SpoonFactory.createAddToSetInvocation(visitedSet, initFieldRead);
+        CtInvocation<?> addToWorklistCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, firstElementRead);
+        CtInvocation<?> addToSetCall = (CtInvocation<?>) SpoonFactory.createAddToSetInvocation(visitedSet, firstElementRead);
         CtBlock<?> ifBlock = SpoonFactory.createBlock();
         ifBlock.insertEnd(addToWorklistCall);
         ifBlock.insertEnd(addToSetCall);
 
 
-        CtExpression<Boolean> ifCondition = SpoonFactory.createNullComparisonClause(initFieldRead, BinaryOperatorKind.NE);
+        CtExpression<Boolean> ifCondition = SpoonFactory.createNullComparisonClause(firstElementRead, BinaryOperatorKind.NE);
         CtIf initialFieldNullCheck = SpoonFactory.createIfThenStatement(ifCondition, ifBlock);
 
         // create condition: !workList.isEmpty()
@@ -99,6 +100,7 @@ public class WorklistTraversal {
 
         body.insertEnd(SpoonFactory.createComment("Begin of traversal"));
         body.insertEnd(worklist);
+        body.insertEnd(firstElement);
         body.insertEnd(SpoonFactory.createComment("Initialize root element:"));
         body.insertEnd(initialFieldNullCheck);
         body.insertEnd(SpoonFactory.createComment("Cycle over cyclic references:"));

@@ -1,6 +1,5 @@
 package evoexpress.ga.mutator.structurecheck.traversal;
 
-import evoexpress.ga.helper.LocalVarHelper;
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.ga.mutator.MutatorHelper;
@@ -14,8 +13,10 @@ import evoexpress.type.typegraph.TypeGraph;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class TraverseWorklistMutator implements Mutator {
         Set<Path> paths = individual.getNonTraversedPathsToCyclicNodes();
         Path chosenPath = paths.stream().toList().get(RandomUtils.nextInt(paths.size()));
         paths.remove(chosenPath);
+        individual.getTraversedPathsToCyclicNodes().add(chosenPath);
 
         CtTypeReference<?> nodeToTraverse = chosenPath.getTypeReference();
         Set<CtTypeReference<?>> nonTraversedNodesWithCycles = individual.getNonTraversedNodesWithCycles();
@@ -55,12 +57,12 @@ public class TraverseWorklistMutator implements Mutator {
 //        instantiateTraversalMethod(chosenPath, individual);
 //    }
 
-    private void removeInvocation(String traversalName, CtBlock<?> block) {
-        List<CtElement> ifContainingInvocations = SpoonQueries.getIfsInvokingMethod(block, traversalName);
-        for (CtElement statement : ifContainingInvocations) {
-            block.removeStatement((CtStatement) statement);
-        }
-    }
+//    private void removeInvocation(String traversalName, CtBlock<?> block) {
+//        List<CtElement> ifContainingInvocations = SpoonQueries.getIfsInvokingMethod(block, traversalName);
+//        for (CtElement statement : ifContainingInvocations) {
+//            block.removeStatement((CtStatement) statement);
+//        }
+//    }
 
     private void instantiateTraversalMethod(Path chosenPath, Individual individual) {
         TypeGraph typeGraph = SpoonManager.inputTypeData.getTypeGraphOfParameter(chosenPath.get(0));
@@ -74,7 +76,7 @@ public class TraverseWorklistMutator implements Mutator {
     }
 
     private boolean addTraversalInvocation(Path chosenPath, Individual individual) {
-        CtMethod<?> traversal = getTraversalOfNode(individual.getCtClass(), chosenPath.getTypeReference());
+        CtMethod<?> traversal = SpoonQueries.getTraversalOfNode(individual.getCtClass(), chosenPath.getTypeReference());
         assert traversal != null;
 
         List<CtParameter<?>> params = traversal.getParameters();
@@ -85,19 +87,5 @@ public class TraverseWorklistMutator implements Mutator {
         p.process(individual.getCtClass());
         return true;
     }
-
-    public CtMethod<?> getTraversalOfNode(CtClass<?> ctClass, CtTypeReference<?> node) {
-        Set<CtMethod<?>> traversals = ctClass.getMethods();
-        for (CtMethod<?> m : traversals) {
-            if (m.getSimpleName().startsWith(LocalVarHelper.TRAVERSAL_PREFIX)) {
-                CtVariable<?> visitedSetParam = m.getParameters().get(m.getParameters().size() - 1);
-                if (visitedSetParam.getType().getActualTypeArguments().get(0).equals(node)) {
-                    return m;
-                }
-            }
-        }
-        return null;
-    }
-
 
 }

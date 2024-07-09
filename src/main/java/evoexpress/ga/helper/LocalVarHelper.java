@@ -20,6 +20,7 @@ public class LocalVarHelper {
     public static final String TRAVERSAL_PREFIX = "traverse_";
     public static final String TRAVERSAL_ARRAY_PREFIX = "traverseArray_";
     public static final String SIZE_VAR_NAME = "initialSize_";
+    public static final String FIRST_ELEMENT_VAR_NAME = "firstElement_";
 
 
     public static String getVarName(CtBlock<?> code) {

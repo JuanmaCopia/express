@@ -13,7 +13,8 @@ public class InputTypeData {
 
     List<CtParameter<?>> inputs;
     List<CtVariable<?>> inputsWithCyclicNodes = new ArrayList<>();
-    Map<CtVariable<?>, TypeGraph> typeGraphMap = new HashMap<>();
+    Map<CtVariable<?>, TypeGraph> paramTotypeGraphMap = new HashMap<>();
+    Map<CtTypeReference<?>, TypeGraph> typeToTypeGraphMap = new HashMap<>();
 
     Set<Path> pathsToCyclicNodes;
     Set<Path> pathsToArrayNodes;
@@ -32,7 +33,8 @@ public class InputTypeData {
             CtTypeReference<?> type = p.getType();
             if (TypeUtils.isUserDefined(type)) {
                 TypeGraph g = new TypeGraph(p);
-                typeGraphMap.put(p, g);
+                initializeTypeToTypeGraphMap(g);
+                paramTotypeGraphMap.put(p, g);
                 nodesWithCycles.addAll(g.getNodesWithCycles());
                 if (!g.getNodesWithCycles().isEmpty())
                     inputsWithCyclicNodes.add(p);
@@ -40,11 +42,17 @@ public class InputTypeData {
         }
     }
 
+    private void initializeTypeToTypeGraphMap(TypeGraph typeGraph) {
+        for (CtTypeReference<?> node : typeGraph.getNodes()) {
+            typeToTypeGraphMap.put(node, typeGraph);
+        }
+    }
+
     private void initializePathsToCyclicNodes() {
         pathsToCyclicNodes = new HashSet<>();
         for (CtVariable<?> p : inputs) {
             if (TypeUtils.isUserDefined(p.getType())) {
-                pathsToCyclicNodes.addAll(typeGraphMap.get(p).getPathsToCyclicNodes());
+                pathsToCyclicNodes.addAll(paramTotypeGraphMap.get(p).getPathsToCyclicNodes());
             }
         }
     }
@@ -53,7 +61,7 @@ public class InputTypeData {
         pathsToArrayNodes = new HashSet<>();
         for (CtVariable<?> p : inputs) {
             if (TypeUtils.isUserDefined(p.getType())) {
-                pathsToArrayNodes.addAll(typeGraphMap.get(p).getPathsToArrayNodes());
+                pathsToArrayNodes.addAll(paramTotypeGraphMap.get(p).getPathsToArrayNodes());
             }
         }
     }
@@ -74,6 +82,10 @@ public class InputTypeData {
         return new ArrayList<>(inputsWithCyclicNodes);
     }
 
+    public TypeGraph getTypegraphOfNode(CtTypeReference<?> type) {
+        return typeToTypeGraphMap.get(type);
+    }
+
     public LinkedList<CtParameter<?>> getInputs() {
         return new LinkedList<>(inputs);
     }
@@ -82,14 +94,14 @@ public class InputTypeData {
         CtTypeReference<?> type = parameter.getType();
         if (!TypeUtils.isUserDefined(type))
             throw new IllegalArgumentException("Type is not user defined");
-        return typeGraphMap.get(parameter);
+        return paramTotypeGraphMap.get(parameter);
     }
 
     public Set<Path> getPathsToCyclicNodesOfParameter(CtVariable<?> parameter) {
         CtTypeReference<?> type = parameter.getType();
         if (!TypeUtils.isUserDefined(type))
             throw new IllegalArgumentException("Type is not user defined");
-        return typeGraphMap.get(parameter).getPathsToCyclicNodes();
+        return paramTotypeGraphMap.get(parameter).getPathsToCyclicNodes();
     }
 
 
@@ -97,7 +109,7 @@ public class InputTypeData {
         List<Path> allPaths = new ArrayList<>();
         for (CtVariable<?> p : inputs) {
             if (TypeUtils.isUserDefined(p.getType())) {
-                allPaths.addAll(typeGraphMap.get(p).getAllReferencePaths(depth));
+                allPaths.addAll(paramTotypeGraphMap.get(p).getAllReferencePaths(depth));
             }
         }
         return allPaths;
@@ -107,7 +119,7 @@ public class InputTypeData {
         List<Path> allPaths = new ArrayList<>();
         for (CtVariable<?> p : inputs) {
             if (TypeUtils.isUserDefined(p.getType())) {
-                allPaths.addAll(typeGraphMap.get(p).getAllReferencePaths(initialVariable, depth));
+                allPaths.addAll(paramTotypeGraphMap.get(p).getAllReferencePaths(initialVariable, depth));
             }
         }
         return allPaths;
@@ -117,7 +129,7 @@ public class InputTypeData {
         List<Path> allPaths = new ArrayList<>();
         for (CtVariable<?> p : inputs) {
             if (TypeUtils.isUserDefined(p.getType())) {
-                allPaths.addAll(typeGraphMap.get(p).getAllPaths(depth));
+                allPaths.addAll(paramTotypeGraphMap.get(p).getAllPaths(depth));
             }
         }
         return allPaths;
@@ -139,7 +151,7 @@ public class InputTypeData {
         List<Path> integerFields = new ArrayList<>();
         for (CtVariable<?> p : inputs) {
             if (TypeUtils.isUserDefined(p.getType())) {
-                integerFields.addAll(typeGraphMap.get(p).getIntegerFieldsOfRoot());
+                integerFields.addAll(paramTotypeGraphMap.get(p).getIntegerFieldsOfRoot());
             } else if (TypeUtils.isInteger(p.getType())) {
                 integerFields.add(new Path(p, new ArrayList<>()));
             }

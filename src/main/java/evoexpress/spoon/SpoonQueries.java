@@ -206,6 +206,23 @@ public class SpoonQueries {
         return (CtStatement) matchingComments.get(RandomUtils.nextInt(matchingComments.size()));
     }
 
+    public static CtMethod<?> getTraversalOfNode(CtClass<?> ctClass, CtTypeReference<?> node) {
+        Set<CtMethod<?>> traversals = ctClass.getMethods();
+        for (CtMethod<?> m : traversals) {
+            if (m.getSimpleName().startsWith(LocalVarHelper.TRAVERSAL_PREFIX)) {
+                CtVariable<?> visitedSetParam = m.getParameters().get(m.getParameters().size() - 1);
+                if (visitedSetParam.getType().getActualTypeArguments().get(0).equals(node)) {
+                    return m;
+                }
+            }
+        }
+        return null;
+    }
+    
+    public static List<CtMethod<?>> getTraversals(CtClass<?> ctClass) {
+        return ctClass.getMethods().stream().filter(method -> method.getSimpleName().startsWith(LocalVarHelper.TRAVERSAL_PREFIX)).toList();
+    }
+
 //    public static List<List<CtVariable<?>>> getNonUsedInitialPathsToCyclicField(CtBlock<?> code) {
 //        List<List<CtVariable<?>>> nonUsedInitialPathsToCyclicField = new LinkedList<>();
 //

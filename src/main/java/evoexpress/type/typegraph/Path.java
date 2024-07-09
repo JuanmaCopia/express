@@ -42,6 +42,10 @@ public class Path {
         return fields.get(fields.size() - 1);
     }
 
+    public void setLast(CtVariable<?> newLast) {
+        fields.set(fields.size() - 1, newLast);
+    }
+
     public CtVariable<?> get(int i) {
         return fields.get(i);
     }
@@ -60,6 +64,9 @@ public class Path {
         return new Path(new LinkedList<>(fields.subList(0, fields.size() - 1)));
     }
 
+    public Path clone() {
+        return new Path(new LinkedList<>(fields));
+    }
 
     public String toString() {
         return getVariableRead().toString();

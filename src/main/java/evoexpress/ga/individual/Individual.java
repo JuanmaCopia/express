@@ -17,6 +17,7 @@ public class Individual implements Comparable<Individual> {
     private final CtClass<?> cls;
     public boolean marked;
     Set<Path> nonTraversedPathsToCyclicNodes;
+    Set<Path> traversedPathsToCyclicNodes = new HashSet<>();
     Set<Path> nonTraversedPathsToArrayNodes;
     Set<CtTypeReference<?>> nonTraversedNodesWithCycles;
     private double fitness;
@@ -52,6 +53,10 @@ public class Individual implements Comparable<Individual> {
 
     public Set<Path> getNonTraversedPathsToCyclicNodes() {
         return nonTraversedPathsToCyclicNodes;
+    }
+
+    public Set<Path> getTraversedPathsToCyclicNodes() {
+        return traversedPathsToCyclicNodes;
     }
 
     public Set<Path> getNonTraversedPathsToArrayNodes() {
