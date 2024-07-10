@@ -18,21 +18,21 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 
-public class ChangeTraversalFieldsMutator implements Mutator {
+public class ChangeLoopFieldsMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("structureCheck"))
+        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("traverse_"))
             return false;
         return !SpoonQueries.getTraversals(individual.getCtClass()).isEmpty();
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
-        List<CtMethod<?>> traversals = SpoonQueries.getTraversals(individual.getCtClass());
-        CtMethod<?> chosenTraversal = traversals.get(RandomUtils.nextInt(traversals.size()));
+        CtBlock<?> blockGene = (CtBlock<?>) gene;
+        CtMethod<?> traversal = blockGene.getParent(CtMethod.class);
 
-        CtVariable<?> visitedSet = SpoonQueries.getTraversalSetVariable(chosenTraversal);
-        CtVariable<?> currentVar = SpoonQueries.getTraversalCurrentVariable(chosenTraversal);
+        CtVariable<?> visitedSet = SpoonQueries.getTraversalSetVariable(traversal);
+        CtVariable<?> currentVar = SpoonQueries.getTraversalCurrentVariable(traversal);
         CtTypeReference<?> traversedNode = currentVar.getType();
 
         TypeGraph typeGraph = SpoonManager.inputTypeData.getTypegraphOfNode(traversedNode);
@@ -41,7 +41,7 @@ public class ChangeTraversalFieldsMutator implements Mutator {
 
         List<CtIf> newIfs = WorklistTraversal.createIfsForLoopFields(newLoopFields, currentVar, visitedSet, RandomUtils.nextBoolean());
 
-        CtBlock<?> traversalBody = chosenTraversal.getBody();
+        CtBlock<?> traversalBody = traversal.getBody();
 
         List<CtIf> traverseIfs = SpoonQueries.getTraversalIfsForTraversedFields(traversalBody);
         for (CtIf oldIf : traverseIfs) {
@@ -53,7 +53,7 @@ public class ChangeTraversalFieldsMutator implements Mutator {
             endOfHandleCurrentComment.insertAfter(newIf);
         }
 
-        chosenTraversal.setBody(traversalBody);
+        traversal.setBody(traversalBody);
 
         //System.err.println("ChangeTraversalFieldsMutator AFTER: \n" + chosenTraversal);
         return true;

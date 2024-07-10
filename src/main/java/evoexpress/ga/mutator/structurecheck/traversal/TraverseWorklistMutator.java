@@ -46,7 +46,8 @@ public class TraverseWorklistMutator implements Mutator {
             chosenPath = pathsToCyclicNodes.get(RandomUtils.nextInt(pathsToCyclicNodes.size()));
         }
 
-        addTraversalInvocation(chosenPath, individual);
+        if (!addTraversalInvocation(chosenPath, individual, (CtBlock<?>) gene))
+            return false;
 
         //System.err.println("TraverseWorklistMutator:\n" + individual.getCtClass().toString());
 
@@ -64,7 +65,7 @@ public class TraverseWorklistMutator implements Mutator {
         p.process(individual.getCtClass());
     }
 
-    private boolean addTraversalInvocation(Path chosenPath, Individual individual) {
+    private boolean addTraversalInvocation(Path chosenPath, Individual individual, CtBlock<?> blockGene) {
         CtMethod<?> traversal = SpoonQueries.getTraversalOfNode(individual.getCtClass(), chosenPath.getTypeReference());
         assert traversal != null;
 
@@ -72,8 +73,12 @@ public class TraverseWorklistMutator implements Mutator {
         if (!params.get(params.size() - 2).getType().equals(chosenPath.getParentPath().getTypeReference()))
             return false;
 
-        Processor<CtClass<?>> p = new InvokeWorklistProcessor(chosenPath, traversal);
+        InvokeWorklistProcessor p = new InvokeWorklistProcessor(chosenPath, traversal);
         p.process(individual.getCtClass());
+
+//        if (SpoonQueries.checkAlreadyExistSimple(p.resultCheck.getCondition(), blockGene))
+//            return false;
+
         return true;
     }
 

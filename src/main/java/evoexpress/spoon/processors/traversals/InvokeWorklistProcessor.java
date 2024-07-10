@@ -17,6 +17,7 @@ import java.util.List;
 
 public class InvokeWorklistProcessor extends AbstractProcessor<CtClass<?>> {
 
+    public CtIf resultCheck = null;
     Path initialField;
     CtMethod<?> traversal;
 
@@ -41,8 +42,9 @@ public class InvokeWorklistProcessor extends AbstractProcessor<CtClass<?>> {
 
         CtExpression<?>[] args = createArguments(traversal.getParameters(), setVar);
         CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(traversal, args);
-        
+
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(SpoonFactory.negateExpresion(traversalCall));
+        resultCheck = ifStatement;
         CtStatement lastStatement = SpoonQueries.getMark1Comment(structureMethod.getBody());
         lastStatement.insertBefore(ifStatement);
     }

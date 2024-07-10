@@ -375,6 +375,15 @@ public class SpoonQueries {
         return null;
     }
 
+    public static CtVariable<?> getParentOfElementParameter(CtMethod<?> method) {
+        List<CtParameter<?>> parameters = method.getParameters();
+        for (CtParameter<?> parameter : parameters) {
+            if (parameter.getSimpleName().startsWith(LocalVarHelper.PARENT_OF_ELEMENT_PARAM))
+                return parameter;
+        }
+        return null;
+    }
+
     public static CtVariable<?> getInitialSizeVariable(CtBlock<?> block) {
         List<CtLocalVariable<?>> vars = getLocalVariablesMathingPrefix(block, LocalVarHelper.SIZE_VAR_NAME);
         if (vars.isEmpty())
@@ -430,6 +439,15 @@ public class SpoonQueries {
                 return (CtComment) statement;
         }
         return null;
+    }
+
+    public static boolean checkAlreadyExistSimple(CtElement condition, CtBlock<?> block) {
+        List<CtIf> ifs = block.getElements(Objects::nonNull);
+        for (CtIf ifStatement : ifs) {
+            if (ifStatement.getCondition().toString().equals(condition.toString()))
+                return true;
+        }
+        return false;
     }
 
     public static boolean checkAlreadyExist(CtElement condition, CtBlock<?> block) {

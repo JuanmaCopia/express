@@ -29,7 +29,7 @@ public class AddRandomComparisonToCurrent implements Mutator {
 
         int depth = 2;
         List<Path> candidates = SpoonManager.inputTypeData
-                .getAllReferencePathsOfType(currentDeclaration, currentDeclaration.getType(), depth)
+                .getAllSimpleReferencePathsOfType(currentDeclaration, currentDeclaration.getType(), depth)
                 .stream()
                 .filter(p -> p.depth() >= depth)
                 .toList();
@@ -53,6 +53,7 @@ public class AddRandomComparisonToCurrent implements Mutator {
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(blockGene);
         endOfHandleCurrentComment.insertBefore(ifStatement);
 
+        //System.err.println("AddRandomComparisonToCurrent:\n" + ifStatement);
         //System.err.println("\nAddNullCompToTraversalMutator:\n\n" + blockGene);
         return true;
     }

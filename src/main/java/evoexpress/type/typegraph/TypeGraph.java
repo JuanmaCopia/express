@@ -212,20 +212,20 @@ public class TypeGraph {
     /**
      * Get all the possible paths of length k from the source node to any other node in the graph.
      *
-     * @param source the source node
-     * @param k      the length of the paths
+     * @param initialVariable the initial variable
+     * @param k               the length of the paths
      * @return the list of all the possible paths of length k from the source node to any other node in the graph
      */
-    public List<Path> getAllPaths(CtVariable<?> initialVariable, CtTypeReference<?> source, int k) {
+    public List<Path> getAllPaths(CtVariable<?> initialVariable, int k) {
         List<Path> paths = new LinkedList<>();
         paths.add(new Path(initialVariable, new LinkedList<>()));
         List<CtVariable<?>> currentPath = new LinkedList<>();
-        getAllPaths(initialVariable, source, currentPath, paths, k);
+        getAllPaths(initialVariable, initialVariable.getType(), currentPath, paths, k);
         return paths;
     }
 
     public List<Path> getAllPaths(int k) {
-        return getAllPaths(rootVariable, rootType, k);
+        return getAllPaths(rootVariable, k);
     }
 
     public void getAllPaths(CtVariable<?> initialVariable, CtTypeReference<?> source, List<CtVariable<?>> currentFieldChain, List<Path> paths, int k) {
@@ -250,7 +250,7 @@ public class TypeGraph {
     }
 
     public List<Path> getAllReferencePaths(CtVariable<?> initialVariable, int depth) {
-        return getAllPaths(initialVariable, initialVariable.getType(), depth).stream().filter(p -> !p.isPrimitiveOrBoxedPrimitive()).toList();
+        return getAllPaths(initialVariable, depth).stream().filter(p -> !p.isPrimitiveOrBoxedPrimitive()).toList();
     }
 
     public List<Path> getIntegerFieldsOfRoot() {

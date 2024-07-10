@@ -41,7 +41,7 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         CtVariable<?> setVar = handleVisitedSetVariable(structureMethodBody, lastStatement);
 
         List<CtParameter<?>> parameters = SpoonManager.inputTypeData.getInputs();
-        parameters.add(SpoonFactory.createParameter(initialField.getParentPath().getTypeReference(), "parentOfTraversable"));
+        parameters.add(SpoonFactory.createParameter(initialField.getParentPath().getTypeReference(), LocalVarHelper.PARENT_OF_ELEMENT_PARAM));
         parameters.add(SpoonFactory.createParameter(setVar.getType(), setVar.getSimpleName()));
 
         CtMethod<?> traversalMethod = WorklistTraversal.createTraversalMethod(ctClass, initialField, parameters, loopFields, useBreakInsteadOfReturn);

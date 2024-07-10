@@ -6,8 +6,10 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class Path {
 
@@ -36,6 +38,16 @@ public class Path {
 
     public boolean isPrimitiveOrBoxedPrimitive() {
         return TypeUtils.isPrimitiveOrBoxedPrimitiveType(getTypeReference());
+    }
+
+    public boolean isSimple() {
+        Set<CtVariable<?>> visited = new HashSet<>();
+        for (CtVariable<?> field : fields) {
+            if (!visited.add(field)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public CtVariable<?> getLast() {

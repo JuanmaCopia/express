@@ -94,8 +94,8 @@ public class WorklistTraversal {
 
         body.insertEnd(SpoonFactory.createComment("Begin of traversal"));
         body.insertEnd(worklist);
-        body.insertEnd(firstElement);
         body.insertEnd(SpoonFactory.createComment("Initialize root element:"));
+        body.insertEnd(firstElement);
         body.insertEnd(initialFieldNullCheck);
         body.insertEnd(SpoonFactory.createComment("Cycle over cyclic references:"));
         body.insertEnd(whileStatement);

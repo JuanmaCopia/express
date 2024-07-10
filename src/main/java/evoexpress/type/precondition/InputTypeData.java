@@ -117,11 +117,8 @@ public class InputTypeData {
 
     public List<Path> getAllReferencePaths(CtVariable<?> initialVariable, int depth) {
         List<Path> allPaths = new ArrayList<>();
-        for (CtVariable<?> p : inputs) {
-            if (TypeUtils.isUserDefined(p.getType())) {
-                allPaths.addAll(paramTotypeGraphMap.get(p).getAllReferencePaths(initialVariable, depth));
-            }
-        }
+        TypeGraph typeGraph = typeToTypeGraphMap.get(initialVariable.getType());
+        allPaths.addAll(typeGraph.getAllReferencePaths(initialVariable, depth));
         return allPaths;
     }
 
@@ -135,17 +132,33 @@ public class InputTypeData {
         return allPaths;
     }
 
-    public List<Path> getAllReferencePathsOfType(CtTypeReference<?> type, int depth) {
-        return getAllReferencePaths(depth).stream().filter(p -> p.getTypeReference().equals(type)).toList();
-    }
-
     public List<Path> getAllPathsOfType(CtTypeReference<?> type, int depth) {
         return getAllPaths(depth).stream().filter(p -> p.getTypeReference().equals(type)).toList();
     }
 
+    public List<Path> getAllPathsOfType(CtVariable<?> initialVariable, CtTypeReference<?> type, int depth) {
+        TypeGraph typeGraph = typeToTypeGraphMap.get(initialVariable.getType());
+        return new ArrayList<>(
+                typeGraph.getAllPaths(initialVariable, depth).stream().filter(p -> p.getTypeReference().equals(type)).toList()
+        );
+    }
+
+    public List<Path> getAllReferencePathsOfType(CtTypeReference<?> type, int depth) {
+        return getAllReferencePaths(depth).stream().filter(p -> p.getTypeReference().equals(type)).toList();
+    }
+
+
     public List<Path> getAllReferencePathsOfType(CtVariable<?> initialVariable, CtTypeReference<?> type, int depth) {
         return getAllReferencePaths(initialVariable, depth).stream().filter(p -> p.getTypeReference().equals(type)).toList();
     }
+
+    public List<Path> getAllSimpleReferencePathsOfType(CtVariable<?> initialVariable, CtTypeReference<?> type, int depth) {
+        return getAllReferencePaths(initialVariable, depth).stream().filter(p -> p.getTypeReference().equals(type) && p.isSimple()).toList();
+    }
+
+//    public List<Path> getAllReferenceSimplePathsOfType(CtVariable<?> initialVariable, CtTypeReference<?> type, int depth) {
+//        return getAllReferencePaths(initialVariable, depth).stream().filter(p -> p.getTypeReference().equals(type)).toList();
+//    }
 
     public List<Path> getIntegerFieldsOfParameters() {
         List<Path> integerFields = new ArrayList<>();

@@ -16,23 +16,23 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 
-public class ChangeTraverseInitialFieldMutator implements Mutator {
+public class ChangeFirstElementMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("structureCheck"))
+        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("traverse_"))
             return false;
         return !SpoonQueries.getTraversals(individual.getCtClass()).isEmpty();
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
-        List<CtMethod<?>> traversals = SpoonQueries.getTraversals(individual.getCtClass());
-        CtMethod<?> chosenTraversal = traversals.get(RandomUtils.nextInt(traversals.size()));
-
-        List<CtParameter<?>> params = chosenTraversal.getParameters();
+        CtBlock<?> blockGene = (CtBlock<?>) gene;
+        CtMethod<?> traversal = blockGene.getParent(CtMethod.class);
+        
+        List<CtParameter<?>> params = traversal.getParameters();
         CtVariable<?> parentOfFirstElement = params.get(params.size() - 2);
 
-        CtLocalVariable<?> firstElement = (CtLocalVariable<?>) chosenTraversal.getElements(
+        CtLocalVariable<?> firstElement = (CtLocalVariable<?>) traversal.getElements(
                 e -> e instanceof CtLocalVariable<?> var &&
                         var.getSimpleName().equals(LocalVarHelper.FIRST_ELEMENT_VAR_NAME)
         ).get(0);
@@ -55,7 +55,7 @@ public class ChangeTraverseInitialFieldMutator implements Mutator {
 
         CtFieldRead newFirstElementRead = SpoonFactory.createFieldRead(parentOfFirstElement, chosenField);
         firstElement.setAssignment(newFirstElementRead);
-        
+
         //System.err.println("ChangeTraverseInitialFieldMutator: " + chosenField.getSimpleName() + " instead of " + fieldName);
         //System.err.println("Result: \n" + chosenTraversal);
 

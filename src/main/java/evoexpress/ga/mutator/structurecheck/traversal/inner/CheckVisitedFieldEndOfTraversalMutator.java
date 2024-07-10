@@ -26,8 +26,11 @@ public class CheckVisitedFieldEndOfTraversalMutator implements Mutator {
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
+        CtMethod<?> traversal = blockGene.getParent(CtMethod.class);
 
-        CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(blockGene.getParent(CtMethod.class));
+        //CtVariable<?> parentOfElement = SpoonQueries.getParentOfElementParameter(traversal);
+
+        CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(traversal);
         CtTypeReference<?> setSubType = visitedSetVar.getType().getActualTypeArguments().get(0);
 
         List<Path> candidates = SpoonManager.inputTypeData.getAllReferencePathsOfType(setSubType, 1).stream().filter(p -> p.depth() >= 1).toList();
