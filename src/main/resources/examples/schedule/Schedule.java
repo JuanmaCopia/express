@@ -280,6 +280,50 @@ public class Schedule {
 //        }
 //    }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (curProc == null)
+            sb.append("curProc: null\n");
+        else
+            sb.append("curProc: " + curProc.toString() + "\n");
+        sb.append("prio_0: " + printList(prio_0) + "\n");
+        sb.append("prio_1: " + printList(prio_1) + "\n");
+        sb.append("prio_2: " + printList(prio_2) + "\n");
+        sb.append("prio_3: " + printList(prio_3) + "\n");
+        sb.append("blockQueue: " + printList(blockQueue) + "\n");
+        sb.append("num_processes: " + numProcesses + "\n");
+        return sb.toString();
+    }
+
+    public String printList(List list) {
+        if (list == null)
+            return "null";
+        StringBuilder buf = new StringBuilder();
+        Job current = list.getFirst();
+        Set<Job> visited = new HashSet<>();
+        if (current == null) {
+            buf.append("Empty");
+        } else {
+            while (current != null) {
+                if (!visited.add(current)) {
+                    buf.append("Cycle!");
+                    break;
+                }
+                buf.append(current.toString() + " ");
+                current = current.getNext();
+            }
+        }
+        if (list.getLast() == null)
+            buf.append("  |  Last: null");
+        else if (!visited.add(list.getLast()))
+            buf.append("  |  Last: Visited!");
+        else
+            buf.append("  |  Last: Not Visited");
+        buf.append("  |  mem_count: " + list.getMemCount());
+        return buf.toString();
+    }
+
+
     public boolean pre() {
         return preH() && preP();
     }
