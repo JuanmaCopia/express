@@ -28,7 +28,7 @@ public class ChangeFirstElementMutator implements Mutator {
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
         CtMethod<?> traversal = blockGene.getParent(CtMethod.class);
-        
+
         List<CtParameter<?>> params = traversal.getParameters();
         CtVariable<?> parentOfFirstElement = params.get(params.size() - 2);
 

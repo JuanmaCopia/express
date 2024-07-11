@@ -2,6 +2,7 @@ package evoexpress.ga.mutator.structurecheck.traversal.inner;
 
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
+import evoexpress.ga.mutator.MutatorHelper;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
@@ -17,10 +18,7 @@ import java.util.List;
 public class CheckVisitedFieldEndOfTraversalMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("traverse_"))
-            return false;
-
-        return true;
+        return MutatorHelper.isTraversalBlock(gene);
     }
 
     @Override
@@ -28,12 +26,12 @@ public class CheckVisitedFieldEndOfTraversalMutator implements Mutator {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
         CtMethod<?> traversal = blockGene.getParent(CtMethod.class);
 
-        //CtVariable<?> parentOfElement = SpoonQueries.getParentOfElementParameter(traversal);
+        CtVariable<?> parentOfElement = SpoonQueries.getParentOfElementParameter(traversal);
 
         CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(traversal);
         CtTypeReference<?> setSubType = visitedSetVar.getType().getActualTypeArguments().get(0);
 
-        List<Path> candidates = SpoonManager.inputTypeData.getAllReferencePathsOfType(setSubType, 1).stream().filter(p -> p.depth() >= 1).toList();
+        List<Path> candidates = SpoonManager.inputTypeData.getAllReferencePathsOfType(parentOfElement, setSubType, 1).stream().filter(p -> p.depth() >= 1).toList();
 
         Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
         CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();

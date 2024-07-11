@@ -256,6 +256,10 @@ public class SpoonQueries {
         return traversal.getParameters().get(traversal.getParameters().size() - 1);
     }
 
+    public static CtVariable<?> getTraversalWorklistVariable(CtMethod<?> traversal) {
+        return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var && var.getSimpleName().startsWith(LocalVarHelper.WORKLIST_VAR_NAME)).get(0);
+    }
+
     public static CtVariable<?> getTraversalCurrentVariable(CtMethod<?> traversal) {
         return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var && var.getSimpleName().startsWith(LocalVarHelper.CURRENT_VAR_NAME)).get(0);
     }

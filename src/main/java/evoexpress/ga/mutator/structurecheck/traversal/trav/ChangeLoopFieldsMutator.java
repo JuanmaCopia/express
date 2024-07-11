@@ -31,6 +31,7 @@ public class ChangeLoopFieldsMutator implements Mutator {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
         CtMethod<?> traversal = blockGene.getParent(CtMethod.class);
 
+        CtVariable<?> worklist = SpoonQueries.getTraversalWorklistVariable(traversal);
         CtVariable<?> visitedSet = SpoonQueries.getTraversalSetVariable(traversal);
         CtVariable<?> currentVar = SpoonQueries.getTraversalCurrentVariable(traversal);
         CtTypeReference<?> traversedNode = currentVar.getType();
@@ -39,7 +40,7 @@ public class ChangeLoopFieldsMutator implements Mutator {
         List<CtVariable<?>> loopFields = typeGraph.getCyclicFieldsOfNode(traversedNode);
         List<CtVariable<?>> newLoopFields = MutatorHelper.selectRandomVariablesFromList(loopFields);
 
-        List<CtIf> newIfs = WorklistTraversal.createIfsForLoopFields(newLoopFields, currentVar, visitedSet, RandomUtils.nextBoolean());
+        List<CtIf> newIfs = WorklistTraversal.createIfsForLoopFields(newLoopFields, currentVar, visitedSet, worklist, RandomUtils.nextBoolean());
 
         CtBlock<?> traversalBody = traversal.getBody();
 

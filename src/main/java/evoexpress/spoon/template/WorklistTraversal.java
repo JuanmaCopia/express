@@ -82,7 +82,7 @@ public class WorklistTraversal {
         whileBody.insertEnd(SpoonFactory.createComment("End of Handle current:"));
 
         // Create worklist.add(current.<loopField>); for each loopField
-        for (CtIf ifStatement : createIfsForLoopFields(loopFields, currentDeclaration, visitedSet, useBreakInsteadOfReturn)) {
+        for (CtIf ifStatement : createIfsForLoopFields(loopFields, currentDeclaration, visitedSet, worklist, useBreakInsteadOfReturn)) {
             whileBody.insertEnd(ifStatement);
         }
 
@@ -106,19 +106,19 @@ public class WorklistTraversal {
         return body;
     }
 
-    public static List<CtIf> createIfsForLoopFields(List<CtVariable<?>> loopFields, CtVariable<?> currentDeclaration, CtVariable<?> visitedSet, boolean useBreakInsteadOfReturn) {
+    public static List<CtIf> createIfsForLoopFields(List<CtVariable<?>> loopFields, CtVariable<?> currentDeclaration, CtVariable<?> visitedSet, CtVariable<?> worklist, boolean useBreakInsteadOfReturn) {
         List<CtIf> ifs = new ArrayList<>();
         for (CtVariable<?> loopField : loopFields) {
-            ifs.add(createIfForLoopField(loopField, currentDeclaration, visitedSet, useBreakInsteadOfReturn));
+            ifs.add(createIfForLoopField(loopField, currentDeclaration, visitedSet, worklist, useBreakInsteadOfReturn));
         }
         return ifs;
     }
 
-    public static CtIf createIfForLoopField(CtVariable<?> loopFields, CtVariable<?> currentDeclaration, CtVariable<?> visitedSet, boolean useBreakInsteadOfReturn) {
+    public static CtIf createIfForLoopField(CtVariable<?> loopFields, CtVariable<?> currentDeclaration, CtVariable<?> visitedSet, CtVariable<?> worklist, boolean useBreakInsteadOfReturn) {
         CtFieldRead<?> loopFieldRead = SpoonFactory.createFieldRead(currentDeclaration, loopFields);
         CtExpression<Boolean> fieldNullComp = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(loopFieldRead, null, BinaryOperatorKind.NE);
 
-        CtInvocation<?> addToListCall = SpoonFactory.createInvocation(visitedSet, "add", visitedSet.getType(), loopFieldRead);
+        CtInvocation<?> addToListCall = SpoonFactory.createInvocation(worklist, "add", worklist.getType(), loopFieldRead);
         CtIf ifNotNull = SpoonFactory.createIfThenStatement(fieldNullComp, addToListCall);
 
         CtIf visitedCheck = SpoonFactory.createVisitedCheck(visitedSet, loopFieldRead, true, useBreakInsteadOfReturn);

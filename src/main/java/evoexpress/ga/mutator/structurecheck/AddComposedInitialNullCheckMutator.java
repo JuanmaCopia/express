@@ -1,13 +1,15 @@
-package evoexpress.ga.mutator.initialcheck;
+package evoexpress.ga.mutator.structurecheck;
 
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
+import evoexpress.ga.mutator.MutatorHelper;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
 import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
 
@@ -15,17 +17,21 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
 
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("initialCheck"))
-            return false;
-
-        return SpoonManager.inputTypeData.getAllReferencePaths(1).stream().filter(p -> p.depth() >= 1).toList().size() > 1;
+        return MutatorHelper.isInitialCheckBlock(gene) || MutatorHelper.isTraversalBlock(gene);
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
-        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(1).stream().filter(p -> p.depth() >= 1).toList();
+        List<Path> paths;
+        if (MutatorHelper.isInitialCheckBlock(gene)) {
+            paths = SpoonManager.inputTypeData.getAllReferencePaths(1).stream().filter(p -> p.depth() >= 1).toList();
+        } else {
+            CtMethod<?> traversal = blockGene.getParent(CtMethod.class);
+            CtVariable<?> parentOfElement = SpoonQueries.getParentOfElementParameter(traversal);
+            paths = SpoonManager.inputTypeData.getAllReferencePaths(parentOfElement, 1).stream().filter(p -> p.depth() >= 1).toList();
+        }
 
         List<Path> chosenVarReads = SpoonQueries.chooseNPaths(paths, 2);
         CtVariableRead<?> var1 = chosenVarReads.get(0).getVariableRead();
@@ -40,11 +46,19 @@ public class AddComposedInitialNullCheckMutator implements Mutator {
             return false;
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
-        CtStatement returnTrueComment = SpoonQueries.getReturnTrueComment(blockGene);
-        returnTrueComment.insertBefore(ifStatement);
 
-        /*System.err.println("\nAddComposedInitialNullCheckMutator:\n" + ifStatement);
-        System.err.println("\nFinal Block:\n\n" + blockGene);*/
+        CtStatement comment;
+        if (MutatorHelper.isInitialCheckBlock(gene)) {
+            comment = SpoonQueries.getReturnTrueComment(blockGene);
+        } else {
+            comment = SpoonQueries.getBeginOfTraversalComment(blockGene);
+        }
+
+        comment.insertBefore(ifStatement);
+
+
+        //System.err.println("\nAddComposedInitialNullCheckMutator:\n" + ifStatement);
+        //System.err.println("\nFinal Block:\n\n" + blockGene);
         return true;
     }
 

@@ -22,12 +22,12 @@ public class Job {
         return next;
     }
 
-    public Job getPrev() {
-        return prev;
-    }
-
     public void setNext(Job newNext) {
         next = newNext;
+    }
+
+    public Job getPrev() {
+        return prev;
     }
 
     public void setPrev(Job newPrev) {
@@ -38,12 +38,12 @@ public class Job {
         return val;
     }
 
-    public int getPriority() {
-        return priority;
-    }
-
     public void setVal(int newVal) {
         val = newVal;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 
     public void setPriority(int newPriority) {
@@ -54,7 +54,7 @@ public class Job {
         final StringBuilder buf = new StringBuilder(1);
         // buf.append(this.val);
         // buf.append(",");
-        buf.append(this.priority);
+        buf.append(this.val);
         return buf.toString();
     }
 
