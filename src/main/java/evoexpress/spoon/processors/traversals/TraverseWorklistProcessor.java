@@ -1,11 +1,11 @@
 package evoexpress.spoon.processors.traversals;
 
 import evoexpress.ga.helper.LocalVarHelper;
+import evoexpress.ga.mutator.template.WorklistTraversalTemplate;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
-import evoexpress.spoon.template.WorklistTraversal;
 import evoexpress.type.typegraph.Path;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
@@ -44,7 +44,7 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         parameters.add(SpoonFactory.createParameter(initialField.getParentPath().getTypeReference(), LocalVarHelper.PARENT_OF_ELEMENT_PARAM));
         parameters.add(SpoonFactory.createParameter(setVar.getType(), setVar.getSimpleName()));
 
-        CtMethod<?> traversalMethod = WorklistTraversal.createTraversalMethod(ctClass, initialField, parameters, loopFields, useBreakInsteadOfReturn);
+        CtMethod<?> traversalMethod = WorklistTraversalTemplate.createTraversalMethod(ctClass, initialField, parameters, loopFields, useBreakInsteadOfReturn);
         ctClass.addMethod(traversalMethod);
     }
 

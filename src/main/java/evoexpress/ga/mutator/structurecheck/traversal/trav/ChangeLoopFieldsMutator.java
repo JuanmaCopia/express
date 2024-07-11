@@ -3,10 +3,10 @@ package evoexpress.ga.mutator.structurecheck.traversal.trav;
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.ga.mutator.MutatorHelper;
+import evoexpress.ga.mutator.template.WorklistTraversalTemplate;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
-import evoexpress.spoon.template.WorklistTraversal;
 import evoexpress.type.typegraph.TypeGraph;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
@@ -40,7 +40,7 @@ public class ChangeLoopFieldsMutator implements Mutator {
         List<CtVariable<?>> loopFields = typeGraph.getCyclicFieldsOfNode(traversedNode);
         List<CtVariable<?>> newLoopFields = MutatorHelper.selectRandomVariablesFromList(loopFields);
 
-        List<CtIf> newIfs = WorklistTraversal.createIfsForLoopFields(newLoopFields, currentVar, visitedSet, worklist, RandomUtils.nextBoolean());
+        List<CtIf> newIfs = WorklistTraversalTemplate.createIfsForLoopFields(newLoopFields, currentVar, visitedSet, worklist, RandomUtils.nextBoolean());
 
         CtBlock<?> traversalBody = traversal.getBody();
 

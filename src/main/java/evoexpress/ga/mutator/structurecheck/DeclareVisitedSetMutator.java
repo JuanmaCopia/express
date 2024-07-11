@@ -1,6 +1,7 @@
-package evoexpress.ga.mutator;
+package evoexpress.ga.mutator.structurecheck;
 
 import evoexpress.ga.individual.Individual;
+import evoexpress.ga.mutator.Mutator;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;

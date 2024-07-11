@@ -1,4 +1,4 @@
-package evoexpress.spoon.template;
+package evoexpress.ga.mutator.template;
 
 import evoexpress.ga.helper.LocalVarHelper;
 import evoexpress.spoon.SpoonFactory;
@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class WorklistTraversal {
+public class WorklistTraversalTemplate {
 
 
     public static CtMethod<?> createTraversalMethod(CtClass<?> ctClass, Path initialField, List<CtParameter<?>> parameters, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
@@ -43,6 +43,9 @@ public class WorklistTraversal {
         CtVariableRead<?> firstElementRead = SpoonFactory.createVariableRead(firstElement);
         CtVariable<?> visitedSet = params.get(params.size() - 1);
 
+        CtIf firstElemVisitedCheck = SpoonFactory.createVisitedCheck(visitedSet, firstElementRead, true, false);
+
+
         CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(firstElementRead.getType(), body);
 
         CtTypeReference<?> subtypeOfWorklist = worklist.getType().getActualTypeArguments().get(0);
@@ -50,6 +53,7 @@ public class WorklistTraversal {
         CtInvocation<?> addToWorklistCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, firstElementRead);
         CtInvocation<?> addToSetCall = (CtInvocation<?>) SpoonFactory.createAddToSetInvocation(visitedSet, firstElementRead);
         CtBlock<?> ifBlock = SpoonFactory.createBlock();
+        ifBlock.insertEnd(firstElemVisitedCheck);
         ifBlock.insertEnd(addToWorklistCall);
         ifBlock.insertEnd(addToSetCall);
 
