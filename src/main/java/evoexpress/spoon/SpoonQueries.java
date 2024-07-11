@@ -264,6 +264,26 @@ public class SpoonQueries {
         return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var && var.getSimpleName().startsWith(LocalVarHelper.CURRENT_VAR_NAME)).get(0);
     }
 
+    public static List<CtIf> getIfsReturnFalses(CtBlock<?> block) {
+        List<CtIf> ifsReturnFalses = new LinkedList<>();
+        List<CtIf> ifs = block.getElements(Objects::nonNull);
+        for (CtIf ifStatement : ifs) {
+            if (ifStatement.getThenStatement() instanceof CtBlock<?> ifBlock) {
+                if (isReturnFalseBlock(ifBlock))
+                    ifsReturnFalses.add(ifStatement);
+            }
+        }
+        return ifsReturnFalses;
+    }
+
+    public static boolean isReturnFalseBlock(CtBlock<?> block) {
+        List<CtStatement> statements = block.getStatements();
+        if (statements.size() != 1)
+            return false;
+        CtStatement statement = statements.get(0);
+        return statement instanceof CtReturn<?> returnStatement && returnStatement.getReturnedExpression().toString().equals("false");
+    }
+
     public static List<CtIf> getTraversalIfsForTraversedFields(CtBlock<?> traversalBody) {
         List<CtIf> traversalIfs = new LinkedList<>();
         CtStatement currStatement = getNextStatement(getEndOfHandleCurrentComment(traversalBody));

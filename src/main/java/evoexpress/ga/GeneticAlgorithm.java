@@ -1,6 +1,6 @@
 package evoexpress.ga;
 
-import evoexpress.ga.fitness.FitnessFunctions;
+import evoexpress.ga.fitness.FitnessFunction;
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.ga.population.Population;
@@ -45,8 +45,14 @@ public abstract class GeneticAlgorithm {
      */
     private Set<Mutator> mutators;
 
-    public GeneticAlgorithm(Set<Mutator> mutators, int maxPopulationSize, double mutationRate, double crossoverRate, int elitismCount) {
+    /**
+     * Fitness function to evaluate the individuals
+     */
+    private FitnessFunction fitnessFunction;
+
+    public GeneticAlgorithm(Set<Mutator> mutators, FitnessFunction fitnessFunction, int maxPopulationSize, double mutationRate, double crossoverRate, int elitismCount) {
         this.mutators = mutators;
+        this.fitnessFunction = fitnessFunction;
         this.maxPopulationSize = maxPopulationSize;
         this.mutationRate = mutationRate;
         this.crossoverRate = crossoverRate;
@@ -81,7 +87,7 @@ public abstract class GeneticAlgorithm {
      * @param population The population to evaluate
      */
     void evalPopulation(Population population) {
-        population.getIndividuals().stream().filter(Individual::isFitnessUpdated).forEach(FitnessFunctions::invalidInstancesFitness);
+        population.getIndividuals().stream().filter(Individual::isFitnessUpdated).forEach(fitnessFunction::eval);
     }
 
     /**
@@ -124,7 +130,7 @@ public abstract class GeneticAlgorithm {
     }
 
     private boolean shouldMutate(Individual individual) {
-        return individual.getFitness() > FitnessFunctions.WORST_FITNESS_VALUE && Math.random() < mutationRate;
+        return individual.getFitness() > FitnessFunction.WORST_FITNESS_VALUE && Math.random() < mutationRate;
     }
 
     Individual mutateIndividual(Individual individual, Set<Mutator> mutators) {
@@ -196,7 +202,7 @@ public abstract class GeneticAlgorithm {
         int i = 0;
         while (i < maxPopulationSize && population.size() > 0) {
             Individual fittest = population.removeFittest();
-            if (fittest.getFitness() > FitnessFunctions.WORST_FITNESS_VALUE)
+            if (fittest.getFitness() > FitnessFunction.WORST_FITNESS_VALUE)
                 survivors.addIndividual(fittest);
             else {
                 SpoonManager.removeClassFromPackage(fittest.getCtClass());

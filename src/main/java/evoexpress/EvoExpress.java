@@ -2,13 +2,16 @@ package evoexpress;
 
 import evoexpress.config.ToolConfig;
 import evoexpress.ga.GeneticAlgorithm;
+import evoexpress.ga.MinimizationGA;
 import evoexpress.ga.StructureCheckGA;
-import evoexpress.ga.fitness.FitnessFunctions;
+import evoexpress.ga.fitness.LengthFitness;
+import evoexpress.ga.helper.GAHelper;
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.ga.mutator.structurecheck.AddComposedInitialNullCheckMutator;
 import evoexpress.ga.mutator.structurecheck.AddIfNullReturnMutator;
 import evoexpress.ga.mutator.structurecheck.DeclareVisitedSetMutator;
+import evoexpress.ga.mutator.structurecheck.RemoveCheckMutator;
 import evoexpress.ga.mutator.structurecheck.traversal.TraverseWorklistMutator;
 import evoexpress.ga.mutator.structurecheck.traversal.inner.AddNullCompToTraversalMutator;
 import evoexpress.ga.mutator.structurecheck.traversal.inner.AddRandomComparisonToCurrent;
@@ -30,8 +33,8 @@ public class EvoExpress {
     public static void main(String[] args) {
         initialize();
         printStart();
-        //Population population = startInitialCheckSearch();
         Population population = startStructureCheckSearch();
+        //population = minimize(population);
         printResults(population);
         saveResults(population);
     }
@@ -47,21 +50,11 @@ public class EvoExpress {
         System.out.println("\n==============================  Search Started  ==============================\n");
     }
 
-//    public static Population startInitialCheckSearch() {
-//        Set<Mutator> mutators = new HashSet<>();
-//        mutators.add(new AddIfNullReturnMutator());
-//        mutators.add(new AddComposedInitialNullCheckMutator());
-//        GeneticAlgorithm ga = new InitialCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
-//        return ga.startSearch(ga.initPopulation());
-//    }
-
     public static Population startStructureCheckSearch() {
         Set<Mutator> mutators = new HashSet<>();
         mutators.add(new TraverseWorklistMutator());
         mutators.add(new AddIfNullReturnMutator());
         mutators.add(new AddComposedInitialNullCheckMutator());
-//        mutators.add(new TraverseCyclicReferenceMutator());
-//        mutators.add(new AddComposedIfToTraversalMutator());
         mutators.add(new ChangeLoopFieldsMutator());
         mutators.add(new ChangeFirstElementMutator());
         mutators.add(new DeclareVisitedSetMutator());
@@ -71,9 +64,15 @@ public class EvoExpress {
         mutators.add(new AddNullCompToTraversalMutator());
         mutators.add(new AddRandomComparisonToCurrent());
         mutators.add(new CheckSizeEndOfTraversalMutator());
-//        mutators.add(new TraverseCircularReferenceMutator());
-        GeneticAlgorithm ga = new StructureCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
+        GeneticAlgorithm ga = new StructureCheckGA(mutators, new LengthFitness(), ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
         return ga.startSearch(ga.initPopulation());
+    }
+
+    public static Population minimize(Population population) {
+        Set<Mutator> mutators = new HashSet<>();
+        mutators.add(new RemoveCheckMutator());
+        GeneticAlgorithm ga = new MinimizationGA(mutators, new LengthFitness(), ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
+        return ga.startSearch(population);
     }
 
 
@@ -94,7 +93,7 @@ public class EvoExpress {
     public static void printNotKilledMutants(Population population) {
         System.out.println("\n\n==============================  Unkilled Mutants  ==============================\n");
         Individual fittest = population.getFittest();
-        FitnessFunctions.printSurvivors(fittest);
+        GAHelper.printSurvivors(fittest);
         System.out.println("\n=================================================================================\n");
     }
 }
