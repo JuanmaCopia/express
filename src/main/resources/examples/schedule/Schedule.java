@@ -314,11 +314,11 @@ public class Schedule {
             }
         }
         if (list.getLast() == null)
-            buf.append("  |  Last: null");
+            buf.append("  |  Last: null!");
         else if (!visited.add(list.getLast()))
-            buf.append("  |  Last: Visited!");
+            buf.append("  |  Last: Visited");
         else
-            buf.append("  |  Last: Not Visited");
+            buf.append("  |  Last: Not Visited!");
         buf.append("  |  mem_count: " + list.getMemCount());
         return buf.toString();
     }

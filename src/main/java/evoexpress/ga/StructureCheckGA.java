@@ -1,6 +1,5 @@
 package evoexpress.ga;
 
-import evoexpress.config.ToolConfig;
 import evoexpress.ga.fitness.FitnessFunction;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.ga.population.Population;
@@ -9,7 +8,7 @@ import java.util.Set;
 
 public class StructureCheckGA extends GeneticAlgorithm {
 
-    private static final int MAX_GEN_WITH_NO_IMPROVEMENT = 5000;
+    private static final int MAX_GEN_WITH_NO_IMPROVEMENT = 250;
     int generationsWithNoImprovement = 0;
     double lastFittest = FitnessFunction.WORST_FITNESS_VALUE;
 
@@ -24,7 +23,7 @@ public class StructureCheckGA extends GeneticAlgorithm {
         else
             generationsWithNoImprovement = 0;
         lastFittest = population.getFittest().getFitness();
-        return lastFittest > -1 || population.getGenerationNumber() >= ToolConfig.maxGenerations || generationsWithNoImprovement >= MAX_GEN_WITH_NO_IMPROVEMENT;
+        return lastFittest > -1 || generationsWithNoImprovement >= MAX_GEN_WITH_NO_IMPROVEMENT;
     }
 
 }

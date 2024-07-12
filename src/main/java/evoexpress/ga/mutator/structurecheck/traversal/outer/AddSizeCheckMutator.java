@@ -3,15 +3,11 @@ package evoexpress.ga.mutator.structurecheck.traversal.outer;
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.spoon.RandomUtils;
+import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
-import evoexpress.spoon.processors.traversals.SizeCheckProcessor;
 import evoexpress.type.typegraph.Path;
-import spoon.processing.Processor;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
 
 import java.util.List;
@@ -23,7 +19,7 @@ public class AddSizeCheckMutator implements Mutator {
             return false;
 
         List<Path> integerFields = SpoonManager.inputTypeData.getIntegerFieldsOfParameters();
-        return !integerFields.isEmpty() && !SpoonQueries.getVisitedSetLocalVars(block).isEmpty() && !SpoonQueries.containsSizeCheck(block);
+        return !integerFields.isEmpty() && !SpoonQueries.getVisitedSetLocalVars(block).isEmpty();
     }
 
     @Override
@@ -38,11 +34,15 @@ public class AddSizeCheckMutator implements Mutator {
         CtVariableRead<?> intFieldRead = chosenIntegerField.getVariableRead();
 
         int maxMinus = 2;
-        Processor<CtBlock<?>> p = new SizeCheckProcessor(setVar, intFieldRead, RandomUtils.nextInt(maxMinus + 1));
-        p.process(blockGene);
+        CtIf ifStatement = SpoonFactory.createVisitedSizeCheck(setVar, intFieldRead, RandomUtils.nextInt(maxMinus));
+        if (SpoonQueries.checkAlreadyExistSimple(ifStatement.getCondition(), blockGene))
+            return false;
 
-        //System.err.println("\nAddSizeCheckMutator:\n\n" + blockGene);
-        //individual.marked = true;
+        CtStatement lastStatement = SpoonQueries.getReturnTrueComment(blockGene);
+        lastStatement.insertBefore(SpoonFactory.createComment("Size check:"));
+        lastStatement.insertBefore(ifStatement);
+
+        System.err.println("\nAddSizeCheckMutator:\n" + ifStatement);
 
         return true;
     }
