@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class PrimitiveCheckGA extends GeneticAlgorithm {
 
-    private static final int MAX_GEN_WITH_NO_IMPROVEMENT = 200;
+    private static final int MAX_GEN_WITH_NO_IMPROVEMENT = 70;
     int generationsWithNoImprovement = 0;
     double lastFittest = FitnessFunction.WORST_FITNESS_VALUE;
 

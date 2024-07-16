@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class TraversalSearch extends GeneticAlgorithm {
 
-    private static final int MAX_GEN_WITH_NO_IMPROVEMENT = 250;
+    private static final int MAX_GEN_WITH_NO_IMPROVEMENT = 180;
     int generationsWithNoImprovement = 0;
     double lastFittest = FitnessFunction.WORST_FITNESS_VALUE;
 
