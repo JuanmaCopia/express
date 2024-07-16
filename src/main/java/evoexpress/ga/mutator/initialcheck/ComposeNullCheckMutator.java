@@ -15,13 +15,13 @@ public class ComposeNullCheckMutator implements Mutator {
 
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        return MutatorHelper.isInitialCheckBlock(gene);
+        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(1).stream().filter(p -> p.depth() >= 1).toList();
+        return paths.size() > 1 && MutatorHelper.isInitialCheckBlock(gene);
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
-
         List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(1).stream().filter(p -> p.depth() >= 1).toList();
 
         List<Path> chosenVarReads = SpoonQueries.chooseNPaths(paths, 2);
@@ -39,7 +39,7 @@ public class ComposeNullCheckMutator implements Mutator {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
         CtStatement comment = SpoonQueries.getReturnTrueComment(blockGene);
         comment.insertBefore(ifStatement);
-        
+
         //System.err.println("\nAddComposedInitialNullCheckMutator:\n" + ifStatement);
         //System.err.println("\nFinal Block:\n\n" + blockGene);
         return true;

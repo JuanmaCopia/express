@@ -17,7 +17,12 @@ public class ComposedNullCheckInTraversalMutator implements Mutator {
 
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        return MutatorHelper.isTraversalBlock(gene);
+        if (!MutatorHelper.isTraversalBlock(gene))
+            return false;
+        CtMethod<?> traversal = gene.getParent(CtMethod.class);
+        CtVariable<?> parentOfElement = SpoonQueries.getParentOfElementParameter(traversal);
+        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(parentOfElement, 1).stream().filter(p -> p.depth() >= 1).toList();
+        return paths.size() > 1;
     }
 
     @Override
@@ -27,8 +32,7 @@ public class ComposedNullCheckInTraversalMutator implements Mutator {
         CtMethod<?> traversal = blockGene.getParent(CtMethod.class);
         CtVariable<?> parentOfElement = SpoonQueries.getParentOfElementParameter(traversal);
         List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(parentOfElement, 1).stream().filter(p -> p.depth() >= 1).toList();
-
-
+        
         List<Path> chosenVarReads = SpoonQueries.chooseNPaths(paths, 2);
         CtVariableRead<?> var1 = chosenVarReads.get(0).getVariableRead();
         CtVariableRead<?> var2 = chosenVarReads.get(1).getVariableRead();
