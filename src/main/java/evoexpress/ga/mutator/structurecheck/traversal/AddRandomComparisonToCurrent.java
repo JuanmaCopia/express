@@ -3,28 +3,34 @@ package evoexpress.ga.mutator.structurecheck.traversal;
 import evoexpress.ga.helper.LocalVarHelper;
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
+import evoexpress.ga.mutator.MutatorHelper;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
 import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtMethod;
 
 import java.util.List;
 
 public class AddRandomComparisonToCurrent implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("traverse_"))
+        if (!MutatorHelper.isTraversalBlock(gene))
             return false;
-        return true;
+        int depth = 2;
+        CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(gene, LocalVarHelper.CURRENT_VAR_NAME);
+        List<Path> candidates = SpoonManager.inputTypeData
+                .getAllSimpleReferencePathsOfType(currentDeclaration, currentDeclaration.getType(), depth)
+                .stream()
+                .filter(p -> p.depth() >= depth)
+                .toList();
+        return !candidates.isEmpty();
     }
 
     @Override
     public boolean mutate(Individual individual, CtCodeElement gene) {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
-
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(blockGene, LocalVarHelper.CURRENT_VAR_NAME);
 
         int depth = 2;

@@ -24,12 +24,14 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
     List<CtVariable<?>> loopFields;
     Path initialField;
     boolean useBreakInsteadOfReturn;
+    boolean useParent;
 
-    public TraverseWorklistProcessor(Path initialField, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
+    public TraverseWorklistProcessor(Path initialField, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn, boolean useParent) {
         super();
         this.loopFields = loopFields;
         this.initialField = initialField;
         this.useBreakInsteadOfReturn = useBreakInsteadOfReturn;
+        this.useParent = useParent;
     }
 
     @Override
@@ -41,10 +43,14 @@ public class TraverseWorklistProcessor extends AbstractProcessor<CtClass<?>> {
         CtVariable<?> setVar = handleVisitedSetVariable(structureMethodBody, lastStatement);
 
         List<CtParameter<?>> parameters = SpoonManager.inputTypeData.getInputs();
-        parameters.add(SpoonFactory.createParameter(initialField.getParentPath().getTypeReference(), LocalVarHelper.PARENT_OF_ELEMENT_PARAM));
+        if (useParent) {
+            parameters.add(SpoonFactory.createParameter(initialField.getParentPath().getTypeReference(), LocalVarHelper.PARENT_OF_ELEMENT_PARAM));
+        } else {
+            parameters.add(SpoonFactory.createParameter(initialField.getTypeReference(), LocalVarHelper.FIRST_ELEMENT_VAR_NAME));
+        }
         parameters.add(SpoonFactory.createParameter(setVar.getType(), setVar.getSimpleName()));
 
-        CtMethod<?> traversalMethod = WorklistTraversalTemplate.createTraversalMethod(ctClass, initialField, parameters, loopFields, useBreakInsteadOfReturn);
+        CtMethod<?> traversalMethod = WorklistTraversalTemplate.createTraversalMethod(ctClass, initialField, parameters, loopFields, useBreakInsteadOfReturn, useParent);
         ctClass.addMethod(traversalMethod);
     }
 

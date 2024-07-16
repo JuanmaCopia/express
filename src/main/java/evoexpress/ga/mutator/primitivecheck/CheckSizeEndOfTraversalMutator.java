@@ -29,7 +29,7 @@ public class CheckSizeEndOfTraversalMutator implements Mutator {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
         CtMethod<?> traversal = blockGene.getParent(CtMethod.class);
 
-        CtVariable<?> parentOfElement = SpoonQueries.getParentOfElementParameter(traversal);
+        CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
         CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(traversal);
 
         CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(visitedSetVar, "size");
@@ -37,7 +37,7 @@ public class CheckSizeEndOfTraversalMutator implements Mutator {
 
         CtExpression<?> leftExpr = SpoonFactory.createBinaryExpression(sizeInvocation, initialSizeVar, BinaryOperatorKind.MINUS);
 
-        List<Path> candidates = SpoonManager.inputTypeData.getAllPathsOfType(parentOfElement, SpoonFactory.getTypeFactory().integerPrimitiveType(), 1);
+        List<Path> candidates = SpoonManager.inputTypeData.getAllPathsOfType(traversedElement, SpoonFactory.getTypeFactory().integerPrimitiveType(), 1);
         Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
         CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
 

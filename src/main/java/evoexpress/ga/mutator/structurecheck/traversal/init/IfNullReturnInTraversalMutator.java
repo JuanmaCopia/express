@@ -17,7 +17,12 @@ import java.util.List;
 public class IfNullReturnInTraversalMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        return MutatorHelper.isTraversalBlock(gene);
+        if (!MutatorHelper.isTraversalBlock(gene))
+            return false;
+        CtMethod<?> traversal = gene.getParent(CtMethod.class);
+        CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
+        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(traversedElement, 2).stream().filter(p -> p.depth() >= 1).toList();
+        return !paths.isEmpty();
     }
 
     @Override
@@ -25,8 +30,8 @@ public class IfNullReturnInTraversalMutator implements Mutator {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
         CtMethod<?> traversal = blockGene.getParent(CtMethod.class);
-        CtVariable<?> parentOfElement = SpoonQueries.getParentOfElementParameter(traversal);
-        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(parentOfElement, 2).stream().filter(p -> p.depth() >= 1).toList();
+        CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
+        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(traversedElement, 2).stream().filter(p -> p.depth() >= 1).toList();
         Path chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
         CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
 
@@ -49,8 +54,8 @@ public class IfNullReturnInTraversalMutator implements Mutator {
         CtStatement comment = SpoonQueries.getBeginOfTraversalComment(blockGene);
         comment.insertBefore(ifStatement);
 
-        /*System.err.println("\nAddIfNullReturnMutator:\n" + ifStatement);
-        System.err.println("\nFinal Block:\n\n" + blockGene);*/
+        //System.err.println("\nIfNullReturnInTraversalMutator:\n" + ifStatement);
+        //System.err.println("\nFinal Block:\n\n" + blockGene);
         return true;
     }
 

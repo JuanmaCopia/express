@@ -399,13 +399,9 @@ public class SpoonQueries {
         return null;
     }
 
-    public static CtVariable<?> getParentOfElementParameter(CtMethod<?> method) {
+    public static CtVariable<?> getTraversedElement(CtMethod<?> method) {
         List<CtParameter<?>> parameters = method.getParameters();
-        for (CtParameter<?> parameter : parameters) {
-            if (parameter.getSimpleName().startsWith(LocalVarHelper.PARENT_OF_ELEMENT_PARAM))
-                return parameter;
-        }
-        return null;
+        return parameters.get(parameters.size() - 2);
     }
 
     public static CtVariable<?> getInitialSizeVariable(CtBlock<?> block) {

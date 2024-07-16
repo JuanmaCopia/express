@@ -63,7 +63,8 @@ public class TraverseWorklistMutator implements Mutator {
         loopFields = MutatorHelper.selectRandomVariablesFromList(loopFields);
 
         boolean useBreakInsteadOfReturn = RandomUtils.nextBoolean();
-        Processor<CtClass<?>> p = new TraverseWorklistProcessor(chosenPath, loopFields, useBreakInsteadOfReturn);
+        boolean useParent = RandomUtils.nextBoolean();
+        Processor<CtClass<?>> p = new TraverseWorklistProcessor(chosenPath, loopFields, useBreakInsteadOfReturn, useParent);
         p.process(individual.getCtClass());
     }
 
@@ -72,15 +73,18 @@ public class TraverseWorklistMutator implements Mutator {
         assert traversal != null;
 
         List<CtParameter<?>> params = traversal.getParameters();
-        if (!params.get(params.size() - 2).getType().equals(chosenPath.getParentPath().getTypeReference()))
+
+        CtVariableRead<?> pathRead;
+        if (chosenPath.getTypeReference().equals(params.get(params.size() - 2).getType())) {
+            pathRead = chosenPath.getVariableRead();
+        } else if (chosenPath.getParentPath().getTypeReference().equals(params.get(params.size() - 2).getType())) {
+            pathRead = chosenPath.getParentPath().getVariableRead();
+        } else {
             return false;
-
-//        InvokeWorklistProcessor p = new InvokeWorklistProcessor(chosenPath, traversal);
-//        p.process(individual.getCtClass());
-
+        }
 
         CtVariable<?> setVar = handleVisitedSetVariable(blockGene, chosenPath);
-        CtExpression<?>[] args = createArguments(traversal.getParameters(), setVar, chosenPath);
+        CtExpression<?>[] args = createArguments(traversal.getParameters(), setVar, pathRead);
         CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(traversal, args);
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(SpoonFactory.negateExpresion(traversalCall));
@@ -94,11 +98,10 @@ public class TraverseWorklistMutator implements Mutator {
         return true;
     }
 
-    private CtExpression<?>[] createArguments(List<CtParameter<?>> params, CtVariable<?> visitedSetVar, Path initialField) {
-
+    private CtExpression<?>[] createArguments(List<CtParameter<?>> params, CtVariable<?> visitedSetVar, CtVariableRead pathRead) {
         CtExpression<?>[] args = new CtExpression[params.size()];
         args[0] = SpoonFactory.createVariableRead(params.get(0));
-        args[1] = initialField.getParentPath().getVariableRead();
+        args[1] = pathRead;
         args[2] = SpoonFactory.createVariableRead(visitedSetVar);
         return args;
     }

@@ -29,13 +29,17 @@ public class ChangeFirstElementMutator implements Mutator {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
         CtMethod<?> traversal = blockGene.getParent(CtMethod.class);
 
-        List<CtParameter<?>> params = traversal.getParameters();
-        CtVariable<?> parentOfFirstElement = params.get(params.size() - 2);
-
-        CtLocalVariable<?> firstElement = (CtLocalVariable<?>) traversal.getElements(
+        List<CtStatement> firstElements = traversal.getElements(
                 e -> e instanceof CtLocalVariable<?> var &&
                         var.getSimpleName().equals(LocalVarHelper.FIRST_ELEMENT_VAR_NAME)
-        ).get(0);
+        );
+        if (firstElements.isEmpty()) {
+            return false;
+        }
+        CtLocalVariable<?> firstElement = (CtLocalVariable<?>) firstElements.get(0);
+
+        List<CtParameter<?>> params = traversal.getParameters();
+        CtVariable<?> parentOfFirstElement = params.get(params.size() - 2);
 
         CtVariableRead<?> firstElemRead = (CtVariableRead<?>) firstElement.getAssignment();
         CtTypeReference<?> typeOfFirstElem = firstElemRead.getType();

@@ -3,22 +3,24 @@ package evoexpress.ga.mutator.structurecheck.traversal;
 import evoexpress.ga.helper.LocalVarHelper;
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
+import evoexpress.ga.mutator.MutatorHelper;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
 import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtMethod;
 
 import java.util.List;
 
 public class AddNullCompToTraversalMutator implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
-        if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("traverse_"))
+        if (!MutatorHelper.isTraversalBlock(gene))
             return false;
-        return true;
+        CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(gene, LocalVarHelper.CURRENT_VAR_NAME);
+        List<Path> candidates = SpoonManager.inputTypeData.getAllReferencePaths(currentDeclaration, 1).stream().filter(p -> p.depth() >= 1).toList();
+        return !candidates.isEmpty();
     }
 
     @Override
@@ -40,7 +42,7 @@ public class AddNullCompToTraversalMutator implements Mutator {
 
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(blockGene);
         endOfHandleCurrentComment.insertBefore(ifStatement);
-
+        //System.err.println("\nAddNullCompToTraversalMutator:\n" + ifStatement);
         //System.err.println("\nAddNullCompToTraversalMutator:\n\n" + blockGene);
         return true;
     }

@@ -20,8 +20,8 @@ public class ComposedNullCheckInTraversalMutator implements Mutator {
         if (!MutatorHelper.isTraversalBlock(gene))
             return false;
         CtMethod<?> traversal = gene.getParent(CtMethod.class);
-        CtVariable<?> parentOfElement = SpoonQueries.getParentOfElementParameter(traversal);
-        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(parentOfElement, 1).stream().filter(p -> p.depth() >= 1).toList();
+        CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
+        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(traversedElement, 1).stream().filter(p -> p.depth() >= 1).toList();
         return paths.size() > 1;
     }
 
@@ -30,9 +30,9 @@ public class ComposedNullCheckInTraversalMutator implements Mutator {
         CtBlock<?> blockGene = (CtBlock<?>) gene;
 
         CtMethod<?> traversal = blockGene.getParent(CtMethod.class);
-        CtVariable<?> parentOfElement = SpoonQueries.getParentOfElementParameter(traversal);
-        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(parentOfElement, 1).stream().filter(p -> p.depth() >= 1).toList();
-        
+        CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
+        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(traversedElement, 1).stream().filter(p -> p.depth() >= 1).toList();
+
         List<Path> chosenVarReads = SpoonQueries.chooseNPaths(paths, 2);
         CtVariableRead<?> var1 = chosenVarReads.get(0).getVariableRead();
         CtVariableRead<?> var2 = chosenVarReads.get(1).getVariableRead();
