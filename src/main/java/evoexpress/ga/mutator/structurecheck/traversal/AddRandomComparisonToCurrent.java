@@ -1,4 +1,4 @@
-package evoexpress.ga.mutator.structurecheck.traversal.inner;
+package evoexpress.ga.mutator.structurecheck.traversal;
 
 import evoexpress.ga.helper.LocalVarHelper;
 import evoexpress.ga.individual.Individual;
@@ -13,7 +13,7 @@ import spoon.reflect.declaration.CtMethod;
 
 import java.util.List;
 
-public class AddNullCompToTraversalMutator implements Mutator {
+public class AddRandomComparisonToCurrent implements Mutator {
 
     public boolean isApplicable(Individual individual, CtCodeElement gene) {
         if (!(gene instanceof CtBlock<?> block) || !(block.getParent() instanceof CtMethod<?> m) || !m.getSimpleName().startsWith("traverse_"))
@@ -27,12 +27,24 @@ public class AddNullCompToTraversalMutator implements Mutator {
 
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(blockGene, LocalVarHelper.CURRENT_VAR_NAME);
 
-        List<Path> candidates = SpoonManager.inputTypeData.getAllReferencePaths(currentDeclaration, 1).stream().filter(p -> p.depth() >= 1).toList();
+        int depth = 2;
+        List<Path> candidates = SpoonManager.inputTypeData
+                .getAllSimpleReferencePathsOfType(currentDeclaration, currentDeclaration.getType(), depth)
+                .stream()
+                .filter(p -> p.depth() >= depth)
+                .toList();
 
         Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
-        CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
+        Path chosenPathOwner = chosenPath.getParentPath();
+        Path currentPath = chosenPathOwner.getParentPath();
+        CtVariableRead<?> chosenPathRead = chosenPath.getVariableRead();
+        CtVariableRead<?> chosenPathReadOwner = chosenPathOwner.getVariableRead();
+        CtVariableRead<?> currentRead = currentPath.getVariableRead();
 
-        CtExpression<Boolean> condition = SpoonFactory.createNullComparisonClause(chosenVarRead);
+        CtExpression<Boolean> clause1 = SpoonFactory.createNullComparisonClause(chosenPathReadOwner, BinaryOperatorKind.NE);
+        CtExpression<Boolean> clause2 = SpoonFactory.createBooleanBinaryExpression(chosenPathRead, currentRead, BinaryOperatorKind.NE);
+        CtExpression<Boolean> condition = SpoonFactory.createBooleanBinaryExpression(clause1, clause2, BinaryOperatorKind.AND);
+
         if (SpoonQueries.checkAlreadyExist(condition, blockGene))
             return false;
 
@@ -41,6 +53,7 @@ public class AddNullCompToTraversalMutator implements Mutator {
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(blockGene);
         endOfHandleCurrentComment.insertBefore(ifStatement);
 
+        //System.err.println("AddRandomComparisonToCurrent:\n" + ifStatement);
         //System.err.println("\nAddNullCompToTraversalMutator:\n\n" + blockGene);
         return true;
     }

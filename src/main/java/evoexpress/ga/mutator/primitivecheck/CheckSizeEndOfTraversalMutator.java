@@ -1,4 +1,4 @@
-package evoexpress.ga.mutator.structurecheck.traversal.inner;
+package evoexpress.ga.mutator.primitivecheck;
 
 import evoexpress.ga.helper.LocalVarHelper;
 import evoexpress.ga.individual.Individual;

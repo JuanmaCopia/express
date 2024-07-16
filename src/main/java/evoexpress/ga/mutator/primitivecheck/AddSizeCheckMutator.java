@@ -1,4 +1,4 @@
-package evoexpress.ga.mutator.structurecheck.traversal.outer;
+package evoexpress.ga.mutator.primitivecheck;
 
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
@@ -42,7 +42,7 @@ public class AddSizeCheckMutator implements Mutator {
         lastStatement.insertBefore(SpoonFactory.createComment("Size check:"));
         lastStatement.insertBefore(ifStatement);
 
-        System.err.println("\nAddSizeCheckMutator:\n" + ifStatement);
+        //System.err.println("\nAddSizeCheckMutator:\n" + ifStatement);
 
         return true;
     }

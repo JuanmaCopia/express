@@ -1,4 +1,4 @@
-package evoexpress.ga;
+package evoexpress.ga.search;
 
 import evoexpress.ga.fitness.FitnessFunction;
 import evoexpress.ga.mutator.Mutator;
