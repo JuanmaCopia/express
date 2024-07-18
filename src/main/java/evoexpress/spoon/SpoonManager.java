@@ -7,6 +7,7 @@ import evoexpress.type.precondition.InputTypeData;
 import evoexpress.util.Utils;
 import spoon.Launcher;
 import spoon.OutputType;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -16,6 +17,8 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class SpoonManager {
@@ -126,8 +129,9 @@ public class SpoonManager {
     }
 
     public static void generateSourcePreconditionSourceFile(Individual individual) {
-        CtClass<?> individualCtClass = individual.getCtClass();
+        CtClass<?> individualCtClass = individual.getCtClass().clone();
         individualCtClass.setSimpleName(ToolConfig.preconditionClassName);
+        removeComments(individualCtClass);
         addClassToPackage(individualCtClass);
         try {
             launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
@@ -135,6 +139,12 @@ public class SpoonManager {
             e.printStackTrace();
         }
         removeClassFromPackage(individualCtClass);
+    }
+
+    private static void removeComments(CtClass<?> cls) {
+        List<CtComment> comments = cls.getElements(Objects::nonNull);
+        for (CtComment comment : comments)
+            comment.delete();
     }
 
 }
