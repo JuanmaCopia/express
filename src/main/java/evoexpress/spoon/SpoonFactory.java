@@ -580,6 +580,10 @@ public class SpoonFactory {
         return (CtExpression<Boolean>) createBinaryExpression(varRead, parseToExpression(null), operator);
     }
 
+    public static CtExpression<Boolean> createNullComparisonClause(CtVariable<?> varRead, BinaryOperatorKind operator) {
+        return (CtExpression<Boolean>) createBinaryExpression(createVariableRead(varRead), parseToExpression(null), operator);
+    }
+
     public static CtExpression<Boolean> createNotEqualComparisonClause(CtVariableRead<?> varRead, CtVariableRead<?> varRead2) {
         return (CtExpression<Boolean>) createBinaryExpression(varRead, varRead2, BinaryOperatorKind.NE);
     }

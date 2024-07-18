@@ -22,16 +22,17 @@ public class LocalVarHelper {
     public static final String SIZE_VAR_NAME = "initialSize_";
     public static final String FIRST_ELEMENT_VAR_NAME = "firstElement_";
     public static final String PARENT_OF_ELEMENT_PARAM = "parentOfElement_";
+    public static final String ARRAY_PARAM_NAME = "array_";
 
 
     public static String getVarName(CtBlock<?> code) {
         return LOCAL_VAR_PREFIX + getNextId(code, LOCAL_VAR_PREFIX);
     }
 
-    public static int getNextTraversalId(CtClass<?> ctClass) {
+    public static int getNextTraversalId(CtClass<?> ctClass, String prefix) {
         List<String> traversalMethodNames = ctClass.getMethods().stream()
                 .map(CtMethod::getSimpleName)
-                .filter(name -> name.startsWith(TRAVERSAL_PREFIX) || name.startsWith(ARRAY_TRAVERSAL_PREFIX))
+                .filter(name -> name.startsWith(prefix))
                 .toList();
         return traversalMethodNames.size();
     }

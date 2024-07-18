@@ -46,15 +46,15 @@ public class WorklistTraversalTemplate {
 
         CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().BOOLEAN_PRIMITIVE;
         List<CtParameter<?>> parameters = createParameters(initialField, setVar, useParent);
-        CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(loopFields), parameters);
-        traversalMethod.setSimpleName(traversalMethod.getSimpleName() + LocalVarHelper.getNextTraversalId(ctClass));
+        CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(), parameters);
+        traversalMethod.setSimpleName(traversalMethod.getSimpleName() + LocalVarHelper.getNextTraversalId(ctClass, LocalVarHelper.TRAVERSAL_PREFIX));
 
         CtBlock<?> traversalBody = createTraversalBody(initialField, parameters, loopFields, useBreakInsteadOfReturn, useParent);
         traversalMethod.setBody(traversalBody);
         return traversalMethod;
     }
 
-    public static String createMethodName(List<CtVariable<?>> loopFields) {
+    public static String createMethodName() {
         return LocalVarHelper.TRAVERSAL_PREFIX;
     }
 
