@@ -38,7 +38,7 @@ public abstract class GeneticAlgorithm {
     /*
      * The fittest individual of the initial population
      */
-    //Individual initialFittest;
+    Individual initialFittest;
 
     /**
      * Set of mutators to employ in the search
@@ -107,7 +107,7 @@ public abstract class GeneticAlgorithm {
     Population mutatePopulation(Population population) {
         Population newPopulation = new Population();
         newPopulation.setGenerationNumber(population.getGenerationNumber());
-        //newPopulation.addIndividual(initialFittest);
+        newPopulation.addIndividual(initialFittest);
         int i = 0;
         for (Individual individual : population.getIndividuals()) {
             if (i < elitismCount) {
@@ -215,7 +215,7 @@ public abstract class GeneticAlgorithm {
 
     public Population startSearch(Population population) {
         evalPopulation(population);
-        //initialFittest = population.getFittest();
+        initialFittest = population.getFittest();
         population = selectSurvivors(population);
 
         while (!isTerminationConditionMet(population)) {

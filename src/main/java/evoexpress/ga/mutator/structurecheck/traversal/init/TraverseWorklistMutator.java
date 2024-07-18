@@ -3,16 +3,14 @@ package evoexpress.ga.mutator.structurecheck.traversal.init;
 import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
 import evoexpress.ga.mutator.MutatorHelper;
+import evoexpress.ga.mutator.template.WorklistTraversalTemplate;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
-import evoexpress.spoon.processors.traversals.TraverseWorklistProcessor;
 import evoexpress.type.typegraph.Path;
 import evoexpress.type.typegraph.TypeGraph;
-import spoon.processing.Processor;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
@@ -64,8 +62,7 @@ public class TraverseWorklistMutator implements Mutator {
 
         boolean useBreakInsteadOfReturn = RandomUtils.nextBoolean();
         boolean useParent = RandomUtils.nextBoolean();
-        Processor<CtClass<?>> p = new TraverseWorklistProcessor(chosenPath, loopFields, useBreakInsteadOfReturn, useParent);
-        p.process(individual.getCtClass());
+        WorklistTraversalTemplate.instantiate(individual.getCtClass(), chosenPath, loopFields, useBreakInsteadOfReturn, useParent);
     }
 
     private boolean addTraversalInvocation(Path chosenPath, Individual individual, CtBlock<?> blockGene) {

@@ -18,7 +18,7 @@ public class LocalVarHelper {
     public static final String WORKLIST_VAR_NAME = "worklist_";
     public static final String CURRENT_VAR_NAME = "current_";
     public static final String TRAVERSAL_PREFIX = "traverse_";
-    public static final String TRAVERSAL_ARRAY_PREFIX = "traverseArray_";
+    public static final String ARRAY_TRAVERSAL_PREFIX = "traverseArray_";
     public static final String SIZE_VAR_NAME = "initialSize_";
     public static final String FIRST_ELEMENT_VAR_NAME = "firstElement_";
     public static final String PARENT_OF_ELEMENT_PARAM = "parentOfElement_";
@@ -31,7 +31,7 @@ public class LocalVarHelper {
     public static int getNextTraversalId(CtClass<?> ctClass) {
         List<String> traversalMethodNames = ctClass.getMethods().stream()
                 .map(CtMethod::getSimpleName)
-                .filter(name -> name.startsWith(TRAVERSAL_PREFIX))
+                .filter(name -> name.startsWith(TRAVERSAL_PREFIX) || name.startsWith(ARRAY_TRAVERSAL_PREFIX))
                 .toList();
         return traversalMethodNames.size();
     }
