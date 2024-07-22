@@ -2,11 +2,11 @@ package examples.schedule;
 
 public class List {
 
-    public int mem_count;
+    int mem_count;
 
-    public Job first;
+    Job first;
 
-    public Job last;
+    Job last;
 
     public List() {
         first = null;
@@ -18,12 +18,12 @@ public class List {
         return first;
     }
 
-    public Job getLast() {
-        return last;
-    }
-
     public void setFirst(Job newFirst) {
         first = newFirst;
+    }
+
+    public Job getLast() {
+        return last;
     }
 
     public void setLast(Job newLast) {

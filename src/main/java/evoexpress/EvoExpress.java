@@ -74,7 +74,7 @@ public class EvoExpress {
         mutators.add(new AddRandomComparisonToCurrent());
         mutators.add(new DeclareVisitedSetMutator());
         mutators.add(new CheckVisitedFieldMutator());
-        GeneticAlgorithm ga = new StructureCheckGA(mutators, new LengthFitness(), ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
+        GeneticAlgorithm ga = new StructureCheckGA(mutators, new NoLengthFitness(), ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
         return ga.startSearch(population);
     }
 

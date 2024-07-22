@@ -5,19 +5,19 @@ import java.util.Set;
 
 public class Schedule {
 
-    public final static int MAXPRIO = 3;
+    final static int MAXPRIO = 3;
 
-    public int allocProcNum;
-    public int numProcesses;
+    int allocProcNum;
+    int numProcesses;
 
-    public Job curProc;
+    Job curProc;
 
-    public List prio_0;
-    public List prio_1;
-    public List prio_2;
-    public List prio_3;
+    List prio_0;
+    List prio_1;
+    List prio_2;
+    List prio_3;
 
-    public List blockQueue;
+    List blockQueue;
 
     // Init the queues with no processes
     public Schedule() {
@@ -111,7 +111,7 @@ public class Schedule {
         }
     }
 
-    public int size() {
+    int size() {
         return numProcesses;
     }
 
@@ -255,30 +255,6 @@ public class Schedule {
         numProcesses = 0;
         blockQueue = new List();
     }
-
-//    public String toString() {
-//        if (numProcesses == 0) {
-//            return "Schedule={}";
-//        } else {
-//            StringBuffer buf = new StringBuffer();
-//            buf.append("Schedule = {");
-//            buf.append(" prioQueue = { ");
-//            for (int i = 1; i <= MAXPRIO; i++) {
-//                List proc = getPrioQueue(i);
-//                buf.append(proc.toString());
-//            }
-//            buf.append(" }");
-//            buf.append(" , ");
-//            buf.append(" blockQueue = { ");
-//            buf.append(blockQueue.toString());
-//            buf.append(" }");
-//            buf.append(" currProc = { ");
-//            buf.append(curProc == null ? "null" : curProc.toString());
-//            buf.append(" }");
-//            buf.append(" }");
-//            return buf.toString();
-//        }
-//    }
 
     public String toString() {
         StringBuilder sb = new StringBuilder();

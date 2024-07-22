@@ -1,13 +1,13 @@
 package examples.schedule;
 
 public class Job {
-    public Job next;
+    Job next;
 
-    public Job prev;
+    Job prev;
 
-    public int val;
+    int val;
 
-    public int priority;
+    int priority;
 
     public Job(int newNum) {
         next = null;
