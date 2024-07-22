@@ -1,33 +1,31 @@
-package examples.schedule;
+package examples.schedulearray;
 
-import java.util.HashSet;
-import java.util.Set;
-
-public class Schedule {
+public class ScheduleArray {
 
     final static int MAXPRIO = 3;
 
     int allocProcNum;
+
     int numProcesses;
 
     Job curProc;
 
-    List prio_0;
-    List prio_1;
-    List prio_2;
-    List prio_3;
+    /**
+     * 0th element unused
+     */
+    List[] prioQueue = new List[MAXPRIO + 1];
 
     List blockQueue;
 
     // Init the queues with no processes
-    public Schedule() {
+    public ScheduleArray() {
         initialize();
         initPrioQueue(3, 0);
         initPrioQueue(2, 0);
         initPrioQueue(1, 0);
     }
 
-    public Schedule(int numProc3, int numProc2, int numProc1) {
+    public ScheduleArray(int numProc3, int numProc2, int numProc1) {
         initialize();
         initPrioQueue(3, numProc3);
         initPrioQueue(2, numProc2);
@@ -103,16 +101,12 @@ public class Schedule {
     private void schedule() {
         curProc = null;
         for (int i = MAXPRIO; i > 0; i--) {
-            if (getPrioQueue(i).getMemCount() > 0) {
-                curProc = getPrioQueue(i).getFirst();
-                setPrioQueue(i, delEle(getPrioQueue(i), curProc));
+            if (prioQueue[i].getMemCount() > 0) {
+                curProc = prioQueue[i].getFirst();
+                prioQueue[i] = delEle(prioQueue[i], curProc);
                 return;
             }
         }
-    }
-
-    int size() {
-        return numProcesses;
     }
 
     public void upgradeProcessPrio(int prio, float ratio) {
@@ -129,8 +123,8 @@ public class Schedule {
         if (prio >= MAXPRIO) {
             return;
         }
-        srcQueue = getPrioQueue(prio);
-        destQueue = getPrioQueue(prio + 1);
+        srcQueue = prioQueue[prio];
+        destQueue = prioQueue[prio + 1];
         count = srcQueue.getMemCount();
 
         if (count > 0) {
@@ -161,7 +155,7 @@ public class Schedule {
                 blockQueue = delEle(blockQueue, proc);
                 /* append to appropriate prio queue */
                 prio = proc.getPriority();
-                setPrioQueue(prio, appendEle(getPrioQueue(prio), proc));
+                prioQueue[prio] = appendEle(prioQueue[prio], proc);
             }
         }
     }
@@ -171,7 +165,7 @@ public class Schedule {
         schedule();
         if (curProc != null) {
             prio = curProc.getPriority();
-            setPrioQueue(prio, appendEle(getPrioQueue(prio), curProc));
+            prioQueue[prio] = appendEle(prioQueue[prio], curProc);
         }
     }
 
@@ -183,6 +177,8 @@ public class Schedule {
     }
 
     private Job newProcess(int prio) {
+        if (prio < 1 || prio > MAXPRIO)
+            throw new IllegalArgumentException();
         Job proc = new Job(allocProcNum++);
         proc.setPriority(prio);
         numProcesses++;
@@ -192,11 +188,9 @@ public class Schedule {
     public void addProcess(int prio) {
         if (prio < 1 || prio > MAXPRIO)
             throw new IllegalArgumentException();
-
         Job proc;
         proc = newProcess(prio);
-
-        setPrioQueue(prio, appendEle(getPrioQueue(prio), proc));
+        prioQueue[prio] = appendEle(prioQueue[prio], proc);
     }
 
     private void initPrioQueue(int prio, int numProc) {
@@ -210,42 +204,7 @@ public class Schedule {
             proc = newProcess(prio);
             queue = appendEle(queue, proc);
         }
-
-        setPrioQueue(prio, queue);
-    }
-
-    private void setPrioQueue(int prio, List queue) {
-        switch (prio) {
-            case 0:
-                prio_0 = queue;
-                break;
-            case 1:
-                prio_1 = queue;
-                break;
-            case 2:
-                prio_2 = queue;
-                break;
-            case 3:
-                prio_3 = queue;
-                break;
-            default:
-                throw new ArrayIndexOutOfBoundsException();
-        }
-    }
-
-    private List getPrioQueue(int prio) {
-        switch (prio) {
-            case 0:
-                return prio_0;
-            case 1:
-                return prio_1;
-            case 2:
-                return prio_2;
-            case 3:
-                return prio_3;
-            default:
-                throw new ArrayIndexOutOfBoundsException();
-        }
+        prioQueue[prio] = queue;
     }
 
     private void initialize() {
@@ -254,46 +213,4 @@ public class Schedule {
         blockQueue = new List();
     }
 
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        if (curProc == null)
-            sb.append("curProc: null\n");
-        else
-            sb.append("curProc: " + curProc.toString() + "\n");
-        sb.append("prio_0: " + printList(prio_0) + "\n");
-        sb.append("prio_1: " + printList(prio_1) + "\n");
-        sb.append("prio_2: " + printList(prio_2) + "\n");
-        sb.append("prio_3: " + printList(prio_3) + "\n");
-        sb.append("blockQueue: " + printList(blockQueue) + "\n");
-        sb.append("num_processes: " + numProcesses + "\n");
-        return sb.toString();
-    }
-
-    private String printList(List list) {
-        if (list == null)
-            return "null";
-        StringBuilder buf = new StringBuilder();
-        Job current = list.getFirst();
-        Set<Job> visited = new HashSet<>();
-        if (current == null) {
-            buf.append("Empty");
-        } else {
-            while (current != null) {
-                if (!visited.add(current)) {
-                    buf.append("Cycle!");
-                    break;
-                }
-                buf.append(current.toString() + " ");
-                current = current.getNext();
-            }
-        }
-        if (list.getLast() == null)
-            buf.append("  |  Last: null!");
-        else if (!visited.add(list.getLast()))
-            buf.append("  |  Last: Visited");
-        else
-            buf.append("  |  Last: Not Visited!");
-        buf.append("  |  mem_count: " + list.getMemCount());
-        return buf.toString();
-    }
 }
