@@ -1,6 +1,6 @@
 package evoexpress.spoon.processors.traversals;
 
-import evoexpress.ga.helper.LocalVarHelper;
+import evoexpress.classinvariant.mutator.LocalVarHelper;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonQueries;

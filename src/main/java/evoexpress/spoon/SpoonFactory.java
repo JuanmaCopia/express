@@ -1,7 +1,7 @@
 package evoexpress.spoon;
 
 import evoexpress.config.ToolConfig;
-import evoexpress.ga.helper.LocalVarHelper;
+import evoexpress.classinvariant.mutator.LocalVarHelper;
 import org.apache.commons.lang3.ClassUtils;
 import spoon.Launcher;
 import spoon.reflect.code.*;

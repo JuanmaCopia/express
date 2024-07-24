@@ -1,6 +1,6 @@
 package evoexpress.spoon;
 
-import evoexpress.ga.helper.LocalVarHelper;
+import evoexpress.classinvariant.mutator.LocalVarHelper;
 import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
@@ -232,10 +232,6 @@ public class SpoonQueries {
         return null;
     }
 
-    public static List<CtMethod<?>> getTraversals(CtClass<?> ctClass) {
-        return ctClass.getMethods().stream().filter(method -> method.getSimpleName().startsWith(LocalVarHelper.TRAVERSAL_PREFIX)).toList();
-    }
-
 //    public static List<List<CtVariable<?>>> getNonUsedInitialPathsToCyclicField(CtBlock<?> code) {
 //        List<List<CtVariable<?>>> nonUsedInitialPathsToCyclicField = new LinkedList<>();
 //
@@ -262,26 +258,6 @@ public class SpoonQueries {
 
     public static CtVariable<?> getTraversalCurrentVariable(CtMethod<?> traversal) {
         return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var && var.getSimpleName().startsWith(LocalVarHelper.CURRENT_VAR_NAME)).get(0);
-    }
-
-    public static List<CtIf> getIfsReturnFalses(CtBlock<?> block) {
-        List<CtIf> ifsReturnFalses = new LinkedList<>();
-        List<CtIf> ifs = block.getElements(Objects::nonNull);
-        for (CtIf ifStatement : ifs) {
-            if (ifStatement.getThenStatement() instanceof CtBlock<?> ifBlock) {
-                if (isReturnFalseBlock(ifBlock))
-                    ifsReturnFalses.add(ifStatement);
-            }
-        }
-        return ifsReturnFalses;
-    }
-
-    public static boolean isReturnFalseBlock(CtBlock<?> block) {
-        List<CtStatement> statements = block.getStatements();
-        if (statements.size() != 1)
-            return false;
-        CtStatement statement = statements.get(0);
-        return statement instanceof CtReturn<?> returnStatement && returnStatement.getReturnedExpression().toString().equals("false");
     }
 
     public static List<CtIf> getTraversalIfsForTraversedFields(CtBlock<?> traversalBody) {

@@ -1,7 +1,6 @@
 package evoexpress.spoon;
 
 import evoexpress.config.ToolConfig;
-import evoexpress.ga.individual.Individual;
 import evoexpress.instrumentation.Instrumentation;
 import evoexpress.type.precondition.InputTypeData;
 import evoexpress.util.Utils;
@@ -109,9 +108,8 @@ public class SpoonManager {
         Instrumentation.instrumentTestSuite(testSuiteClass);
     }
 
-    public static boolean compileIndividual(Individual individual) throws Exception {
-        CtClass<?> indClass = individual.getCtClass();
-        if (targetClass.getPackage().getType(indClass.getSimpleName()) == null)
+    public static boolean compileCtClass(CtClass<?> cls) throws Exception {
+        if (targetClass.getPackage().getType(cls.getSimpleName()) == null)
             throw new RuntimeException("Individual class not found in the target class package");
         return compileModel();
     }
@@ -128,17 +126,17 @@ public class SpoonManager {
         targetClass.getPackage().removeType(ctType);
     }
 
-    public static void generateSourcePreconditionSourceFile(Individual individual) {
-        CtClass<?> individualCtClass = individual.getCtClass().clone();
-        individualCtClass.setSimpleName(ToolConfig.preconditionClassName);
-        removeComments(individualCtClass);
-        addClassToPackage(individualCtClass);
+    public static void generateSourcePreconditionSourceFile(CtClass<?> cls) {
+        CtClass<?> clsClone = cls.clone();
+        clsClone.setSimpleName(ToolConfig.preconditionClassName);
+        removeComments(clsClone);
+        addClassToPackage(clsClone);
         try {
             launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        removeClassFromPackage(individualCtClass);
+        removeClassFromPackage(clsClone);
     }
 
     private static void removeComments(CtClass<?> cls) {

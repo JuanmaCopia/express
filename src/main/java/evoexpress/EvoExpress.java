@@ -1,24 +1,25 @@
 package evoexpress;
 
+import evoexpress.classinvariant.mutator.initialcheck.RemoveIfInitialCheckMutator;
+import evoexpress.classinvariant.mutator.primitivecheck.RemoveIfPrimitiveCheckMutator;
+import evoexpress.classinvariant.mutator.structurecheck.RemoveIfStructureCheckMutator;
+import evoexpress.classinvariant.mutator.structurecheck.traversal.*;
+import evoexpress.classinvariant.mutator.structurecheck.traversal.init.*;
+import evoexpress.classinvariant.problem.ClassInvariantProblem;
+import evoexpress.classinvariant.search.ClassInvariantSearch;
+import evoexpress.classinvariant.state.ClassInvariantState;
 import evoexpress.config.ToolConfig;
-import evoexpress.ga.fitness.LengthFitness;
-import evoexpress.ga.fitness.NoLengthFitness;
-import evoexpress.ga.helper.GAHelper;
-import evoexpress.ga.individual.Individual;
-import evoexpress.ga.mutator.Mutator;
-import evoexpress.ga.mutator.initialcheck.ComposeNullCheckMutator;
-import evoexpress.ga.mutator.initialcheck.IfNullReturnMutator;
-import evoexpress.ga.mutator.primitivecheck.AddSizeCheckMutator;
-import evoexpress.ga.mutator.primitivecheck.CheckSizeEndOfTraversalMutator;
-import evoexpress.ga.mutator.structurecheck.CheckVisitedFieldMutator;
-import evoexpress.ga.mutator.structurecheck.DeclareVisitedSetMutator;
-import evoexpress.ga.mutator.structurecheck.traversal.AddNullCompToTraversalMutator;
-import evoexpress.ga.mutator.structurecheck.traversal.AddRandomComparisonToCurrent;
-import evoexpress.ga.mutator.structurecheck.traversal.CheckVisitedFieldEndOfTraversalMutator;
-import evoexpress.ga.mutator.structurecheck.traversal.init.*;
-import evoexpress.ga.population.Population;
-import evoexpress.ga.search.*;
+import evoexpress.classinvariant.fitness.LengthFitness;
+import evoexpress.execution.Executor;
+import evoexpress.classinvariant.mutator.ClassInvariantMutator;
+import evoexpress.classinvariant.mutator.initialcheck.ComposeNullCheckMutator;
+import evoexpress.classinvariant.mutator.initialcheck.IfNullReturnMutator;
+import evoexpress.classinvariant.mutator.primitivecheck.AddSizeCheckMutator;
+import evoexpress.classinvariant.mutator.primitivecheck.CheckSizeEndOfTraversalMutator;
+import evoexpress.classinvariant.mutator.structurecheck.CheckVisitedFieldMutator;
+import evoexpress.classinvariant.mutator.structurecheck.DeclareVisitedSetMutator;
 import evoexpress.object.ObjectGeneratorManager;
+import evoexpress.search.simulatedannealing.schedule.SimulatedAnnealingSchedule;
 import evoexpress.spoon.SpoonManager;
 
 import java.util.HashSet;
@@ -29,12 +30,97 @@ public class EvoExpress {
     public static void main(String[] args) {
         initialize();
         printStart();
-        Population population = startInitialSearch();
-        population = startTraversalSearch(population);
-        population = startStructureCheckSearch(population);
-        population = startPrimitiveCheck(population);
-        printResults(population);
-        saveResults(population);
+        ClassInvariantState finalState = startSearch();
+        printResults(finalState);
+        saveResults(finalState);
+    }
+
+    private static ClassInvariantState startSearch() {
+        ClassInvariantState currentState = startInitialSearch();
+        //currentState = startTraversalSearch(currentState);
+        currentState = startStructureCheckSearch(currentState);
+        //currentState = startPrimitiveCheck(currentState);
+        return currentState;
+    }
+
+    public static ClassInvariantState startInitialSearch() {
+        Set<ClassInvariantMutator> mutators = new HashSet<>();
+        mutators.add(new ComposeNullCheckMutator());
+        mutators.add(new IfNullReturnMutator());
+        mutators.add(new RemoveIfInitialCheckMutator());
+        ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness());
+        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.005));
+        return (ClassInvariantState) simulatedAnnealing.startSearch();
+    }
+
+//    public static ClassInvariantState startTraversalSearch(ClassInvariantState initialState) {
+//        printStartOfPhase("Traversal Search");
+//        Set<ClassInvariantMutator> mutators = new HashSet<>();
+//        mutators.add(new TraverseWorklistMutator());
+//        mutators.add(new IfNullReturnInTraversalMutator());
+//        mutators.add(new ComposedNullCheckInTraversalMutator());
+//        mutators.add(new ChangeLoopFieldsMutator());
+//        mutators.add(new ChangeFirstElementMutator());
+//        mutators.add(new RemoveIfTraversalMutator());
+//        ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness(), initialState);
+//        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.005));
+//        return (ClassInvariantState) simulatedAnnealing.startSearch();
+//    }
+
+    public static ClassInvariantState startStructureCheckSearch(ClassInvariantState initialState) {
+        printStartOfPhase("Structure Search");
+        Set<ClassInvariantMutator> mutators = new HashSet<>();
+        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
+        mutators.add(new AddNullCompToTraversalMutator());
+        mutators.add(new AddRandomComparisonToCurrent());
+        mutators.add(new DeclareVisitedSetMutator());
+        mutators.add(new CheckVisitedFieldMutator());
+        mutators.add(new RemoveIfStructureCheckMutator());
+        mutators.add(new TraverseWorklistMutator());
+        mutators.add(new IfNullReturnInTraversalMutator());
+        mutators.add(new ComposedNullCheckInTraversalMutator());
+        mutators.add(new ChangeLoopFieldsMutator());
+        mutators.add(new ChangeFirstElementMutator());
+        mutators.add(new RemoveIfTraversalMutator());
+        ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness(), initialState);
+        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.005));
+        return (ClassInvariantState) simulatedAnnealing.startSearch();
+    }
+
+    public static ClassInvariantState startPrimitiveCheck(ClassInvariantState initialState) {
+        printStartOfPhase("Primitive Search");
+        Set<ClassInvariantMutator> mutators = new HashSet<>();
+        mutators.add(new CheckSizeEndOfTraversalMutator());
+        mutators.add(new AddSizeCheckMutator());
+        mutators.add(new RemoveIfPrimitiveCheckMutator());
+        mutators.add(new RemoveIfStructureCheckMutator());
+        //mutators.add(new ());
+        ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness(), initialState);
+        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.005));
+        return (ClassInvariantState) simulatedAnnealing.startSearch();
+    }
+
+    public static void printResults(ClassInvariantState finalState) {
+        System.out.println("\n\n==============================  Search Finished  ==============================\n");
+        System.out.println("Best solution: " + finalState.getCtClass().toString());
+        System.out.println("Fitness: " + finalState.getFitness());
+        printNotKilledMutants(finalState);
+        System.out.println("\n=================================================================================\n");
+    }
+
+    public static void printStartOfPhase(String phase) {
+        System.out.println("\n\n==============================  " + phase + "  ==============================\n");
+    }
+
+    public static void saveResults(ClassInvariantState finalState) {
+        SpoonManager.generateSourcePreconditionSourceFile(finalState.getCtClass());
+        System.out.println("\nSource code saved in: " + ToolConfig.outputSrcPath);
+    }
+
+    public static void printNotKilledMutants(ClassInvariantState finalState) {
+        System.out.println("\n\n==============================  Unkilled Mutants  ==============================\n");
+        Executor.printSurvivors(finalState.getCtClass());
+        System.out.println("\n=================================================================================\n");
     }
 
     private static void initialize() {
@@ -43,74 +129,8 @@ public class EvoExpress {
         ObjectGeneratorManager.generateObjects();
     }
 
-
     public static void printStart() {
         System.out.println("\n==============================  Search Started  ==============================\n");
     }
 
-    public static Population startInitialSearch() {
-        Set<Mutator> mutators = new HashSet<>();
-        mutators.add(new ComposeNullCheckMutator());
-        mutators.add(new IfNullReturnMutator());
-        GeneticAlgorithm ga = new InitialSearch(mutators, new LengthFitness(), ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
-        return ga.startSearch(ga.initPopulation());
-    }
-
-    public static Population startTraversalSearch(Population population) {
-        Set<Mutator> mutators = new HashSet<>();
-        mutators.add(new TraverseWorklistMutator());
-        mutators.add(new IfNullReturnInTraversalMutator());
-        mutators.add(new ComposedNullCheckInTraversalMutator());
-        mutators.add(new ChangeLoopFieldsMutator());
-        mutators.add(new ChangeFirstElementMutator());
-        GeneticAlgorithm ga = new TraversalSearch(mutators, new NoLengthFitness(), ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
-        return ga.startSearch(population);
-    }
-
-    public static Population startStructureCheckSearch(Population population) {
-        Set<Mutator> mutators = new HashSet<>();
-        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
-        mutators.add(new AddNullCompToTraversalMutator());
-        mutators.add(new AddRandomComparisonToCurrent());
-        mutators.add(new DeclareVisitedSetMutator());
-        mutators.add(new CheckVisitedFieldMutator());
-        GeneticAlgorithm ga = new StructureCheckGA(mutators, new NoLengthFitness(), ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
-        return ga.startSearch(population);
-    }
-
-    public static Population startPrimitiveCheck(Population population) {
-        Set<Mutator> mutators = new HashSet<>();
-        mutators.add(new CheckSizeEndOfTraversalMutator());
-        mutators.add(new AddSizeCheckMutator());
-        GeneticAlgorithm ga = new PrimitiveCheckGA(mutators, new NoLengthFitness(), ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
-        return ga.startSearch(population);
-    }
-
-//    public static Population minimize(Population population) {
-//        Set<Mutator> mutators = new HashSet<>();
-//        mutators.add(new RemoveCheckMutator());
-//        GeneticAlgorithm ga = new MinimizationGA(mutators, new LengthFitness(), ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
-//        return ga.startSearch(population);
-//    }
-
-    public static void printResults(Population population) {
-        System.out.println("\n\n==============================  Search Finished  ==============================\n");
-        System.out.println("Number of generations: " + population.getGenerationNumber());
-        System.out.println("Best solution: " + population.getFittest().toString());
-        System.out.println("Fitness: " + population.getFittest().getFitness());
-        printNotKilledMutants(population);
-        System.out.println("\n=================================================================================\n");
-    }
-
-    public static void saveResults(Population population) {
-        SpoonManager.generateSourcePreconditionSourceFile(population.getFittest());
-        System.out.println("\nSource code saved in: " + ToolConfig.outputSrcPath);
-    }
-
-    public static void printNotKilledMutants(Population population) {
-        System.out.println("\n\n==============================  Unkilled Mutants  ==============================\n");
-        Individual fittest = population.getFittest();
-        GAHelper.printSurvivors(fittest);
-        System.out.println("\n=================================================================================\n");
-    }
 }

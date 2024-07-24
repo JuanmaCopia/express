@@ -1,7 +1,10 @@
 package evoexpress.execution;
 
-import evoexpress.ga.individual.Individual;
+import evoexpress.config.ToolConfig;
+import evoexpress.object.ObjectCollector;
 import evoexpress.reflection.Reflection;
+import evoexpress.spoon.SpoonManager;
+import spoon.reflect.declaration.CtClass;
 
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
@@ -10,7 +13,7 @@ import java.util.concurrent.*;
 
 public class Executor {
 
-    public static int runPrecondition(Individual individual, Method precondition, Object[] args) {
+    public static int runPrecondition(Method precondition, Object[] args) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         Callable<Boolean> task = () -> {
@@ -28,14 +31,7 @@ public class Executor {
             e.printStackTrace();
             return -1;
         } catch (Exception e) {
-            if (individual.marked) {
-                System.err.println("\nError running precondition:\n");
-                e.printStackTrace();
-            }
             // Handle other exceptions
-            //System.err.println("\nError running precondition:\n\n" + individual.toString());
-            //e.printStackTrace();
-            //System.err.println("\nThe individual was:\n\n" + individual.toString());
             return -1;
         } finally {
             // Shutdown the executor
@@ -66,6 +62,24 @@ public class Executor {
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
+        }
+    }
+
+    public static void printSurvivors(CtClass<?> cls) {
+        Class<?> preconditionClass = Reflection.loadClass(SpoonManager.classLoader, cls.getQualifiedName());
+        Method precondition = Reflection.loadMethod(preconditionClass, ToolConfig.preconditionMethodName);
+
+        for (Object invalidInstance : ObjectCollector.negativeObjects) {
+            Object[] args = new Object[1];
+            args[0] = invalidInstance;
+
+            int result = Executor.runPrecondition(precondition, args);
+            if (result == 1) {
+                System.out.println("\n\nCould not kill:\n" + invalidInstance.toString());
+            } else if (result == -1) {
+                System.out.println("Error with" + invalidInstance.toString());
+                return;
+            }
         }
     }
 
