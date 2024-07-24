@@ -1,7 +1,8 @@
 package evoexpress.object;
 
-import evoexpress.spoon.SpoonQueries;
-import evoexpress.typegraph.TypeGraph;
+import evoexpress.spoon.SpoonManager;
+import evoexpress.type.TypeUtils;
+import evoexpress.type.typegraph.TypeGraph;
 import evoexpress.util.Utils;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
@@ -81,7 +82,7 @@ public class ObjectMutator {
      */
     static TargetField selectTargetField(List<Object> candidates) {
         int maxAttempts = 10;
-        List<CtTypeReference<?>> userDefTypes = TypeGraph.getInstance().getUserDefinedTypes().stream().toList();
+        List<CtTypeReference<?>> userDefTypes = SpoonManager.inputTypeData.getTypeGraphOfParameter(SpoonManager.inputTypeData.getInputs().get(0)).getUserDefinedTypes().stream().toList();
         CtTypeReference<?> targetType = userDefTypes.get(new Random().nextInt(userDefTypes.size()));
 
         Object targetObject = getRandomReferenceOfType(candidates, targetType);
@@ -144,9 +145,9 @@ public class ObjectMutator {
      * @return a random field to mutate
      */
     static CtVariable<?> selectReferenceField(CtTypeReference<?> type) {
-        TypeGraph typeGraph = TypeGraph.getInstance();
+        TypeGraph typeGraph = SpoonManager.inputTypeData.getTypeGraphOfParameter(SpoonManager.inputTypeData.getInputs().get(0));
         List<CtVariable<?>> fields = typeGraph.getOutgoingFields(type).stream().filter(
-                f -> !f.getType().isPrimitive() && !SpoonQueries.isBoxedPrimitive(f.getType())).toList();
+                f -> !f.getType().isPrimitive() && !TypeUtils.isBoxedPrimitive(f.getType())).toList();
         if (fields.isEmpty())
             return null;
         return fields.get(Utils.nextInt(fields.size()));

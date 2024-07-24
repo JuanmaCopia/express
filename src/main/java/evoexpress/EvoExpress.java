@@ -1,12 +1,23 @@
 package evoexpress;
 
 import evoexpress.config.ToolConfig;
-import evoexpress.ga.*;
-import evoexpress.ga.fitness.FitnessFunctions;
+import evoexpress.ga.fitness.LengthFitness;
+import evoexpress.ga.fitness.NoLengthFitness;
+import evoexpress.ga.helper.GAHelper;
+import evoexpress.ga.individual.Individual;
 import evoexpress.ga.mutator.Mutator;
-import evoexpress.ga.mutator.initialcheck.AddComposedInitialNullCheckMutator;
-import evoexpress.ga.mutator.initialcheck.AddIfNullReturnMutator;
-import evoexpress.ga.mutator.structurecheck.*;
+import evoexpress.ga.mutator.initialcheck.ComposeNullCheckMutator;
+import evoexpress.ga.mutator.initialcheck.IfNullReturnMutator;
+import evoexpress.ga.mutator.primitivecheck.AddSizeCheckMutator;
+import evoexpress.ga.mutator.primitivecheck.CheckSizeEndOfTraversalMutator;
+import evoexpress.ga.mutator.structurecheck.CheckVisitedFieldMutator;
+import evoexpress.ga.mutator.structurecheck.DeclareVisitedSetMutator;
+import evoexpress.ga.mutator.structurecheck.traversal.AddNullCompToTraversalMutator;
+import evoexpress.ga.mutator.structurecheck.traversal.AddRandomComparisonToCurrent;
+import evoexpress.ga.mutator.structurecheck.traversal.CheckVisitedFieldEndOfTraversalMutator;
+import evoexpress.ga.mutator.structurecheck.traversal.init.*;
+import evoexpress.ga.population.Population;
+import evoexpress.ga.search.*;
 import evoexpress.object.ObjectGeneratorManager;
 import evoexpress.spoon.SpoonManager;
 
@@ -18,11 +29,12 @@ public class EvoExpress {
     public static void main(String[] args) {
         initialize();
         printStart();
-        Population population = startInitialCheckSearch();
+        Population population = startInitialSearch();
+        population = startTraversalSearch(population);
         population = startStructureCheckSearch(population);
+        population = startPrimitiveCheck(population);
         printResults(population);
         saveResults(population);
-        //printNotKilledMutants(population);
     }
 
     private static void initialize() {
@@ -36,33 +48,57 @@ public class EvoExpress {
         System.out.println("\n==============================  Search Started  ==============================\n");
     }
 
-    public static Population startInitialCheckSearch() {
+    public static Population startInitialSearch() {
         Set<Mutator> mutators = new HashSet<>();
-        mutators.add(new AddIfNullReturnMutator());
-        mutators.add(new AddComposedInitialNullCheckMutator());
-        GeneticAlgorithm ga = new InitialCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
+        mutators.add(new ComposeNullCheckMutator());
+        mutators.add(new IfNullReturnMutator());
+        GeneticAlgorithm ga = new InitialSearch(mutators, new LengthFitness(), ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
         return ga.startSearch(ga.initPopulation());
+    }
+
+    public static Population startTraversalSearch(Population population) {
+        Set<Mutator> mutators = new HashSet<>();
+        mutators.add(new TraverseWorklistMutator());
+        mutators.add(new IfNullReturnInTraversalMutator());
+        mutators.add(new ComposedNullCheckInTraversalMutator());
+        mutators.add(new ChangeLoopFieldsMutator());
+        mutators.add(new ChangeFirstElementMutator());
+        GeneticAlgorithm ga = new TraversalSearch(mutators, new NoLengthFitness(), ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
+        return ga.startSearch(population);
     }
 
     public static Population startStructureCheckSearch(Population population) {
         Set<Mutator> mutators = new HashSet<>();
-        mutators.add(new TraverseWorklistMutator());
-        mutators.add(new TraverseCyclicReferenceMutator());
-        mutators.add(new AddComposedIfToTraversalMutator());
         mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
-        mutators.add(new AddSizeCheckMutator());
         mutators.add(new AddNullCompToTraversalMutator());
-        mutators.add(new TraverseCircularReferenceMutator());
-        GeneticAlgorithm ga = new StructureCheckGA(mutators, ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
+        mutators.add(new AddRandomComparisonToCurrent());
+        mutators.add(new DeclareVisitedSetMutator());
+        mutators.add(new CheckVisitedFieldMutator());
+        GeneticAlgorithm ga = new StructureCheckGA(mutators, new NoLengthFitness(), ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
         return ga.startSearch(population);
     }
 
+    public static Population startPrimitiveCheck(Population population) {
+        Set<Mutator> mutators = new HashSet<>();
+        mutators.add(new CheckSizeEndOfTraversalMutator());
+        mutators.add(new AddSizeCheckMutator());
+        GeneticAlgorithm ga = new PrimitiveCheckGA(mutators, new NoLengthFitness(), ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
+        return ga.startSearch(population);
+    }
+
+//    public static Population minimize(Population population) {
+//        Set<Mutator> mutators = new HashSet<>();
+//        mutators.add(new RemoveCheckMutator());
+//        GeneticAlgorithm ga = new MinimizationGA(mutators, new LengthFitness(), ToolConfig.maxPopulation, ToolConfig.mutationRate, ToolConfig.crossoverRate, ToolConfig.elitismCount);
+//        return ga.startSearch(population);
+//    }
 
     public static void printResults(Population population) {
         System.out.println("\n\n==============================  Search Finished  ==============================\n");
         System.out.println("Number of generations: " + population.getGenerationNumber());
         System.out.println("Best solution: " + population.getFittest().toString());
         System.out.println("Fitness: " + population.getFittest().getFitness());
+        printNotKilledMutants(population);
         System.out.println("\n=================================================================================\n");
     }
 
@@ -74,7 +110,7 @@ public class EvoExpress {
     public static void printNotKilledMutants(Population population) {
         System.out.println("\n\n==============================  Unkilled Mutants  ==============================\n");
         Individual fittest = population.getFittest();
-        FitnessFunctions.printSurvivors(fittest);
+        GAHelper.printSurvivors(fittest);
         System.out.println("\n=================================================================================\n");
     }
 }

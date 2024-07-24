@@ -14,6 +14,10 @@ public class RandomUtils {
         return r.nextInt(bound);
     }
 
+    public static int nextInt(int min, int max) {
+        return r.nextInt(max - min) + min;
+    }
+
     public static boolean nextBoolean() {
         return r.nextBoolean();
     }

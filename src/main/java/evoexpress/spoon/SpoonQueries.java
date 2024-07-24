@@ -1,7 +1,8 @@
 package evoexpress.spoon;
 
 import evoexpress.ga.helper.LocalVarHelper;
-import evoexpress.typegraph.TypeGraph;
+import evoexpress.type.TypeUtils;
+import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
@@ -61,27 +62,9 @@ public class SpoonQueries {
     public static List<CtVariable<?>> getVariablesOfReferenceType(List<CtVariable<?>> list) {
         if (list == null)
             throw new IllegalArgumentException("List cannot be null");
-        return list.stream().filter(SpoonQueries::isReferenceType).toList();
+        return list.stream().filter(var -> TypeUtils.isReferenceType(var.getType())).toList();
     }
 
-    public static boolean isReferenceType(CtVariable<?> var) {
-        return !var.getType().isPrimitive();
-    }
-
-    public static boolean isPrimitiveType(CtVariable<?> var) {
-        return var.getType().isPrimitive();
-    }
-
-    public static boolean isBoxedPrimitive(CtTypeReference<?> type) {
-        return (type.equals(SpoonFactory.getTypeFactory().BOOLEAN) ||
-                type.equals(SpoonFactory.getTypeFactory().CHARACTER) ||
-                type.equals(SpoonFactory.getTypeFactory().BYTE) ||
-                type.equals(SpoonFactory.getTypeFactory().SHORT) ||
-                type.equals(SpoonFactory.getTypeFactory().INTEGER) ||
-                type.equals(SpoonFactory.getTypeFactory().LONG) ||
-                type.equals(SpoonFactory.getTypeFactory().FLOAT) ||
-                type.equals(SpoonFactory.getTypeFactory().DOUBLE));
-    }
 
     public static List<CtVariable<?>> getVariablesOfType(List<CtVariable<?>> list, Class<?> type) {
         return getVariablesOfType(list, SpoonFactory.getTypeFactory().createReference(type));
@@ -131,36 +114,12 @@ public class SpoonQueries {
         if (list == null)
             throw new IllegalArgumentException("List cannot be null");
 
-        return list.stream().filter(var -> isUserDefined(var)).toList();
+        return list.stream().filter(var -> TypeUtils.isUserDefined(var)).toList();
     }
 
-    public static boolean isUserDefined(CtVariable<?> var) {
-        return isReferenceType(var) && var.getType().getDeclaration() != null;
-    }
-
-    public static boolean isUserDefined(CtTypeReference<?> var) {
-        return var.getDeclaration() != null;
-    }
 
     public static boolean containsReturnStatement(CtBlock<?> block) {
         return !block.getElements(e -> e instanceof CtReturn).isEmpty();
-    }
-
-
-    public static List<List<CtVariable<?>>> getAllReferencePaths(CtTypeReference<?> sourceNode, int depth) {
-        TypeGraph typesGraph = TypeGraph.getInstance();
-        List<List<CtVariable<?>>> paths = typesGraph.getAllPaths(sourceNode, depth);
-        List<List<CtVariable<?>>> referencePaths = new ArrayList<>();
-
-        for (List<CtVariable<?>> path : paths) {
-            if (!path.get(path.size() - 1).getType().isPrimitive())
-                referencePaths.add(path);
-        }
-
-        if (referencePaths.isEmpty())
-            throw new RuntimeException("No reference paths found.");
-
-        return referencePaths;
     }
 
     public static boolean isHandleCurrentComment(CtElement element) {
@@ -206,6 +165,12 @@ public class SpoonQueries {
         return comment.getContent().equals("Return true");
     }
 
+    public static boolean isReturnMark1Comment(CtElement element) {
+        if (!(element instanceof CtComment comment))
+            return false;
+        return comment.getContent().equals("Mark1");
+    }
+
     public static CtStatement getEndHandleCurrentComment(CtBlock<?> block) {
         List<CtElement> handleCurrentEndComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isEndOfHandleCurrentComment).toList();
         if (handleCurrentEndComments.isEmpty())
@@ -220,29 +185,140 @@ public class SpoonQueries {
         return (CtStatement) returnTrueComments.get(RandomUtils.nextInt(returnTrueComments.size()));
     }
 
-    public static List<List<CtVariable<?>>> getNonUsedInitialPathsToCyclicField(CtBlock<?> code) {
-        List<List<CtVariable<?>>> nonUsedInitialPathsToCyclicField = new LinkedList<>();
-
-        TypeGraph typeGraph = TypeGraph.getInstance();
-        List<List<CtVariable<?>>> pathsToCyclicFields = typeGraph.getPathsToCyclicFields();
-
-        List<CtLocalVariable<?>> currentVars = getLocalVariablesMathingPrefix(code, LocalVarHelper.CURRENT_VAR_NAME);
-        for (List<CtVariable<?>> path : pathsToCyclicFields) {
-            CtVariableRead<?> varRead = SpoonFactory.createFieldReadOfRootObject(path);
-            if (currentVars.stream().noneMatch(var -> var.getAssignment().equals(varRead)))
-                nonUsedInitialPathsToCyclicField.add(path);
-        }
-
-        return nonUsedInitialPathsToCyclicField;
+    public static CtStatement getMark1Comment(CtBlock<?> block) {
+        List<CtElement> returnMark1Comments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isReturnMark1Comment).toList();
+        if (returnMark1Comments.isEmpty())
+            return null;
+        return (CtStatement) returnMark1Comments.get(RandomUtils.nextInt(returnMark1Comments.size()));
     }
 
-    public static List<CtVariable<?>> getIntegerFieldsOfRoot() {
-        TypeGraph typeGraph = TypeGraph.getInstance();
-        List<CtVariable<?>> rootFields = typeGraph.getOutgoingFields(typeGraph.getRoot());
-        return rootFields.stream().filter(
-                field -> field.getType().isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER) ||
-                        field.getType().isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER_PRIMITIVE)
-        ).toList();
+    public static CtStatement getEndOfTraversalComment(CtBlock<?> block) {
+        List<CtElement> traversalEndComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isEndOfTraversalComment).toList();
+        if (traversalEndComments.isEmpty())
+            return null;
+        return (CtStatement) traversalEndComments.get(RandomUtils.nextInt(traversalEndComments.size()));
+    }
+
+    public static CtStatement getBeginOfTraversalComment(CtBlock<?> block) {
+        List<CtElement> matchingComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isBeginOfTraversalComment).toList();
+        if (matchingComments.isEmpty())
+            return null;
+        return (CtStatement) matchingComments.get(RandomUtils.nextInt(matchingComments.size()));
+    }
+
+    public static CtStatement getEndOfTraversedFieldsComment(CtBlock<?> block) {
+        List<CtElement> matchingComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isEndOfTraversedFieldsComment).toList();
+        if (matchingComments.isEmpty())
+            return null;
+        return (CtStatement) matchingComments.get(RandomUtils.nextInt(matchingComments.size()));
+    }
+
+    public static boolean isEndOfTraversedFieldsComment(CtElement element) {
+        if (!(element instanceof CtComment comment))
+            return false;
+        return comment.getContent().equals("End of Traversed Fields");
+    }
+
+    public static CtMethod<?> getTraversalOfNode(CtClass<?> ctClass, CtTypeReference<?> node) {
+        Set<CtMethod<?>> traversals = ctClass.getMethods();
+        for (CtMethod<?> m : traversals) {
+            if (m.getSimpleName().startsWith(LocalVarHelper.TRAVERSAL_PREFIX)) {
+                CtVariable<?> visitedSetParam = m.getParameters().get(m.getParameters().size() - 1);
+                if (visitedSetParam.getType().getActualTypeArguments().get(0).equals(node)) {
+                    return m;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static List<CtMethod<?>> getTraversals(CtClass<?> ctClass) {
+        return ctClass.getMethods().stream().filter(method -> method.getSimpleName().startsWith(LocalVarHelper.TRAVERSAL_PREFIX)).toList();
+    }
+
+//    public static List<List<CtVariable<?>>> getNonUsedInitialPathsToCyclicField(CtBlock<?> code) {
+//        List<List<CtVariable<?>>> nonUsedInitialPathsToCyclicField = new LinkedList<>();
+//
+//        TypeGraph typeGraph = TypeGraph.getInstance();
+//        List<List<CtVariable<?>>> pathsToCyclicFields = typeGraph.getPathsToCyclicFields();
+//
+//        List<CtLocalVariable<?>> currentVars = getLocalVariablesMathingPrefix(code, LocalVarHelper.CURRENT_VAR_NAME);
+//        for (List<CtVariable<?>> path : pathsToCyclicFields) {
+//            CtVariableRead<?> varRead = SpoonFactory.createFieldReadOfRootObject(path);
+//            if (currentVars.stream().noneMatch(var -> var.getAssignment().equals(varRead)))
+//                nonUsedInitialPathsToCyclicField.add(path);
+//        }
+//
+//        return nonUsedInitialPathsToCyclicField;
+//    }
+
+    public static CtVariable<?> getTraversalSetVariable(CtMethod<?> traversal) {
+        return traversal.getParameters().get(traversal.getParameters().size() - 1);
+    }
+
+    public static CtVariable<?> getTraversalWorklistVariable(CtMethod<?> traversal) {
+        return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var && var.getSimpleName().startsWith(LocalVarHelper.WORKLIST_VAR_NAME)).get(0);
+    }
+
+    public static CtVariable<?> getTraversalCurrentVariable(CtMethod<?> traversal) {
+        return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var && var.getSimpleName().startsWith(LocalVarHelper.CURRENT_VAR_NAME)).get(0);
+    }
+
+    public static List<CtIf> getIfsReturnFalses(CtBlock<?> block) {
+        List<CtIf> ifsReturnFalses = new LinkedList<>();
+        List<CtIf> ifs = block.getElements(Objects::nonNull);
+        for (CtIf ifStatement : ifs) {
+            if (ifStatement.getThenStatement() instanceof CtBlock<?> ifBlock) {
+                if (isReturnFalseBlock(ifBlock))
+                    ifsReturnFalses.add(ifStatement);
+            }
+        }
+        return ifsReturnFalses;
+    }
+
+    public static boolean isReturnFalseBlock(CtBlock<?> block) {
+        List<CtStatement> statements = block.getStatements();
+        if (statements.size() != 1)
+            return false;
+        CtStatement statement = statements.get(0);
+        return statement instanceof CtReturn<?> returnStatement && returnStatement.getReturnedExpression().toString().equals("false");
+    }
+
+    public static List<CtIf> getTraversalIfsForTraversedFields(CtBlock<?> traversalBody) {
+        List<CtIf> traversalIfs = new LinkedList<>();
+        CtStatement currStatement = getNextStatement(getEndOfHandleCurrentComment(traversalBody));
+        while (!isEndOfTraversedFieldsComment(currStatement)) {
+            assert currStatement instanceof CtIf;
+            traversalIfs.add((CtIf) currStatement);
+            currStatement = getNextStatement(currStatement);
+        }
+        return traversalIfs;
+    }
+
+    public static List<CtVariable<?>> getTraversedFields(List<CtIf> traversedFields) {
+        List<CtVariable<?>> fields = new LinkedList<>();
+        for (CtIf traversedField : traversedFields) {
+            CtBinaryOperator<?> nullComp = (CtBinaryOperator<?>) traversedField.getCondition();
+            CtFieldRead<?> fieldRead = (CtFieldRead<?>) nullComp.getLeftHandOperand();
+            CtVariable<?> field = (CtVariable<?>) fieldRead.getVariable();
+            fields.add(field);
+        }
+        return fields;
+    }
+
+    public static CtStatement getNextStatement(CtStatement statement) {
+        CtElement parent = statement.getParent();
+
+        // Ensure the parent is a block
+        if (parent instanceof CtBlock) {
+            CtBlock<?> block = (CtBlock<?>) parent;
+            int index = block.getStatements().indexOf(statement);
+            if (index != -1 && index < block.getStatements().size() - 1) {
+                return block.getStatements().get(index + 1);
+            }
+        }
+        // No next statement found
+        return null;
     }
 
     public static List<CtLocalVariable<?>> getLocalVariablesMathingPrefix(CtBlock<?> code, String varPrefix) {
@@ -294,6 +370,47 @@ public class SpoonQueries {
         return getLocalVariablesMathingPrefix(block, LocalVarHelper.SET_VAR_NAME);
     }
 
+    public static CtVariable<?> searchVisitedSetInBlock(CtBlock<?> block, CtTypeReference<?> setSubtype) {
+        List<CtLocalVariable<?>> visitedSetVars = getLocalVariablesMathingPrefix(block, LocalVarHelper.SET_VAR_NAME);
+        if (visitedSetVars.isEmpty())
+            return null;
+        for (CtLocalVariable<?> setVar : visitedSetVars) {
+            CtTypeReference<?> subtype = setVar.getType().getActualTypeArguments().get(0);
+            if (subtype.equals(setSubtype)) {
+                return setVar;
+            }
+        }
+        return null;
+    }
+
+    public static List<CtElement> getIfsInvokingMethod(CtBlock<?> block, String methodName) {
+        return block.getElements(e -> e instanceof CtIf).stream().filter(ifStatement -> {
+            CtIf ifStatement1 = (CtIf) ifStatement;
+            return ifStatement1.getCondition().toString().contains(methodName);
+        }).toList();
+    }
+
+    public static CtVariable<?> getVisitedSetParameter(CtMethod<?> method) {
+        List<CtParameter<?>> parameters = method.getParameters();
+        for (CtParameter<?> parameter : parameters) {
+            if (parameter.getSimpleName().startsWith(LocalVarHelper.SET_VAR_NAME))
+                return parameter;
+        }
+        return null;
+    }
+
+    public static CtVariable<?> getTraversedElement(CtMethod<?> method) {
+        List<CtParameter<?>> parameters = method.getParameters();
+        return parameters.get(parameters.size() - 2);
+    }
+
+    public static CtVariable<?> getInitialSizeVariable(CtBlock<?> block) {
+        List<CtLocalVariable<?>> vars = getLocalVariablesMathingPrefix(block, LocalVarHelper.SIZE_VAR_NAME);
+        if (vars.isEmpty())
+            return null;
+        return vars.get(0);
+    }
+
     public static List<CtLocalVariable<?>> getVisitedSetLocalVarsOfType(CtBlock<?> block, CtTypeReference<?> type) {
         return getLocalVariablesMathingPrefix(block, LocalVarHelper.SET_VAR_NAME).stream().filter(
                 var -> var.getType().getActualTypeArguments().get(0).isSubtypeOf(type)).toList();
@@ -303,11 +420,11 @@ public class SpoonQueries {
         return !block.getElements(SpoonQueries::isSizeCheckComment).isEmpty();
     }
 
-    public static List<List<CtVariable<?>>> chooseNVariablePaths(List<List<CtVariable<?>>> varPaths, int n) {
-        List<List<CtVariable<?>>> chosenPaths = new ArrayList<>();
-        List<Integer> indices = generateRandomIntegers(varPaths.size() - 1, n);
+    public static List<Path> chooseNPaths(List<Path> paths, int n) {
+        List<Path> chosenPaths = new ArrayList<>();
+        List<Integer> indices = generateRandomIntegers(paths.size() - 1, n);
         for (int index : indices) {
-            chosenPaths.add(varPaths.get(index));
+            chosenPaths.add(paths.get(index));
         }
         return chosenPaths;
     }
@@ -342,6 +459,15 @@ public class SpoonQueries {
                 return (CtComment) statement;
         }
         return null;
+    }
+
+    public static boolean checkAlreadyExistSimple(CtElement condition, CtBlock<?> block) {
+        List<CtIf> ifs = block.getElements(Objects::nonNull);
+        for (CtIf ifStatement : ifs) {
+            if (ifStatement.getCondition().toString().equals(condition.toString()))
+                return true;
+        }
+        return false;
     }
 
     public static boolean checkAlreadyExist(CtElement condition, CtBlock<?> block) {

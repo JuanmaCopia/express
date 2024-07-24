@@ -1,19 +1,24 @@
 package evoexpress.spoon;
 
 import evoexpress.config.ToolConfig;
-import evoexpress.ga.Individual;
+import evoexpress.ga.individual.Individual;
 import evoexpress.instrumentation.Instrumentation;
+import evoexpress.type.precondition.InputTypeData;
 import evoexpress.util.Utils;
 import spoon.Launcher;
 import spoon.OutputType;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class SpoonManager {
@@ -24,11 +29,10 @@ public class SpoonManager {
     public static Launcher launcher;
     public static CtClass<?> targetClass;
     public static CtMethod<?> targetMethod;
-    public static LinkedList<CtParameter<?>> preconditionParameters;
+    public static InputTypeData inputTypeData;
     public static CtClass<?> testSuiteClass;
     public static URL outputBinURL;
     public static URLClassLoader classLoader;
-    private static int compilationId = 0;
 
     public static void initialize() {
         try {
@@ -36,16 +40,22 @@ public class SpoonManager {
             initializeLauncher();
             initializeFactories();
             initializeTarget();
-            initializePrecondition();
+            initializeInputTypeData();
             initializeTestSuiteClass();
-            compileModel();
+            if (!compileModel())
+                throw new Exception("Model could not be compiled");
             initializeClassLoader();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void initializePrecondition() {
+    private static void initializeInputTypeData() {
+        inputTypeData = new InputTypeData(createParameterList());
+    }
+
+    private static LinkedList<CtParameter<?>> createParameterList() {
+        LinkedList<CtParameter<?>> preconditionParameters;
         if (SpoonManager.targetMethod == null)
             preconditionParameters = new LinkedList<>();
         else
@@ -55,6 +65,7 @@ public class SpoonManager {
         thisParameter.setType(targetClass.getReference());
         thisParameter.setSimpleName("_this");
         preconditionParameters.addFirst(thisParameter);
+        return preconditionParameters;
     }
 
     private static void initializeOutputDirectories() {
@@ -98,57 +109,29 @@ public class SpoonManager {
         Instrumentation.instrumentTestSuite(testSuiteClass);
     }
 
-    public static boolean compileIndividual(Individual individual) {
-        CtClass<?> addedClass = putIndividualIntoTheEnvironment(individual);
-        boolean compiles = compileModel();
-        removeClassFromPackage(addedClass);
-        return compiles;
+    public static boolean compileIndividual(Individual individual) throws Exception {
+        CtClass<?> indClass = individual.getCtClass();
+        if (targetClass.getPackage().getType(indClass.getSimpleName()) == null)
+            throw new RuntimeException("Individual class not found in the target class package");
+        return compileModel();
     }
 
-    public static boolean compileModel() {
-        boolean compiles = false;
-        try {
-            compiles = launcher.getModelBuilder().compile();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return compiles;
+    public static boolean compileModel() throws Exception {
+        return launcher.getModelBuilder().compile();
     }
 
-    public static CtClass<?> putIndividualIntoTheEnvironment(Individual individual) {
-        CtClass<?> preconditionClass = generateIndividualCtClass(individual, compilationId++);
-        addClassToPackage(preconditionClass);
-        individual.setIndividualClassName(preconditionClass.getQualifiedName());
-        return preconditionClass;
+    public static void addClassToPackage(CtType<?> ctType) {
+        targetClass.getPackage().addType(ctType);
     }
 
-    private static CtClass<?> generateIndividualCtClass(Individual individual, Integer id) {
-        String preconditionClassName = ToolConfig.preconditionClassName;
-        if (id != null)
-            preconditionClassName += id;
-
-        CtClass<?> preconditionClass = SpoonFactory.createPreconditionClass(preconditionClassName);
-
-        CtMethod<?> initialChecks = preconditionClass.getMethodsByName("initialCheck").get(0);
-        CtMethod<?> structureChecks = preconditionClass.getMethodsByName("structureCheck").get(0);
-        CtMethod<?> primitiveChecks = preconditionClass.getMethodsByName("primitiveCheck").get(0);
-        initialChecks.setBody(individual.getInitialCheck());
-        structureChecks.setBody(individual.getStructureCheck());
-        primitiveChecks.setBody(individual.getPrimitiveCheck());
-
-        return preconditionClass;
-    }
-
-    public static void addClassToPackage(CtClass<?> ctClass) {
-        targetClass.getPackage().addType(ctClass);
-    }
-
-    public static void removeClassFromPackage(CtClass<?> ctClass) {
-        targetClass.getPackage().removeType(ctClass);
+    public static void removeClassFromPackage(CtType<?> ctType) {
+        targetClass.getPackage().removeType(ctType);
     }
 
     public static void generateSourcePreconditionSourceFile(Individual individual) {
-        CtClass<?> individualCtClass = generateIndividualCtClass(individual, null);
+        CtClass<?> individualCtClass = individual.getCtClass().clone();
+        individualCtClass.setSimpleName(ToolConfig.preconditionClassName);
+        removeComments(individualCtClass);
         addClassToPackage(individualCtClass);
         try {
             launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
@@ -156,6 +139,12 @@ public class SpoonManager {
             e.printStackTrace();
         }
         removeClassFromPackage(individualCtClass);
+    }
+
+    private static void removeComments(CtClass<?> cls) {
+        List<CtComment> comments = cls.getElements(Objects::nonNull);
+        for (CtComment comment : comments)
+            comment.delete();
     }
 
 }

@@ -66,7 +66,7 @@ public class SpoonFactory {
         CtPackage ctPackage = SpoonManager.targetClass.getPackage();
         ctPackage.addType(preconditionClass);
 
-        createSubPreconditions(preconditionClass, SpoonManager.preconditionParameters);
+        createSubPreconditions(preconditionClass, SpoonManager.inputTypeData.getInputs());
 
         return preconditionClass;
     }
@@ -96,28 +96,36 @@ public class SpoonFactory {
         preconditionClass.addMethod(preconditionMethod);
     }
 
-    public static CtVariableRead<?> createFieldReadOfRootObject(List<CtVariable<?>> path) {
-        List<CtVariable<?>> pathCopy = new ArrayList<>(path);
-        CtVariable<?> rootVar = getRootObjectVar();
-        pathCopy.add(0, rootVar);
-        return createFieldRead(pathCopy);
-    }
-
-    public static CtVariableRead<?> createFieldReadOfRootObject(CtVariable<?> var) {
-        CtVariable<?> rootVar = getRootObjectVar();
-        return createFieldRead(rootVar, var);
-    }
-
-
-    public static CtVariable<?> getRootObjectVar() {
-        return SpoonManager.preconditionParameters.get(0);
-    }
+//    public static CtVariableRead<?> createFieldReadOfRootObject(List<CtVariable<?>> path) {
+//        List<CtVariable<?>> pathCopy = new ArrayList<>(path);
+//        CtVariable<?> rootVar = getRootObjectVar();
+//        pathCopy.add(0, rootVar);
+//        return createFieldRead(pathCopy);
+//    }
+//
+//    public static CtVariableRead<?> createFieldReadOfRootObject(CtVariable<?> var) {
+//        CtVariable<?> rootVar = getRootObjectVar();
+//        return createFieldRead(rootVar, var);
+//    }
+//
+//
+//    public static CtVariable<?> getRootObjectVar() {
+//        return SpoonManager.preconditionParameters.get(0);
+//    }
 
     public static CtExpression<?>[] createArgumentsFromParameters(CtMethod<?> method) {
-        List<CtParameter<?>> params = method.getParameters();
-        CtExpression<?>[] args = new CtExpression<?>[params.size()];
+        List<CtParameter<?>> parameters = method.getParameters();
+        CtExpression<?>[] args = new CtExpression<?>[parameters.size()];
         for (int i = 0; i < args.length; i++) {
-            args[i] = createVariableRead(params.get(i));
+            args[i] = createVariableRead(parameters.get(i));
+        }
+        return args;
+    }
+
+    public static CtExpression<?>[] createArgumentsFromParameters(List<CtParameter<?>> parameters) {
+        CtExpression<?>[] args = new CtExpression<?>[parameters.size()];
+        for (int i = 0; i < args.length; i++) {
+            args[i] = createVariableRead(parameters.get(i));
         }
         return args;
     }
@@ -144,9 +152,14 @@ public class SpoonFactory {
 
     public static CtBlock<?> createReturnTrueBlock() {
         CtBlock<Boolean> block = coreFactory.createBlock();
+        block.addStatement(createComment("Mark1"));
         block.addStatement(createComment("Return true"));
         block.addStatement(createReturnStatement(codeFactory.createLiteral(true)));
         return block;
+    }
+
+    public static CtReturn<Boolean> createReturnTrueStatement() {
+        return createReturnStatement(codeFactory.createLiteral(true));
     }
 
     public static CtMethod<Boolean> createMethod(
@@ -278,6 +291,17 @@ public class SpoonFactory {
         return factory.Code().createInvocation(null, staticMethodRef, args);
     }
 
+    public static CtInvocation<?> createStaticInvocation(CtClass<?> targetClass, String methodName, CtExpression<?>[] args) {
+        CtMethod<?> staticMethod = targetClass.getMethodsByName(methodName).get(0);
+        CtExecutableReference<?> staticMethodRef = factory.Executable().createReference(staticMethod);
+        return factory.Code().createInvocation(null, staticMethodRef, args);
+    }
+
+    public static CtInvocation<?> createStaticInvocation(CtMethod<?> staticMethod, CtExpression<?>[] args) {
+        CtExecutableReference<?> staticMethodRef = factory.Executable().createReference(staticMethod);
+        return factory.Code().createInvocation(null, staticMethodRef, args);
+    }
+
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName) {
         return createInvocation(target, methodName, new LinkedList<>(), new LinkedList<>());
     }
@@ -393,12 +417,29 @@ public class SpoonFactory {
         return localVariable;
     }
 
-    public static CtIf createVisitedCheck(CtVariable<?> setVariable, Object argument, boolean negate) {
+    public static CtParameter<?> createParameter(CtTypeReference<?> typeRef, String name) {
+        CtParameter<?> parameter = coreFactory.createParameter();
+        parameter.setType(typeRef);
+        parameter.setSimpleName(name);
+        return parameter;
+    }
+
+    public static CtIf createVisitedCheck(CtVariable<?> setVariable, Object argument, boolean negate, boolean useBreak) {
         CtExpression<?> condition = SpoonFactory.createAddToSetInvocation(setVariable, argument);
         if (negate)
             condition = SpoonFactory.createUnaryExpression(condition, UnaryOperatorKind.NOT);
-        CtReturn<?> returnStatement = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
-        return SpoonFactory.createIfThenStatement((CtExpression<Boolean>) condition, returnStatement);
+
+        CtStatement thenBlock;
+        if (useBreak)
+            thenBlock = SpoonFactory.createBreakStatement();
+        else
+            thenBlock = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
+
+        return SpoonFactory.createIfThenStatement((CtExpression<Boolean>) condition, thenBlock);
+    }
+
+    public static CtExpression<Boolean> negateExpresion(CtExpression<Boolean> expression) {
+        return (CtExpression<Boolean>) createUnaryExpression(expression, UnaryOperatorKind.NOT);
     }
 
     public static CtExpression<Boolean> createAddToSetInvocation(CtVariable<?> setVariable, Object argument) {
@@ -406,10 +447,14 @@ public class SpoonFactory {
         return SpoonFactory.createInvocation(setVariable, "add", elemType, argument);
     }
 
-    public static CtIf createVisitedSizeCheck(CtVariable<?> setVariable, CtVariableRead<?> integerField) {
-        CtInvocation<?> addInvocation = SpoonFactory.createInvocation(setVariable, "size");
+    public static CtIf createVisitedSizeCheck(CtVariable<?> setVariable, CtExpression<?> integerField, int minus) {
+        CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(setVariable, "size");
+        CtExpression<?> sizeMinus = sizeInvocation;
+        if (minus > 0)
+            sizeMinus = createBinaryExpression(sizeInvocation, minus, BinaryOperatorKind.MINUS);
+
         CtBinaryOperator<Boolean> condition = (CtBinaryOperator<Boolean>) SpoonFactory
-                .createBinaryExpression(addInvocation, integerField, BinaryOperatorKind.NE);
+                .createBinaryExpression(sizeMinus, integerField, BinaryOperatorKind.NE);
         CtReturn<?> returnStatement = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
         return SpoonFactory.createIfThenStatement(condition, returnStatement);
     }
@@ -533,6 +578,10 @@ public class SpoonFactory {
 
     public static CtExpression<Boolean> createNullComparisonClause(CtVariableRead<?> varRead, BinaryOperatorKind operator) {
         return (CtExpression<Boolean>) createBinaryExpression(varRead, parseToExpression(null), operator);
+    }
+
+    public static CtExpression<Boolean> createNullComparisonClause(CtVariable<?> varRead, BinaryOperatorKind operator) {
+        return (CtExpression<Boolean>) createBinaryExpression(createVariableRead(varRead), parseToExpression(null), operator);
     }
 
     public static CtExpression<Boolean> createNotEqualComparisonClause(CtVariableRead<?> varRead, CtVariableRead<?> varRead2) {
