@@ -26,7 +26,6 @@ public abstract class SimulatedAnnealing {
             problem.printCurrentState(i, temperature, currentState);
             i++;
             SimulatedAnnealingState nextState = problem.nextState(currentState);
-
             if (nextState == null)
                 continue;
 

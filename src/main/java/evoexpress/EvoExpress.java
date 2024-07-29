@@ -1,7 +1,7 @@
 package evoexpress;
 
 import evoexpress.classinvariant.mutator.initialcheck.RemoveIfInitialCheckMutator;
-import evoexpress.classinvariant.mutator.primitivecheck.RemoveIfPrimitiveCheckMutator;
+import evoexpress.classinvariant.mutator.primitivecheck.*;
 import evoexpress.classinvariant.mutator.structurecheck.RemoveIfStructureCheckMutator;
 import evoexpress.classinvariant.mutator.structurecheck.traversal.*;
 import evoexpress.classinvariant.mutator.structurecheck.traversal.init.*;
@@ -14,8 +14,6 @@ import evoexpress.execution.Executor;
 import evoexpress.classinvariant.mutator.ClassInvariantMutator;
 import evoexpress.classinvariant.mutator.initialcheck.ComposeNullCheckMutator;
 import evoexpress.classinvariant.mutator.initialcheck.IfNullReturnMutator;
-import evoexpress.classinvariant.mutator.primitivecheck.AddSizeCheckMutator;
-import evoexpress.classinvariant.mutator.primitivecheck.CheckSizeEndOfTraversalMutator;
 import evoexpress.classinvariant.mutator.structurecheck.CheckVisitedFieldMutator;
 import evoexpress.classinvariant.mutator.structurecheck.DeclareVisitedSetMutator;
 import evoexpress.object.ObjectGeneratorManager;
@@ -37,9 +35,8 @@ public class EvoExpress {
 
     private static ClassInvariantState startSearch() {
         ClassInvariantState currentState = startInitialSearch();
-        //currentState = startTraversalSearch(currentState);
         currentState = startStructureCheckSearch(currentState);
-        //currentState = startPrimitiveCheck(currentState);
+        currentState = startPrimitiveCheck(currentState);
         return currentState;
     }
 
@@ -49,23 +46,9 @@ public class EvoExpress {
         mutators.add(new IfNullReturnMutator());
         mutators.add(new RemoveIfInitialCheckMutator());
         ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness());
-        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.005));
+        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.05));
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
-
-//    public static ClassInvariantState startTraversalSearch(ClassInvariantState initialState) {
-//        printStartOfPhase("Traversal Search");
-//        Set<ClassInvariantMutator> mutators = new HashSet<>();
-//        mutators.add(new TraverseWorklistMutator());
-//        mutators.add(new IfNullReturnInTraversalMutator());
-//        mutators.add(new ComposedNullCheckInTraversalMutator());
-//        mutators.add(new ChangeLoopFieldsMutator());
-//        mutators.add(new ChangeFirstElementMutator());
-//        mutators.add(new RemoveIfTraversalMutator());
-//        ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness(), initialState);
-//        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.005));
-//        return (ClassInvariantState) simulatedAnnealing.startSearch();
-//    }
 
     public static ClassInvariantState startStructureCheckSearch(ClassInvariantState initialState) {
         printStartOfPhase("Structure Search");
@@ -83,7 +66,7 @@ public class EvoExpress {
         mutators.add(new ChangeFirstElementMutator());
         mutators.add(new RemoveIfTraversalMutator());
         ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness(), initialState);
-        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.005));
+        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(20, 0.01));
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
 
@@ -93,10 +76,10 @@ public class EvoExpress {
         mutators.add(new CheckSizeEndOfTraversalMutator());
         mutators.add(new AddSizeCheckMutator());
         mutators.add(new RemoveIfPrimitiveCheckMutator());
-        mutators.add(new RemoveIfStructureCheckMutator());
-        //mutators.add(new ());
+        mutators.add(new RemoveSizeCheckMutator());
+        mutators.add(new RemoveTraversalSizeCheckMutator());
         ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness(), initialState);
-        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.005));
+        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(5, 0.02));
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
 

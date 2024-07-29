@@ -213,6 +213,13 @@ public class SpoonQueries {
         return (CtStatement) matchingComments.get(RandomUtils.nextInt(matchingComments.size()));
     }
 
+    public static CtStatement getSizeCheckComment(CtBlock<?> block) {
+        List<CtElement> matchingComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isSizeCheckComment).toList();
+        if (matchingComments.isEmpty())
+            return null;
+        return (CtStatement) matchingComments.get(RandomUtils.nextInt(matchingComments.size()));
+    }
+
     public static boolean isEndOfTraversedFieldsComment(CtElement element) {
         if (!(element instanceof CtComment comment))
             return false;
@@ -475,6 +482,7 @@ public class SpoonQueries {
             return false;
         return true;
     }
+
 
 
 }

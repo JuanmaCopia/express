@@ -74,7 +74,11 @@ public class MutatorHelper {
     }
 
     public static List<CtIf> getMutablesIfReturnFalse(CtMethod<?> method) {
-        return method.getBody().getElements(e -> isIfReturnFalse(e));
+        return method.getBody().getElements(e -> isMutableIf(e) && isIfReturnFalse(e));
+    }
+
+    public static boolean isMutableIf(CtIf ifStatement) {
+        return ifStatement.getParent(CtIf.class) == null;
     }
 
     public static List<CtIf> getIfsReturnFalses(CtBlock<?> block) {
@@ -108,6 +112,16 @@ public class MutatorHelper {
 
     public static boolean isReturnFalseStatement(CtStatement statement) {
         return statement instanceof CtReturn<?> returnStatement && returnStatement.getReturnedExpression().toString().equals("false");
+    }
+
+    public static List<CtIf> getIfsWithVariableInCondition(CtBlock<?> block, CtVariable<?> var) {
+        List<CtIf> ifs = block.getElements(Objects::nonNull);
+        List<CtIf> ifsWithVar = new LinkedList<>();
+        for (CtIf ifStatement : ifs) {
+            if (ifStatement.getCondition().toString().contains(var.getSimpleName()))
+                ifsWithVar.add(ifStatement);
+        }
+        return ifsWithVar;
     }
 
 }
