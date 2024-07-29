@@ -7,6 +7,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.*;
@@ -20,8 +21,11 @@ public class TypeGraph {
 
     Set<Edge> edges = new HashSet<>();
 
+    Set<CtTypeReference<?>> arrayNodes;
+
     Set<Path> pathsToArrayNodes = new HashSet<>();
     Set<Path> pathsToCyclicNodes = new HashSet<>();
+
     Map<CtTypeReference<?>, List<CtVariable<?>>> cyclicFieldsMap = new HashMap<>();
 
     List<Path> allSimplePaths = new LinkedList<>();
@@ -45,7 +49,7 @@ public class TypeGraph {
     }
 
     private void initializePathsToArrayNodes() {
-        Set<CtTypeReference<?>> arrayNodes = getNodes().stream().filter(CtTypeInformation::isArray).collect(Collectors.toSet());
+        arrayNodes = getNodes().stream().filter(CtTypeInformation::isArray).collect(Collectors.toSet());
         for (CtTypeReference<?> node : arrayNodes) {
             pathsToArrayNodes.addAll(getSimplePaths(rootType, node));
         }
@@ -138,6 +142,10 @@ public class TypeGraph {
 
     public Set<CtTypeReference<?>> getNodes() {
         return adjacencyList.keySet();
+    }
+
+    public Set<CtTypeReference<?>> getArrayNodes() {
+        return arrayNodes;
     }
 
     public Set<Path> getPathsToCyclicNodes() {
@@ -275,7 +283,7 @@ public class TypeGraph {
         return builder.toString();
     }
 
-    public Collection<? extends Path> getPathsToArrayNodes() {
+    public Set<Path> getPathsToArrayNodes() {
         return pathsToArrayNodes;
     }
 

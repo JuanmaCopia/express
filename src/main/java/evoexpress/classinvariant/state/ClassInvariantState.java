@@ -5,6 +5,7 @@ import evoexpress.search.simulatedannealing.state.SimulatedAnnealingState;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.HashSet;
@@ -18,10 +19,12 @@ public class ClassInvariantState implements SimulatedAnnealingState {
     private Double fitness;
     public boolean marked;
     Set<CtTypeReference<?>> nonTraversedNodesWithCycles;
+    Set<CtTypeReference<?>> nonTraversedArrays;
 
     public ClassInvariantState() {
         cls = SpoonFactory.createPreconditionClass(ToolConfig.preconditionClassName + id++);
         nonTraversedNodesWithCycles = SpoonManager.inputTypeData.getNodesWithCycles();
+        nonTraversedArrays = SpoonManager.inputTypeData.getArrayNodes();
     }
 
     public ClassInvariantState(ClassInvariantState other) {
@@ -31,13 +34,19 @@ public class ClassInvariantState implements SimulatedAnnealingState {
     }
 
     public void setTypeAsTraversed(CtTypeReference<?> typeReference) {
-        nonTraversedNodesWithCycles.remove(typeReference);
+        if (typeReference instanceof CtArrayTypeReference)
+            nonTraversedArrays.remove(typeReference);
+        else
+            nonTraversedNodesWithCycles.remove(typeReference);
     }
 
     public Set<CtTypeReference<?>> getNonTraversedNodesWithCycles() {
         return nonTraversedNodesWithCycles;
     }
 
+    public Set<CtTypeReference<?>> getNonTraversedArrays() {
+        return nonTraversedArrays;
+    }
 
     public CtClass<?> getCtClass() {
         return cls;

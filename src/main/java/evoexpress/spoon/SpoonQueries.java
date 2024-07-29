@@ -239,6 +239,19 @@ public class SpoonQueries {
         return null;
     }
 
+    public static CtMethod<?> getTraversalOfArray(CtClass<?> ctClass, CtTypeReference<?> array) {
+        Set<CtMethod<?>> traversals = ctClass.getMethods();
+        for (CtMethod<?> m : traversals) {
+            if (m.getSimpleName().startsWith(LocalVarHelper.ARRAY_TRAVERSAL_PREFIX)) {
+                CtVariable<?> arrayParam = m.getParameters().get(m.getParameters().size() - 1);
+                if (arrayParam.getType().equals(array)) {
+                    return m;
+                }
+            }
+        }
+        return null;
+    }
+
 //    public static List<List<CtVariable<?>>> getNonUsedInitialPathsToCyclicField(CtBlock<?> code) {
 //        List<List<CtVariable<?>>> nonUsedInitialPathsToCyclicField = new LinkedList<>();
 //

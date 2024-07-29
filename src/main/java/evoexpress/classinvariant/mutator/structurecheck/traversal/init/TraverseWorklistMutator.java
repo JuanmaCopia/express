@@ -23,7 +23,7 @@ import java.util.List;
 public class TraverseWorklistMutator implements ClassInvariantMutator {
 
     public boolean isApplicable(ClassInvariantState state) {
-        return true;
+        return !SpoonManager.inputTypeData.getPathsToCyclicNodes().isEmpty();
     }
 
     @Override

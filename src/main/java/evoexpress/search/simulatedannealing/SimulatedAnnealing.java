@@ -35,7 +35,7 @@ public abstract class SimulatedAnnealing {
             } else {
                 delta = delta + 1.0;
                 double probability = Math.exp(-delta / temperature);
-                System.out.println("Delta: " + delta + " Probability: " + probability);
+                //System.out.println("Delta: " + delta + " Probability: " + probability);
                 if (Math.random() < probability) {
                     currentState = nextState;
                 }

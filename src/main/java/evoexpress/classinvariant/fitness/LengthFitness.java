@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 
 public class LengthFitness extends ClassInvariantFitness {
 
-    private static final int MAX_LENGTH = 1000000;
+    private static final int MAX_LENGTH = 20000;
 
     @Override
     public void evaluate(ClassInvariantState state) {

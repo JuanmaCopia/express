@@ -5,6 +5,7 @@ import evoexpress.type.typegraph.Path;
 import evoexpress.type.typegraph.TypeGraph;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.*;
@@ -19,6 +20,7 @@ public class InputTypeData {
     Set<Path> pathsToCyclicNodes;
     Set<Path> pathsToArrayNodes;
     Set<CtTypeReference<?>> nodesWithCycles = new HashSet<>();
+    Set<CtTypeReference<?>> arrayNodes = new HashSet<>();
 
 
     public InputTypeData(List<CtParameter<?>> methodInputs) {
@@ -61,7 +63,10 @@ public class InputTypeData {
         pathsToArrayNodes = new HashSet<>();
         for (CtVariable<?> p : inputs) {
             if (TypeUtils.isUserDefined(p.getType())) {
-                pathsToArrayNodes.addAll(paramTotypeGraphMap.get(p).getPathsToArrayNodes());
+                TypeGraph g = paramTotypeGraphMap.get(p);
+                Collection<Path> pathToArrayNodes = g.getPathsToArrayNodes();
+                arrayNodes.addAll(g.getArrayNodes());
+                pathsToArrayNodes.addAll(pathToArrayNodes);
             }
         }
     }
@@ -174,5 +179,9 @@ public class InputTypeData {
 
     public Set<Path> getPathsToArrayNodes() {
         return new HashSet<>(pathsToArrayNodes);
+    }
+
+    public Set<CtTypeReference<?>> getArrayNodes() {
+        return new HashSet<>(arrayNodes);
     }
 }

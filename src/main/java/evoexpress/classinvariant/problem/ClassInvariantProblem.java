@@ -7,6 +7,7 @@ import evoexpress.classinvariant.mutator.ClassInvariantMutator;
 import evoexpress.search.simulatedannealing.problem.SimulatedAnnealingProblem;
 import evoexpress.search.simulatedannealing.state.SimulatedAnnealingState;
 
+import java.text.DecimalFormat;
 import java.util.Set;
 
 public class ClassInvariantProblem implements SimulatedAnnealingProblem {
@@ -52,7 +53,8 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
     @Override
     public void printCurrentState(int round, Double temperature, SimulatedAnnealingState currentState) {
         ClassInvariantState s = (ClassInvariantState) currentState;
-        System.out.println(round + " | Temperature: " + temperature + " | Fitness: " + s.getFitness());
+        DecimalFormat df = new DecimalFormat("0.00");
+        System.out.println(round + " | Temperature: " + df.format(temperature) + " | Fitness: " + df.format(s.getFitness()));
     }
 
 

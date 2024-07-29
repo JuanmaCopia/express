@@ -50,7 +50,7 @@ public class ArrayTraversalTemplate {
     private static List<CtParameter<?>> createParameters(Path pathToArray, CtVariable<?> visitedSet) {
         List<CtParameter<?>> parameters = SpoonManager.inputTypeData.getInputs();
         parameters.add(SpoonFactory.createParameter(pathToArray.getTypeReference(), LocalVarHelper.ARRAY_PARAM_NAME));
-        parameters.add(SpoonFactory.createParameter(visitedSet.getType(), visitedSet.getSimpleName()));
+        //parameters.add(SpoonFactory.createParameter(visitedSet.getType(), visitedSet.getSimpleName()));
         return parameters;
     }
 
@@ -63,10 +63,8 @@ public class ArrayTraversalTemplate {
     private static CtBlock<?> createArrayTraversalBody(Path pathToArray, List<CtParameter<?>> params) {
         CtBlock<?> body = SpoonFactory.createBlock();
 
-        CtVariable<?> arrayVar = params.get(params.size() - 2);
-
-
-        CtVariable<?> visitedSet = params.get(params.size() - 1);
+        CtVariable<?> arrayVar = params.get(params.size() - 1);
+        //CtVariable<?> visitedSet = params.get(params.size() - 1);
 
         // Create while statement
         CtFor forStatement = createForStatement(arrayVar);
