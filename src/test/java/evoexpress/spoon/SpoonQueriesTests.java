@@ -1,6 +1,6 @@
 package evoexpress.spoon;
 
-import evoexpress.config.ToolConfig;
+import evoexpress.config.Config;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.SpoonAPI;
@@ -14,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SpoonQueriesTests {
 
+    private static final Config config = new Config();
+
     String METHOD_NAME = "m";
 
     SpoonAPI launcher;
@@ -23,12 +25,12 @@ public class SpoonQueriesTests {
     @BeforeEach
     void setUp() {
         // Initialize ToolConfig
-        ToolConfig.subjectClassName = "SLL";
-        ToolConfig.subjectTestSuiteClassName = "SLLTestSuite";
-        ToolConfig.subjectSrcPath = "./src/test/resources";
-        ToolConfig.subjectSrcJavaVersion = 17;
+        config.subjectClassName = "SLL";
+        config.subjectTestSuiteClassName = "SLLTestSuite";
+        config.subjectSrcPath = "./src/test/resources";
+        config.subjectSrcJavaVersion = 17;
         // Initialise Spoon
-        SpoonManager.initialize();
+        SpoonManager.initialize(config);
 
         launcher = SpoonFactory.getLauncher();
         sllClass = SpoonQueries.getClass("SLL");

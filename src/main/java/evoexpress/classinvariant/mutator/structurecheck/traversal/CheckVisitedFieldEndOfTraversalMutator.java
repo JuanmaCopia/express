@@ -34,7 +34,7 @@ public class CheckVisitedFieldEndOfTraversalMutator implements ClassInvariantMut
         CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(traversal);
         CtTypeReference<?> setSubType = visitedSetVar.getType().getActualTypeArguments().get(0);
 
-        List<Path> candidates = SpoonManager.inputTypeData.getAllReferencePathsOfType(traversedElement, setSubType, 1).stream().filter(p -> p.depth() >= 1).toList();
+        List<Path> candidates = SpoonManager.getTypeData().getIntegerPaths();
 
         Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
         CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();

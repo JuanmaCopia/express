@@ -23,14 +23,14 @@ public class IfNullReturnMutator implements ClassInvariantMutator {
     public boolean mutate(ClassInvariantState state) {
         CtBlock<?> methodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.INITIAL_METHOD_NAME).getBody();
 
-        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(2).stream().filter(p -> p.depth() >= 1).toList();
+        List<Path> paths = SpoonManager.getTypeData().getReferencePaths().stream().filter(p -> p.size() >= 2 && p.size() <=3).toList();
         Path chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
         CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
 
         CtExpression<Boolean> condition = null;
-        if (chosenPath.depth() == 1) {
+        if (chosenPath.size() == 2) {
             condition = SpoonFactory.createNullComparisonClause(chosenVarRead);
-        } else if (chosenPath.depth() == 2) {
+        } else if (chosenPath.size() == 3) {
             CtVariableRead<?> owner = chosenPath.getVariableReadOwner();
             condition = SpoonFactory.createBooleanBinaryExpression(
                     SpoonFactory.createNullComparisonClause(owner, BinaryOperatorKind.NE),

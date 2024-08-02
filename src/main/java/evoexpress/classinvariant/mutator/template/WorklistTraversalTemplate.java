@@ -6,6 +6,7 @@ import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
 import evoexpress.type.typegraph.Path;
+import org.apache.commons.lang3.tuple.Pair;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
@@ -17,39 +18,40 @@ import java.util.Set;
 
 public class WorklistTraversalTemplate {
 
-    public static void instantiate(CtClass<?> ctClass, Path initialField, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn, boolean useParent) {
+    public static void instantiate(CtClass<?> ctClass, Path initialField, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn, int splitIndex) {
         CtMethod<?> structureMethod = ctClass.getMethodsByName(LocalVarHelper.STRUCTURE_METHOD_NAME).get(0);
         CtBlock<?> structureMethodBody = structureMethod.getBody();
         CtStatement lastStatement = SpoonQueries.getMark1Comment(structureMethodBody);
 
         CtVariable<?> setVar = MutatorHelper.handleVisitedSetVariable(structureMethodBody, lastStatement, initialField.getTypeReference());
 
-        CtMethod<?> traversalMethod = createTraversalMethod(ctClass, initialField, loopFields, setVar, useBreakInsteadOfReturn, useParent);
+        CtMethod<?> traversalMethod = createTraversalMethod(ctClass, initialField, loopFields, setVar, useBreakInsteadOfReturn, splitIndex);
         ctClass.addMethod(traversalMethod);
     }
 
-    private static List<CtParameter<?>> createParameters(Path initialField, CtVariable<?> visitedSet, boolean useParent) {
-        List<CtParameter<?>> parameters = SpoonManager.inputTypeData.getInputs();
-        if (useParent) {
-            parameters.add(SpoonFactory.createParameter(initialField.getParentPath().getTypeReference(), LocalVarHelper.PARENT_OF_ELEMENT_PARAM));
-        } else {
-            parameters.add(SpoonFactory.createParameter(initialField.getTypeReference(), LocalVarHelper.FIRST_ELEMENT_VAR_NAME));
-        }
+    private static List<CtParameter<?>> createParameters(Path leftPath, CtVariable<?> visitedSet) {
+        List<CtParameter<?>> parameters = new ArrayList<>();
+        parameters.add((CtParameter<?>) SpoonManager.getTypeData().getThisVariable());
+        parameters.add(SpoonFactory.createParameter(leftPath.getTypeReference(), LocalVarHelper.TRAVERSED_ELEMENT_VAR_NAME));
         parameters.add(SpoonFactory.createParameter(visitedSet.getType(), visitedSet.getSimpleName()));
         return parameters;
     }
 
-    public static CtMethod<?> createTraversalMethod(CtClass<?> ctClass, Path initialField, List<CtVariable<?>> loopFields, CtVariable<?> setVar, boolean useBreakInsteadOfReturn, boolean useParent) {
+    public static CtMethod<?> createTraversalMethod(CtClass<?> ctClass, Path initialField, List<CtVariable<?>> loopFields, CtVariable<?> setVar, boolean useBreakInsteadOfReturn, int splitIndex) {
         Set<ModifierKind> modifiers = new HashSet<>();
         modifiers.add(ModifierKind.PRIVATE);
         modifiers.add(ModifierKind.STATIC);
 
+        Pair<Path, Path> splitPaths = initialField.split(splitIndex);
+        Path leftPath = splitPaths.getLeft();
+        Path rightPath = splitPaths.getRight();
+
         CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().BOOLEAN_PRIMITIVE;
-        List<CtParameter<?>> parameters = createParameters(initialField, setVar, useParent);
+        List<CtParameter<?>> parameters = createParameters(leftPath, setVar);
         CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(), parameters);
         traversalMethod.setSimpleName(traversalMethod.getSimpleName() + LocalVarHelper.getNextTraversalId(ctClass, LocalVarHelper.TRAVERSAL_PREFIX));
 
-        CtBlock<?> traversalBody = createTraversalBody(initialField, parameters, loopFields, useBreakInsteadOfReturn, useParent);
+        CtBlock<?> traversalBody = createTraversalBody(rightPath, parameters, loopFields, useBreakInsteadOfReturn, splitIndex);
         traversalMethod.setBody(traversalBody);
         return traversalMethod;
     }
@@ -59,13 +61,14 @@ public class WorklistTraversalTemplate {
     }
 
 
-    private static CtBlock<?> createTraversalBody(Path initialField, List<CtParameter<?>> params, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn, boolean useParent) {
+    private static CtBlock<?> createTraversalBody(Path firstElem, List<CtParameter<?>> params, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn, int splitIndex) {
         CtBlock<?> body = SpoonFactory.createBlock();
 
         CtVariable<?> firstElement;
-        if (useParent) {
+        if (!firstElem.isEmpty()) {
             CtVariable<?> initFieldParent = params.get(params.size() - 2);
-            CtVariableRead<?> initFieldRead = SpoonFactory.createFieldRead(initFieldParent, initialField.getLast());
+            Path pathToFirstElement = new Path(initFieldParent, firstElem);
+            CtVariableRead<?> initFieldRead = pathToFirstElement.getVariableRead();
             firstElement = SpoonFactory.createLocalVariable(LocalVarHelper.FIRST_ELEMENT_VAR_NAME, initFieldRead.getType(), initFieldRead);
         } else {
             firstElement = params.get(params.size() - 2);
@@ -128,7 +131,7 @@ public class WorklistTraversalTemplate {
 
         body.insertEnd(SpoonFactory.createComment("Begin of traversal"));
         body.insertEnd(worklist);
-        if (useParent) {
+        if (!firstElem.isEmpty()) {
             body.insertEnd(SpoonFactory.createComment("Initialize root element:"));
             body.insertEnd((CtStatement) firstElement);
         }

@@ -12,10 +12,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ArrayTraversalTemplate {
 
@@ -48,7 +45,8 @@ public class ArrayTraversalTemplate {
     }
 
     private static List<CtParameter<?>> createParameters(Path pathToArray, CtVariable<?> visitedSet) {
-        List<CtParameter<?>> parameters = SpoonManager.inputTypeData.getInputs();
+        List<CtParameter<?>> parameters = new ArrayList<>();
+        parameters.add((CtParameter<?>) SpoonManager.getTypeData().getThisVariable());
         parameters.add(SpoonFactory.createParameter(pathToArray.getTypeReference(), LocalVarHelper.ARRAY_PARAM_NAME));
         //parameters.add(SpoonFactory.createParameter(visitedSet.getType(), visitedSet.getSimpleName()));
         return parameters;

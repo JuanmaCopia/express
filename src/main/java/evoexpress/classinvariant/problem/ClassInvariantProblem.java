@@ -4,8 +4,10 @@ import evoexpress.classinvariant.mutator.ClassInvariantMutatorManager;
 import evoexpress.classinvariant.state.ClassInvariantState;
 import evoexpress.classinvariant.fitness.ClassInvariantFitness;
 import evoexpress.classinvariant.mutator.ClassInvariantMutator;
+import evoexpress.output.Compiler;
 import evoexpress.search.simulatedannealing.problem.SimulatedAnnealingProblem;
 import evoexpress.search.simulatedannealing.state.SimulatedAnnealingState;
+import evoexpress.spoon.SpoonManager;
 
 import java.text.DecimalFormat;
 import java.util.Set;
@@ -15,16 +17,19 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
     ClassInvariantMutatorManager mutatorManager;
     ClassInvariantFitness fitnessFunction;
     ClassInvariantState initialState;
+    Compiler compiler;
 
     public ClassInvariantProblem(Set<ClassInvariantMutator> mutators, ClassInvariantFitness fitnessFunction, ClassInvariantState initialState) {
         mutatorManager = new ClassInvariantMutatorManager(mutators);
         this.fitnessFunction = fitnessFunction;
         this.initialState = initialState;
+        this.compiler = SpoonManager.getOutput().getCompiler();
     }
 
     public ClassInvariantProblem(Set<ClassInvariantMutator> mutators, ClassInvariantFitness fitnessFunction) {
         mutatorManager = new ClassInvariantMutatorManager(mutators);
         this.fitnessFunction = fitnessFunction;
+        this.compiler = SpoonManager.getOutput().getCompiler();
     }
 
     @Override
@@ -33,16 +38,41 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
     }
 
     @Override
-    public ClassInvariantState nextState(SimulatedAnnealingState state) {
-        return mutatorManager.performRandomMutation((ClassInvariantState) state);
+    public SimulatedAnnealingState nextState(SimulatedAnnealingState state) {
+        ClassInvariantState stateClone = ((ClassInvariantState) state).clone();
+        compiler.addClassToPackage(stateClone.getCtClass());
+        boolean wasMutated = mutatorManager.performRandomMutation(stateClone);
+        ClassInvariantState nextState;
+        if (wasMutated && compiles(stateClone)) {
+            stateClone.setFitnessAsOutdated();
+            nextState = stateClone;
+        } else {
+            nextState = (ClassInvariantState) state;
+        }
+        compiler.removeClassFromPackage(stateClone.getCtClass());
+        return nextState;
+    }
+
+    private boolean compiles(ClassInvariantState nextState) {
+        try {
+            return compiler.compileModel();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
     public Double evaluate(SimulatedAnnealingState state) {
         ClassInvariantState s = (ClassInvariantState) state;
-        if (!s.isFitnessUpdated())
-            fitnessFunction.evaluate(s);
-        return s.getFitness();
+        if (s.isFitnessUpdated())
+            return s.getFitness();
+
+        compiler.addClassToPackage(s.getCtClass());
+        double fitness = fitnessFunction.evaluate(s);
+        s.setFitness(fitness);
+        compiler.removeClassFromPackage(s.getCtClass());
+        return fitness;
     }
 
     @Override

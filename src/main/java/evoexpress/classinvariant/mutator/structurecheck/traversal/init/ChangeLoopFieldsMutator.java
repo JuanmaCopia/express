@@ -8,6 +8,7 @@ import evoexpress.classinvariant.state.ClassInvariantState;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
+import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.TypeGraph;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;
@@ -31,12 +32,11 @@ public class ChangeLoopFieldsMutator implements ClassInvariantMutator {
         CtMethod<?> traversal = traversals.get(RandomUtils.nextInt(traversals.size()));
 
         CtVariable<?> worklist = SpoonQueries.getTraversalWorklistVariable(traversal);
-        CtVariable<?> visitedSet = SpoonQueries.getTraversalSetVariable(traversal);
+        CtVariable<?> visitedSet = SpoonQueries.getTraversalSetParameter(traversal);
         CtVariable<?> currentVar = SpoonQueries.getTraversalCurrentVariable(traversal);
         CtTypeReference<?> traversedNode = currentVar.getType();
 
-        TypeGraph typeGraph = SpoonManager.inputTypeData.getTypegraphOfNode(traversedNode);
-        List<CtVariable<?>> loopFields = typeGraph.getCyclicFieldsOfNode(traversedNode);
+        List<CtVariable<?>> loopFields = TypeUtils.getCyclicFieldsOfType(traversedNode);
         List<CtVariable<?>> newLoopFields = MutatorHelper.selectRandomVariablesFromList(loopFields);
 
         List<CtIf> newIfs = WorklistTraversalTemplate.createIfsForLoopFields(newLoopFields, currentVar, visitedSet, worklist, RandomUtils.nextBoolean());

@@ -8,6 +8,7 @@ import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
+import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
@@ -28,7 +29,11 @@ public class AddNullCompToTraversalMutator implements ClassInvariantMutator {
         CtBlock<?> traversalBody = traversal.getBody();
 
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(traversalBody, LocalVarHelper.CURRENT_VAR_NAME);
-        List<Path> candidates = SpoonManager.inputTypeData.getAllReferencePaths(currentDeclaration, 1).stream().filter(p -> p.depth() >= 1).toList();
+
+        List<Path> candidates = SpoonManager.getTypeData().getThisTypeGraph()
+                .computeSimplePathsForAlternativeVar(currentDeclaration).stream()
+                .filter(p -> TypeUtils.isReferenceType(p.getTypeReference()) && p.size() > 1)
+                .toList();
         if (candidates.isEmpty())
             return false;
 

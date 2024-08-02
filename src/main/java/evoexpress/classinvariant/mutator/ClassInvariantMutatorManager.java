@@ -1,6 +1,7 @@
 package evoexpress.classinvariant.mutator;
 
 import evoexpress.classinvariant.state.ClassInvariantState;
+import evoexpress.output.Compiler;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonManager;
 
@@ -15,28 +16,12 @@ public class ClassInvariantMutatorManager {
         this.mutators = mutators;
     }
 
-    public ClassInvariantState performRandomMutation(ClassInvariantState state) {
-        ClassInvariantState mutant = state.clone();
-        ClassInvariantMutator mutator = selectMutator(mutant);
-        SpoonManager.addClassToPackage(mutant.getCtClass());
-
-        if (mutator != null && mutator.mutate(mutant)) {
-            boolean compiles = false;
-            try {
-                compiles = SpoonManager.compileCtClass(mutant.getCtClass());
-            } catch (Exception e) {
-                SpoonManager.removeClassFromPackage(mutant.getCtClass());
-                System.err.println("Error while compiling state");
-                System.err.println("Individual: \n" + mutant);
-            }
-            SpoonManager.removeClassFromPackage(mutant.getCtClass());
-            if (!compiles) {
-                return null;
-            }
-            return mutant;
+    public boolean performRandomMutation(ClassInvariantState state) {
+        ClassInvariantMutator mutator = selectMutator(state);
+        if (mutator != null && mutator.mutate(state)) {
+            return true;
         }
-        SpoonManager.removeClassFromPackage(mutant.getCtClass());
-        return null;
+        return false;
     }
 
     ClassInvariantMutator selectMutator(ClassInvariantState state) {

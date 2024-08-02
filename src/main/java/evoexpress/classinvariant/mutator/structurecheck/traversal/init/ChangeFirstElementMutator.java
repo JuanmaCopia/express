@@ -7,6 +7,7 @@ import evoexpress.classinvariant.state.ClassInvariantState;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
+import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
@@ -46,8 +47,7 @@ public class ChangeFirstElementMutator implements ClassInvariantMutator {
         String[] fields = firstElemRead.toString().split("\\.");
         String fieldName = fields[fields.length - 1];
 
-        TypeGraph typeGraph = SpoonManager.inputTypeData.getTypegraphOfNode(typeOfFirstElem);
-        List<CtVariable<?>> candidateFields = typeGraph.getOutgoingFields(parentOfFirstElement.getType()).stream().filter(
+        List<CtVariable<?>> candidateFields = TypeUtils.getFields(parentOfFirstElement.getType()).stream().filter(
                 field -> field.getType().equals(typeOfFirstElem) && !field.getSimpleName().equals(fieldName)
         ).toList();
         if (candidateFields.isEmpty()) {

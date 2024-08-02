@@ -1,21 +1,23 @@
 package evoexpress.object;
 
-import evoexpress.config.ToolConfig;
+import evoexpress.config.Config;
 import evoexpress.spoon.SpoonManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class ObjectGeneratorTests {
 
+    private static final Config config = new Config();
+
     @BeforeAll
     public static void setUp() {
         // Initialize ToolConfig
-        ToolConfig.subjectClassName = "SLL";
-        ToolConfig.subjectTestSuiteClassName = "SLLTestSuite";
-        ToolConfig.subjectSrcPath = "./src/test/resources";
-        ToolConfig.subjectSrcJavaVersion = 17;
+        config.subjectClassName = "SLL";
+        config.subjectTestSuiteClassName = "SLLTestSuite";
+        config.subjectSrcPath = "./src/test/resources";
+        config.subjectSrcJavaVersion = 17;
         // Initialise Spoon
-        SpoonManager.initialize();
+        SpoonManager.initialize(config);
     }
 
     @Test

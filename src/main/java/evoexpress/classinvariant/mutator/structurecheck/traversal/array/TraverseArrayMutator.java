@@ -24,12 +24,12 @@ import java.util.List;
 public class TraverseArrayMutator implements ClassInvariantMutator {
 
     public boolean isApplicable(ClassInvariantState state) {
-        return !SpoonManager.inputTypeData.getPathsToArrayNodes().isEmpty();
+        return !SpoonManager.getTypeData().getArrayPaths().isEmpty();
     }
 
     @Override
     public boolean mutate(ClassInvariantState state) {
-        List<Path> pathsToArrays = new ArrayList<>(SpoonManager.inputTypeData.getPathsToArrayNodes());
+        List<Path> pathsToArrays = SpoonManager.getTypeData().getArrayPaths();
         List<Path> paths = pathsToArrays.stream().filter(
                 path -> state.getNonTraversedArrays().contains(path.getTypeReference())
         ).toList();

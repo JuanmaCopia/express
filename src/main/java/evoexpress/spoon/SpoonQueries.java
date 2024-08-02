@@ -268,8 +268,12 @@ public class SpoonQueries {
 //        return nonUsedInitialPathsToCyclicField;
 //    }
 
-    public static CtVariable<?> getTraversalSetVariable(CtMethod<?> traversal) {
+    public static CtVariable<?> getTraversalSetParameter(CtMethod<?> traversal) {
         return traversal.getParameters().get(traversal.getParameters().size() - 1);
+    }
+
+    public static CtVariable<?> getTraversalInitialElementParameter(CtMethod<?> traversal) {
+        return traversal.getParameters().get(traversal.getParameters().size() - 2);
     }
 
     public static CtVariable<?> getTraversalWorklistVariable(CtMethod<?> traversal) {

@@ -1,148 +1,76 @@
 package evoexpress.spoon;
 
-import evoexpress.config.ToolConfig;
+import evoexpress.config.Config;
 import evoexpress.instrumentation.Instrumentation;
-import evoexpress.type.precondition.InputTypeData;
-import evoexpress.util.Utils;
+import evoexpress.output.InputOutputManager;
+import evoexpress.type.typegraph.TypeData;
 import spoon.Launcher;
-import spoon.OutputType;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.*;
 
-import java.io.File;
-import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 public class SpoonManager {
 
     private static final Logger logger = Logger.getLogger(SpoonManager.class.getName());
-    public static File outputBinDirectory;
-    public static File outputSrcDirectory;
-    public static Launcher launcher;
-    public static CtClass<?> targetClass;
-    public static CtMethod<?> targetMethod;
-    public static InputTypeData inputTypeData;
-    public static CtClass<?> testSuiteClass;
-    public static URL outputBinURL;
-    public static URLClassLoader classLoader;
 
-    public static void initialize() {
-        try {
-            initializeOutputDirectories();
-            initializeLauncher();
-            initializeFactories();
-            initializeTarget();
-            initializeInputTypeData();
-            initializeTestSuiteClass();
-            if (!compileModel())
-                throw new Exception("Model could not be compiled");
-            initializeClassLoader();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    static Config config;
+    static InputOutputManager output;
 
-    private static void initializeInputTypeData() {
-        inputTypeData = new InputTypeData(createParameterList());
-    }
+    static Launcher launcher;
+    static CtClass<?> testSuiteClass;
+    static TypeData typeData;
 
-    private static LinkedList<CtParameter<?>> createParameterList() {
-        LinkedList<CtParameter<?>> preconditionParameters;
-        if (SpoonManager.targetMethod == null)
-            preconditionParameters = new LinkedList<>();
-        else
-            preconditionParameters = new LinkedList<>(SpoonManager.targetMethod.getParameters());
-        CtClass<?> targetClass = SpoonManager.targetClass;
-        CtParameter<?> thisParameter = targetClass.getFactory().Core().createParameter();
-        thisParameter.setType(targetClass.getReference());
-        thisParameter.setSimpleName("_this");
-        preconditionParameters.addFirst(thisParameter);
-        return preconditionParameters;
-    }
+    static boolean initialized = false;
 
-    private static void initializeOutputDirectories() {
-        outputBinDirectory = Utils.createDirectory(ToolConfig.outputBinPath);
-        outputSrcDirectory = Utils.createDirectory(ToolConfig.outputSrcPath);
-    }
-
-    private static void initializeClassLoader() {
-        outputBinURL = Utils.createURL(outputBinDirectory);
-        classLoader = Utils.createClassLoader(outputBinURL);
-    }
-
-    private static void initializeLauncher() {
+    public static void initialize(Config conf) {
+        config = conf;
         launcher = new Launcher();
-        launcher.addInputResource(ToolConfig.subjectSrcPath);
-        launcher.setBinaryOutputDirectory(outputBinDirectory);
-        launcher.setSourceOutputDirectory(outputSrcDirectory);
-        launcher.getEnvironment().setComplianceLevel(ToolConfig.subjectSrcJavaVersion);
+        launcher.addInputResource(config.subjectSrcPath);
+
+        launcher.getEnvironment().setComplianceLevel(config.subjectSrcJavaVersion);
         launcher.getEnvironment().setShouldCompile(true);
         launcher.getEnvironment().setAutoImports(true);
         launcher.buildModel();
-    }
 
-    private static void instrumentClasses() {
+        typeData = new TypeData(launcher.getFactory().Class().get(config.subjectClassName));
+
+        output = new InputOutputManager(launcher, config);
+        launcher.setBinaryOutputDirectory(output.getOutputBinPath());
+        launcher.setSourceOutputDirectory(output.getOutputSrcPath());
+
+        SpoonFactory.initialize(config, launcher, typeData);
+
+        testSuiteClass = launcher.getFactory().Class().get(config.subjectTestSuiteClassName);
         Instrumentation.instrumentClasses(launcher.getModel());
-    }
-
-    private static void initializeFactories() {
-        SpoonFactory.initialize(launcher);
-    }
-
-    private static void initializeTarget() {
-        targetClass = launcher.getFactory().Class().get(ToolConfig.subjectClassName);
-        targetMethod = targetClass.getMethod(ToolConfig.subjectMethodName);
-        if (targetMethod == null)
-            logger.warning("Target Method not found or not set");
-    }
-
-    private static void initializeTestSuiteClass() {
-        testSuiteClass = launcher.getFactory().Class().get(ToolConfig.subjectTestSuiteClassName);
         Instrumentation.instrumentTestSuite(testSuiteClass);
+
+        output.getCompiler().compileModel();
+
+        initialized = true;
     }
 
-    public static boolean compileCtClass(CtClass<?> cls) throws Exception {
-        if (targetClass.getPackage().getType(cls.getSimpleName()) == null)
-            throw new RuntimeException("Individual class not found in the target class package");
-        return compileModel();
+    public static boolean isInitialized() {
+        return initialized;
     }
 
-    public static boolean compileModel() throws Exception {
-        return launcher.getModelBuilder().compile();
+    public static TypeData getTypeData() {
+        return typeData;
     }
 
-    public static void addClassToPackage(CtType<?> ctType) {
-        targetClass.getPackage().addType(ctType);
+    public static Launcher getLauncher() {
+        return launcher;
     }
 
-    public static void removeClassFromPackage(CtType<?> ctType) {
-        targetClass.getPackage().removeType(ctType);
+    public static CtClass<?> getTestSuiteClass() {
+        return testSuiteClass;
     }
 
-    public static void generateSourcePreconditionSourceFile(CtClass<?> cls) {
-        CtClass<?> clsClone = cls.clone();
-        clsClone.setSimpleName(ToolConfig.preconditionClassName);
-        removeComments(clsClone);
-        addClassToPackage(clsClone);
-        try {
-            launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        removeClassFromPackage(clsClone);
+    public static InputOutputManager getOutput() {
+        return output;
     }
 
-    private static void removeComments(CtClass<?> cls) {
-        List<CtComment> comments = cls.getElements(Objects::nonNull);
-        for (CtComment comment : comments)
-            comment.delete();
+    public static Config getConfig() {
+        return config;
     }
-
 }

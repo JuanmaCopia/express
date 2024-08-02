@@ -10,7 +10,6 @@ import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
 import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
@@ -30,7 +29,7 @@ public class CheckVisitedFieldMutator implements ClassInvariantMutator {
         CtLocalVariable<?> setVar = visitedSetVars.get(RandomUtils.nextInt(visitedSetVars.size()));
         CtTypeReference<?> setSubType = setVar.getType().getActualTypeArguments().get(0);
 
-        List<Path> candidates = SpoonManager.inputTypeData.getAllReferencePathsOfType(setSubType, 1).stream().filter(p -> p.depth() >= 1).toList();
+        List<Path> candidates = SpoonManager.getTypeData().getSimplePathsOfType(setSubType);
         if (candidates.isEmpty())
             return false;
 

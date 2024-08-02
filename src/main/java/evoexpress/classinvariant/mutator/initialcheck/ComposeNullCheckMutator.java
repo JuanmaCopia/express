@@ -16,14 +16,13 @@ public class ComposeNullCheckMutator implements ClassInvariantMutator {
 
 
     public boolean isApplicable(ClassInvariantState state) {
-        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(1).stream().filter(p -> p.depth() >= 1).toList();
-        return paths.size() > 1;
+        return SpoonManager.getTypeData().getReferencePaths().stream().filter(p -> p.size() == 2).count() >= 2;
     }
 
     @Override
     public boolean mutate(ClassInvariantState state) {
         CtBlock<?> blockGene = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.INITIAL_METHOD_NAME).getBody();
-        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(1).stream().filter(p -> p.depth() >= 1).toList();
+        List<Path> paths = SpoonManager.getTypeData().getReferencePaths().stream().filter(p -> p.size() == 2).toList();
 
         List<Path> chosenVarReads = SpoonQueries.chooseNPaths(paths, 2);
         CtVariableRead<?> var1 = chosenVarReads.get(0).getVariableRead();

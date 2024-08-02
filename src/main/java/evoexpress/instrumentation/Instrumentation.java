@@ -1,7 +1,8 @@
 package evoexpress.instrumentation;
 
-import evoexpress.config.ToolConfig;
+import evoexpress.config.Config;
 import evoexpress.spoon.SpoonFactory;
+import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
@@ -34,7 +35,7 @@ public class Instrumentation {
         CodeFactory codeFactory = SpoonFactory.getCodeFactory();
         List<CtVariable<?>> localVariableList = SpoonQueries.getLocalVariablesFromElement(method);
         for (CtVariable<?> variable : localVariableList) {
-            if (variable.getType().getQualifiedName().equals(ToolConfig.subjectClassName)) {
+            if (variable.getType().getQualifiedName().equals(SpoonManager.getConfig().subjectClassName)) {
                 CtCodeSnippetStatement statement = codeFactory.createCodeSnippetStatement(
                         "evoexpress.object.ObjectCollector.saveObject(" + variable.getSimpleName() + ")");
                 method.getBody().addStatement(statement);

@@ -8,6 +8,7 @@ import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
+import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
@@ -30,7 +31,10 @@ public class ComposedNullCheckInTraversalMutator implements ClassInvariantMutato
         CtBlock<?> traversalBody = traversal.getBody();
 
         CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
-        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(traversedElement, 1).stream().filter(p -> p.depth() >= 1).toList();
+        List<Path> paths = SpoonManager.getTypeData().getThisTypeGraph()
+                .computeSimplePathsForAlternativeVar(traversedElement).stream()
+                .filter(p -> TypeUtils.isReferenceType(p.getTypeReference()) && p.size() > 1)
+                .toList();
         if (paths.size() < 2)
             return false;
 

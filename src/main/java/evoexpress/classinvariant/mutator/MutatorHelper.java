@@ -73,6 +73,14 @@ public class MutatorHelper {
         return clazz.getElements(e -> isIfReturnFalse(e) && isMutableMethod(e.getParent(CtMethod.class)));
     }
 
+    public static List<CtIf> getIfsCallingMethod(CtClass<?> clazz, String methodName) {
+        return clazz.getElements(e -> isIfReturnFalse(e) && callsMethod(e, methodName));
+    }
+
+    private static boolean callsMethod(CtIf e, String methodName) {
+        return e.toString().contains(methodName);
+    }
+
     public static List<CtIf> getMutablesIfReturnFalse(CtMethod<?> method) {
         return method.getBody().getElements(e -> isMutableIf(e) && isIfReturnFalse(e));
     }

@@ -2,6 +2,7 @@ package evoexpress.object;
 
 import evoexpress.spoon.SpoonManager;
 import evoexpress.type.TypeUtils;
+import evoexpress.type.typegraph.TypeData;
 import evoexpress.type.typegraph.TypeGraph;
 import evoexpress.util.Utils;
 import spoon.reflect.declaration.CtVariable;
@@ -14,6 +15,7 @@ import java.util.*;
  * This class provides methods to perform random mutations on a given object
  *
  * @author Facundo Molina <facundo.molina@imdea.org>
+ * @author Juan Manuel Copia <juanmanuel.copia@imdea.org>
  */
 public class ObjectMutator {
 
@@ -29,14 +31,7 @@ public class ObjectMutator {
             return false;
 
         Object newFieldValue = getNewValueForField(targetField, candidates);
-        //String originalObject = rootObject.toString();
         targetField.setValue(newFieldValue);
-        //String mutatedObject = rootObject.toString();
-
-/*        if (originalObject.equals(mutatedObject.toString())) {
-            ObjectGeneratorManager.logger.warning("object and mutation are equal: " + originalObject + " == " + mutatedObject);
-        }*/
-
         return true;
     }
 
@@ -82,7 +77,7 @@ public class ObjectMutator {
      */
     static TargetField selectTargetField(List<Object> candidates) {
         int maxAttempts = 10;
-        List<CtTypeReference<?>> userDefTypes = SpoonManager.inputTypeData.getTypeGraphOfParameter(SpoonManager.inputTypeData.getInputs().get(0)).getUserDefinedTypes().stream().toList();
+        List<CtTypeReference<?>> userDefTypes = SpoonManager.getTypeData().getReferenceTypes();
         CtTypeReference<?> targetType = userDefTypes.get(new Random().nextInt(userDefTypes.size()));
 
         Object targetObject = getRandomReferenceOfType(candidates, targetType);
@@ -145,12 +140,11 @@ public class ObjectMutator {
      * @return a random field to mutate
      */
     static CtVariable<?> selectReferenceField(CtTypeReference<?> type) {
-        TypeGraph typeGraph = SpoonManager.inputTypeData.getTypeGraphOfParameter(SpoonManager.inputTypeData.getInputs().get(0));
-        List<CtVariable<?>> fields = typeGraph.getOutgoingFields(type).stream().filter(
-                f -> !f.getType().isPrimitive() && !TypeUtils.isBoxedPrimitive(f.getType())).toList();
-        if (fields.isEmpty())
+        List<CtVariable<?>> fields = TypeUtils.getFields(type);
+        List<CtVariable<?>> referenceFields = TypeUtils.filterFields(fields, TypeUtils::isReferenceType).stream().toList();
+        if (referenceFields.isEmpty())
             return null;
-        return fields.get(Utils.nextInt(fields.size()));
+        return referenceFields.get(Utils.nextInt(referenceFields.size()));
     }
 
     /**

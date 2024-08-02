@@ -5,6 +5,7 @@ import evoexpress.type.TypeUtils;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -15,13 +16,27 @@ public class Path {
 
     LinkedList<CtVariable<?>> fields;
 
-    public Path(CtVariable<?> root, List<CtVariable<?>> fields) {
-        this.fields = new LinkedList<>(fields);
-        this.fields.addFirst(root);
+    public Path() {
+        this.fields = new LinkedList<>();
+    }
+
+    public Path(CtVariable<?> firstVariable) {
+        this.fields = new LinkedList<>();
+        this.fields.add(firstVariable);
     }
 
     public Path(List<CtVariable<?>> fields) {
         this.fields = new LinkedList<>(fields);
+    }
+
+    public Path(CtVariable<?> root, Path path) {
+        this.fields = new LinkedList<>(path.fields);
+        this.fields.addFirst(root);
+    }
+
+    public Path(CtVariable<?> root, List<CtVariable<?>> fields) {
+        this.fields = new LinkedList<>(fields);
+        this.fields.addFirst(root);
     }
 
     public LinkedList<CtVariable<?>> getFieldChain() {
@@ -30,10 +45,6 @@ public class Path {
 
     public CtTypeReference<?> getTypeReference() {
         return getLast().getType();
-    }
-
-    public int depth() {
-        return fields.size() - 1;
     }
 
     public boolean isPrimitiveOrBoxedPrimitive() {
@@ -50,6 +61,42 @@ public class Path {
         return true;
     }
 
+    public boolean isEmpty() {
+        return fields.isEmpty();
+    }
+
+    public int size() {
+        return fields.size();
+    }
+
+    public Pair<Path, Path> split(int index) {
+        if (index < 0 || index >= fields.size()) {
+            throw new IllegalArgumentException("Index out of bounds");
+        }
+        return Pair.of(new Path(new LinkedList<>(fields.subList(0, index))), new Path(new LinkedList<>(fields.subList(index, fields.size()))));
+    }
+
+    public Pair<Path, Path> splitByType(CtTypeReference<?> type) {
+        for (int i = 0; i < fields.size(); i++) {
+            if (fields.get(i).getType().equals(type)) {
+                return split(i + 1);
+            }
+        }
+        throw new IllegalArgumentException("Type not found in path");
+    }
+
+    public void add(CtVariable<?> newFirst) {
+        fields.add(newFirst);
+    }
+
+    public CtVariable<?> removeLast() {
+        return fields.removeLast();
+    }
+
+    public boolean contains(CtVariable<?> field) {
+        return fields.contains(field);
+    }
+
     public CtVariable<?> getLast() {
         return fields.get(fields.size() - 1);
     }
@@ -59,7 +106,15 @@ public class Path {
     }
 
     public CtVariable<?> get(int i) {
+        if (i < 0 || i >= fields.size())
+            throw new IllegalArgumentException("Index out of bounds");
         return fields.get(i);
+    }
+
+    public void set(int i, CtVariable<?> newField) {
+        if (i < 0 || i >= fields.size())
+            throw new IllegalArgumentException("Index out of bounds");
+        fields.set(i, newField);
     }
 
     public CtVariableRead<?> getVariableRead() {
@@ -67,20 +122,29 @@ public class Path {
     }
 
     public CtVariableRead<?> getVariableReadOwner() {
-        assert fields.size() > 1;
+        if (fields.size() <= 1)
+            throw new IllegalArgumentException("Path has no owner");
         return SpoonFactory.createFieldRead(new LinkedList(fields.subList(0, fields.size() - 1)));
     }
 
     public Path getParentPath() {
-        assert fields.size() > 1;
+        if (fields.size() <= 1)
+            throw new IllegalArgumentException("Path has no parent");
         return new Path(new LinkedList<>(fields.subList(0, fields.size() - 1)));
     }
 
     public Path clone() {
-        return new Path(new LinkedList<>(fields));
+        return new Path(fields);
     }
 
     public String toString() {
-        return getVariableRead().toString();
+        if (fields.isEmpty()) {
+            return "<EMPTY PATH>";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (CtVariable<?> field : fields) {
+            sb.append(field.getSimpleName()).append(".");
+        }
+        return sb.substring(0, sb.length() - 1);
     }
 }

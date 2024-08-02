@@ -1,6 +1,6 @@
 package evoexpress.execution;
 
-import evoexpress.config.ToolConfig;
+import evoexpress.config.Config;
 import evoexpress.object.ObjectCollector;
 import evoexpress.reflection.Reflection;
 import evoexpress.spoon.SpoonManager;
@@ -66,8 +66,8 @@ public class Executor {
     }
 
     public static void printSurvivors(CtClass<?> cls) {
-        Class<?> preconditionClass = Reflection.loadClass(SpoonManager.classLoader, cls.getQualifiedName());
-        Method precondition = Reflection.loadMethod(preconditionClass, ToolConfig.preconditionMethodName);
+        Class<?> preconditionClass = Reflection.loadClass(SpoonManager.getOutput().getClassLoader(), cls.getQualifiedName());
+        Method precondition = Reflection.loadMethod(preconditionClass, SpoonManager.getConfig().preconditionMethodName);
 
         for (Object invalidInstance : ObjectCollector.negativeObjects) {
             Object[] args = new Object[1];

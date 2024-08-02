@@ -1,6 +1,6 @@
 package evoexpress.object;
 
-import evoexpress.config.ToolConfig;
+import evoexpress.config.Config;
 import evoexpress.execution.Executor;
 import evoexpress.spoon.SpoonManager;
 
@@ -13,8 +13,10 @@ import java.util.logging.Logger;
  * they are obtained by modifying the positive objects through random mutations.
  *
  * @author Facundo Molina <facundo.molina@imdea.org>
+ * @author Juan Manuel Copia <juanmanuel.copia@imdea.org>
+ +
  */
-public class ObjectGeneratorManager {
+public class ObjectGenerator {
 
     public static final Logger logger = Logger.getLogger(SpoonManager.class.getName());
 
@@ -22,6 +24,8 @@ public class ObjectGeneratorManager {
      * Generate the set of positive and negative objects.
      */
     public static void generateObjects() {
+        if (!SpoonManager.isInitialized())
+            throw new IllegalStateException("SpoonManager must be initialized before generating objects");
         generatePositiveObjects();
         generateNegativeObjects();
         logger.info("Positive Objects Generated: " + ObjectCollector.positiveObjects.size());
@@ -29,23 +33,20 @@ public class ObjectGeneratorManager {
     }
 
     public static void generatePositiveObjects() {
-        Executor.runTestSuite(SpoonManager.testSuiteClass.getQualifiedName(), SpoonManager.classLoader);
+        Executor.runTestSuite(SpoonManager.getTestSuiteClass().getQualifiedName(), SpoonManager.getOutput().getClassLoader());
     }
 
     /**
      * Generate the negative objects by randomly mutating the positive objects.
      */
     private static void generateNegativeObjects() {
-        //Gson gson = new Gson();
         for (Object positiveObject : ObjectCollector.positiveObjects) {
-            for (int i = 0; i < ToolConfig.maxMutationsPerInstance; i++) {
+            for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
                 Object copy = ObjectHelper.deepCopy(positiveObject);
-                //Object copy = gson.fromJson(gson.toJson(positiveObject), positiveObject.getClass());
                 boolean wasMutated = ObjectMutator.mutate(copy);
                 if (wasMutated)
                     ObjectCollector.negativeObjects.add(copy);
             }
-
         }
     }
 

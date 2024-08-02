@@ -9,5 +9,5 @@ public abstract class ClassInvariantFitness {
     public static final double WORST_FITNESS_VALUE = Short.MIN_VALUE;
     static final Logger logger = Logger.getLogger(ClassInvariantFitness.class.getName());
 
-    public abstract void evaluate(ClassInvariantState state);
+    public abstract double evaluate(ClassInvariantState state);
 }

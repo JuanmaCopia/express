@@ -1,32 +1,39 @@
 package evoexpress;
 
+import evoexpress.classinvariant.fitness.LengthFitness;
+import evoexpress.classinvariant.mutator.ClassInvariantMutator;
+import evoexpress.classinvariant.mutator.initialcheck.ComposeNullCheckMutator;
+import evoexpress.classinvariant.mutator.initialcheck.IfNullReturnMutator;
 import evoexpress.classinvariant.mutator.initialcheck.RemoveIfInitialCheckMutator;
 import evoexpress.classinvariant.mutator.primitivecheck.*;
+import evoexpress.classinvariant.mutator.structurecheck.CheckVisitedFieldMutator;
+import evoexpress.classinvariant.mutator.structurecheck.DeclareVisitedSetMutator;
 import evoexpress.classinvariant.mutator.structurecheck.RemoveIfStructureCheckMutator;
 import evoexpress.classinvariant.mutator.structurecheck.traversal.*;
 import evoexpress.classinvariant.mutator.structurecheck.traversal.init.*;
 import evoexpress.classinvariant.problem.ClassInvariantProblem;
 import evoexpress.classinvariant.search.ClassInvariantSearch;
 import evoexpress.classinvariant.state.ClassInvariantState;
-import evoexpress.config.ToolConfig;
-import evoexpress.classinvariant.fitness.LengthFitness;
-import evoexpress.execution.Executor;
-import evoexpress.classinvariant.mutator.ClassInvariantMutator;
-import evoexpress.classinvariant.mutator.initialcheck.ComposeNullCheckMutator;
-import evoexpress.classinvariant.mutator.initialcheck.IfNullReturnMutator;
-import evoexpress.classinvariant.mutator.structurecheck.CheckVisitedFieldMutator;
-import evoexpress.classinvariant.mutator.structurecheck.DeclareVisitedSetMutator;
-import evoexpress.object.ObjectGeneratorManager;
+import evoexpress.config.Config;
+import evoexpress.object.ObjectGenerator;
 import evoexpress.search.simulatedannealing.schedule.SimulatedAnnealingSchedule;
 import evoexpress.spoon.SpoonManager;
+import evoexpress.execution.Executor;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class EvoExpress {
 
-    public static void main(String[] args) {
-        initialize();
+    private static final String CONFIG_FILE_PATH = "config.properties";
+
+
+    public EvoExpress(Config config) {
+        SpoonManager.initialize(config);
+        ObjectGenerator.generateObjects();
+    }
+
+    public void run() {
         printStart();
         ClassInvariantState finalState = startSearch();
         printResults(finalState);
@@ -35,8 +42,8 @@ public class EvoExpress {
 
     private static ClassInvariantState startSearch() {
         ClassInvariantState currentState = startInitialSearch();
-        currentState = startStructureCheckSearch(currentState);
-        currentState = startPrimitiveCheck(currentState);
+        //currentState = startStructureCheckSearch(currentState);
+        //currentState = startPrimitiveCheck(currentState);
         return currentState;
     }
 
@@ -60,6 +67,8 @@ public class EvoExpress {
         mutators.add(new CheckVisitedFieldMutator());
         mutators.add(new RemoveIfStructureCheckMutator());
         mutators.add(new TraverseWorklistMutator());
+        mutators.add(new AddTraverseInvocationMutator());
+        mutators.add(new RemoveTraverseMutator());
         mutators.add(new IfNullReturnInTraversalMutator());
         mutators.add(new ComposedNullCheckInTraversalMutator());
         mutators.add(new ChangeLoopFieldsMutator());
@@ -96,8 +105,8 @@ public class EvoExpress {
     }
 
     public static void saveResults(ClassInvariantState finalState) {
-        SpoonManager.generateSourcePreconditionSourceFile(finalState.getCtClass());
-        System.out.println("\nSource code saved in: " + ToolConfig.outputSrcPath);
+        SpoonManager.getOutput().generateSourcePreconditionSourceFile(finalState.getCtClass());
+        System.out.println("\nSource code saved in: " + Config.outputSrcPath);
     }
 
     public static void printNotKilledMutants(ClassInvariantState finalState) {
@@ -106,14 +115,13 @@ public class EvoExpress {
         System.out.println("\n=================================================================================\n");
     }
 
-    private static void initialize() {
-        ToolConfig.parseConfigurationFile();
-        SpoonManager.initialize();
-        ObjectGeneratorManager.generateObjects();
-    }
-
     public static void printStart() {
         System.out.println("\n==============================  Search Started  ==============================\n");
+    }
+
+    public static void main(String[] args) {
+        EvoExpress evoExpress = new EvoExpress(new Config(CONFIG_FILE_PATH));
+        evoExpress.run();
     }
 
 }

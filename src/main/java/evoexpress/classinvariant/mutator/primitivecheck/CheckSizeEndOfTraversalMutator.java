@@ -21,7 +21,7 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
         if (MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX).isEmpty())
             return false;
 
-        return !SpoonManager.inputTypeData.getAllPathsOfType(SpoonFactory.getTypeFactory().integerPrimitiveType(), 2).isEmpty();
+        return !SpoonManager.getTypeData().getIntegerPaths().isEmpty();
     }
 
     @Override
@@ -40,7 +40,7 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
 
         CtExpression<?> leftExpr = SpoonFactory.createBinaryExpression(sizeInvocation, initialSizeVar, BinaryOperatorKind.MINUS);
 
-        List<Path> candidates = SpoonManager.inputTypeData.getAllPathsOfType(traversedElement, SpoonFactory.getTypeFactory().integerPrimitiveType(), 1);
+        List<Path> candidates = SpoonManager.getTypeData().getIntegerPaths();
         Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
         CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
 

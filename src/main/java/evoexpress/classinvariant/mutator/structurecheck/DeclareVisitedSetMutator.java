@@ -8,9 +8,8 @@ import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
-import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
-import evoexpress.type.typegraph.TypeGraph;
+import evoexpress.type.typegraph.TypeData;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
@@ -27,10 +26,8 @@ public class DeclareVisitedSetMutator implements ClassInvariantMutator {
     public boolean mutate(ClassInvariantState state) {
         CtBlock<?> structureMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
 
-        List<CtVariable<?>> refParams = SpoonManager.inputTypeData.getParameters().stream().filter(p -> TypeUtils.isReferenceType(p.getType())).toList();
-        CtVariable<?> chosenParameter = refParams.get(RandomUtils.nextInt(refParams.size()));
-        TypeGraph typeGraph = SpoonManager.inputTypeData.getTypeGraphOfParameter(chosenParameter);
-        List<CtTypeReference<?>> nodesWithAliasing = typeGraph.getRefNodesWithAliasing();
+        TypeData typeData = SpoonManager.getTypeData();
+        List<CtTypeReference<?>> nodesWithAliasing = typeData.getCyclicTypes();
         CtTypeReference<?> chosenNode = nodesWithAliasing.get(RandomUtils.nextInt(nodesWithAliasing.size()));
 
         CtVariable<?> setVar = SpoonQueries.searchVisitedSetInBlock(structureMethodBody, chosenNode);
@@ -41,7 +38,7 @@ public class DeclareVisitedSetMutator implements ClassInvariantMutator {
 
         CtTypeReference<?> setSubType = setVar.getType().getActualTypeArguments().get(0);
 
-        List<Path> candidates = SpoonManager.inputTypeData.getAllReferencePathsOfType(setSubType, 1).stream().filter(p -> p.depth() >= 1).toList();
+        List<Path> candidates = typeData.getSimplePathsOfType(setSubType);
         if (candidates.isEmpty())
             return false;
 

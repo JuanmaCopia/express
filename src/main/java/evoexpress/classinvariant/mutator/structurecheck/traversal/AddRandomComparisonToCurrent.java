@@ -29,11 +29,11 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
 
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(traversalBody, LocalVarHelper.CURRENT_VAR_NAME);
 
-        int depth = 2;
-        List<Path> candidates = SpoonManager.inputTypeData
-                .getAllSimpleReferencePathsOfType(currentDeclaration, currentDeclaration.getType(), depth)
+        int size = 2;
+        List<Path> candidates = SpoonManager.getTypeData().getThisTypeGraph()
+                .computeSimplePathsForAlternativeVar(currentDeclaration)
                 .stream()
-                .filter(p -> p.depth() >= depth)
+                .filter(p -> p.size() > size)
                 .toList();
         if (candidates.isEmpty())
             return false;

@@ -1,7 +1,8 @@
 package evoexpress.spoon;
 
-import evoexpress.config.ToolConfig;
+import evoexpress.config.Config;
 import evoexpress.classinvariant.mutator.LocalVarHelper;
+import evoexpress.type.typegraph.TypeData;
 import org.apache.commons.lang3.ClassUtils;
 import spoon.Launcher;
 import spoon.reflect.code.*;
@@ -19,14 +20,18 @@ import java.util.function.Function;
 
 public class SpoonFactory {
 
+    private static Config config;
     private static Launcher launcher;
+    private static TypeData typeData;
     private static Factory factory;
     private static CodeFactory codeFactory;
     private static CoreFactory coreFactory;
     private static TypeFactory typeFactory;
 
-    public static void initialize(Launcher spoonLauncher) {
+    public static void initialize(Config conf, Launcher spoonLauncher, TypeData data) {
+        config = conf;
         launcher = spoonLauncher;
+        typeData = data;
         factory = launcher.getFactory();
         codeFactory = launcher.getFactory().Code();
         coreFactory = launcher.getFactory().Core();
@@ -57,18 +62,26 @@ public class SpoonFactory {
 
     // ==================== Methods for creating new elements ====================
 
-    public static CtClass<?> createPreconditionClass(String className) {
+    public static CtClass<?> createPreconditionClass(long id) {
         CtClass<?> preconditionClass = coreFactory.createClass();
+        String className = createPreconditionClassName(id);
         preconditionClass.setSimpleName(className);
         Set<ModifierKind> modifiers = new HashSet<>();
         modifiers.add(ModifierKind.PUBLIC);
         preconditionClass.setModifiers(modifiers);
-        CtPackage ctPackage = SpoonManager.targetClass.getPackage();
+
+        CtPackage ctPackage = typeData.getThisCtClass().getPackage();
         ctPackage.addType(preconditionClass);
 
-        createSubPreconditions(preconditionClass, SpoonManager.inputTypeData.getInputs());
+        List<CtParameter<?>> parameters = new ArrayList<>();
+        parameters.add((CtParameter<?>) typeData.getThisVariable());
+        createSubPreconditions(preconditionClass, parameters);
 
         return preconditionClass;
+    }
+
+    public static String createPreconditionClassName(long id) {
+        return config.preconditionClassName + id;
     }
 
     private static void createSubPreconditions(CtClass<?> preconditionClass, List<CtParameter<?>> parameters) {
@@ -80,7 +93,7 @@ public class SpoonFactory {
         modifiers.add(ModifierKind.PUBLIC);
         modifiers.add(ModifierKind.STATIC);
 
-        CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.BOOLEAN_PRIMITIVE, ToolConfig.preconditionMethodName, parameters);
+        CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.BOOLEAN_PRIMITIVE,  config.preconditionMethodName, parameters);
         CtExpression<?>[] args = createArgumentsFromParameters(preconditionMethod);
 
         CtBlock<?> body = createBlock();
@@ -244,6 +257,8 @@ public class SpoonFactory {
     }
 
     public static CtVariableRead<?> createFieldRead(List<CtVariable<?>> path) {
+        if (path.isEmpty())
+            throw new IllegalArgumentException("Path must not be empty");
         CtVariableRead<?> fieldRead = createFieldRead(path.get(0));
         for (int i = 1; i < path.size(); i++)
             fieldRead = createFieldRead(fieldRead, path.get(i));

@@ -29,7 +29,7 @@ public class IfNullReturnInTraversalMutator implements ClassInvariantMutator {
         CtBlock<?> traversalBody = traversal.getBody();
 
         CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
-        List<Path> paths = SpoonManager.inputTypeData.getAllReferencePaths(traversedElement, 2).stream().filter(p -> p.depth() >= 1).toList();
+        List<Path> paths = SpoonManager.getTypeData().getThisTypeGraph().computeSimplePathsForAlternativeVar(traversedElement).stream().filter(p -> p.size() > 1).toList();
         if (paths.isEmpty())
             return false;
 
@@ -37,9 +37,9 @@ public class IfNullReturnInTraversalMutator implements ClassInvariantMutator {
         CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
 
         CtExpression<Boolean> condition = null;
-        if (chosenPath.depth() == 1) {
+        if (chosenPath.size() == 2) {
             condition = SpoonFactory.createNullComparisonClause(chosenVarRead);
-        } else if (chosenPath.depth() == 2) {
+        } else if (chosenPath.size() == 3) {
             CtVariableRead<?> owner = chosenPath.getVariableReadOwner();
             condition = SpoonFactory.createBooleanBinaryExpression(
                     SpoonFactory.createNullComparisonClause(owner, BinaryOperatorKind.NE),

@@ -18,7 +18,7 @@ public class AddSizeCheckMutator implements ClassInvariantMutator {
     public boolean isApplicable(ClassInvariantState state) {
         CtBlock<?> methodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
 
-        List<Path> integerFields = SpoonManager.inputTypeData.getIntegerFieldsOfParameters();
+        List<Path> integerFields = SpoonManager.getTypeData().getIntegerPaths();
         return !integerFields.isEmpty() && !SpoonQueries.getVisitedSetLocalVars(methodBody).isEmpty();
     }
 
@@ -29,7 +29,7 @@ public class AddSizeCheckMutator implements ClassInvariantMutator {
         List<CtLocalVariable<?>> visitedSetVars = SpoonQueries.getVisitedSetLocalVars(methodBody);
         CtLocalVariable<?> setVar = visitedSetVars.get(RandomUtils.nextInt(visitedSetVars.size()));
 
-        List<Path> integerFields = SpoonManager.inputTypeData.getIntegerFieldsOfParameters();
+        List<Path> integerFields = SpoonManager.getTypeData().getIntegerPaths();
         Path chosenIntegerField = integerFields.get(RandomUtils.nextInt(integerFields.size()));
         CtVariableRead<?> intFieldRead = chosenIntegerField.getVariableRead();
 

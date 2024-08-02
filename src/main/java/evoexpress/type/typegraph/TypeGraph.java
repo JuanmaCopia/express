@@ -1,296 +1,129 @@
 package evoexpress.type.typegraph;
 
 
-import evoexpress.spoon.SpoonFactory;
 import evoexpress.type.TypeUtils;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class TypeGraph {
 
-    CtVariable<?> rootVariable;
-    CtTypeReference<?> rootType;
-    Map<CtTypeReference<?>, List<Edge>> adjacencyList = new HashMap<>();
-
-    Set<Edge> edges = new HashSet<>();
-
-    Set<CtTypeReference<?>> arrayNodes;
-
-    Set<Path> pathsToArrayNodes = new HashSet<>();
-    Set<Path> pathsToCyclicNodes = new HashSet<>();
-
-    Map<CtTypeReference<?>, List<CtVariable<?>>> cyclicFieldsMap = new HashMap<>();
-
-    List<Path> allSimplePaths = new LinkedList<>();
-    Map<CtTypeReference<?>, List<Path>> typesToPathsMap = new HashMap<>();
-
+    private CtVariable<?> root;
+    private final Map<CtVariable<?>, List<CtVariable<?>>> adjacencyList = new HashMap<>();
 
     public TypeGraph(CtVariable<?> rootVariable) {
-        initializeGraph(rootVariable);
-        initializeCyclicFieldsMap();
-        initializePathsToArrayNodes();
-        initializeSimplePaths();
-    }
-
-    private void initializeCyclicFieldsMap() {
-        Set<CtTypeReference<?>> nodesWithCycles = getNodes().stream().filter(this::nodeHasCycle).collect(Collectors.toSet());
-        for (CtTypeReference<?> node : nodesWithCycles) {
-            List<CtVariable<?>> cyclicFields = _getCyclicFieldsOfNode(node);
-            cyclicFieldsMap.put(node, cyclicFields);
-            pathsToCyclicNodes.addAll(getSimplePaths(rootType, node));
-        }
-    }
-
-    private void initializePathsToArrayNodes() {
-        arrayNodes = getNodes().stream().filter(CtTypeInformation::isArray).collect(Collectors.toSet());
-        for (CtTypeReference<?> node : arrayNodes) {
-            pathsToArrayNodes.addAll(getSimplePaths(rootType, node));
-        }
-    }
-
-    private void initializeSimplePaths() {
-        List<CtVariable<?>> currentPath = new LinkedList<>();
-        initializeSimplePaths(rootType, currentPath, allSimplePaths);
-    }
-
-    private void initializeSimplePaths(CtTypeReference<?> currNode, List<CtVariable<?>> currentPath, List<Path> paths) {
-        if (typesToPathsMap.containsKey(currNode)) {
-            Path newPath = new Path(rootVariable, currentPath);
-            paths.add(newPath);
-            typesToPathsMap.get(currNode).add(newPath);
-            return;
-        }
-
-        typesToPathsMap.put(currNode, new LinkedList<>());
-
-        List<TypeGraph.Edge> adjacent = adjacencyList.get(currNode);
-        for (TypeGraph.Edge edge : adjacent) {
-            currentPath.add(edge.label());
-            initializeSimplePaths(edge.destination(), currentPath, paths);
-            currentPath.remove(currentPath.size() - 1);
-        }
-    }
-
-    private void initializeGraph(CtVariable<?> rootVariable) {
-        this.rootVariable = rootVariable;
-        this.rootType = rootVariable.getType();
-        addNode(rootType);
-
-        Set<CtTypeReference<?>> visited = new HashSet<>();
-        LinkedList<CtTypeReference<?>> workList = new LinkedList<>();
-        visited.add(rootType);
-        workList.add(rootType);
+        root = rootVariable;
+        LinkedList<CtVariable<?>> workList = new LinkedList<>();
+        workList.add(root);
 
         while (!workList.isEmpty()) {
-            CtTypeReference<?> currentType = workList.removeFirst();
-            addNode(currentType);
+            CtVariable<?> current = workList.removeFirst();
 
-            CtType<?> declaration = currentType.getDeclaration();
+            List<CtVariable<?>> currentAdjacency = new LinkedList<>();
+            adjacencyList.put(current, currentAdjacency);
+
+            CtType<?> declaration = current.getType().getTypeDeclaration();
             if (declaration == null)
                 continue; // Type is not declared in the current project
 
             List<CtField<?>> fields = declaration.getFields();
             for (CtVariable<?> field : fields) {
-                CtTypeReference<?> fieldType = field.getType();
-                if (fieldType != null) {
-                    addEdge(currentType, fieldType, field);
-                    if (visited.add(fieldType))
-                        workList.add(fieldType);
-                }
+                currentAdjacency.add(field);
+                if (!adjacencyList.containsKey(field))
+                    workList.add(field);
             }
         }
     }
 
-
-    public boolean nodeHasCycle(CtTypeReference<?> node) {
-        List<TypeGraph.Edge> adjacent = adjacencyList.get(node);
-        for (TypeGraph.Edge edge : adjacent) {
-            if (edge.destination().equals(node))
-                return true;
-        }
-        return false;
+    public Set<Path> computeSimplePaths(CtVariable<?> source) {
+        Set<Path> allPaths = new HashSet<>();
+        Path currentPath = new Path(source);
+        computeSimplePaths(source, currentPath, allPaths);
+        return allPaths;
     }
 
-    public void addNode(CtTypeReference<?> node) {
-        if (!adjacencyList.containsKey(node)) {
-            adjacencyList.put(node, new LinkedList<>());
-        }
-    }
-
-    public void addEdge(CtTypeReference<?> source, CtTypeReference<?> destination, CtVariable<?> label) {
-        Edge newEdge = new Edge(source, destination, label);
-        edges.add(newEdge);
+    public Set<Path> computeSimplePathsForAlternativeVar(CtVariable<?> source) {
+        boolean replacedVar = false;
+        CtVariable<?> initialVar;
         if (!adjacencyList.containsKey(source)) {
-            List<Edge> adj = new LinkedList<>();
-            adj.add(newEdge);
-            adjacencyList.put(source, adj);
-        } else {
-            adjacencyList.get(source).add(newEdge);
+            initialVar = searchVariableOfType(source.getType());
+            if (initialVar == null)
+                return new HashSet<>();
+            replacedVar = true;
+        }
+        else {
+            initialVar = source;
+        }
+        Set<Path> allPaths = new HashSet<>();
+        Path currentPath = new Path(initialVar);
+        computeSimplePaths(initialVar, currentPath, allPaths);
+        if (replacedVar)
+            replaceFirstVariableInPaths(allPaths, source);
+        return allPaths;
+    }
+
+
+    private void replaceFirstVariableInPaths(Set<Path> allPaths, CtVariable<?> newFirstVar) {
+        for (Path path : allPaths) {
+            if (!path.isEmpty())
+                path.set(0, newFirstVar);
         }
     }
 
-    public CtTypeReference<?> getRoot() {
-        return rootType;
-    }
-
-    public Set<CtTypeReference<?>> getNodes() {
-        return adjacencyList.keySet();
-    }
-
-    public Set<CtTypeReference<?>> getArrayNodes() {
-        return arrayNodes;
-    }
-
-    public Set<Path> getPathsToCyclicNodes() {
-        return pathsToCyclicNodes;
-    }
-
-    public Set<CtTypeReference<?>> getNodesWithCycles() {
-        return getNodes().stream().filter(this::nodeHasCycle).collect(Collectors.toSet());
-    }
-
-    public List<Edge> getOutgoingEdges(CtTypeReference<?> source) {
-        return adjacencyList.get(source);
-    }
-
-    public List<CtVariable<?>> getCyclicFieldsOfNode(CtTypeReference<?> node) {
-        return cyclicFieldsMap.get(node);
-    }
-
-    public Set<CtTypeReference<?>> getNodesWithSelfCycles() {
-        return cyclicFieldsMap.keySet();
-    }
-
-    public List<CtTypeReference<?>> getRefNodesWithAliasing() {
-        List<CtTypeReference<?>> nodesWithAliasing = new LinkedList<>();
-        for (CtTypeReference<?> node : getNodes()) {
-            if (TypeUtils.isReferenceType(node) && typesToPathsMap.get(node).size() > 1)
-                nodesWithAliasing.add(node);
+    private CtVariable<?> searchVariableOfType(CtTypeReference<?> type) {
+        for (CtVariable<?> node : adjacencyList.keySet()) {
+            if (node.getType().equals(type))
+                return node;
         }
-        return nodesWithAliasing;
+        return null;
     }
 
-    public Set<CtTypeReference<?>> getUserDefinedTypes() {
-        return adjacencyList.keySet().stream().filter(TypeUtils::isUserDefined).collect(Collectors.toSet());
-    }
-
-    public List<CtVariable<?>> getOutgoingFields(CtTypeReference<?> source) {
-        return adjacencyList.get(source).stream().map(Edge::label).collect(Collectors.toList());
-    }
-
-    private List<CtVariable<?>> _getCyclicFieldsOfNode(CtTypeReference<?> node) {
-        return adjacencyList.get(node).stream()
-                .filter(edge -> edge.destination().equals(node))
-                .map(Edge::label)
-                .collect(Collectors.toList());
-    }
-
-    public LinkedList<Path> getSimplePaths(CtTypeReference<?> source, CtTypeReference<?> destination) {
-        LinkedList<Path> paths = new LinkedList<>();
-        List<CtVariable<?>> currentPath = new LinkedList<>();
-        getSimplePaths(source, destination, currentPath, paths);
-        return paths;
-    }
-
-    public void getSimplePaths(CtTypeReference<?> source, CtTypeReference<?> destination, List<CtVariable<?>> currentPath, List<Path> paths) {
-        if (source.equals(destination)) {
-            paths.add(new Path(rootVariable, currentPath));
-            return;
-        }
-
-        List<TypeGraph.Edge> adjacent = adjacencyList.get(source);
-        for (TypeGraph.Edge edge : adjacent) {
-            currentPath.add(edge.label());
-            getSimplePaths(edge.destination(), destination, currentPath, paths);
-            currentPath.remove(currentPath.size() - 1);
+    private void computeSimplePaths(CtVariable<?> current, Path currentPath, Set<Path> allPaths) {
+        allPaths.add(currentPath.clone());
+        List<CtVariable<?>> adjacent = adjacencyList.get(current);
+        for (CtVariable<?> node : adjacent) {
+            if (!currentPath.contains(node)) {
+                currentPath.add(node);
+                computeSimplePaths(node, currentPath, allPaths);
+                currentPath.removeLast();
+            }
         }
     }
 
-    public List<Path> getAllSimplePaths() {
-        return allSimplePaths;
+    public Set<CtTypeReference<?>> computeTypes() {
+        Set<CtTypeReference<?>> types = new HashSet<>();
+        for (CtVariable<?> node : adjacencyList.keySet())
+            types.add(node.getType());
+        return new HashSet<>(types);
     }
 
     /**
-     * Get all the possible paths of length k from the source node to any other node in the graph.
+     * Get all the possible paths of length minor or equal to k from the source node to any other
+     * node in the graph.
      *
-     * @param initialVariable the initial variable
-     * @param k               the length of the paths
-     * @return the list of all the possible paths of length k from the source node to any other node in the graph
+     * @param source   the source node
+     * @param k        the maximum length of the paths
+     * @return the list of all the possible paths of length minor or equal to k
      */
-    public List<Path> getAllPaths(CtVariable<?> initialVariable, int k) {
-        List<Path> paths = new LinkedList<>();
-        paths.add(new Path(initialVariable, new LinkedList<>()));
-        List<CtVariable<?>> currentPath = new LinkedList<>();
-        getAllPaths(initialVariable, initialVariable.getType(), currentPath, paths, k);
-        return paths;
+    public Set<Path> computeAllPathsOfLengthK(CtVariable<?> source, int k) {
+        Set<Path> allPaths = new HashSet<>();
+        Path currentPath = new Path(source);
+        computeAllPathsOfLengthK(source, currentPath, allPaths, k);
+        return allPaths;
     }
 
-    public List<Path> getAllPaths(int k) {
-        return getAllPaths(rootVariable, k);
-    }
-
-    public void getAllPaths(CtVariable<?> initialVariable, CtTypeReference<?> source, List<CtVariable<?>> currentFieldChain, List<Path> paths, int k) {
-        if (k == 0) {
+    private void computeAllPathsOfLengthK(CtVariable<?> current, Path currentPath, Set<Path> allPaths, int k) {
+        if (currentPath.size() > k)
             return;
-        }
-        List<TypeGraph.Edge> adjacent = adjacencyList.get(source);
-        for (TypeGraph.Edge edge : adjacent) {
-            currentFieldChain.add(edge.label());
-            paths.add(new Path(initialVariable, currentFieldChain));
-            getAllPaths(initialVariable, edge.destination(), currentFieldChain, paths, k - 1);
-            currentFieldChain.remove(currentFieldChain.size() - 1);
-        }
-    }
-
-    public List<Path> getAllReferencePaths(int depth) {
-        return getAllPaths(depth).stream().filter(p -> !p.isPrimitiveOrBoxedPrimitive()).toList();
-    }
-
-    public List<Path> getAllReferenceSimplePaths(CtTypeReference<?> destination) {
-        return getSimplePaths(rootType, destination).stream().filter(p -> !p.isPrimitiveOrBoxedPrimitive()).toList();
-    }
-
-    public List<Path> getAllReferencePaths(CtVariable<?> initialVariable, int depth) {
-        return getAllPaths(initialVariable, depth).stream().filter(p -> !p.isPrimitiveOrBoxedPrimitive()).toList();
-    }
-
-    public List<Path> getIntegerFieldsOfRoot() {
-        List<CtVariable<?>> rootFields = getOutgoingFields(rootType);
-        List<CtVariable<?>> integerFields = rootFields.stream().filter(
-                field -> field.getType().isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER) ||
-                        field.getType().isSubtypeOf(SpoonFactory.getTypeFactory().INTEGER_PRIMITIVE)
-        ).toList();
-        List<Path> paths = new LinkedList<>();
-        for (CtVariable<?> field : integerFields) {
-            paths.add(new Path(rootVariable, List.of(field)));
-        }
-        return paths;
-    }
-
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        for (CtTypeReference<?> node : adjacencyList.keySet()) {
-            List<String> adj = adjacencyList.get(node).stream().map(Edge::toString).toList();
-            builder.append(node.getSimpleName()).append(" -> ").append(adj).append("\n");
-        }
-        return builder.toString();
-    }
-
-    public Set<Path> getPathsToArrayNodes() {
-        return pathsToArrayNodes;
-    }
-
-    public record Edge(CtTypeReference<?> source, CtTypeReference<?> destination, CtVariable<?> label) {
-
-        public String toString() {
-            return "(" + label.getSimpleName() + ") " + destination.getSimpleName();
+        allPaths.add(currentPath.clone());
+        List<CtVariable<?>> adjacent = adjacencyList.get(current);
+        for (CtVariable<?> node : adjacent) {
+            currentPath.add(node);
+            computeAllPathsOfLengthK(node, currentPath, allPaths, k);
+            currentPath.removeLast();
         }
     }
 
