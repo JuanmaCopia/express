@@ -85,6 +85,17 @@ public class Path {
         throw new IllegalArgumentException("Type not found in path");
     }
 
+    public Path subPath(int start, int end) {
+        if (start < 0 || start >= fields.size() || end < 0 || end >= fields.size() || start > end) {
+            throw new IllegalArgumentException("Index out of bounds");
+        }
+        return new Path(fields.subList(start, end));
+    }
+
+    public Path subPath(int end) {
+        return subPath(0, end);
+    }
+
     public void add(CtVariable<?> newFirst) {
         fields.add(newFirst);
     }

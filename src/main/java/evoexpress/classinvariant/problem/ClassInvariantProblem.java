@@ -41,13 +41,15 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
     public SimulatedAnnealingState nextState(SimulatedAnnealingState state) {
         ClassInvariantState stateClone = ((ClassInvariantState) state).clone();
         compiler.addClassToPackage(stateClone.getCtClass());
-        boolean wasMutated = mutatorManager.performRandomMutation(stateClone);
-        ClassInvariantState nextState;
-        if (wasMutated && compiles(stateClone)) {
-            stateClone.setFitnessAsOutdated();
-            nextState = stateClone;
-        } else {
-            nextState = (ClassInvariantState) state;
+        ClassInvariantState nextState = (ClassInvariantState) state;
+        if (mutatorManager.performRandomMutation(stateClone)) {
+            if (compiles(stateClone)) {
+                stateClone.setFitnessAsOutdated();
+                nextState = stateClone;
+            } else {
+                System.err.println("\n---------- Compilation failed ----------\n");
+                System.err.println(stateClone.toString());
+            }
         }
         compiler.removeClassFromPackage(stateClone.getCtClass());
         return nextState;
@@ -57,7 +59,7 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
         try {
             return compiler.compileModel();
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return false;
         }
     }

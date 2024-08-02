@@ -33,9 +33,10 @@ public class TraverseWorklistMutator implements ClassInvariantMutator {
 
         Path chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
         state.setTypeAsTraversed(chosenPath.getTypeReference());
+
         instantiateTraversalMethod(chosenPath, state);
 
-        System.err.println("TraverseWorklistMutator:\n" + state.getCtClass().toString());
+        //System.err.println("TraverseWorklistMutator:\n" + state.getCtClass().toString());
         return true;
     }
 

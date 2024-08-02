@@ -63,6 +63,17 @@ public class TypeUtils {
         return resultPaths;
     }
 
+    public static Set<Path> filterPathsByType(Collection<Path> paths, CtTypeReference<?> type) {
+        Set<Path> resultPaths = new HashSet<>();
+        for (Path path : paths) {
+            CtTypeReference<?> pathType = path.getTypeReference();
+            if (pathType.equals(type)) {
+                resultPaths.add(path);
+            }
+        }
+        return resultPaths;
+    }
+
     public static boolean isReferenceType(CtTypeReference<?> typeRef) {
         return !typeRef.isPrimitive() && !isBoxedPrimitive(typeRef);
     }

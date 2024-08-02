@@ -9,6 +9,7 @@ import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
+import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
 import evoexpress.type.typegraph.TypeGraph;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,10 +35,11 @@ public class AddTraverseInvocationMutator implements ClassInvariantMutator {
         CtMethod<?> traversal = traversals.get(RandomUtils.nextInt(traversals.size()));
         CtVariable<?> initialElement = SpoonQueries.getTraversalInitialElementParameter(traversal);
 
-        TypeGraph typeGraph = SpoonManager.getTypeData().getThisTypeGraph();
-        List<Path> pathCandidates = typeGraph.computeSimplePathsForAlternativeVar(initialElement).stream().toList();
-        Path chosenPath = pathCandidates.get(RandomUtils.nextInt(pathCandidates.size()));
+        List<Path> pathCandidates = SpoonManager.getTypeData().getSimplePaths();
+        pathCandidates = TypeUtils.filterPathsByType(pathCandidates, initialElement.getType()).stream().toList();
 
+        Path chosenPath = pathCandidates.get(RandomUtils.nextInt(pathCandidates.size()));
+        System.err.println("\nAddTraverseInvocationMutator chosenPath " + chosenPath);
         if (!addTraversalInvocation(traversal, chosenPath, structureMethodBody)) {
             //System.err.println("TraverseWorklistMutator: Could not add traversal invocation");
             return false;

@@ -3,6 +3,7 @@ package evoexpress.classinvariant.mutator;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonQueries;
+import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
@@ -131,5 +132,4 @@ public class MutatorHelper {
         }
         return ifsWithVar;
     }
-
 }

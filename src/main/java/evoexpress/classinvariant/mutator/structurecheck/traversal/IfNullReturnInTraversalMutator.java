@@ -8,6 +8,7 @@ import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
+import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
@@ -30,24 +31,13 @@ public class IfNullReturnInTraversalMutator implements ClassInvariantMutator {
 
         CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
         List<Path> paths = SpoonManager.getTypeData().getThisTypeGraph().computeSimplePathsForAlternativeVar(traversedElement).stream().filter(p -> p.size() > 1).toList();
+        paths = TypeUtils.filterPaths(paths, TypeUtils::isReferenceType).stream().toList();
         if (paths.isEmpty())
             return false;
 
         Path chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
-        CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
 
-        CtExpression<Boolean> condition = null;
-        if (chosenPath.size() == 2) {
-            condition = SpoonFactory.createNullComparisonClause(chosenVarRead);
-        } else if (chosenPath.size() == 3) {
-            CtVariableRead<?> owner = chosenPath.getVariableReadOwner();
-            condition = SpoonFactory.createBooleanBinaryExpression(
-                    SpoonFactory.createNullComparisonClause(owner, BinaryOperatorKind.NE),
-                    SpoonFactory.createNullComparisonClause(chosenVarRead),
-                    BinaryOperatorKind.AND
-            );
-        }
-
+        CtExpression<Boolean> condition = SpoonFactory.generateAndConcatenationOfNullComparisons(chosenPath);
         if (SpoonQueries.checkAlreadyExist(condition, traversalBody))
             return false;
 

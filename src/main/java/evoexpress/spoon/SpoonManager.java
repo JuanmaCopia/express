@@ -35,7 +35,7 @@ public class SpoonManager {
 
         typeData = new TypeData(launcher.getFactory().Class().get(config.subjectClassName));
 
-        output = new InputOutputManager(launcher, config);
+        output = new InputOutputManager(launcher, config, typeData.getThisCtClass().getPackage());
         launcher.setBinaryOutputDirectory(output.getOutputBinPath());
         launcher.setSourceOutputDirectory(output.getOutputSrcPath());
 

@@ -8,6 +8,7 @@ import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
+import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
@@ -33,7 +34,7 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
         List<Path> candidates = SpoonManager.getTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration)
                 .stream()
-                .filter(p -> p.size() > size)
+                .filter(p -> p.size() > size && currentDeclaration.getType().equals(p.getTypeReference()))
                 .toList();
         if (candidates.isEmpty())
             return false;

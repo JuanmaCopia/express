@@ -8,6 +8,7 @@ import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
+import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
@@ -34,7 +35,8 @@ public class CheckVisitedFieldEndOfTraversalMutator implements ClassInvariantMut
         CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(traversal);
         CtTypeReference<?> setSubType = visitedSetVar.getType().getActualTypeArguments().get(0);
 
-        List<Path> candidates = SpoonManager.getTypeData().getIntegerPaths();
+        List<Path> candidates = SpoonManager.getTypeData().getThisTypeGraph().computeSimplePathsForAlternativeVar(traversedElement).stream().filter(p -> p.size() > 1).toList();
+        candidates = TypeUtils.filterPathsByType(candidates, setSubType).stream().toList();
 
         Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
         CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();

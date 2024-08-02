@@ -2,6 +2,7 @@ package evoexpress.spoon;
 
 import evoexpress.config.Config;
 import evoexpress.classinvariant.mutator.LocalVarHelper;
+import evoexpress.type.typegraph.Path;
 import evoexpress.type.typegraph.TypeData;
 import org.apache.commons.lang3.ClassUtils;
 import spoon.Launcher;
@@ -584,6 +585,34 @@ public class SpoonFactory {
 
     public static CtIf createIfReturnFalse(CtExpression<Boolean> condition) {
         return createIfThenStatement(condition, createReturnStatement(createLiteral(false)));
+    }
+
+
+    public static CtExpression<Boolean> generateAndConcatenationOfNullComparisons(Path path) {
+        List<CtExpression<Boolean>> clauses = new LinkedList<>();
+        for (int end = 2; end < path.size() - 1; end++) {
+            CtVariableRead<?> varRead = path.subPath(end).getVariableRead();
+            clauses.add(createNullComparisonClause(varRead, BinaryOperatorKind.NE));
+        }
+        clauses.add(createNullComparisonClause(path.getVariableRead()));
+        return conjunction(clauses);
+    }
+
+    public static CtExpression<Boolean> conjunction(List<CtExpression<Boolean>> clauses) {
+        if (clauses.isEmpty())
+            throw new IllegalArgumentException("List of clauses must not be empty");
+        if (clauses.size() == 1)
+            return clauses.get(0);
+
+        CtExpression<Boolean> result = clauses.get(0);
+        for (int i = 1; i < clauses.size(); i++) {
+            result = (CtExpression<Boolean>) createBinaryExpression(result, clauses.get(i), BinaryOperatorKind.AND);
+        }
+        return result;
+    }
+
+    public static CtExpression<Boolean> createNullComparisonClause(Path path, BinaryOperatorKind operator) {
+        return createNullComparisonClause(path.getVariableRead(), operator);
     }
 
     public static CtExpression<Boolean> createNullComparisonClause(CtVariableRead<?> varRead) {

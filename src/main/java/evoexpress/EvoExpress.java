@@ -42,7 +42,7 @@ public class EvoExpress {
 
     private static ClassInvariantState startSearch() {
         ClassInvariantState currentState = startInitialSearch();
-        //currentState = startStructureCheckSearch(currentState);
+        currentState = startStructureCheckSearch(currentState);
         //currentState = startPrimitiveCheck(currentState);
         return currentState;
     }
