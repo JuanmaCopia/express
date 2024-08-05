@@ -158,4 +158,8 @@ public class Path {
         }
         return sb.substring(0, sb.length() - 1);
     }
+
+    public int indexOf(CtVariable<?> field) {
+        return fields.indexOf(field);
+    }
 }

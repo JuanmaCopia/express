@@ -10,10 +10,13 @@ import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
 import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
+import evoexpress.type.typegraph.TypeData;
+import evoexpress.type.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
 
 import java.util.List;
+import java.util.Set;
 
 public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
 
@@ -30,14 +33,16 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
 
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(traversalBody, LocalVarHelper.CURRENT_VAR_NAME);
 
+        TypeGraph typeGraph = SpoonManager.getTypeData().getThisTypeGraph();
         int size = 2;
-        List<Path> candidates = SpoonManager.getTypeData().getThisTypeGraph()
+        List<Path> candidates = typeGraph
                 .computeSimplePathsForAlternativeVar(currentDeclaration)
                 .stream()
                 .filter(p -> p.size() > size && currentDeclaration.getType().equals(p.getTypeReference()))
                 .toList();
         if (candidates.isEmpty())
             return false;
+
 
         Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
         Path chosenPathOwner = chosenPath.getParentPath();

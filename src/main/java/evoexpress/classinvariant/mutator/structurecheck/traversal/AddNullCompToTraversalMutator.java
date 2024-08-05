@@ -34,13 +34,12 @@ public class AddNullCompToTraversalMutator implements ClassInvariantMutator {
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream()
                 .filter(p -> TypeUtils.isReferenceType(p.getTypeReference()) && p.size() > 1)
                 .toList();
-        if (candidates.isEmpty())
+        if (candidates.isEmpty()) {
             return false;
+        }
 
         Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
-        CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
-
-        CtExpression<Boolean> condition = SpoonFactory.createNullComparisonClause(chosenVarRead);
+        CtExpression<Boolean> condition = SpoonFactory.generateAndConcatenationOfNullComparisons(chosenPath);
         if (SpoonQueries.checkAlreadyExist(condition, traversalBody))
             return false;
 

@@ -39,13 +39,11 @@ public class AddTraverseInvocationMutator implements ClassInvariantMutator {
         pathCandidates = TypeUtils.filterPathsByType(pathCandidates, initialElement.getType()).stream().toList();
 
         Path chosenPath = pathCandidates.get(RandomUtils.nextInt(pathCandidates.size()));
-        System.err.println("\nAddTraverseInvocationMutator chosenPath " + chosenPath);
         if (!addTraversalInvocation(traversal, chosenPath, structureMethodBody)) {
-            //System.err.println("TraverseWorklistMutator: Could not add traversal invocation");
             return false;
         }
 
-        //System.err.println("AddTraverseInvocationMutator:\n" + state.getCtClass().toString());
+        //System.err.println("AddTraverseInvocationMutator:\n" + structureMethodBody.toString());
 
         return true;
     }

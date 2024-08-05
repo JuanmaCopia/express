@@ -590,7 +590,7 @@ public class SpoonFactory {
 
     public static CtExpression<Boolean> generateAndConcatenationOfNullComparisons(Path path) {
         List<CtExpression<Boolean>> clauses = new LinkedList<>();
-        for (int end = 2; end < path.size() - 1; end++) {
+        for (int end = 2; end < path.size(); end++) {
             CtVariableRead<?> varRead = path.subPath(end).getVariableRead();
             clauses.add(createNullComparisonClause(varRead, BinaryOperatorKind.NE));
         }

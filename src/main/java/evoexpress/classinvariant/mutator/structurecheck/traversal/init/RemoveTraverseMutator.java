@@ -30,6 +30,8 @@ public class RemoveTraverseMutator implements ClassInvariantMutator {
         List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
         CtMethod<?> traversal = traversals.get(RandomUtils.nextInt(traversals.size()));
 
+        //System.err.println("RemoveTraverseWorklistMutator:\n" + traversal.toString());
+
         List<CtIf> checks = MutatorHelper.getIfsCallingMethod(state.getCtClass(), traversal.getSimpleName());
 
         for (CtIf check : checks) {
@@ -41,7 +43,7 @@ public class RemoveTraverseMutator implements ClassInvariantMutator {
         CtTypeReference<?> traversedType = SpoonQueries.getTraversalSetParameter(traversal).getType().getActualTypeArguments().get(0);
         state.setTypeAsNonTraversed(traversedType);
 
-        //System.err.println("TraverseWorklistMutator:\n" + state.getCtClass().toString());
+
         return true;
     }
 

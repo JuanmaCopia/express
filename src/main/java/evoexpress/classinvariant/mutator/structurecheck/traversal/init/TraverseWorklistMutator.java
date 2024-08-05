@@ -9,7 +9,9 @@ import evoexpress.spoon.SpoonManager;
 import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
 import evoexpress.type.typegraph.TypeGraph;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtTypeReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,22 +34,35 @@ public class TraverseWorklistMutator implements ClassInvariantMutator {
         }
 
         Path chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
+        chosenPath = trimPath(chosenPath);
         state.setTypeAsTraversed(chosenPath.getTypeReference());
 
-        instantiateTraversalMethod(chosenPath, state);
+        CtMethod<?> traversal = instantiateTraversalMethod(chosenPath, state);
 
-        //System.err.println("TraverseWorklistMutator:\n" + state.getCtClass().toString());
+        //System.err.println("TraverseWorklistMutator:\n" + traversal.toString());
         return true;
     }
 
-    private void instantiateTraversalMethod(Path chosenPath, ClassInvariantState state) {
+    private Path trimPath(Path path) {
+        CtTypeReference<?> type = path.getTypeReference();
+        int i = 0;
+        for (CtVariable<?> field : path.getFieldChain()) {
+            i++;
+            if (field.getType().equals(type) && i < path.size() ) {
+                return path.subPath(i);
+            }
+        }
+        return path;
+    }
+
+    private CtMethod<?> instantiateTraversalMethod(Path chosenPath, ClassInvariantState state) {
         List<CtVariable<?>> loopFields = TypeUtils.getCyclicFieldsOfType(chosenPath.getTypeReference());
 
         loopFields = MutatorHelper.selectRandomVariablesFromList(loopFields);
 
         boolean useBreakInsteadOfReturn = RandomUtils.nextBoolean();
         int splitIndex = RandomUtils.nextInt(1, chosenPath.size());
-        WorklistTraversalTemplate.instantiate(state.getCtClass(), chosenPath, loopFields, useBreakInsteadOfReturn, splitIndex);
+        return WorklistTraversalTemplate.instantiate(state.getCtClass(), chosenPath, loopFields, useBreakInsteadOfReturn, splitIndex);
     }
 
 }

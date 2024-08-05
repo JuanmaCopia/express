@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class WorklistTraversalTemplate {
 
-    public static void instantiate(CtClass<?> ctClass, Path initialField, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn, int splitIndex) {
+    public static CtMethod<?> instantiate(CtClass<?> ctClass, Path initialField, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn, int splitIndex) {
         CtMethod<?> structureMethod = ctClass.getMethodsByName(LocalVarHelper.STRUCTURE_METHOD_NAME).get(0);
         CtBlock<?> structureMethodBody = structureMethod.getBody();
         CtStatement lastStatement = SpoonQueries.getMark1Comment(structureMethodBody);
@@ -27,6 +27,7 @@ public class WorklistTraversalTemplate {
 
         CtMethod<?> traversalMethod = createTraversalMethod(ctClass, initialField, loopFields, setVar, useBreakInsteadOfReturn, splitIndex);
         ctClass.addMethod(traversalMethod);
+        return traversalMethod;
     }
 
     private static List<CtParameter<?>> createParameters(Path leftPath, CtVariable<?> visitedSet) {
