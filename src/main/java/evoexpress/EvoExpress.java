@@ -9,6 +9,7 @@ import evoexpress.classinvariant.mutator.primitivecheck.*;
 import evoexpress.classinvariant.mutator.structurecheck.CheckVisitedFieldMutator;
 import evoexpress.classinvariant.mutator.structurecheck.DeclareVisitedSetMutator;
 import evoexpress.classinvariant.mutator.structurecheck.RemoveIfStructureCheckMutator;
+import evoexpress.classinvariant.mutator.structurecheck.RemoveVisitedSetMutator;
 import evoexpress.classinvariant.mutator.structurecheck.traversal.*;
 import evoexpress.classinvariant.mutator.structurecheck.traversal.init.*;
 import evoexpress.classinvariant.problem.ClassInvariantProblem;
@@ -74,8 +75,9 @@ public class EvoExpress {
         mutators.add(new ChangeLoopFieldsMutator());
         mutators.add(new ChangeFirstElementMutator());
         mutators.add(new RemoveIfTraversalMutator());
+        //mutators.add(new RemoveVisitedSetMutator());
         ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness(), initialState);
-        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.002));
+        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(7, 0.0015));
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
 

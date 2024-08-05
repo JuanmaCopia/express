@@ -414,7 +414,7 @@ public class SpoonFactory {
         CtTypeReference<?> setType = createTypeWithSubtypeReference(Set.class, subType);
         CtTypeReference<?> hashSetType = createTypeWithSubtypeReference(HashSet.class, subType);
         CtConstructorCall<?> hashSetConstructorCall = createConstructorCall(hashSetType);
-        return createLocalVariable(LocalVarHelper.getVisitedSetVarName(code), setType, hashSetConstructorCall);
+        return createLocalVariable(LocalVarHelper.SET_VAR_NAME + subType.getSimpleName(), setType, hashSetConstructorCall);
     }
 
     public static CtTypeReference<?> createTypeWithSubtypeReference(Class<?> type, CtTypeReference<?> subtype) {
@@ -587,14 +587,19 @@ public class SpoonFactory {
         return createIfThenStatement(condition, createReturnStatement(createLiteral(false)));
     }
 
-
     public static CtExpression<Boolean> generateAndConcatenationOfNullComparisons(Path path) {
+        BinaryOperatorKind operator = RandomUtils.nextBoolean() ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE;
+        return generateAndConcatenationOfNullComparisons(path, operator);
+    }
+
+
+    public static CtExpression<Boolean> generateAndConcatenationOfNullComparisons(Path path, BinaryOperatorKind operator) {
         List<CtExpression<Boolean>> clauses = new LinkedList<>();
         for (int end = 2; end < path.size(); end++) {
             CtVariableRead<?> varRead = path.subPath(end).getVariableRead();
             clauses.add(createNullComparisonClause(varRead, BinaryOperatorKind.NE));
         }
-        clauses.add(createNullComparisonClause(path.getVariableRead()));
+        clauses.add(createNullComparisonClause(path.getVariableRead(), operator));
         return conjunction(clauses);
     }
 

@@ -5,7 +5,9 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LocalVarHelper {
 
@@ -25,6 +27,8 @@ public class LocalVarHelper {
     public static final String ARRAY_PARAM_NAME = "array_";
     public static final String THIS_PARAM_NAME = "_this";
 
+    public static final Map<String, Integer> idMap = new HashMap<>();
+
 
     public static String getVarName(CtBlock<?> code) {
         return LOCAL_VAR_PREFIX + getNextId(code, LOCAL_VAR_PREFIX);
@@ -39,20 +43,24 @@ public class LocalVarHelper {
     }
 
     public static int getNextId(CtBlock<?> code, String varPrefix) {
-        List<CtLocalVariable<?>> vars = code.getElements(var -> var.getSimpleName().startsWith(varPrefix));
-        return vars.size();
+        if (idMap.containsKey(varPrefix)) {
+            idMap.put(varPrefix, idMap.get(varPrefix) + 1);
+        } else {
+            idMap.put(varPrefix, 0);
+        }
+        return idMap.get(varPrefix);
     }
 
     public static String getCurrentVarName(CtBlock<?> code) {
-        return CURRENT_VAR_NAME + getNextId(code, CURRENT_VAR_NAME);
+        return CURRENT_VAR_NAME ;
     }
 
-    public static String getVisitedSetVarName(CtBlock<?> code) {
-        return SET_VAR_NAME + getNextId(code, SET_VAR_NAME);
-    }
+//    public static String getVisitedSetVarName(CtBlock<?> code) {
+//        return SET_VAR_NAME + getNextId(code, SET_VAR_NAME);
+//    }
 
     public static String getWorklistVarName(CtBlock<?> code) {
-        return WORKLIST_VAR_NAME + getNextId(code, WORKLIST_VAR_NAME);
+        return WORKLIST_VAR_NAME;
     }
 
     public static String getTraversalMethodName() {

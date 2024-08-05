@@ -9,6 +9,7 @@ import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
 import evoexpress.type.typegraph.Path;
+import evoexpress.util.Utils;
 import spoon.reflect.code.*;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -33,11 +34,14 @@ public class CheckVisitedFieldMutator implements ClassInvariantMutator {
         if (candidates.isEmpty())
             return false;
 
-        Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
+        Path chosenPath = Utils.getRandomPath(candidates);
         CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
 
-        CtExpression<Boolean> nullComparisonClause = SpoonFactory.createNullComparisonClause(chosenVarRead, BinaryOperatorKind.NE);
+        CtExpression<Boolean> nullComparisonClause = SpoonFactory.generateAndConcatenationOfNullComparisons(chosenPath, BinaryOperatorKind.NE);
         CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(setVar, chosenVarRead);
+        if (RandomUtils.nextBoolean())
+            addToSetInvocation = SpoonFactory.negateExpresion(addToSetInvocation);
+
         CtExpression<Boolean> conjunction = SpoonFactory.createBooleanBinaryExpression(
                 nullComparisonClause,
                 addToSetInvocation,

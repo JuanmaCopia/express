@@ -1,5 +1,6 @@
 package evoexpress.util;
 
+import evoexpress.type.typegraph.Path;
 import org.apache.commons.math3.util.Combinations;
 import spoon.reflect.declaration.CtField;
 
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -68,4 +70,44 @@ public class Utils {
             e.printStackTrace();
         }
     }
+
+    public static Path getRandomPath(Collection<Path> paths) {
+        if (paths == null || paths.isEmpty()) {
+            throw new IllegalArgumentException("The collection of lists must not be null or empty");
+        }
+
+        // Calculate the inverse size weights
+        List<Double> weights = new ArrayList<>();
+        for (Path path : paths) {
+            weights.add(1.0 / path.size());
+        }
+
+        // Calculate the total sum of weights
+        double totalWeight = weights.stream().mapToDouble(Double::doubleValue).sum();
+
+        // Normalize weights to get probabilities
+        List<Double> probabilities = new ArrayList<>();
+        for (double weight : weights) {
+            probabilities.add(weight / totalWeight);
+        }
+
+        // Generate a random number
+        double randomValue = Math.random();
+
+        // Use the random number to select a list based on the probabilities
+        double cumulativeProbability = 0.0;
+        int index = 0;
+        for (double probability : probabilities) {
+            cumulativeProbability += probability;
+            if (randomValue <= cumulativeProbability) {
+                break;
+            }
+            index++;
+        }
+
+        // Convert collection to a list to access by index
+        List<Path> listOfPaths = new ArrayList<>(paths);
+        return listOfPaths.get(index);
+    }
+
 }
