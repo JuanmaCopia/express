@@ -29,27 +29,27 @@ public class TraverseArrayMutator implements ClassInvariantMutator {
 
     @Override
     public boolean mutate(ClassInvariantState state) {
-        List<Path> pathsToArrays = SpoonManager.getTypeData().getArrayPaths();
-        List<Path> paths = pathsToArrays.stream().filter(
-                path -> state.getNonTraversedArrays().contains(path.getTypeReference())
-        ).toList();
-
-        Path chosenPath;
-        if (!paths.isEmpty()) {
-            chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
-            state.setTypeAsTraversed(chosenPath.getTypeReference());
-            ArrayTraversalTemplate.instantiate(state.getCtClass(), chosenPath);
-        } else {
-            chosenPath = pathsToArrays.get(RandomUtils.nextInt(pathsToArrays.size()));
-        }
-
-        CtBlock<?> structureMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
-        if (!addTraversalInvocation(chosenPath, state, structureMethodBody)) {
-            //System.err.println("TraverseWorklistMutator: Could not add traversal invocation");
-            return false;
-        }
-
-        System.err.println("TraverseArrayMutator:\n" + state.getCtClass().toString());
+//        List<Path> pathsToArrays = SpoonManager.getTypeData().getArrayPaths();
+//        List<Path> paths = pathsToArrays.stream().filter(
+//                path -> state.getNonTraversedArrays().contains(path.getTypeReference())
+//        ).toList();
+//
+//        Path chosenPath;
+//        if (!paths.isEmpty()) {
+//            chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
+//            state.setTypeAsTraversed(chosenPath.getTypeReference());
+//            ArrayTraversalTemplate.instantiate(state.getCtClass(), chosenPath);
+//        } else {
+//            chosenPath = pathsToArrays.get(RandomUtils.nextInt(pathsToArrays.size()));
+//        }
+//
+//        CtBlock<?> structureMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
+//        if (!addTraversalInvocation(chosenPath, state, structureMethodBody)) {
+//            //System.err.println("TraverseWorklistMutator: Could not add traversal invocation");
+//            return false;
+//        }
+//
+//        System.err.println("TraverseArrayMutator:\n" + state.getCtClass().toString());
 
         return true;
     }

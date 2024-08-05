@@ -110,4 +110,20 @@ public class Utils {
         return listOfPaths.get(index);
     }
 
+    public static <T> T getRandomElement(Collection<T> collection) {
+        if (collection == null || collection.isEmpty()) {
+            throw new IllegalArgumentException("The collection must not be null or empty");
+        }
+
+        // Convert the collection to a list
+        List<T> list = new ArrayList<>(collection);
+
+        // Generate a random index
+        Random random = new Random();
+        int randomIndex = random.nextInt(list.size());
+
+        // Return the element at the random index
+        return list.get(randomIndex);
+    }
+
 }

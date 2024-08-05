@@ -10,10 +10,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class MutatorHelper {
 
@@ -132,4 +129,20 @@ public class MutatorHelper {
         }
         return ifsWithVar;
     }
+
+    public static CtTypeReference<?> getTraversedType(CtMethod<?> traversal) {
+        return traversal.getParameters().get(2).getType().getActualTypeArguments().get(0);
+    }
+
+    public static Set<CtTypeReference<?>> getTraversedTypes(CtClass<?> cls) {
+        Set<CtTypeReference<?>> traversedTypes = new HashSet<>();
+        for (CtMethod<?> method : cls.getMethods()) {
+            if (method.getSimpleName().startsWith(LocalVarHelper.TRAVERSAL_PREFIX)) {
+                traversedTypes.add(getTraversedType(method));
+            }
+        }
+        return traversedTypes;
+    }
+
+
 }

@@ -26,7 +26,7 @@ public class WorklistTraversalTemplate {
         CtVariable<?> setVar = MutatorHelper.handleVisitedSetVariable(structureMethodBody, lastStatement, initialField.getTypeReference());
 
         CtMethod<?> traversalMethod = createTraversalMethod(ctClass, initialField, loopFields, setVar, useBreakInsteadOfReturn, splitIndex);
-        ctClass.addMethod(traversalMethod);
+        //ctClass.addMethod(traversalMethod);
         return traversalMethod;
     }
 

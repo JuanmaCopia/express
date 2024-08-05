@@ -20,45 +20,18 @@ public class ClassInvariantState implements SimulatedAnnealingState {
     private final CtClass<?> cls;
     private Double fitness;
     public boolean marked;
-    Set<CtTypeReference<?>> nonTraversedNodesWithCycles;
-    Set<CtTypeReference<?>> nonTraversedArrays;
 
     public ClassInvariantState() {
         cls = SpoonFactory.createPreconditionClass(id++);
-        nonTraversedNodesWithCycles = new HashSet<>(SpoonManager.getTypeData().getCyclicTypes());
-        nonTraversedArrays = new HashSet<>(SpoonManager.getTypeData().getArrayTypes());
         fitness = null;
     }
 
     public ClassInvariantState(ClassInvariantState other) {
         cls = other.getCtClass().clone();
         cls.setSimpleName(SpoonFactory.createPreconditionClassName(id++));
-        nonTraversedNodesWithCycles = new HashSet<>(other.nonTraversedNodesWithCycles);
-        nonTraversedArrays = new HashSet<>(other.nonTraversedArrays);
         fitness = other.fitness;
     }
 
-    public void setTypeAsTraversed(CtTypeReference<?> typeReference) {
-        if (typeReference instanceof CtArrayTypeReference)
-            nonTraversedArrays.remove(typeReference);
-        else
-            nonTraversedNodesWithCycles.remove(typeReference);
-    }
-
-    public void setTypeAsNonTraversed(CtTypeReference<?> typeReference) {
-        if (typeReference instanceof CtArrayTypeReference)
-            nonTraversedArrays.add(typeReference);
-        else
-            nonTraversedNodesWithCycles.add(typeReference);
-    }
-
-    public Set<CtTypeReference<?>> getNonTraversedNodesWithCycles() {
-        return nonTraversedNodesWithCycles;
-    }
-
-    public Set<CtTypeReference<?>> getNonTraversedArrays() {
-        return nonTraversedArrays;
-    }
 
     public CtClass<?> getCtClass() {
         return cls;

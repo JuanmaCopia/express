@@ -12,6 +12,7 @@ import evoexpress.spoon.SpoonQueries;
 import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
 import evoexpress.type.typegraph.TypeGraph;
+import evoexpress.util.Utils;
 import org.apache.commons.lang3.tuple.Pair;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
@@ -24,21 +25,39 @@ import java.util.List;
 
 public class AddTraverseInvocationMutator implements ClassInvariantMutator {
 
+    CtMethod<?> traversal;
+    List<Path> pathCandidates;
+
     public boolean isApplicable(ClassInvariantState state) {
-        return !MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX).isEmpty();
+        List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
+        if (traversals.isEmpty()) {
+            return false;
+        }
+
+        return isApplicable(state, Utils.getRandomElement(traversals));
+    }
+
+    boolean isApplicable(ClassInvariantState state, CtMethod<?> traversalMethod) {
+        traversal = traversalMethod;
+        CtVariable<?> initialElement = SpoonQueries.getTraversalInitialElementParameter(traversal);
+
+        pathCandidates = TypeUtils.filterPathsByType(
+                SpoonManager.getTypeData().getSimplePaths(),
+                initialElement.getType()
+        ).stream().toList();
+
+        if (pathCandidates.isEmpty()) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public boolean mutate(ClassInvariantState state) {
         CtBlock<?> structureMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
-        List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
-        CtMethod<?> traversal = traversals.get(RandomUtils.nextInt(traversals.size()));
-        CtVariable<?> initialElement = SpoonQueries.getTraversalInitialElementParameter(traversal);
 
-        List<Path> pathCandidates = SpoonManager.getTypeData().getSimplePaths();
-        pathCandidates = TypeUtils.filterPathsByType(pathCandidates, initialElement.getType()).stream().toList();
-
-        Path chosenPath = pathCandidates.get(RandomUtils.nextInt(pathCandidates.size()));
+        Path chosenPath = Utils.getRandomPath(pathCandidates);
         if (!addTraversalInvocation(traversal, chosenPath, structureMethodBody)) {
             return false;
         }
