@@ -4,6 +4,8 @@ import evoexpress.config.Config;
 import evoexpress.execution.Executor;
 import evoexpress.spoon.SpoonManager;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -19,6 +21,8 @@ import java.util.logging.Logger;
 public class ObjectGenerator {
 
     public static final Logger logger = Logger.getLogger(SpoonManager.class.getName());
+
+    private static final Map<String, Object> hashcodeToObjects = new HashMap<>();
 
     /**
      * Generate the set of positive and negative objects.
@@ -45,9 +49,18 @@ public class ObjectGenerator {
                 Object copy = ObjectHelper.deepCopy(positiveObject);
                 boolean wasMutated = ObjectMutator.mutate(copy);
                 if (wasMutated)
-                    ObjectCollector.negativeObjects.add(copy);
+                    addNegativeObjectIfNotExists(copy);
             }
         }
     }
+
+    private static void addNegativeObjectIfNotExists(Object object) {
+        String hash = ObjectHelper.calculateHash(object);
+        if (!hashcodeToObjects.containsKey(hash)) {
+            hashcodeToObjects.put(hash, object);
+            ObjectCollector.negativeObjects.add(object);
+        }
+    }
+
 
 }

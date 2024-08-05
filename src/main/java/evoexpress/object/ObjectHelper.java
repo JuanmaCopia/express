@@ -3,9 +3,7 @@ package evoexpress.object;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 public class ObjectHelper {
 
@@ -192,4 +190,89 @@ public class ObjectHelper {
             throw new RuntimeException("Invalid object: " + original.getClass());
         }
     }
+
+    public static String calculateHash(Object object) {
+        id = 0;
+        List<String> hashList = new LinkedList<>();
+        calculateHash(object, new HashMap<>(), hashList);
+        return String.join("", hashList);
+    }
+
+    public static void calculateHash(Object object, Map<Object, String> objToHash, List<String> hashList) {
+        if (object == null) {
+            hashList.add("null");
+        } else if (isWrapperType(object) || object instanceof String) {
+            //hashList.add(object.getClass().getSimpleName());
+        } else if (object instanceof Collection<?>) {
+            hashCollection((Collection<?>) object, objToHash, hashList);
+        } else if (object.getClass().isArray()) {
+            hashArray(object, objToHash, hashList);
+        } else {
+            hashObject(object, objToHash, hashList);
+        }
+    }
+
+    private static void hashArray(Object object, Map<Object, String> objToHash, List<String> hashList) {
+        if (objToHash.containsKey(object)) {
+            hashList.add(objToHash.get(object));
+            return;
+        }
+
+        String arrayHash = createObjectHash(object);
+        objToHash.put(object, arrayHash);
+        hashList.add(arrayHash);
+
+        Object[] array = (Object[]) object;
+        for (Object element : array) {
+            calculateHash(element, objToHash, hashList);
+        }
+    }
+
+    private static void hashCollection(Collection<?> object, Map<Object, String> objToHash, List<String> hashList) {
+        if (objToHash.containsKey(object)) {
+            hashList.add(objToHash.get(object));
+            return;
+        }
+
+        String objectHash = createObjectHash(object);
+        objToHash.put(object, objectHash);
+        hashList.add(objectHash);
+
+        for (Object element : object) {
+            calculateHash(element, objToHash, hashList);
+        }
+    }
+
+    private static void hashObject(Object object, Map<Object, String> objToHash, List<String> hashList) {
+        if (objToHash.containsKey(object)) {
+            hashList.add(objToHash.get(object));
+            return;
+        }
+
+        String objectHash = createObjectHash(object);
+        objToHash.put(object, objectHash);
+        hashList.add(objectHash);
+
+        Field[] fields = object.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()))
+                continue;
+            try {
+                field.setAccessible(true);
+                Object fieldValue = field.get(object);
+                calculateHash(fieldValue, objToHash, hashList);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static long id = 0;
+
+    private static String createObjectHash(Object object) {
+        return object.getClass().getSimpleName() + id++;
+    }
+
+
+
 }
