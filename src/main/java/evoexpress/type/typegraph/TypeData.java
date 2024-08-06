@@ -59,7 +59,7 @@ public class TypeData {
         booleanPaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isBooleanType);
         charPaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isCharType);
         floatingPointPaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isFloatingPointType);
-        referencePaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isUserDefined);
+        referencePaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isReferenceType);
         arrayPaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isArrayType);
         iterablePaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isIterableType);
     }

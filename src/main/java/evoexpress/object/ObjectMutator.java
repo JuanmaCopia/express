@@ -8,6 +8,7 @@ import evoexpress.util.Utils;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -29,7 +30,7 @@ public class ObjectMutator {
         TargetField targetField = selectTargetField(candidates);
         if (targetField == null)
             return false;
-
+        
         Object newFieldValue = getNewValueForField(targetField, candidates);
         targetField.setValue(newFieldValue);
         return true;
@@ -51,23 +52,53 @@ public class ObjectMutator {
             if (!visited.contains(currentObject)) {
                 visited.add(currentObject);
 
-                Class<?> clazz = currentObject.getClass();
-                Field[] fields = clazz.getDeclaredFields();
-                for (Field field : fields) {
-                    field.setAccessible(true);
-                    try {
-                        Object fieldValue = field.get(currentObject);
-                        if (fieldValue != null && !field.getType().isPrimitive()) {
-                            queue.offer(fieldValue);
+                if (currentObject.getClass().isArray()) {
+                    Object[] array = collectObjectsFromArray(currentObject);
+                    for (Object o : array) {
+                        if (o != null && !o.getClass().isPrimitive()) {
+                            queue.offer(o);
                         }
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                    }
+                } else  {
+                    Class<?> clazz = currentObject.getClass();
+                    Field[] fields = clazz.getDeclaredFields();
+                    for (Field field : fields) {
+                        field.setAccessible(true);
+                        try {
+                            Object fieldValue = field.get(currentObject);
+                            if (fieldValue != null && !field.getType().isPrimitive()) {
+                                queue.offer(fieldValue);
+                            }
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
         }
         return visited.stream().toList();
     }
+
+    public static Object[] collectObjectsFromArray(Object array) {
+        // Check if the provided object is an array
+        if (!array.getClass().isArray()) {
+            throw new IllegalArgumentException("Provided object is not an array");
+        }
+
+        // Get the length of the array
+        int length = Array.getLength(array);
+
+        // Create an array to hold the collected objects
+        Object[] collectedObjects = new Object[length];
+
+        // Iterate over the array and collect each element
+        for (int i = 0; i < length; i++) {
+            collectedObjects[i] = Array.get(array, i);
+        }
+
+        return collectedObjects;
+    }
+
 
     /**
      * Select a random field to mutate from the given list of candidates
@@ -77,7 +108,8 @@ public class ObjectMutator {
      */
     static TargetField selectTargetField(List<Object> candidates) {
         int maxAttempts = 10;
-        List<CtTypeReference<?>> userDefTypes = SpoonManager.getTypeData().getReferenceTypes();
+        List<CtTypeReference<?>> userDefTypes = SpoonManager.getTypeData().getReferenceTypes().stream().filter(
+                t -> !TypeUtils.isArrayType(t)).toList();
         CtTypeReference<?> targetType = userDefTypes.get(new Random().nextInt(userDefTypes.size()));
 
         Object targetObject = getRandomReferenceOfType(candidates, targetType);
@@ -140,8 +172,9 @@ public class ObjectMutator {
      * @return a random field to mutate
      */
     static CtVariable<?> selectReferenceField(CtTypeReference<?> type) {
-        List<CtVariable<?>> fields = TypeUtils.getFields(type);
-        List<CtVariable<?>> referenceFields = TypeUtils.filterFields(fields, TypeUtils::isReferenceType).stream().toList();
+        List<CtVariable<?>> referenceFields = TypeUtils.getFields(type).stream().filter(
+                f -> TypeUtils.isReferenceType(f.getType()) && !f.getType().isArray()
+        ).toList();
         if (referenceFields.isEmpty())
             return null;
         return referenceFields.get(Utils.nextInt(referenceFields.size()));
@@ -227,6 +260,13 @@ public class ObjectMutator {
                 // Do nothing
                 e.printStackTrace();
             }
+        }
+
+        public String toString() {
+            return "TargetField{" +
+                    "targetType=" + target.getClass() +
+                    ", field=" + field.getSimpleName() +
+                    '}';
         }
 
     }

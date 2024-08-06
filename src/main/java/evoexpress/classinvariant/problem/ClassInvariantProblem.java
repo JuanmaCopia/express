@@ -34,7 +34,13 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
     @Override
     public ClassInvariantState initialState() {
-        return initialState == null ? new ClassInvariantState() : initialState;
+        if (initialState != null)
+            return initialState;
+        ClassInvariantState s = new ClassInvariantState();
+        compiler.addClassToPackage(s.getCtClass());
+        compiler.compileModel();
+        compiler.removeClassFromPackage(s.getCtClass());
+        return s;
     }
 
     @Override
