@@ -1,27 +1,18 @@
 package evoexpress.classinvariant.mutator.structurecheck.traversal.array;
 
 import evoexpress.classinvariant.mutator.ClassInvariantMutator;
-import evoexpress.classinvariant.mutator.LocalVarHelper;
-import evoexpress.classinvariant.mutator.MutatorHelper;
-import evoexpress.classinvariant.mutator.template.ArrayTraversalTemplate;
-import evoexpress.classinvariant.mutator.template.WorklistTraversalTemplate;
 import evoexpress.classinvariant.state.ClassInvariantState;
-import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
 import evoexpress.type.typegraph.Path;
-import evoexpress.type.typegraph.TypeGraph;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtTypeReference;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class TraverseArrayMutator implements ClassInvariantMutator {
+public class DeclareArrayTraversalMutator implements ClassInvariantMutator {
 
     public boolean isApplicable(ClassInvariantState state) {
         return !SpoonManager.getTypeData().getArrayPaths().isEmpty();

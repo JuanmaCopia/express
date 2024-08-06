@@ -1,6 +1,5 @@
 package evoexpress.classinvariant.mutator.structurecheck.traversal.init;
 
-import evoexpress.classinvariant.mutator.LocalVarHelper;
 import evoexpress.classinvariant.mutator.MutatorHelper;
 import evoexpress.classinvariant.state.ClassInvariantState;
 import evoexpress.classinvariant.mutator.ClassInvariantMutator;
@@ -9,18 +8,16 @@ import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
-import evoexpress.type.typegraph.TypeGraph;
 import evoexpress.util.Utils;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class TraverseWorklistMutator implements ClassInvariantMutator {
+public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
 
     CtMethod<?> traversal;
 

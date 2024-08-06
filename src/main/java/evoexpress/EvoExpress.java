@@ -9,7 +9,6 @@ import evoexpress.classinvariant.mutator.primitivecheck.*;
 import evoexpress.classinvariant.mutator.structurecheck.CheckVisitedFieldMutator;
 import evoexpress.classinvariant.mutator.structurecheck.DeclareVisitedSetMutator;
 import evoexpress.classinvariant.mutator.structurecheck.RemoveIfStructureCheckMutator;
-import evoexpress.classinvariant.mutator.structurecheck.RemoveVisitedSetMutator;
 import evoexpress.classinvariant.mutator.structurecheck.traversal.*;
 import evoexpress.classinvariant.mutator.structurecheck.traversal.init.*;
 import evoexpress.classinvariant.problem.ClassInvariantProblem;
@@ -67,7 +66,7 @@ public class EvoExpress {
         mutators.add(new DeclareVisitedSetMutator());
         mutators.add(new CheckVisitedFieldMutator());
         mutators.add(new RemoveIfStructureCheckMutator());
-        mutators.add(new TraverseWorklistMutator());
+        mutators.add(new DeclareWorklistTraversalMutator());
         mutators.add(new AddTraverseInvocationMutator());
         mutators.add(new RemoveTraverseMutator());
         mutators.add(new IfNullReturnInTraversalMutator());
