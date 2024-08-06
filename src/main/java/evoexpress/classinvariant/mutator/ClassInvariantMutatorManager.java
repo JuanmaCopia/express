@@ -20,6 +20,7 @@ public class ClassInvariantMutatorManager {
         ClassInvariantMutator mutator = selectMutator(state);
         if (mutator != null && mutator.mutate(state)) {
             //System.err.println("Mutator applied: " + mutator.getClass().getSimpleName());
+            state.setFitnessAsOutdated();
             return true;
         }
         return false;

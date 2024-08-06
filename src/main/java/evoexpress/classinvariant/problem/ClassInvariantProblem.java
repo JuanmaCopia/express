@@ -8,6 +8,8 @@ import evoexpress.output.Compiler;
 import evoexpress.search.simulatedannealing.problem.SimulatedAnnealingProblem;
 import evoexpress.search.simulatedannealing.state.SimulatedAnnealingState;
 import evoexpress.spoon.SpoonManager;
+import org.apache.commons.math3.genetics.Fitness;
+import spoon.reflect.declaration.CtClass;
 
 import java.text.DecimalFormat;
 import java.util.Set;
@@ -36,50 +38,24 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
     public ClassInvariantState initialState() {
         if (initialState != null)
             return initialState;
-        ClassInvariantState s = new ClassInvariantState();
-        compiler.addClassToPackage(s.getCtClass());
-        compiler.compileModel();
-        compiler.removeClassFromPackage(s.getCtClass());
-        return s;
+        return new ClassInvariantState();
     }
 
     @Override
     public SimulatedAnnealingState nextState(SimulatedAnnealingState state) {
         ClassInvariantState stateClone = ((ClassInvariantState) state).clone();
         ClassInvariantState nextState = (ClassInvariantState) state;
-        compiler.addClassToPackage(stateClone.getCtClass());
         if (mutatorManager.performRandomMutation(stateClone)) {
-            if (compiles()) {
-                stateClone.setFitnessAsOutdated();
-                nextState = stateClone;
-            } else {
-                System.err.println("\n---------- Compilation failed ----------\n");
-                System.err.println(stateClone.toString());
-            }
+            nextState = stateClone;
         }
-        compiler.removeClassFromPackage(stateClone.getCtClass());
         return nextState;
-    }
-
-    private boolean compiles() {
-        try {
-            return compiler.compileModel();
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     @Override
     public Double evaluate(SimulatedAnnealingState state) {
         ClassInvariantState s = (ClassInvariantState) state;
-        if (s.isFitnessUpdated())
-            return s.getFitness();
-
-        compiler.addClassToPackage(s.getCtClass());
-        double fitness = fitnessFunction.evaluate(s);
-        s.setFitness(fitness);
-        compiler.removeClassFromPackage(s.getCtClass());
-        return fitness;
+        fitnessFunction.evaluate(s);
+        return s.getFitness();
     }
 
     @Override

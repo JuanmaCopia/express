@@ -7,6 +7,7 @@ import evoexpress.object.ObjectCollector;
 import evoexpress.output.Compiler;
 import evoexpress.reflection.Reflection;
 import evoexpress.spoon.SpoonManager;
+import spoon.reflect.declaration.CtClass;
 
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
@@ -19,13 +20,14 @@ public class LengthFitness extends ClassInvariantFitness {
     URLClassLoader classLoader;
 
     public LengthFitness() {
+        super(SpoonManager.getOutput().getCompiler());
         this.config = SpoonManager.getConfig();
         this.classLoader = SpoonManager.getOutput().getClassLoader();
     }
 
     @Override
-    public double evaluate(ClassInvariantState state) {
-        Class<?> preconditionClass = Reflection.loadClass(classLoader, state.getCtClass().getQualifiedName());
+    double calculateFitness(CtClass<?> ctClass) {
+        Class<?> preconditionClass = Reflection.loadClass(classLoader, ctClass.getQualifiedName());
         Method precondition = Reflection.loadMethod(preconditionClass, config.preconditionMethodName);
 
         for (Object validInstance : ObjectCollector.positiveObjects) {
@@ -50,7 +52,7 @@ public class LengthFitness extends ClassInvariantFitness {
             }
         }
 
-        fitness -= (double) state.toString().length() / MAX_LENGTH;
+        fitness -= (double) ctClass.toString().length() / MAX_LENGTH;
         return fitness;
     }
 
