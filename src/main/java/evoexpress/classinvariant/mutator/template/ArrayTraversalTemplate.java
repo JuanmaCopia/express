@@ -16,7 +16,7 @@ import java.util.*;
 
 public class ArrayTraversalTemplate {
 
-    public static void instantiate(CtClass<?> ctClass, Path pathToArray) {
+    public static CtMethod<?> instantiate(CtClass<?> ctClass, Path pathToArray) {
         CtMethod<?> structureMethod = ctClass.getMethodsByName(LocalVarHelper.STRUCTURE_METHOD_NAME).get(0);
         CtBlock<?> structureMethodBody = structureMethod.getBody();
         CtStatement lastStatement = SpoonQueries.getMark1Comment(structureMethodBody);
@@ -25,8 +25,7 @@ public class ArrayTraversalTemplate {
 
         CtVariable<?> setVar = MutatorHelper.handleVisitedSetVariable(structureMethodBody, lastStatement, arraySubtype);
 
-        CtMethod<?> traversalMethod = createTraversalMethod(ctClass, pathToArray, setVar);
-        ctClass.addMethod(traversalMethod);
+        return createTraversalMethod(ctClass, pathToArray, setVar);
     }
 
     private static CtMethod<?> createTraversalMethod(CtClass<?> ctClass, Path pathToArray, CtVariable<?> setVar) {
@@ -48,7 +47,7 @@ public class ArrayTraversalTemplate {
         List<CtParameter<?>> parameters = new ArrayList<>();
         parameters.add((CtParameter<?>) SpoonManager.getTypeData().getThisVariable());
         parameters.add(SpoonFactory.createParameter(pathToArray.getTypeReference(), LocalVarHelper.ARRAY_PARAM_NAME));
-        //parameters.add(SpoonFactory.createParameter(visitedSet.getType(), visitedSet.getSimpleName()));
+        parameters.add(SpoonFactory.createParameter(visitedSet.getType(), LocalVarHelper.SET_VAR_NAME));
         return parameters;
     }
 
@@ -60,13 +59,8 @@ public class ArrayTraversalTemplate {
 
     private static CtBlock<?> createArrayTraversalBody(Path pathToArray, List<CtParameter<?>> params) {
         CtBlock<?> body = SpoonFactory.createBlock();
-
         CtVariable<?> arrayVar = params.get(params.size() - 1);
-        //CtVariable<?> visitedSet = params.get(params.size() - 1);
-
-        // Create while statement
         CtFor forStatement = createForStatement(arrayVar);
-
 
         CtExpression<Boolean> arrayNotNullCheck = SpoonFactory.createNullComparisonClause(arrayVar, BinaryOperatorKind.NE);
         CtIf ifArrayNotNull = SpoonFactory.createIfThenStatement(arrayNotNullCheck, forStatement);

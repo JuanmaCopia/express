@@ -272,7 +272,7 @@ public class SpoonQueries {
         return traversal.getParameters().get(traversal.getParameters().size() - 1);
     }
 
-    public static CtVariable<?> getTraversalInitialElementParameter(CtMethod<?> traversal) {
+    public static CtVariable<?> getTraversedElementParameter(CtMethod<?> traversal) {
         return traversal.getParameters().get(traversal.getParameters().size() - 2);
     }
 

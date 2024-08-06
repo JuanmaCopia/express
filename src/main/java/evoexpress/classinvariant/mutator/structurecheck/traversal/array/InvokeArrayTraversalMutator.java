@@ -1,4 +1,4 @@
-package evoexpress.classinvariant.mutator.structurecheck.traversal.init;
+package evoexpress.classinvariant.mutator.structurecheck.traversal.array;
 
 import evoexpress.classinvariant.mutator.ClassInvariantMutator;
 import evoexpress.classinvariant.mutator.LocalVarHelper;
@@ -18,34 +18,30 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 
-public class AddTraverseInvocationMutator implements ClassInvariantMutator {
+public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
 
     CtMethod<?> traversal;
     List<Path> pathCandidates;
 
     public boolean isApplicable(ClassInvariantState state) {
-        List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
+        List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.ARRAY_TRAVERSAL_PREFIX);
         if (traversals.isEmpty()) {
             return false;
         }
 
-        return isApplicable(state, Utils.getRandomElement(traversals));
+        return isApplicable(Utils.getRandomElement(traversals));
     }
 
-    boolean isApplicable(ClassInvariantState state, CtMethod<?> traversalMethod) {
-        traversal = traversalMethod;
-        CtVariable<?> initialElement = SpoonQueries.getTraversedElementParameter(traversal);
+    boolean isApplicable(CtMethod<?> arrayTraversal) {
+        traversal = arrayTraversal;
+        CtVariable<?> array = SpoonQueries.getTraversedElementParameter(traversal);
 
         pathCandidates = TypeUtils.filterPathsByType(
-                SpoonManager.getTypeData().getSimplePaths(),
-                initialElement.getType()
+                SpoonManager.getTypeData().getArrayPaths(),
+                array.getType()
         ).stream().toList();
 
-        if (pathCandidates.isEmpty()) {
-            return false;
-        }
-
-        return true;
+        return !pathCandidates.isEmpty();
     }
 
     @Override

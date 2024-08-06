@@ -134,11 +134,25 @@ public class MutatorHelper {
         return traversal.getParameters().get(2).getType().getActualTypeArguments().get(0);
     }
 
+    public static CtTypeReference<?> getTraversedArrayType(CtMethod<?> arrayTraversal) {
+        return arrayTraversal.getParameters().get(1).getType();
+    }
+
     public static Set<CtTypeReference<?>> getTraversedTypes(CtClass<?> cls) {
         Set<CtTypeReference<?>> traversedTypes = new HashSet<>();
         for (CtMethod<?> method : cls.getMethods()) {
             if (method.getSimpleName().startsWith(LocalVarHelper.TRAVERSAL_PREFIX)) {
                 traversedTypes.add(getTraversedType(method));
+            }
+        }
+        return traversedTypes;
+    }
+
+    public static Set<CtTypeReference<?>> getTraversedArrayTypes(CtClass<?> cls) {
+        Set<CtTypeReference<?>> traversedTypes = new HashSet<>();
+        for (CtMethod<?> method : cls.getMethods()) {
+            if (method.getSimpleName().startsWith(LocalVarHelper.ARRAY_TRAVERSAL_PREFIX)) {
+                traversedTypes.add(getTraversedArrayType(method));
             }
         }
         return traversedTypes;
