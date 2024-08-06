@@ -26,6 +26,7 @@ public class LocalVarHelper {
     public static final String TRAVERSED_ELEMENT_VAR_NAME = "subject";
     public static final String ARRAY_PARAM_NAME = "array_";
     public static final String THIS_PARAM_NAME = "_this";
+    public static final String ARRAY_VAR_PREFIX = "arrayOf";
 
     public static final Map<String, Integer> idMap = new HashMap<>();
 

@@ -5,12 +5,14 @@ import evoexpress.classinvariant.mutator.LocalVarHelper;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
+import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 
 import java.util.*;
 
@@ -59,7 +61,7 @@ public class ArrayTraversalTemplate {
 
     private static CtBlock<?> createArrayTraversalBody(Path pathToArray, List<CtParameter<?>> params) {
         CtBlock<?> body = SpoonFactory.createBlock();
-        CtVariable<?> arrayVar = params.get(params.size() - 1);
+        CtVariable<?> arrayVar = params.get(params.size() - 2);
         CtFor forStatement = createForStatement(arrayVar);
 
         CtExpression<Boolean> arrayNotNullCheck = SpoonFactory.createNullComparisonClause(arrayVar, BinaryOperatorKind.NE);
@@ -85,16 +87,24 @@ public class ArrayTraversalTemplate {
 
         // Create a CtFieldRead for 'array.length'
         CtVariableRead<?> arrayRead = SpoonFactory.createVariableRead(arrayVar);
-        CtFieldReference<Integer> lengthFieldRef = SpoonFactory.getFactory().Field().createReference("length");
 
-        CtFieldRead<Integer> lengthRead = SpoonFactory.getCoreFactory().createFieldRead();
-        lengthRead.setTarget(arrayRead);
-        lengthRead.setVariable(lengthFieldRef);
+
+
+        // Create a CtFieldReference for the "length" field of the array
+        CtFieldReference<Integer> lengthFieldReference = SpoonFactory.getFactory().createFieldReference();
+        lengthFieldReference.setSimpleName("length");
+        lengthFieldReference.setDeclaringType(arrayRead.getType()); // Array type reference
+        lengthFieldReference.setType(SpoonFactory.getFactory().Type().integerPrimitiveType());
+
+        // Create a CtFieldRead for the "length" field access
+        CtFieldRead<Integer> lengthFieldRead = SpoonFactory.getFactory().createFieldRead();
+        lengthFieldRead.setVariable(lengthFieldReference);
+        lengthFieldRead.setTarget(arrayRead);
 
         // Create the condition: i < array.length
         CtBinaryOperator<Boolean> condition = (CtBinaryOperator<Boolean>) SpoonFactory.createBinaryExpression(
                 init,
-                lengthRead,
+                lengthFieldRead,
                 BinaryOperatorKind.LT
         );
 
@@ -107,15 +117,26 @@ public class ArrayTraversalTemplate {
         forStatement.setForUpdate(Collections.singletonList((CtStatement) increment));
 
         CtBlock<?> forBody = SpoonFactory.createBlock();
-        CtTypeReference<?> arraySubtype = ((CtArrayTypeReference<?>) arrayVar.getType()).getComponentType();
+        CtTypeReference<?> arraySubtype = ((CtArrayTypeReferenceImpl<?>) arrayVar.getType()).getComponentType();
         CtArrayRead<?> arrayAccess = SpoonFactory.getFactory().createArrayRead();
         arrayAccess.setTarget(arrayRead);
         arrayAccess.setIndexExpression(indexRead);
         CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(forBody), arraySubtype, arrayAccess);
         forBody.insertBegin(currentDeclaration);
+        forBody.insertEnd(SpoonFactory.createComment("Handle current:"));
+        forBody.insertEnd(SpoonFactory.createComment("End of Handle current:"));
+
         forStatement.setBody(forBody);
 
         return forStatement;
+    }
+
+    public static boolean isReferenceArrayTraversal(CtMethod<?> traversal) {
+        CtTypeReference<?> traversedElement = traversal.getParameters().get(1).getType();
+        if (!traversedElement.isArray())
+            return false;
+        CtArrayTypeReference<?> arrayType = (CtArrayTypeReference<?>) traversedElement;
+        return TypeUtils.isReferenceType(arrayType.getComponentType());
     }
 
 

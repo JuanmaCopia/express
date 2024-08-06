@@ -12,6 +12,7 @@ import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -414,7 +415,13 @@ public class SpoonFactory {
         CtTypeReference<?> setType = createTypeWithSubtypeReference(Set.class, subType);
         CtTypeReference<?> hashSetType = createTypeWithSubtypeReference(HashSet.class, subType);
         CtConstructorCall<?> hashSetConstructorCall = createConstructorCall(hashSetType);
-        return createLocalVariable(LocalVarHelper.SET_VAR_NAME + subType.getSimpleName(), setType, hashSetConstructorCall);
+        String varName = LocalVarHelper.SET_VAR_NAME ;
+        if (subType.isArray()) {
+            varName = varName + LocalVarHelper.ARRAY_VAR_PREFIX + ((CtArrayTypeReference<?>)subType).getComponentType().getSimpleName();
+        } else {
+            varName = varName + subType.getSimpleName();
+        }
+        return createLocalVariable(varName, setType, hashSetConstructorCall);
     }
 
     public static CtTypeReference<?> createTypeWithSubtypeReference(Class<?> type, CtTypeReference<?> subtype) {

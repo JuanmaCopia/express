@@ -1,5 +1,6 @@
 package evoexpress.classinvariant.mutator;
 
+import evoexpress.classinvariant.mutator.template.ArrayTraversalTemplate;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonQueries;
@@ -156,6 +157,16 @@ public class MutatorHelper {
             }
         }
         return traversedTypes;
+    }
+
+    public static List<CtMethod<?>> getAllTraversalsOfReferenceObjects(CtClass<?> cls) {
+        List<CtMethod<?>> traversals = new LinkedList<>(MutatorHelper.getMethodsByName(cls, LocalVarHelper.TRAVERSAL_PREFIX));
+        List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(cls, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX).stream().filter(
+                ArrayTraversalTemplate::isReferenceArrayTraversal
+        ).toList();
+
+        traversals.addAll(arrayTraversals);
+        return traversals;
     }
 
 

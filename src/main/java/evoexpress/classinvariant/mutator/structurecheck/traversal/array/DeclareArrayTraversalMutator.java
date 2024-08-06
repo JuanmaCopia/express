@@ -52,40 +52,8 @@ public class DeclareArrayTraversalMutator implements ClassInvariantMutator {
     @Override
     public boolean mutate(ClassInvariantState state) {
         state.getCtClass().addMethod(traversal);
-        System.err.println("DeclareArrayTraversalMutator:\n" + traversal.toString());
+        //System.err.println("DeclareArrayTraversalMutator:\n" + traversal.toString());
         return true;
-    }
-
-
-
-
-
-
-    private boolean addTraversalInvocation(Path chosenPath, ClassInvariantState state, CtBlock<?> blockGene) {
-        CtMethod<?> traversal = SpoonQueries.getTraversalOfArray(state.getCtClass(), chosenPath.getTypeReference());
-        assert traversal != null;
-
-        CtVariableRead<?> pathRead = chosenPath.getVariableRead();
-
-        CtExpression<?>[] args = createArguments(traversal.getParameters(), pathRead);
-        CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(traversal, args);
-
-        CtIf ifStatement = SpoonFactory.createIfReturnFalse(SpoonFactory.negateExpresion(traversalCall));
-        if (SpoonQueries.checkAlreadyExistSimple(ifStatement.getCondition(), blockGene))
-            return false;
-
-        CtMethod<?> structureMethod = blockGene.getParent(CtMethod.class);
-        CtStatement lastStatement = SpoonQueries.getMark1Comment(structureMethod.getBody());
-        lastStatement.insertBefore(ifStatement);
-
-        return true;
-    }
-
-    private CtExpression<?>[] createArguments(List<CtParameter<?>> params, CtVariableRead pathRead) {
-        CtExpression<?>[] args = new CtExpression[params.size()];
-        args[0] = SpoonFactory.createVariableRead(params.get(0));
-        args[1] = pathRead;
-        return args;
     }
 
 }
