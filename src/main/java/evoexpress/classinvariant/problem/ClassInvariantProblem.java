@@ -40,10 +40,10 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
     @Override
     public SimulatedAnnealingState nextState(SimulatedAnnealingState state) {
         ClassInvariantState stateClone = ((ClassInvariantState) state).clone();
-        compiler.addClassToPackage(stateClone.getCtClass());
         ClassInvariantState nextState = (ClassInvariantState) state;
+        compiler.addClassToPackage(stateClone.getCtClass());
         if (mutatorManager.performRandomMutation(stateClone)) {
-            if (compiles(stateClone)) {
+            if (compiles()) {
                 stateClone.setFitnessAsOutdated();
                 nextState = stateClone;
             } else {
@@ -55,11 +55,10 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
         return nextState;
     }
 
-    private boolean compiles(ClassInvariantState nextState) {
+    private boolean compiles() {
         try {
             return compiler.compileModel();
         } catch (Exception e) {
-            //e.printStackTrace();
             return false;
         }
     }
@@ -85,7 +84,7 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
     @Override
     public void printCurrentState(int round, Double temperature, SimulatedAnnealingState currentState) {
         ClassInvariantState s = (ClassInvariantState) currentState;
-        DecimalFormat df = new DecimalFormat("0.00");
+        DecimalFormat df = new DecimalFormat("0.000");
         System.out.println(round + " | Temperature: " + df.format(temperature) + " | Fitness: " + df.format(s.getFitness()));
     }
 
