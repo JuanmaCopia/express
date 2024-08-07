@@ -68,7 +68,7 @@ public class EvoExpress {
         mutators.add(new InvokeFieldTraversalOnArrayTraversalMutator());
         mutators.add(new RemoveTraversalInvocationMutator());
         ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness());
-        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.005));
+        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.002));
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
 
@@ -85,7 +85,7 @@ public class EvoExpress {
         mutators.add(new ComposedNullCheckInTraversalMutator());
         mutators.add(new CheckVisitedCurrentMutator());
         ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness(), initialState);
-        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.005));
+        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.002));
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
 
