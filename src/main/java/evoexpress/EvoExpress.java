@@ -2,6 +2,7 @@ package evoexpress;
 
 import evoexpress.classinvariant.fitness.LengthFitness;
 import evoexpress.classinvariant.mutator.ClassInvariantMutator;
+import evoexpress.classinvariant.mutator.all.RemoveCheckMutator;
 import evoexpress.classinvariant.mutator.initialcheck.ComposeNullCheckMutator;
 import evoexpress.classinvariant.mutator.initialcheck.IfNullReturnMutator;
 import evoexpress.classinvariant.mutator.initialcheck.RemoveIfInitialCheckMutator;
@@ -80,7 +81,7 @@ public class EvoExpress {
         mutators.add(new AddRandomComparisonToCurrent());
         mutators.add(new DeclareVisitedSetMutator());
         mutators.add(new CheckVisitedFieldMutator());
-        mutators.add(new RemoveIfStructureCheckMutator());
+        mutators.add(new RemoveCheckMutator());
         mutators.add(new IfNullReturnInTraversalMutator());
         mutators.add(new ComposedNullCheckInTraversalMutator());
         mutators.add(new CheckVisitedCurrentMutator());
