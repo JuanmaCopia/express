@@ -10,9 +10,8 @@ import evoexpress.classinvariant.mutator.structurecheck.CheckVisitedFieldMutator
 import evoexpress.classinvariant.mutator.structurecheck.DeclareVisitedSetMutator;
 import evoexpress.classinvariant.mutator.structurecheck.RemoveIfStructureCheckMutator;
 import evoexpress.classinvariant.mutator.structurecheck.traversal.*;
-import evoexpress.classinvariant.mutator.structurecheck.traversal.array.DeclareArrayTraversalMutator;
-import evoexpress.classinvariant.mutator.structurecheck.traversal.array.InvokeArrayTraversalMutator;
 import evoexpress.classinvariant.mutator.structurecheck.traversal.init.*;
+import evoexpress.classinvariant.mutator.structurecheck.traversal.array.*;
 import evoexpress.classinvariant.problem.ClassInvariantProblem;
 import evoexpress.classinvariant.search.ClassInvariantSearch;
 import evoexpress.classinvariant.state.ClassInvariantState;
@@ -44,6 +43,7 @@ public class EvoExpress {
 
     private static ClassInvariantState startSearch() {
         ClassInvariantState currentState = startInitialSearch();
+        printCurrentState(currentState);
         currentState = startStructureCheckSearch(currentState);
         //currentState = startPrimitiveCheck(currentState);
         return currentState;
@@ -51,11 +51,24 @@ public class EvoExpress {
 
     public static ClassInvariantState startInitialSearch() {
         Set<ClassInvariantMutator> mutators = new HashSet<>();
+        // Initial Check Mutators
         mutators.add(new ComposeNullCheckMutator());
         mutators.add(new IfNullReturnMutator());
         mutators.add(new RemoveIfInitialCheckMutator());
+        // Traversal Declaration Mutators
+        mutators.add(new DeclareWorklistTraversalMutator());
+        mutators.add(new DeclareArrayTraversalMutator());
+        mutators.add(new RemoveTraversalMutator());
+        // Traversal Modification Mutators
+        mutators.add(new ChangeLoopFieldsMutator());
+        mutators.add(new ChangeFirstElementMutator());
+        // Traversal Invocation Mutators
+        mutators.add(new InvokeArrayTraversalMutator());
+        mutators.add(new InvokeFieldTraversalMutator());
+        mutators.add(new InvokeFieldTraversalOnArrayTraversalMutator());
+        mutators.add(new RemoveTraversalInvocationMutator());
         ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness());
-        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.01));
+        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.005));
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
 
@@ -68,19 +81,11 @@ public class EvoExpress {
         mutators.add(new DeclareVisitedSetMutator());
         mutators.add(new CheckVisitedFieldMutator());
         mutators.add(new RemoveIfStructureCheckMutator());
-        mutators.add(new DeclareWorklistTraversalMutator());
-        mutators.add(new AddTraverseInvocationMutator());
-        mutators.add(new RemoveTraverseMutator());
         mutators.add(new IfNullReturnInTraversalMutator());
         mutators.add(new ComposedNullCheckInTraversalMutator());
-        mutators.add(new ChangeLoopFieldsMutator());
-        mutators.add(new ChangeFirstElementMutator());
-        mutators.add(new RemoveIfTraversalMutator());
-        mutators.add(new DeclareArrayTraversalMutator());
-        mutators.add(new InvokeArrayTraversalMutator());
-        //mutators.add(new RemoveVisitedSetMutator());
+        mutators.add(new CheckVisitedCurrentMutator());
         ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness(), initialState);
-        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(7, 0.0015));
+        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.005));
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
 
@@ -102,6 +107,13 @@ public class EvoExpress {
         System.out.println("Best solution: " + finalState.getCtClass().toString());
         System.out.println("Fitness: " + finalState.getFitness());
         printNotKilledMutants(finalState);
+        System.out.println("\n=================================================================================\n");
+    }
+
+    public static void printCurrentState(ClassInvariantState state) {
+        System.out.println("\n\n==============================  Search Finished  ==============================\n");
+        System.out.println("Current best solution: " + state.getCtClass().toString());
+        System.out.println("Fitness: " + state.getFitness());
         System.out.println("\n=================================================================================\n");
     }
 

@@ -395,8 +395,11 @@ public class SpoonQueries {
     }
 
     public static CtVariable<?> getVisitedSetParameter(CtMethod<?> method) {
-        List<CtParameter<?>> parameters = method.getParameters();
-        for (CtParameter<?> parameter : parameters) {
+        return getVisitedSetParameter(method.getParameters());
+    }
+
+    public static CtVariable<?> getVisitedSetParameter(List<CtParameter<?>> params) {
+        for (CtParameter<?> parameter : params) {
             if (parameter.getSimpleName().startsWith(LocalVarHelper.SET_VAR_NAME))
                 return parameter;
         }

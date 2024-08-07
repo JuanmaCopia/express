@@ -1,4 +1,4 @@
-package evoexpress.classinvariant.mutator.structurecheck.traversal.array;
+package evoexpress.classinvariant.mutator.structurecheck.traversal.init;
 
 import evoexpress.classinvariant.mutator.ClassInvariantMutator;
 import evoexpress.classinvariant.mutator.LocalVarHelper;
@@ -18,28 +18,26 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 
-public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
+public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
 
     CtMethod<?> traversal;
     CtBlock<?> targetBody;
-    List<Path> pathCandidates;
     CtExpression<Boolean> condition;
     CtVariable<?> setVar;
     boolean mustDeclareSet = false;
 
     public boolean isApplicable(ClassInvariantState state) {
-        List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.ARRAY_TRAVERSAL_PREFIX);
+        List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
         if (traversals.isEmpty()) {
             return false;
         }
 
         traversal = Utils.getRandomElement(traversals);
+        CtVariable<?> initialElement = SpoonQueries.getTraversedElementParameter(traversal);
 
-        CtVariable<?> array = SpoonQueries.getTraversedElementParameter(traversal);
-
-        pathCandidates = TypeUtils.filterPathsByType(
-                SpoonManager.getTypeData().getArrayPaths(),
-                array.getType()
+        List<Path> pathCandidates = TypeUtils.filterPathsByType(
+                SpoonManager.getTypeData().getSimplePaths(),
+                initialElement.getType()
         ).stream().toList();
 
         if (pathCandidates.isEmpty())
@@ -48,9 +46,8 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         Path chosenPath = Utils.getRandomPath(pathCandidates);
 
         targetBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
-
         CtVariable<?> formalParameter = SpoonQueries.getTraversalSetParameter(traversal);
-        CtTypeReference<?> setSubType = TypeUtils.getSubType(formalParameter.getType(), 0);
+        CtTypeReference<?> setSubType = formalParameter.getType().getActualTypeArguments().get(0);
         setVar = SpoonQueries.searchVisitedSetInBlock(targetBody, setSubType);
         if (setVar == null) {
             mustDeclareSet = true;
@@ -58,6 +55,7 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         } else {
             mustDeclareSet = false;
         }
+
         CtExpression<?>[] args = createArguments(traversal.getParameters(), setVar, chosenPath.getVariableRead());
         CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(traversal, args);
 
@@ -68,14 +66,12 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         if (SpoonQueries.checkAlreadyExistSimple(condition, targetBody))
             return false;
 
-
         return true;
     }
 
 
     @Override
     public boolean mutate(ClassInvariantState state) {
-        //System.err.println("InvokeArrayTraversalMutator: BEFORE\n" + state.toString());
         if (mustDeclareSet) {
             targetBody.insertBegin((CtStatement) setVar);
         }
@@ -83,11 +79,13 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
         CtStatement lastStatement = SpoonQueries.getMark1Comment(targetBody);
         lastStatement.insertBefore(ifStatement);
-        //System.err.println("InvokeArrayTraversalMutator: added check: \n" + ifStatement.toString());
-        //System.err.println("InvokeArrayTraversalMutator: result:\n" + state.toString());
+
+        //System.err.println("AddTraverseInvocationMutator:\n" + structureMethodBody.toString());
+        //System.err.println("InvokeFieldTraversalMutator: AFTER\n" + state.toString());
 
         return true;
     }
+
 
     private CtExpression<?>[] createArguments(List<CtParameter<?>> params, CtVariable<?> visitedSetVar, CtVariableRead<?> pathRead) {
         CtExpression<?>[] args = new CtExpression[params.size()];

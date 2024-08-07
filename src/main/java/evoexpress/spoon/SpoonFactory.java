@@ -411,7 +411,7 @@ public class SpoonFactory {
         return variableWrite;
     }
 
-    public static CtLocalVariable<?> createVisitedSetDeclaration(CtTypeReference<?> subType, CtBlock<?> code) {
+    public static CtLocalVariable<?> createVisitedSetDeclaration(CtTypeReference<?> subType) {
         CtTypeReference<?> setType = createTypeWithSubtypeReference(Set.class, subType);
         CtTypeReference<?> hashSetType = createTypeWithSubtypeReference(HashSet.class, subType);
         CtConstructorCall<?> hashSetConstructorCall = createConstructorCall(hashSetType);

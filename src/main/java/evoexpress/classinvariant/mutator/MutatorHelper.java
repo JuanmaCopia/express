@@ -55,7 +55,7 @@ public class MutatorHelper {
     }
 
     public static CtVariable<?> declareVisitedSetVariable(CtBlock<?> methodBody, CtStatement statement, CtTypeReference<?> setSubtype) {
-        CtVariable<?> setVar = SpoonFactory.createVisitedSetDeclaration(setSubtype, methodBody);
+        CtVariable<?> setVar = SpoonFactory.createVisitedSetDeclaration(setSubtype);
         statement.insertBefore((CtStatement) setVar);
         return setVar;
     }
@@ -165,6 +165,13 @@ public class MutatorHelper {
                 ArrayTraversalTemplate::isReferenceArrayTraversal
         ).toList();
 
+        traversals.addAll(arrayTraversals);
+        return traversals;
+    }
+
+    public static List<CtMethod<?>> getAllTraversals(CtClass<?> cls) {
+        List<CtMethod<?>> traversals = new LinkedList<>(MutatorHelper.getMethodsByName(cls, LocalVarHelper.TRAVERSAL_PREFIX));
+        List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(cls, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX);
         traversals.addAll(arrayTraversals);
         return traversals;
     }

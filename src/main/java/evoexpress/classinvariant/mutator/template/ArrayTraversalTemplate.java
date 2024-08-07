@@ -64,11 +64,11 @@ public class ArrayTraversalTemplate {
         CtVariable<?> arrayVar = params.get(params.size() - 2);
         CtFor forStatement = createForStatement(arrayVar);
 
-        CtExpression<Boolean> arrayNotNullCheck = SpoonFactory.createNullComparisonClause(arrayVar, BinaryOperatorKind.NE);
-        CtIf ifArrayNotNull = SpoonFactory.createIfThenStatement(arrayNotNullCheck, forStatement);
+//        CtExpression<Boolean> arrayNotNullCheck = SpoonFactory.createNullComparisonClause(arrayVar, BinaryOperatorKind.NE);
+//        CtIf ifArrayNotNull = SpoonFactory.createIfThenStatement(arrayNotNullCheck, forStatement);
 
         body.insertEnd(SpoonFactory.createComment("Begin of traversal"));
-        body.insertEnd(ifArrayNotNull);
+        body.insertEnd(forStatement);
         body.insertEnd(SpoonFactory.createComment("End of traversal"));
         body.insertEnd(SpoonFactory.createComment("Return True"));
         body.insertEnd(SpoonFactory.createReturnTrueStatement());

@@ -14,7 +14,7 @@ import java.net.URLClassLoader;
 
 public class LengthFitness extends ClassInvariantFitness {
 
-    private static final int MAX_LENGTH = 100000;
+    private static final int MAX_LENGTH = 30000;
 
     Config config;
     URLClassLoader classLoader;

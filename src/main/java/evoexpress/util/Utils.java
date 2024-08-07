@@ -3,6 +3,7 @@ package evoexpress.util;
 import evoexpress.type.typegraph.Path;
 import org.apache.commons.math3.util.Combinations;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.reference.CtTypeReference;
 
 import java.io.File;
 import java.io.FileWriter;

@@ -183,4 +183,8 @@ public class TypeUtils {
 
         return false;
     }
+
+    public static CtTypeReference<?> getSubType(CtTypeReference<?> typeRef, int subtypeIndex) {
+        return typeRef.getActualTypeArguments().get(subtypeIndex);
+    }
 }
