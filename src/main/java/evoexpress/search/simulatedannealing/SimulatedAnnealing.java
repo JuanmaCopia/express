@@ -17,6 +17,7 @@ public abstract class SimulatedAnnealing {
     public SimulatedAnnealingState startSearch() {
         SimulatedAnnealingState currentState = problem.initialState();
         problem.evaluate(currentState);
+        SimulatedAnnealingState fittest = currentState.clone();
         int i = 0;
         while (!problem.isTerminationConditionMet(currentState)) {
             double temperature = schedule.schedule(i);
@@ -29,18 +30,22 @@ public abstract class SimulatedAnnealing {
             if (nextState == null)
                 continue;
 
-            double delta = problem.evaluate(currentState) - problem.evaluate(nextState);
+            double delta = currentState.getFitness() - problem.evaluate(nextState);
             if (delta < 0) {
                 currentState = nextState;
             } else {
                 delta = delta + 1.0;
                 double probability = Math.exp(-delta / temperature);
-                //System.out.println("Delta: " + delta + " Probability: " + probability);
                 if (Math.random() < probability) {
                     currentState = nextState;
                 }
             }
 
+            if (problem.shouldRestart(currentState, fittest)) {
+                currentState = fittest.clone();
+            } else if (currentState.getFitness() > fittest.getFitness()) {
+                fittest = currentState.clone();
+            }
         }
         return currentState;
     }

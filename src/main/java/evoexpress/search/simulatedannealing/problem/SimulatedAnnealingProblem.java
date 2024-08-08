@@ -13,4 +13,6 @@ public interface SimulatedAnnealingProblem {
     boolean isTerminationConditionMet(SimulatedAnnealingState state);
 
     void printCurrentState(int round, Double temperature, SimulatedAnnealingState currentState);
+
+    boolean shouldRestart(SimulatedAnnealingState currentState, SimulatedAnnealingState fittest);
 }

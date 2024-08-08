@@ -59,6 +59,7 @@ public class ClassInvariantState implements SimulatedAnnealingState {
      *
      * @return The individual's fitness
      */
+    @Override
     public double getFitness() {
         return this.fitness;
     }
@@ -68,6 +69,7 @@ public class ClassInvariantState implements SimulatedAnnealingState {
      *
      * @param fitnessValue The individuals fitness
      */
+    @Override
     public void setFitness(double fitnessValue) {
         fitness = fitnessValue;
     }

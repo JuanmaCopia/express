@@ -16,10 +16,14 @@ import java.util.Set;
 
 public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
+    static final int MAX_ROUNDS_WITHOUT_IMPROVEMENT = 100;
+
     ClassInvariantMutatorManager mutatorManager;
     ClassInvariantFitness fitnessFunction;
     ClassInvariantState initialState;
     Compiler compiler;
+
+    int roundsWithoutImprovement = 0;
 
     public ClassInvariantProblem(Set<ClassInvariantMutator> mutators, ClassInvariantFitness fitnessFunction, ClassInvariantState initialState) {
         mutatorManager = new ClassInvariantMutatorManager(mutators);
@@ -66,8 +70,18 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
     @Override
     public void printCurrentState(int round, Double temperature, SimulatedAnnealingState currentState) {
         ClassInvariantState s = (ClassInvariantState) currentState;
-        DecimalFormat df = new DecimalFormat("0.000");
+        DecimalFormat df = new DecimalFormat("0.00");
         System.out.println(round + " | Temperature: " + df.format(temperature) + " | Fitness: " + df.format(s.getFitness()));
+    }
+
+    @Override
+    public boolean shouldRestart(SimulatedAnnealingState currentState, SimulatedAnnealingState fittest) {
+        if (fittest.getFitness() > currentState.getFitness()) {
+            roundsWithoutImprovement++;
+        } else {
+            roundsWithoutImprovement = 0;
+        }
+        return roundsWithoutImprovement >= MAX_ROUNDS_WITHOUT_IMPROVEMENT;
     }
 
 
