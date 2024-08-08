@@ -23,8 +23,8 @@ public class Config {
     public int subjectSrcJavaVersion = DEFAULT_JAVA_VERSION;
 
     // Output Settings
-    public static String outputBinPath = OUTPUT_BIN_FOLDER;
-    public static String outputSrcPath = OUTPUT_SRC_FOLDER;
+    public String outputBinPath = OUTPUT_BIN_FOLDER;
+    public String outputSrcPath = OUTPUT_SRC_FOLDER;
     public String preconditionClassName;
     public String preconditionMethodName;
 

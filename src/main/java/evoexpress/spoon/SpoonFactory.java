@@ -95,7 +95,7 @@ public class SpoonFactory {
         modifiers.add(ModifierKind.PUBLIC);
         modifiers.add(ModifierKind.STATIC);
 
-        CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.BOOLEAN_PRIMITIVE,  config.preconditionMethodName, parameters);
+        CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.booleanPrimitiveType(),  config.preconditionMethodName, parameters);
         CtExpression<?>[] args = createArgumentsFromParameters(preconditionMethod);
 
         CtBlock<?> body = createBlock();
@@ -159,7 +159,7 @@ public class SpoonFactory {
         modifiers.add(ModifierKind.PUBLIC);
         modifiers.add(ModifierKind.STATIC);
 
-        CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.BOOLEAN_PRIMITIVE, name, parameters);
+        CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.booleanPrimitiveType(), name, parameters);
 
         preconditionMethod.setBody(createReturnTrueBlock());
         return preconditionMethod;

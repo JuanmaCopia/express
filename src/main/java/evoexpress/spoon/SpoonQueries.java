@@ -40,7 +40,7 @@ public class SpoonQueries {
     public static List<CtVariable<?>> getReferenceFields(CtTypeReference<?> type) {
         if (type.getDeclaration() == null)
             throw new IllegalArgumentException("the type is not in source files");
-        return getVariablesOfType(getFields(type.getDeclaration()), SpoonFactory.getTypeFactory().OBJECT);
+        return getVariablesOfType(getFields(type.getDeclaration()), SpoonFactory.getTypeFactory().objectType());
     }
 
     public static List<CtVariable<?>> getFieldsOfType(CtType<?> varType, CtTypeReference<?> type) {

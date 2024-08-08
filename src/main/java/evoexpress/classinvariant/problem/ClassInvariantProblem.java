@@ -4,7 +4,6 @@ import evoexpress.classinvariant.mutator.ClassInvariantMutatorManager;
 import evoexpress.classinvariant.state.ClassInvariantState;
 import evoexpress.classinvariant.fitness.ClassInvariantFitness;
 import evoexpress.classinvariant.mutator.ClassInvariantMutator;
-import evoexpress.output.Compiler;
 import evoexpress.search.simulatedannealing.problem.SimulatedAnnealingProblem;
 import evoexpress.search.simulatedannealing.state.SimulatedAnnealingState;
 import evoexpress.spoon.SpoonManager;
@@ -21,7 +20,6 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
     ClassInvariantMutatorManager mutatorManager;
     ClassInvariantFitness fitnessFunction;
     ClassInvariantState initialState;
-    Compiler compiler;
 
     int roundsWithoutImprovement = 0;
 
@@ -29,13 +27,11 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
         mutatorManager = new ClassInvariantMutatorManager(mutators);
         this.fitnessFunction = fitnessFunction;
         this.initialState = initialState;
-        this.compiler = SpoonManager.getOutput().getCompiler();
     }
 
     public ClassInvariantProblem(Set<ClassInvariantMutator> mutators, ClassInvariantFitness fitnessFunction) {
         mutatorManager = new ClassInvariantMutatorManager(mutators);
         this.fitnessFunction = fitnessFunction;
-        this.compiler = SpoonManager.getOutput().getCompiler();
     }
 
     @Override

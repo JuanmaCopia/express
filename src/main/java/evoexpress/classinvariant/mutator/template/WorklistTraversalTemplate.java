@@ -45,7 +45,7 @@ public class WorklistTraversalTemplate {
         Path leftPath = splitPaths.getLeft();
         Path rightPath = splitPaths.getRight();
 
-        CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().BOOLEAN_PRIMITIVE;
+        CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().booleanPrimitiveType();
         List<CtParameter<?>> parameters = createParameters(leftPath, setVar);
         CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(), parameters);
         traversalMethod.setSimpleName(traversalMethod.getSimpleName() + LocalVarHelper.getNextTraversalId(ctClass, LocalVarHelper.TRAVERSAL_PREFIX));

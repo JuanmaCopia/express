@@ -36,7 +36,7 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
         CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(traversal);
 
         CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(visitedSetVar, "size");
-        CtLocalVariable<?> initialSizeVar = SpoonFactory.createLocalVariable(LocalVarHelper.getInitialSizeVarName(), SpoonFactory.getTypeFactory().INTEGER_PRIMITIVE, sizeInvocation);
+        CtLocalVariable<?> initialSizeVar = SpoonFactory.createLocalVariable(LocalVarHelper.getInitialSizeVarName(), SpoonFactory.getTypeFactory().integerPrimitiveType(), sizeInvocation);
 
         CtExpression<?> leftExpr = SpoonFactory.createBinaryExpression(sizeInvocation, initialSizeVar, BinaryOperatorKind.MINUS);
 

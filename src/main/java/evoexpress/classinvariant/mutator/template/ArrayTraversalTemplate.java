@@ -35,7 +35,7 @@ public class ArrayTraversalTemplate {
         modifiers.add(ModifierKind.PRIVATE);
         modifiers.add(ModifierKind.STATIC);
 
-        CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().BOOLEAN_PRIMITIVE;
+        CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().booleanPrimitiveType();
         List<CtParameter<?>> parameters = createParameters(pathToArray, setVar);
         CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(), parameters);
         traversalMethod.setSimpleName(traversalMethod.getSimpleName() + LocalVarHelper.getNextTraversalId(ctClass, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX));
@@ -80,7 +80,7 @@ public class ArrayTraversalTemplate {
         // Create the variable declaration: int i = 0;
         CtLocalVariable<?> init = SpoonFactory.createLocalVariable(
                 "i",
-                SpoonFactory.getTypeFactory().INTEGER_PRIMITIVE,
+                SpoonFactory.getTypeFactory().integerPrimitiveType(),
                 SpoonFactory.getCodeFactory().createLiteral(0)
         );
         CtVariableRead<Integer> indexRead = (CtVariableRead<Integer>) SpoonFactory.createVariableRead(init);

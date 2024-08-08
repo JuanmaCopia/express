@@ -28,9 +28,10 @@ import java.util.Set;
 public class EvoExpress {
 
     private static final String CONFIG_FILE_PATH = "config.properties";
-
+    Config config;
 
     public EvoExpress(Config config) {
+        this.config = config;
         SpoonManager.initialize(config);
         ObjectGenerator.generateObjects();
     }
@@ -42,7 +43,7 @@ public class EvoExpress {
         saveResults(finalState);
     }
 
-    private static ClassInvariantState startSearch() {
+    private ClassInvariantState startSearch() {
         ClassInvariantState currentState = startInitialSearch();
         printCurrentState(currentState);
         currentState = startStructureCheckSearch(currentState);
@@ -50,7 +51,7 @@ public class EvoExpress {
         return currentState;
     }
 
-    public static ClassInvariantState startInitialSearch() {
+    public ClassInvariantState startInitialSearch() {
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         // Initial Check Mutators
         mutators.add(new ComposeNullCheckMutator());
@@ -73,7 +74,7 @@ public class EvoExpress {
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
 
-    public static ClassInvariantState startStructureCheckSearch(ClassInvariantState initialState) {
+    public ClassInvariantState startStructureCheckSearch(ClassInvariantState initialState) {
         printStartOfPhase("Structure Search");
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
@@ -90,7 +91,7 @@ public class EvoExpress {
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
 
-    public static ClassInvariantState startPrimitiveCheck(ClassInvariantState initialState) {
+    public ClassInvariantState startPrimitiveCheck(ClassInvariantState initialState) {
         printStartOfPhase("Primitive Search");
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         mutators.add(new CheckSizeEndOfTraversalMutator());
@@ -103,7 +104,7 @@ public class EvoExpress {
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
 
-    public static void printResults(ClassInvariantState finalState) {
+    public void printResults(ClassInvariantState finalState) {
         System.out.println("\n\n==============================  Search Finished  ==============================\n");
         System.out.println("Best solution: " + finalState.getCtClass().toString());
         System.out.println("Fitness: " + finalState.getFitness());
@@ -111,29 +112,29 @@ public class EvoExpress {
         System.out.println("\n=================================================================================\n");
     }
 
-    public static void printCurrentState(ClassInvariantState state) {
+    public void printCurrentState(ClassInvariantState state) {
         System.out.println("\n\n==============================  Search Finished  ==============================\n");
         System.out.println("Current best solution: " + state.getCtClass().toString());
         System.out.println("Fitness: " + state.getFitness());
         System.out.println("\n=================================================================================\n");
     }
 
-    public static void printStartOfPhase(String phase) {
+    public void printStartOfPhase(String phase) {
         System.out.println("\n\n==============================  " + phase + "  ==============================\n");
     }
 
-    public static void saveResults(ClassInvariantState finalState) {
+    public void saveResults(ClassInvariantState finalState) {
         SpoonManager.getOutput().generateSourcePreconditionSourceFile(finalState.getCtClass());
-        System.out.println("\nSource code saved in: " + Config.outputSrcPath);
+        System.out.println("\nSource code saved in: " + config.outputSrcPath);
     }
 
-    public static void printNotKilledMutants(ClassInvariantState finalState) {
+    public void printNotKilledMutants(ClassInvariantState finalState) {
         System.out.println("\n\n==============================  Unkilled Mutants  ==============================\n");
-        Executor.printSurvivors(finalState.getCtClass());
+        //Executor.printSurvivors(finalState.getCtClass());
         System.out.println("\n=================================================================================\n");
     }
 
-    public static void printStart() {
+    public void printStart() {
         System.out.println("\n==============================  Search Started  ==============================\n");
     }
 
