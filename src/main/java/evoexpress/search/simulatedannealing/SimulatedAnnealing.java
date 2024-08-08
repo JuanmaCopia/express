@@ -22,7 +22,7 @@ public abstract class SimulatedAnnealing {
         while (!problem.isTerminationConditionMet(currentState)) {
             double temperature = schedule.schedule(i);
             if (temperature <= 0.1) {
-                return currentState;
+                return fittest;
             }
             problem.printCurrentState(i, temperature, currentState);
             i++;
