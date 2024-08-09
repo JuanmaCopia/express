@@ -31,6 +31,7 @@ public class SpoonManager {
         launcher.getEnvironment().setComplianceLevel(config.subjectSrcJavaVersion);
         launcher.getEnvironment().setShouldCompile(true);
         launcher.getEnvironment().setAutoImports(true);
+        //launcher.getEnvironment().setPreserveLineNumbers(true);
         launcher.buildModel();
 
         typeData = new TypeData(launcher.getFactory().Class().get(config.subjectClassName));

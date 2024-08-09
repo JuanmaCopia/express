@@ -114,7 +114,7 @@ public class SpoonQueries {
         if (list == null)
             throw new IllegalArgumentException("List cannot be null");
 
-        return list.stream().filter(var -> TypeUtils.isUserDefined(var)).toList();
+        return list.stream().filter(var -> TypeUtils.isUserDefinedType(var)).toList();
     }
 
 

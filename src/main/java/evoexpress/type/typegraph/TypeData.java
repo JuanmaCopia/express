@@ -17,6 +17,7 @@ public class TypeData {
 
     private Set<CtTypeReference<?>> types;
 
+    private Set<CtTypeReference<?>> userDefinedTypes;
     private Set<CtTypeReference<?>> cyclicTypes;
     private Set<CtTypeReference<?>> integerTypes;
     private Set<CtTypeReference<?>> booleanTypes;
@@ -66,6 +67,7 @@ public class TypeData {
 
     private void initializeTypes() {
         types = typeGraph.computeTypes();
+        userDefinedTypes = TypeUtils.filterTypes(types, TypeUtils::isUserDefinedType);
         cyclicTypes = TypeUtils.filterTypes(types, TypeUtils::isCyclicType);
         integerTypes = TypeUtils.filterTypes(types, TypeUtils::isIntegerType);
         booleanTypes = TypeUtils.filterTypes(types, TypeUtils::isBooleanType);
@@ -162,6 +164,10 @@ public class TypeData {
 
     public List<CtTypeReference<?>> getIterableTypes() {
         return new LinkedList<>(iterableTypes);
+    }
+
+    public List<CtTypeReference<?>> getUserDefinedTypes() {
+        return new LinkedList<>(userDefinedTypes);
     }
 
     public List<Path> getSimplePathsOfType(CtTypeReference<?> type) {

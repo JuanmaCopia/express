@@ -1,7 +1,6 @@
 package evoexpress.type;
 
 import evoexpress.type.typegraph.Path;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
@@ -20,11 +19,19 @@ public class TypeUtils {
         return new ArrayList<>(declaration.getFields());
     }
 
-    public static boolean isUserDefined(CtVariable<?> var) {
-        return isUserDefined(var.getType());
+    public static List<CtVariable<?>> getReferenceFields(CtTypeReference<?> typeRef) {
+        return new LinkedList<>(filterFields(getFields(typeRef), TypeUtils::isReferenceType));
     }
 
-    public static boolean isUserDefined(CtTypeReference<?> type) {
+    public static boolean hasReferenceFields(CtTypeReference<?> type) {
+        return getFields(type).stream().anyMatch(f -> isReferenceType(f.getType()));
+    }
+
+    public static boolean isUserDefinedType(CtVariable<?> var) {
+        return isUserDefinedType(var.getType());
+    }
+
+    public static boolean isUserDefinedType(CtTypeReference<?> type) {
         return isReferenceType(type) && isInSourcePath(type);
     }
 

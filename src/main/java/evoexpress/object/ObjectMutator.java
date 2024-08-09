@@ -2,14 +2,13 @@ package evoexpress.object;
 
 import evoexpress.spoon.SpoonManager;
 import evoexpress.type.TypeUtils;
-import evoexpress.type.typegraph.TypeData;
-import evoexpress.type.typegraph.TypeGraph;
 import evoexpress.util.Utils;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -30,8 +29,11 @@ public class ObjectMutator {
         TargetField targetField = selectTargetField(candidates);
         if (targetField == null)
             return false;
-        
+
         Object newFieldValue = getNewValueForField(targetField, candidates);
+        if (newFieldValue == targetField.getValue())
+            return false;
+
         targetField.setValue(newFieldValue);
         return true;
     }
@@ -52,24 +54,31 @@ public class ObjectMutator {
             if (!visited.contains(currentObject)) {
                 visited.add(currentObject);
 
-                if (currentObject.getClass().isArray()) {
+                Class<?> currentClass = currentObject.getClass();
+                if (currentClass.isArray()) {
                     Object[] array = collectObjectsFromArray(currentObject);
                     for (Object o : array) {
                         if (o != null && !o.getClass().isPrimitive()) {
                             queue.offer(o);
                         }
                     }
-                } else  {
-                    Class<?> clazz = currentObject.getClass();
-                    Field[] fields = clazz.getDeclaredFields();
+                } else {
+                    Field[] fields = currentClass.getDeclaredFields();
                     for (Field field : fields) {
-                        field.setAccessible(true);
+                        if (field.getType().isArray()) {
+                            queue.offer(field);
+                            continue;
+                        }
+                        if (Modifier.isStatic(field.getModifiers()) || !isUserDefinedClass(field.getType())) {
+                            continue;
+                        }
                         try {
+                            field.setAccessible(true);
                             Object fieldValue = field.get(currentObject);
-                            if (fieldValue != null && !field.getType().isPrimitive()) {
+                            if (fieldValue != null) {
                                 queue.offer(fieldValue);
                             }
-                        } catch (IllegalAccessException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
@@ -77,6 +86,11 @@ public class ObjectMutator {
             }
         }
         return visited.stream().toList();
+    }
+
+    private static boolean isUserDefinedClass(Class<?> cls) {
+        List<CtTypeReference<?>> userDefTypes = SpoonManager.getTypeData().getUserDefinedTypes();
+        return userDefTypes.stream().anyMatch(t -> t.getQualifiedName().equals(cls.getName()));
     }
 
     public static Object[] collectObjectsFromArray(Object array) {
@@ -107,25 +121,29 @@ public class ObjectMutator {
      * @return a random field to mutate
      */
     static TargetField selectTargetField(List<Object> candidates) {
-        int maxAttempts = 10;
-        List<CtTypeReference<?>> userDefTypes = SpoonManager.getTypeData().getReferenceTypes().stream().filter(
-                t -> !TypeUtils.isArrayType(t)).toList();
-        CtTypeReference<?> targetType = userDefTypes.get(new Random().nextInt(userDefTypes.size()));
-
-        Object targetObject = getRandomReferenceOfType(candidates, targetType);
-        CtVariable<?> fieldToMutate = selectReferenceField(targetType);
-        int i = 0;
-        while ((targetObject == null || fieldToMutate == null) && i < maxAttempts) {
-            targetType = userDefTypes.get(new Random().nextInt(userDefTypes.size()));
-            targetObject = getRandomReferenceOfType(candidates, targetType);
-            fieldToMutate = selectReferenceField(targetType);
-            i++;
-        }
-
-        if (i == maxAttempts)
+        List<CtTypeReference<?>> candidateTypes = selectCandidateTypes(candidates);
+        if (candidateTypes.isEmpty())
             return null;
 
-        return new TargetField(targetObject, fieldToMutate);
+        CtTypeReference<?> chosenType = Utils.getRandomElement(candidateTypes);
+        List<Object> objectsOfType = getCandidatesOfType(candidates, chosenType);
+        Object chosenObject = Utils.getRandomElement(objectsOfType);
+
+        List<CtVariable<?>> referenceFields = TypeUtils.getReferenceFields(chosenType);
+        CtVariable<?> chosenField = Utils.getRandomElement(referenceFields);
+
+        return new TargetField(chosenObject, chosenField);
+    }
+
+    private static List<CtTypeReference<?>> selectCandidateTypes(List<Object> candidates) {
+        List<CtTypeReference<?>> candidateTypes = new ArrayList<>();
+        List<CtTypeReference<?>> userDefTypes = SpoonManager.getTypeData().getUserDefinedTypes()
+                .stream().filter(TypeUtils::hasReferenceFields).toList();
+        for (CtTypeReference<?> type : userDefTypes) {
+            if (!getCandidatesOfType(candidates, type).isEmpty())
+                candidateTypes.add(type);
+        }
+        return candidateTypes;
     }
 
     /**
@@ -139,15 +157,20 @@ public class ObjectMutator {
         List<Object> possibleChoices = new ArrayList<>(getCandidatesOfType(candidates, targetField));
 
         // Add a fresh object to the possible choices
-        Object freshObject = ObjectHelper.createNewInstance(targetField.getFieldClass());
-        if (freshObject != null)
-            possibleChoices.add(freshObject);
+        Object freshObject = null;
+        if (isUserDefinedClass(targetField.getFieldClass())) {
+            freshObject = ObjectHelper.createNewInstance(targetField.getFieldClass());
+            if (freshObject != null)
+                possibleChoices.add(freshObject);
+        }
 
         // Add null to the possible choices
         Object currentValue = targetField.getValue();
         if (currentValue != null)
             possibleChoices.add(null);
 
+        if (possibleChoices.isEmpty())
+            return null;
         return possibleChoices.get(new Random().nextInt(possibleChoices.size()));
     }
 
@@ -162,23 +185,9 @@ public class ObjectMutator {
      */
     static List<Object> getCandidatesOfType(List<Object> candidates, TargetField targetField) {
         return candidates.stream().filter(o -> o != targetField.getValue() &&
-                o.getClass().getTypeName().equals(targetField.getFieldTypeQualifiedName())).toList();
+                o.getClass().getName().equals(targetField.getField().getType().getQualifiedName())).toList();
     }
 
-    /**
-     * Select a random field to mutate from the given type
-     *
-     * @param type is the type to select the field from
-     * @return a random field to mutate
-     */
-    static CtVariable<?> selectReferenceField(CtTypeReference<?> type) {
-        List<CtVariable<?>> referenceFields = TypeUtils.getFields(type).stream().filter(
-                f -> TypeUtils.isReferenceType(f.getType()) && !f.getType().isArray()
-        ).toList();
-        if (referenceFields.isEmpty())
-            return null;
-        return referenceFields.get(Utils.nextInt(referenceFields.size()));
-    }
 
     /**
      * Get all the possible candidates for the given type
@@ -218,10 +227,6 @@ public class ObjectMutator {
             return field;
         }
 
-        CtTypeReference<?> getFieldType() {
-            return field.getType();
-        }
-
         Class<?> getFieldClass() {
             try {
                 Field f = target.getClass().getDeclaredField(field.getSimpleName());
@@ -229,14 +234,6 @@ public class ObjectMutator {
             } catch (NoSuchFieldException e) {
                 return null;
             }
-        }
-
-        String getFieldTypeQualifiedName() {
-            return field.getType().getQualifiedName();
-        }
-
-        String getTargetTypeName() {
-            return target.getClass().getTypeName();
         }
 
         Object getValue() {

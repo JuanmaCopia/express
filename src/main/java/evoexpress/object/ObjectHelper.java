@@ -146,12 +146,16 @@ public class ObjectHelper {
             if (!Modifier.isStatic(clazz.getModifiers()) && declaringClass != null) {
                 //System.err.println("creating isntance for Declaring class: " + declaringClass.getName());
                 Constructor<?> constructor = clazz.getDeclaredConstructor(declaringClass);
+                constructor.setAccessible(true);
                 Object param = declaringClass.getDeclaredConstructor().newInstance();
                 instance = constructor.newInstance(param);
             } else {
-                instance = clazz.getDeclaredConstructor().newInstance();
+                Constructor<?> constructor = clazz.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                instance = constructor.newInstance();
             }
         } catch (Exception e) {
+            //System.err.println("\n\nError creating new instance of class: " + clazz.getName());
             e.printStackTrace();
             throw new RuntimeException("Error creating new instance of class: " + clazz.getName());
         }
