@@ -144,7 +144,6 @@ public class ObjectHelper {
         try {
             Class<?> declaringClass = clazz.getDeclaringClass();
             if (!Modifier.isStatic(clazz.getModifiers()) && declaringClass != null) {
-                //System.err.println("creating isntance for Declaring class: " + declaringClass.getName());
                 Constructor<?> constructor = clazz.getDeclaredConstructor(declaringClass);
                 constructor.setAccessible(true);
                 Object param = declaringClass.getDeclaredConstructor().newInstance();

@@ -26,11 +26,16 @@ public class ObjectMutator {
      */
     public static boolean mutate(Object rootObject) {
         List<Object> candidates = collectCandidatesForMutation(rootObject);
+//        System.err.println("\n\nNumber of candidates for mutation: " + candidates.size());
+//        System.err.println("Candidates for mutation: " + candidates);
         TargetField targetField = selectTargetField(candidates);
+//        System.err.println("Target field: " + targetField);
         if (targetField == null)
             return false;
 
         Object newFieldValue = getNewValueForField(targetField, candidates);
+//        System.err.println("Current field value: " + targetField.getValue());
+//        System.err.println("New field value: " + newFieldValue);
         if (newFieldValue == targetField.getValue())
             return false;
 
@@ -157,9 +162,9 @@ public class ObjectMutator {
         List<Object> possibleChoices = new ArrayList<>(getCandidatesOfType(candidates, targetField));
 
         // Add a fresh object to the possible choices
-        Object freshObject = null;
-        if (isUserDefinedClass(targetField.getFieldClass())) {
-            freshObject = ObjectHelper.createNewInstance(targetField.getFieldClass());
+        Class<?> fieldClass = targetField.getFieldClass();
+        if (fieldClass != null && !fieldClass.isInterface() && isUserDefinedClass(fieldClass)) {
+            Object freshObject = ObjectHelper.createNewInstance(fieldClass);
             if (freshObject != null)
                 possibleChoices.add(freshObject);
         }

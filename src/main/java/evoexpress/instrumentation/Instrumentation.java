@@ -56,6 +56,7 @@ public class Instrumentation {
         List<CtClass<?>> classes = model.getRootPackage().getElements(new TypeFilter<>(CtClass.class));
         for (CtClass<?> clazz : classes) {
             addEmptyConstructor(clazz);
+            //setPrivateFieldsAccessible(clazz);
         }
     }
 
@@ -74,6 +75,10 @@ public class Instrumentation {
         constructor.setModifiers(Set.of(ModifierKind.PUBLIC));
         clazz.addConstructor(constructor);
     }
+
+//    private static void setPrivateFieldsAccessible(CtClass<?> clazz) {
+//        clazz.getFields().forEach(f -> f.setVisibility(ModifierKind.PUBLIC));
+//    }
 
     private static CtConstructor<?> getEmptyConstructor(CtClass<?> clazz) {
         return clazz.getConstructors().stream().filter(c -> c.getParameters().isEmpty()).findFirst().orElse(null);

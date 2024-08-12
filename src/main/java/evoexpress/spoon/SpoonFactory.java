@@ -72,7 +72,11 @@ public class SpoonFactory {
         modifiers.add(ModifierKind.PUBLIC);
         preconditionClass.setModifiers(modifiers);
 
-        CtPackage ctPackage = typeData.getThisCtClass().getPackage();
+        CtClass<?> thisClass = typeData.getThisCtClass();
+//        List<CtTypeParameter> formalTypeParameters = thisClass.getFormalCtTypeParameters();
+//        preconditionClass.setFormalCtTypeParameters(formalTypeParameters);
+
+        CtPackage ctPackage = thisClass.getPackage();
         ctPackage.addType(preconditionClass);
 
         List<CtParameter<?>> parameters = new ArrayList<>();
@@ -294,14 +298,6 @@ public class SpoonFactory {
         return resultType;
     }
 
-    public static CtConstructorCall<?> createConstructorCall(Class<?> type) {
-        return createConstructorCall(typeFactory.createReference(type));
-    }
-
-    public static CtConstructorCall<?> createConstructorCall(CtTypeReference<?> type) {
-        return codeFactory.createConstructorCall(type);
-    }
-
     public static CtInvocation<?> createStaticInvocation(CtTypeReference<?> targetClassRef, String methodName, CtExpression<?>[] args) {
         CtMethod<?> staticMethod = targetClassRef.getTypeDeclaration().getMethodsByName(methodName).get(0);
         CtExecutableReference<?> staticMethodRef = factory.Executable().createReference(staticMethod);
@@ -413,7 +409,7 @@ public class SpoonFactory {
 
     public static CtLocalVariable<?> createVisitedSetDeclaration(CtTypeReference<?> subType) {
         CtTypeReference<?> setType = createTypeWithSubtypeReference(Set.class, subType);
-        CtTypeReference<?> hashSetType = createTypeWithSubtypeReference(HashSet.class, subType);
+        CtTypeReference<?> hashSetType =  typeFactory.createReference(HashSet.class);
         CtConstructorCall<?> hashSetConstructorCall = createConstructorCall(hashSetType);
         String varName = LocalVarHelper.SET_VAR_NAME ;
         if (subType.isArray()) {
@@ -424,11 +420,44 @@ public class SpoonFactory {
         return createLocalVariable(varName, setType, hashSetConstructorCall);
     }
 
+    public static CtConstructorCall<?> createConstructorCall(CtTypeReference<?> typeRef) {
+        List<CtTypeReference<?>> actualTypeArguments = new ArrayList<>();
+        actualTypeArguments.add(factory.createTypeParameterReference(""));
+        typeRef.setActualTypeArguments(actualTypeArguments);
+
+        CtConstructorCall<?> constructorCall = factory.Core().createConstructorCall();
+        constructorCall.setType(typeRef);
+        return constructorCall;
+    }
+
     public static CtTypeReference<?> createTypeWithSubtypeReference(Class<?> type, CtTypeReference<?> subtype) {
         CtTypeReference<?> resultType = typeFactory.createReference(type);
         resultType.addActualTypeArgument(subtype);
         return resultType;
     }
+
+//    public static CtTypeReference<?> createTypeWithSubtypeReference(Class<?> type, CtTypeReference<?> subtype) {
+//        CtTypeReference<?> resultType = typeFactory.createReference(type);
+//        if (!subtype.isGenerics()) {
+//            resultType.addActualTypeArgument(subtype);
+//            return resultType;
+//        }
+//
+//        if (!subtype.isParameterized()) {
+//            resultType.addActualTypeArgument(coreFactory.createWildcardReference());
+//            return resultType;
+//        }
+//
+//        int numberOfArgs = subtype.getActualTypeArguments().size();
+//        List<CtTypeReference<?>> wildcardTypeArgs = new ArrayList<>();
+//        for (int i = 0; i < numberOfArgs; i++) {
+//            wildcardTypeArgs.add(coreFactory.createWildcardReference());
+//        }
+//
+//        subtype.setActualTypeArguments(wildcardTypeArgs);
+//        resultType.addActualTypeArgument(subtype);
+//        return resultType;
+//    }
 
     public static CtLocalVariable<?> createLocalVariable(String varName, CtTypeReference<?> type,
                                                          Object assignment) {
@@ -510,8 +539,8 @@ public class SpoonFactory {
     public static CtLocalVariable<?> createWorkListDeclaration(CtTypeReference<?> subType, CtBlock<?> code) {
         CtTypeReference<?> listType = createTypeWithSubtypeReference(LinkedList.class, subType);
         CtTypeReference<?> linkedListType = createTypeWithSubtypeReference(LinkedList.class, subType);
-        CtConstructorCall<?> hashSetConstructorCall = createConstructorCall(linkedListType);
-        return createLocalVariable(LocalVarHelper.getWorklistVarName(code), listType, hashSetConstructorCall);
+        CtConstructorCall<?> linkedListConstructorCall = createConstructorCall(linkedListType);
+        return createLocalVariable(LocalVarHelper.getWorklistVarName(code), listType, linkedListConstructorCall);
     }
 
     public static CtContinue createContinueStatement() {

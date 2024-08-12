@@ -6,16 +6,14 @@ import evoexpress.classinvariant.fitness.ClassInvariantFitness;
 import evoexpress.classinvariant.mutator.ClassInvariantMutator;
 import evoexpress.search.simulatedannealing.problem.SimulatedAnnealingProblem;
 import evoexpress.search.simulatedannealing.state.SimulatedAnnealingState;
-import evoexpress.spoon.SpoonManager;
-import org.apache.commons.math3.genetics.Fitness;
-import spoon.reflect.declaration.CtClass;
 
 import java.text.DecimalFormat;
 import java.util.Set;
 
 public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
-    static final int MAX_ROUNDS_WITHOUT_IMPROVEMENT = 100;
+    static final int MAX_ROUNDS_WITHOUT_IMPROVEMENT_RESTART = 100;
+    static final int MAX_ROUNDS_WITHOUT_IMPROVEMENT_TERMINATION = 300;
 
     ClassInvariantMutatorManager mutatorManager;
     ClassInvariantFitness fitnessFunction;
@@ -60,7 +58,7 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
     @Override
     public boolean isTerminationConditionMet(SimulatedAnnealingState state) {
-        return false;
+        return roundsWithoutImprovement >= MAX_ROUNDS_WITHOUT_IMPROVEMENT_TERMINATION;
     }
 
     @Override
@@ -77,7 +75,7 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
         } else {
             roundsWithoutImprovement = 0;
         }
-        return roundsWithoutImprovement >= MAX_ROUNDS_WITHOUT_IMPROVEMENT;
+        return roundsWithoutImprovement >= MAX_ROUNDS_WITHOUT_IMPROVEMENT_RESTART;
     }
 
 
