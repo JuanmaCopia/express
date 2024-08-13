@@ -24,15 +24,16 @@ public class ComposeNullCheckMutator implements ClassInvariantMutator {
         CtBlock<?> blockGene = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.INITIAL_METHOD_NAME).getBody();
         List<Path> paths = SpoonManager.getTypeData().getReferencePaths().stream().filter(p -> p.size() == 2).toList();
 
-        List<Path> chosenVarReads = SpoonQueries.chooseNPaths(paths, 2);
-        CtVariableRead<?> var1 = chosenVarReads.get(0).getVariableRead();
-        CtVariableRead<?> var2 = chosenVarReads.get(1).getVariableRead();
+        List<Path> chosenPaths = SpoonQueries.chooseNPaths(paths, 2);
+        Path path1 = chosenPaths.get(0);
+        Path path2 = chosenPaths.get(1);
 
-        CtExpression<Boolean> clause1 = SpoonFactory.createNullComparisonClause(var1);
-        CtExpression<Boolean> clause2 = SpoonFactory.createNullComparisonClause(var2);
+        List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(path1);
+        clauses.add(SpoonFactory.createNullComparisonClause(path1.getVariableRead()));
+        clauses.addAll(SpoonFactory.generateParentPathNullComparisonClauses(path2));
+        clauses.add(SpoonFactory.createNullComparisonClause(path2.getVariableRead()));
 
-        CtExpression<Boolean> condition = SpoonFactory.createBooleanBinaryExpression(clause1, clause2, BinaryOperatorKind.AND);
-
+        CtExpression<Boolean> condition = SpoonFactory.conjunction(clauses);
         if (SpoonQueries.checkAlreadyExist(condition, blockGene))
             return false;
 
@@ -40,7 +41,7 @@ public class ComposeNullCheckMutator implements ClassInvariantMutator {
         CtStatement comment = SpoonQueries.getReturnTrueComment(blockGene);
         comment.insertBefore(ifStatement);
 
-        //System.err.println("\nAddComposedInitialNullCheckMutator:\n" + ifStatement);
+        //System.err.println("\nComposeNullCheckMutator:\n" + ifStatement);
         //System.err.println("\nFinal Block:\n\n" + blockGene);
         return true;
     }

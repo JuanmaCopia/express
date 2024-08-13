@@ -20,6 +20,7 @@ public abstract class SimulatedAnnealing {
         SimulatedAnnealingState fittest = currentState.clone();
         int i = 0;
         while (!problem.isTerminationConditionMet(currentState)) {
+            
             double temperature = schedule.schedule(i);
             if (temperature <= 0.1) {
                 return fittest;
@@ -46,7 +47,8 @@ public abstract class SimulatedAnnealing {
             } else if (currentState.getFitness() > fittest.getFitness()) {
                 fittest = currentState.clone();
             }
+
         }
-        return currentState;
+        return fittest;
     }
 }

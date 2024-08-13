@@ -11,6 +11,7 @@ import evoexpress.spoon.SpoonQueries;
 import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
 import evoexpress.util.Utils;
+import jdk.jshell.execution.Util;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
@@ -34,19 +35,18 @@ public class CheckVisitedFieldEndOfTraversalMutator implements ClassInvariantMut
         CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(traversal);
         CtTypeReference<?> setSubType = TypeUtils.getSubType(visitedSetVar.getType(), 0);
 
-        List<Path> candidates = SpoonManager.getTypeData().getThisTypeGraph().computeSimplePathsForAlternativeVar(traversedElement).stream().filter(p -> p.size() > 1).toList();
+        List<Path> candidates = SpoonManager.getTypeData().getThisTypeGraph().computeSimplePathsForAlternativeVar(traversedElement).stream().filter(p -> p.size() == 2).toList();
         candidates = TypeUtils.filterPathsByType(candidates, setSubType).stream().toList();
 
-        Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
-        CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
+        Path chosenPath = Utils.getRandomPath(candidates);
 
-        CtExpression<Boolean> nullComparisonClause = SpoonFactory.createNullComparisonClause(chosenVarRead, BinaryOperatorKind.NE);
+        List<CtExpression<Boolean>> clauses = SpoonFactory.generateNullComparisonClauses(chosenPath);
+
+        CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
         CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(visitedSetVar, chosenVarRead);
-        condition = SpoonFactory.createBooleanBinaryExpression(
-                nullComparisonClause,
-                addToSetInvocation,
-                BinaryOperatorKind.AND
-        );
+        clauses.add(addToSetInvocation);
+
+        condition = SpoonFactory.conjunction(clauses);
 
         return !SpoonQueries.checkAlreadyExist(condition, traversal.getBody());
     }

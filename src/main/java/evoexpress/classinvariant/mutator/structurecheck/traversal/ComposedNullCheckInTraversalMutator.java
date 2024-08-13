@@ -33,20 +33,21 @@ public class ComposedNullCheckInTraversalMutator implements ClassInvariantMutato
         CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
         List<Path> paths = SpoonManager.getTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(traversedElement).stream()
-                .filter(p -> TypeUtils.isReferenceType(p.getTypeReference()) && p.size() > 1)
+                .filter(p -> TypeUtils.isReferenceType(p.getTypeReference()) && p.size() == 2)
                 .toList();
         if (paths.size() < 2)
             return false;
 
-        List<Path> chosenVarReads = SpoonQueries.chooseNPaths(paths, 2);
-        CtVariableRead<?> var1 = chosenVarReads.get(0).getVariableRead();
-        CtVariableRead<?> var2 = chosenVarReads.get(1).getVariableRead();
+        List<Path> chosenPaths = SpoonQueries.chooseNPaths(paths, 2);
+        Path path1 = chosenPaths.get(0);
+        Path path2 = chosenPaths.get(1);
 
-        CtExpression<Boolean> clause1 = SpoonFactory.createNullComparisonClause(var1);
-        CtExpression<Boolean> clause2 = SpoonFactory.createNullComparisonClause(var2);
+        List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(path1);
+        clauses.add(SpoonFactory.createNullComparisonClause(path1.getVariableRead()));
+        clauses.addAll(SpoonFactory.generateParentPathNullComparisonClauses(path2));
+        clauses.add(SpoonFactory.createNullComparisonClause(path2.getVariableRead()));
 
-        CtExpression<Boolean> condition = SpoonFactory.createBooleanBinaryExpression(clause1, clause2, BinaryOperatorKind.AND);
-
+        CtExpression<Boolean> condition = SpoonFactory.conjunction(clauses);
         if (SpoonQueries.checkAlreadyExist(condition, traversalBody))
             return false;
 
@@ -54,7 +55,7 @@ public class ComposedNullCheckInTraversalMutator implements ClassInvariantMutato
         CtStatement comment = SpoonQueries.getBeginOfTraversalComment(traversalBody);
         comment.insertBefore(ifStatement);
 
-        //System.err.println("\nAddComposedInitialNullCheckMutator:\n" + ifStatement);
+        //System.err.println("\nComposedNullCheckInTraversalMutator:\n" + ifStatement);
         //System.err.println("\nFinal Block:\n\n" + traversalBody);
         return true;
     }

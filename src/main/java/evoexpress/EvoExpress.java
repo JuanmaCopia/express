@@ -70,24 +70,25 @@ public class EvoExpress {
         mutators.add(new InvokeFieldTraversalOnArrayTraversalMutator());
         mutators.add(new RemoveTraversalInvocationMutator());
         ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness());
-        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.002));
+        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(7, 0.004));
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
 
     public ClassInvariantState startStructureCheckSearch(ClassInvariantState initialState) {
         printStartOfPhase("Structure Search");
         Set<ClassInvariantMutator> mutators = new HashSet<>();
+        mutators.add(new RemoveCheckMutator());
+        // Structure Check Mutators
         mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
         mutators.add(new AddNullCompToTraversalMutator());
         mutators.add(new AddRandomComparisonToCurrent());
         mutators.add(new DeclareVisitedSetMutator());
         mutators.add(new CheckVisitedFieldMutator());
-        mutators.add(new RemoveCheckMutator());
         mutators.add(new IfNullReturnInTraversalMutator());
         mutators.add(new ComposedNullCheckInTraversalMutator());
         mutators.add(new CheckVisitedCurrentMutator());
         ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness(), initialState);
-        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(10, 0.002));
+        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, new SimulatedAnnealingSchedule(7, 0.004));
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
 
@@ -130,7 +131,7 @@ public class EvoExpress {
 
     public void printNotKilledMutants(ClassInvariantState finalState) {
         System.out.println("\n\n==============================  Unkilled Mutants  ==============================\n");
-        //Executor.printSurvivors(finalState.getCtClass());
+        Executor.printSurvivors(finalState.getCtClass());
         System.out.println("\n=================================================================================\n");
     }
 

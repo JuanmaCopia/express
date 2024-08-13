@@ -21,12 +21,9 @@ public abstract class ClassInvariantFitness {
     public void evaluate(ClassInvariantState state) {
         if (!state.isFitnessUpdated()) {
             CtClass<?> ctClass = state.getCtClass();
-            compiler.addClassToPackage(ctClass);
             compiler.compileModel(ctClass);
-
             double fitness = calculateFitness(ctClass);
             state.setFitness(fitness);
-            compiler.removeClassFromPackage(ctClass);
         }
     }
 

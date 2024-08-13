@@ -23,7 +23,8 @@ public class RemoveTraversalInvocationMutator implements ClassInvariantMutator {
         }
         traversal = Utils.getRandomElement(traversals);
 
-        checks = MutatorHelper.getIfsCallingMethod(state.getCtClass(), traversal.getSimpleName());
+        List<CtIf> allChecks = MutatorHelper.getMutableIfs(state.getCtClass());
+        checks = allChecks.stream().filter(check -> MutatorHelper.callsMethod(check, traversal)).toList();
         if (checks.isEmpty())
             return false;
 

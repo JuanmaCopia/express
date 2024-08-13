@@ -1,7 +1,9 @@
 package evoexpress.execution;
 
+import evoexpress.classinvariant.state.ClassInvariantState;
 import evoexpress.config.Config;
 import evoexpress.object.ObjectCollector;
+import evoexpress.output.Compiler;
 import evoexpress.reflection.Reflection;
 import evoexpress.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
@@ -32,6 +34,7 @@ public class Executor {
             return -1;
         } catch (Exception e) {
             // Handle other exceptions
+            e.printStackTrace();
             return -1;
         } finally {
             // Shutdown the executor
@@ -66,6 +69,9 @@ public class Executor {
     }
 
     public static void printSurvivors(CtClass<?> cls) {
+        Compiler compiler = SpoonManager.getOutput().getCompiler();
+        compiler.compileModel(cls);
+
         Class<?> preconditionClass = Reflection.loadClass(SpoonManager.getOutput().getClassLoader(), cls.getQualifiedName());
         Method precondition = Reflection.loadMethod(preconditionClass, SpoonManager.getConfig().preconditionMethodName);
 
@@ -77,7 +83,8 @@ public class Executor {
             if (result == 1) {
                 System.out.println("\n\nCould not kill:\n" + invalidInstance.toString());
             } else if (result == -1) {
-                System.out.println("Error with" + invalidInstance.toString());
+                System.err.println("\nError with" + invalidInstance.toString());
+                System.err.println("\n\n Class: " + cls.toString());
                 return;
             }
         }

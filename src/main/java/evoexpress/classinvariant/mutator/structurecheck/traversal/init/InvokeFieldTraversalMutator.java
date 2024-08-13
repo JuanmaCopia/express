@@ -80,7 +80,8 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
         CtStatement lastStatement = SpoonQueries.getMark1Comment(targetBody);
         lastStatement.insertBefore(ifStatement);
 
-        //System.err.println("InvokeFieldTraversalMutator: invocation:\n" + ifStatement.toString());
+        //System.err.println("\nInvokeFieldTraversalMutator: invocation:\n" + ifStatement.toString());
+        //System.err.println("\n\nInvokeFieldTraversalMutator: traversal:\n" + traversal.toString());
         //System.err.println("\nInvokeFieldTraversalMutator: AFTER\n" + state.toString());
 
         return true;

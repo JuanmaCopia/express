@@ -1,6 +1,7 @@
 package evoexpress.classinvariant.mutator;
 
 import evoexpress.classinvariant.mutator.template.ArrayTraversalTemplate;
+import evoexpress.classinvariant.state.ClassInvariantState;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonQueries;
@@ -8,6 +9,7 @@ import evoexpress.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -23,20 +25,12 @@ public class MutatorHelper {
         return candidates;
     }
 
-    public static boolean isTraversalBlock(CtCodeElement elem) {
-        return elem instanceof CtBlock<?> block && block.getParent() instanceof CtMethod<?> m && m.getSimpleName().startsWith(LocalVarHelper.TRAVERSAL_PREFIX);
-    }
-
     public static CtMethod<?> getMethodByName(CtClass<?> clazz, String methodNamePrefix) {
         return clazz.getMethods().stream().filter(m -> m.getSimpleName().startsWith(methodNamePrefix)).findFirst().orElse(null);
     }
 
     public static List<CtMethod<?>> getMethodsByName(CtClass<?> clazz, String methodNamePrefix) {
         return clazz.getMethods().stream().filter(m -> m.getSimpleName().startsWith(methodNamePrefix)).toList();
-    }
-
-    public static boolean isInitialCheckBlock(CtCodeElement elem) {
-        return elem instanceof CtBlock<?> block && block.getParent() instanceof CtMethod<?> m && m.getSimpleName().startsWith("initialCheck");
     }
 
     public static CtVariable<?> handleVisitedSetVariable(CtBlock<?> methodBody, CtStatement statement, CtTypeReference<?> setSubtype) {
@@ -60,44 +54,56 @@ public class MutatorHelper {
         return setVar;
     }
 
+
+    public static List<CtMethod<?>> getMutableMethods(CtClass<?> clazz) {
+        return clazz.getMethods().stream().filter(MutatorHelper::isMutableMethod).toList();
+    }
+
     public static boolean isMutableMethod(CtMethod<?> method) {
-        String methodName = method.getSimpleName();
-        return methodName.startsWith(LocalVarHelper.STRUCTURE_METHOD_NAME) ||
-                methodName.startsWith(LocalVarHelper.PRIMITIVE_METHOD_NAME) ||
-                methodName.startsWith(LocalVarHelper.INITIAL_METHOD_NAME) ||
-                methodName.startsWith(LocalVarHelper.TRAVERSAL_PREFIX);
+        return method.getSimpleName().contains(LocalVarHelper.MUTABLE_METHOD_SUFFIX);
     }
 
-    public static List<CtIf> getMutablesIfReturnFalse(CtClass<?> clazz) {
-        return clazz.getElements(e -> isMutableIf(e) &&  isIfReturnFalse(e) && isMutableMethod(e.getParent(CtMethod.class)));
+    public static List<CtIf> getMutableIfs(CtMethod<?> method) {
+        return method.getBody().getElements(MutatorHelper::isMutableIf);
     }
 
-    public static List<CtIf> getIfsCallingMethod(CtClass<?> clazz, String methodName) {
-        return clazz.getElements(e -> isIfReturnFalse(e) && callsMethod(e, methodName));
+
+    public static List<CtIf> getMutableIfs(CtClass<?> ctClass) {
+        return getMutableIfs(getMutableMethods(ctClass));
     }
 
-    private static boolean callsMethod(CtIf e, String methodName) {
-        return e.toString().contains(methodName);
-    }
-
-    public static List<CtIf> getMutablesIfReturnFalse(CtMethod<?> method) {
-        return method.getBody().getElements(e -> isMutableIf(e) && isIfReturnFalse(e));
+    public static List<CtIf> getMutableIfs(Collection<CtMethod<?>> methods) {
+        List<CtIf> ifs = new LinkedList<>();
+        for (CtMethod<?> method : methods) {
+            ifs.addAll(method.getBody().getElements(MutatorHelper::isMutableIf));
+        }
+        return ifs;
     }
 
     public static boolean isMutableIf(CtIf ifStatement) {
-        return ifStatement.getParent(CtIf.class) == null;
+        if (ifStatement.getParent(CtIf.class) != null)
+            return false;
+        if (ifStatement.getThenStatement() instanceof CtBlock<?> block &&
+                block.getStatement(0) instanceof CtComment comment &&
+                comment.getContent().contains(LocalVarHelper.IMMUTABLE_COMMENT))
+            return false;
+        if (!isIfReturnFalse(ifStatement))
+            return false;
+
+        CtMethod<?> method = ifStatement.getParent(CtMethod.class);
+        return isMutableMethod(method);
     }
 
-    public static List<CtIf> getIfsReturnFalses(CtBlock<?> block) {
-        List<CtIf> ifsReturnFalses = new LinkedList<>();
-        List<CtIf> ifs = block.getElements(Objects::nonNull);
-        for (CtIf ifStatement : ifs) {
-            if (ifStatement.getThenStatement() instanceof CtBlock<?> ifBlock) {
-                if (isReturnFalseBlock(ifBlock))
-                    ifsReturnFalses.add(ifStatement);
-            }
-        }
-        return ifsReturnFalses;
+    public static List<CtIf> getIfsCallingMethod(CtClass<?> clazz, String methodName) {
+        return getMutableIfs(clazz).stream().filter(e -> callsMethod(e, methodName)).toList();
+    }
+
+    public static boolean callsMethod(CtIf e, String methodName) {
+        return e.toString().contains(methodName);
+    }
+
+    public static boolean callsMethod(CtIf e, CtMethod<?> method) {
+        return e.toString().contains(method.getSimpleName());
     }
 
     public static boolean isIfReturnFalse(CtIf ifStatement) {
@@ -111,10 +117,10 @@ public class MutatorHelper {
 
     public static boolean isReturnFalseBlock(CtBlock<?> block) {
         List<CtStatement> statements = block.getStatements();
-        if (statements.size() != 1)
+        if (statements.isEmpty())
             return false;
-        CtStatement statement = statements.get(0);
-        return isReturnFalseStatement(statement);
+        CtStatement lastStatement = statements.get(statements.size() - 1);
+        return isReturnFalseStatement(lastStatement);
     }
 
     public static boolean isReturnFalseStatement(CtStatement statement) {
@@ -174,6 +180,17 @@ public class MutatorHelper {
         List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(cls, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX);
         traversals.addAll(arrayTraversals);
         return traversals;
+    }
+
+    public static CtParameter<?> createThisParameter(CtThisAccess<?> thisAccess) {
+        return SpoonFactory.createParameter(thisAccess.getType(), LocalVarHelper.THIS_PARAM_NAME);
+    }
+
+    public static void addImmutableComment(CtIf check) {
+        CtComment comment = SpoonFactory.createComment(LocalVarHelper.IMMUTABLE_COMMENT);
+        if (!(check.getThenStatement() instanceof CtBlock<?> block))
+            throw new IllegalArgumentException("Expected block statement");
+        block.insertBegin(comment);
     }
 
 

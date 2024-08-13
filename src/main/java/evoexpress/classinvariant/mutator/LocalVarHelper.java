@@ -11,6 +11,11 @@ import java.util.Map;
 
 public class LocalVarHelper {
 
+    public static final String IMMUTABLE_COMMENT = "Immutable Statement:";
+
+    public static final String MUTABLE_METHOD_SUFFIX = "_M_";
+    public static final String IMMUTABLE_METHOD_SUFFIX = "_I_";
+
     public static final String INITIAL_METHOD_NAME = "initialCheck";
     public static final String STRUCTURE_METHOD_NAME = "structureCheck";
     public static final String PRIMITIVE_METHOD_NAME = "primitiveCheck";

@@ -47,10 +47,12 @@ public class TypeGraph {
 
     public Set<Path> computeSimplePathsForAlternativeVar(CtVariable<?> source) {
         CtVariable<?> initialVar;
+        boolean shouldReplace = false;
         if (!adjacencyList.containsKey(source)) {
             initialVar = searchVariableOfType(source.getType());
             if (initialVar == null)
                 return new HashSet<>();
+            shouldReplace = true;
         }
         else {
             initialVar = source;
@@ -58,6 +60,8 @@ public class TypeGraph {
         Set<Path> allPaths = new HashSet<>();
         Path currentPath = new Path(source);
         computeSimplePaths(initialVar, currentPath, allPaths);
+        if (shouldReplace)
+            replaceFirstVariableInPaths(allPaths, source);
         return allPaths;
     }
 

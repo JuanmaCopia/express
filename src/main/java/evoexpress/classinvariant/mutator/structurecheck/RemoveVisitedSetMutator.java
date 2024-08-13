@@ -28,7 +28,7 @@ public class RemoveVisitedSetMutator implements ClassInvariantMutator {
         List<CtLocalVariable<?>> visitedSetVars = SpoonQueries.getVisitedSetLocalVars(structureMethodBody);
         CtLocalVariable<?> setVar = visitedSetVars.get(RandomUtils.nextInt(visitedSetVars.size()));
 
-        List<CtIf> checks = MutatorHelper.getMutablesIfReturnFalse(structureMethod);
+        List<CtIf> checks = MutatorHelper.getMutableIfs(structureMethod);
         for (CtIf check : checks) {
             if (check.getCondition().toString().contains(setVar.getSimpleName())) {
                 check.delete();

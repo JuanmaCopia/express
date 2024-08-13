@@ -19,7 +19,7 @@ import java.util.Set;
 public class WorklistTraversalTemplate {
 
     public static CtMethod<?> instantiate(CtClass<?> ctClass, Path initialField, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn, int splitIndex) {
-        CtMethod<?> structureMethod = ctClass.getMethodsByName(LocalVarHelper.STRUCTURE_METHOD_NAME).get(0);
+        CtMethod<?> structureMethod = MutatorHelper.getMethodByName(ctClass, LocalVarHelper.STRUCTURE_METHOD_NAME);
         CtBlock<?> structureMethodBody = structureMethod.getBody();
         CtStatement lastStatement = SpoonQueries.getMark1Comment(structureMethodBody);
 
@@ -47,32 +47,37 @@ public class WorklistTraversalTemplate {
 
         CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().booleanPrimitiveType();
         List<CtParameter<?>> parameters = createParameters(leftPath, setVar);
-        CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(), parameters);
-        traversalMethod.setSimpleName(traversalMethod.getSimpleName() + LocalVarHelper.getNextTraversalId(ctClass, LocalVarHelper.TRAVERSAL_PREFIX));
+        CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(leftPath.getTypeReference()), parameters);
+        //traversalMethod.setSimpleName(traversalMethod.getSimpleName() + LocalVarHelper.getNextTraversalId(ctClass, LocalVarHelper.TRAVERSAL_PREFIX));
 
-        CtBlock<?> traversalBody = createTraversalBody(rightPath, parameters, loopFields, useBreakInsteadOfReturn, splitIndex);
+        CtBlock<?> traversalBody = createTraversalBody(rightPath, parameters, loopFields, useBreakInsteadOfReturn);
         traversalMethod.setBody(traversalBody);
         return traversalMethod;
     }
 
-    public static String createMethodName() {
-        return LocalVarHelper.TRAVERSAL_PREFIX;
+    public static String createMethodName(CtTypeReference<?> type) {
+        return LocalVarHelper.TRAVERSAL_PREFIX + type.getSimpleName() + LocalVarHelper.MUTABLE_METHOD_SUFFIX;
     }
 
 
-    private static CtBlock<?> createTraversalBody(Path firstElem, List<CtParameter<?>> params, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn, int splitIndex) {
+    private static CtBlock<?> createTraversalBody(Path firstElem, List<CtParameter<?>> params, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn) {
         CtBlock<?> body = SpoonFactory.createBlock();
 
-        CtVariable<?> firstElement;
+        CtIf pathNullCheck = null;
+        CtVariableRead<?> firstElementRead;
         if (!firstElem.isEmpty()) {
             CtVariable<?> initFieldParent = params.get(params.size() - 2);
             Path pathToFirstElement = new Path(initFieldParent, firstElem);
-            CtVariableRead<?> initFieldRead = pathToFirstElement.getVariableRead();
-            firstElement = SpoonFactory.createLocalVariable(LocalVarHelper.FIRST_ELEMENT_VAR_NAME, initFieldRead.getType(), initFieldRead);
+            CtExpression<Boolean> nullPathCheckCond = SpoonFactory.generateOrConcatenationOfNullComparisons(pathToFirstElement);
+            pathNullCheck = SpoonFactory.createIfReturnTrue(nullPathCheckCond);
+            firstElementRead = pathToFirstElement.getVariableRead();
         } else {
-            firstElement = params.get(params.size() - 2);
+            CtVariable<?> firstElement = params.get(params.size() - 2);
+            firstElementRead = SpoonFactory.createVariableRead(firstElement);
+            CtExpression<Boolean> nullPathCheckCond = SpoonFactory.createNullComparisonClause(firstElement, BinaryOperatorKind.EQ);
+            pathNullCheck = SpoonFactory.createIfReturnTrue(nullPathCheckCond);
         }
-        CtVariableRead<?> firstElementRead = SpoonFactory.createVariableRead(firstElement);
+
         CtVariable<?> visitedSet = params.get(params.size() - 1);
 
         CtIf firstElemVisitedCheck = SpoonFactory.createVisitedCheck(visitedSet, firstElementRead, true, false);
@@ -83,15 +88,7 @@ public class WorklistTraversalTemplate {
         CtTypeReference<?> subtypeOfWorklist = worklist.getType().getActualTypeArguments().get(0);
 
         CtInvocation<?> addToWorklistCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, firstElementRead);
-        CtInvocation<?> addToSetCall = (CtInvocation<?>) SpoonFactory.createAddToSetInvocation(visitedSet, firstElementRead);
-        CtBlock<?> ifBlock = SpoonFactory.createBlock();
-        ifBlock.insertEnd(firstElemVisitedCheck);
-        ifBlock.insertEnd(addToWorklistCall);
-        ifBlock.insertEnd(addToSetCall);
-
-
-        CtExpression<Boolean> ifCondition = SpoonFactory.createNullComparisonClause(firstElementRead, BinaryOperatorKind.NE);
-        CtIf initialFieldNullCheck = SpoonFactory.createIfThenStatement(ifCondition, ifBlock);
+        //CtInvocation<?> addToSetCall = (CtInvocation<?>) SpoonFactory.createAddToSetInvocation(visitedSet, firstElementRead);
 
         // create condition: !workList.isEmpty()
         CtInvocation<?> isEmptyMethodCall = SpoonFactory.createInvocation(worklist, "isEmpty");
@@ -106,10 +103,6 @@ public class WorklistTraversalTemplate {
         CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(body), subtypeOfWorklist, removeFirstMethodCall);
         //CtAssignment<?, ?> assignRemoveFirst = SpoonFactory.createAssignment(currentDeclaration, removeFirstMethodCall);
         whileBody.insertEnd(currentDeclaration);
-
-        // Add visited check
-        //CtIf ifStatement = SpoonFactory.createVisitedCheck(visitedSet, currentDeclaration, true);
-        //whileBody.insertEnd(ifStatement);
 
         // Create comment: // Handle current:
         whileBody.insertEnd(SpoonFactory.createComment("Handle current:"));
@@ -127,19 +120,26 @@ public class WorklistTraversalTemplate {
         // Create while statement
         CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, whileBody);
 
-
         body.insertEnd(SpoonFactory.createComment("Begin of traversal"));
+        body.insertEnd(pathNullCheck);
+        body.insertEnd(firstElemVisitedCheck);
+
+        MutatorHelper.addImmutableComment(pathNullCheck);
+        MutatorHelper.addImmutableComment(firstElemVisitedCheck);
+
         body.insertEnd(worklist);
-        if (!firstElem.isEmpty()) {
-            body.insertEnd(SpoonFactory.createComment("Initialize root element:"));
-            body.insertEnd((CtStatement) firstElement);
-        }
-        body.insertEnd(initialFieldNullCheck);
+
+
+        body.insertEnd(addToWorklistCall);
+        //body.insertEnd(addToSetCall);
+
         body.insertEnd(SpoonFactory.createComment("Cycle over cyclic references:"));
         body.insertEnd(whileStatement);
         body.insertEnd(SpoonFactory.createComment("End of traversal"));
         body.insertEnd(SpoonFactory.createComment("Return True"));
         body.insertEnd(SpoonFactory.createReturnTrueStatement());
+
+        //System.out.println("\nWorklistTraversalTemplate.createTraversalBody()" + body.toString());
 
         return body;
     }

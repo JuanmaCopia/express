@@ -17,9 +17,8 @@ public class RemoveCheckMutator implements ClassInvariantMutator {
     CtIf chosenCheck;
 
     public boolean isApplicable(ClassInvariantState state) {
-        List<CtIf> checks = MutatorHelper.getMutablesIfReturnFalse(state.getCtClass()).stream().filter(
+        List<CtIf> checks = MutatorHelper.getMutableIfs(state.getCtClass()).stream().filter(
                 c -> !c.getParent(CtMethod.class).getSimpleName().startsWith(LocalVarHelper.INITIAL_METHOD_NAME) &&
-                        !c.getParent(CtMethod.class).getSimpleName().startsWith(SpoonManager.getConfig().preconditionMethodName) &&
                         !c.getCondition().toString().contains(LocalVarHelper.TRAVERSAL_PREFIX) &&
                         !c.getCondition().toString().contains(LocalVarHelper.ARRAY_TRAVERSAL_PREFIX)
         ).toList();

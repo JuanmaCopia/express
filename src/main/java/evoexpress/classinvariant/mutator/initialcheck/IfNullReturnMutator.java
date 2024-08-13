@@ -9,41 +9,33 @@ import evoexpress.spoon.SpoonFactory;
 import evoexpress.spoon.SpoonManager;
 import evoexpress.spoon.SpoonQueries;
 import evoexpress.type.typegraph.Path;
+import evoexpress.util.Utils;
 import spoon.reflect.code.*;
 
 import java.util.List;
 
 public class IfNullReturnMutator implements ClassInvariantMutator {
 
+    CtBlock<?> targetMethodBody;
+    CtExpression<Boolean> condition;
+
     public boolean isApplicable(ClassInvariantState state) {
+        targetMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.INITIAL_METHOD_NAME).getBody();
+
+        List<Path> paths = SpoonManager.getTypeData().getReferencePaths().stream().filter(p -> p.size() > 1 && p.size() < 4).toList();
+        Path chosenPath = Utils.getRandomPath(paths);
+
+        condition = SpoonFactory.generateAndConcatenationOfNullComparisons(chosenPath);
+        if (SpoonQueries.checkAlreadyExist(condition, targetMethodBody))
+            return false;
+
         return true;
     }
 
     @Override
     public boolean mutate(ClassInvariantState state) {
-        CtBlock<?> methodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.INITIAL_METHOD_NAME).getBody();
-
-        List<Path> paths = SpoonManager.getTypeData().getReferencePaths().stream().filter(p -> p.size() >= 2 && p.size() <=3).toList();
-        Path chosenPath = paths.get(RandomUtils.nextInt(paths.size()));
-        CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
-
-        CtExpression<Boolean> condition = null;
-        if (chosenPath.size() == 2) {
-            condition = SpoonFactory.createNullComparisonClause(chosenVarRead);
-        } else if (chosenPath.size() == 3) {
-            CtVariableRead<?> owner = chosenPath.getVariableReadOwner();
-            condition = SpoonFactory.createBooleanBinaryExpression(
-                    SpoonFactory.createNullComparisonClause(owner, BinaryOperatorKind.NE),
-                    SpoonFactory.createNullComparisonClause(chosenVarRead),
-                    BinaryOperatorKind.AND
-            );
-        }
-
-        if (SpoonQueries.checkAlreadyExist(condition, methodBody))
-            return false;
-
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
-        CtStatement returnTrueComment = SpoonQueries.getReturnTrueComment(methodBody);
+        CtStatement returnTrueComment = SpoonQueries.getReturnTrueComment(targetMethodBody);
         returnTrueComment.insertBefore(ifStatement);
 
         /*System.err.println("\nAddIfNullReturnMutator:\n" + ifStatement);

@@ -34,6 +34,11 @@ public class LengthFitness extends ClassInvariantFitness {
             Object[] args = new Object[1];
             args[0] = validInstance;
             int result = Executor.runPrecondition(precondition, args);
+            if (result == -1) {
+                System.err.println("Error running precondition");
+                System.err.println("Class: " + ctClass.toString());
+                return WORST_FITNESS_VALUE;
+            }
             if (result != 1) {
                 return WORST_FITNESS_VALUE;
             }
@@ -46,6 +51,8 @@ public class LengthFitness extends ClassInvariantFitness {
             args[0] = invalidInstance;
             int result = Executor.runPrecondition(precondition, args);
             if (result == -1) {
+                System.err.println("Error running precondition");
+                System.err.println("Class: " + ctClass.toString());
                 return WORST_FITNESS_VALUE;
             } else if (result == 0) {
                 fitness = fitness + 1;

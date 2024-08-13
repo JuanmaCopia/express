@@ -12,6 +12,7 @@ import evoexpress.type.TypeUtils;
 import evoexpress.type.typegraph.Path;
 import evoexpress.type.typegraph.TypeData;
 import evoexpress.type.typegraph.TypeGraph;
+import evoexpress.util.Utils;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
 
@@ -44,17 +45,14 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
             return false;
 
 
-        Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
-        Path chosenPathOwner = chosenPath.getParentPath();
-        Path currentPath = chosenPathOwner.getParentPath();
-        CtVariableRead<?> chosenPathRead = chosenPath.getVariableRead();
-        CtVariableRead<?> chosenPathReadOwner = chosenPathOwner.getVariableRead();
-        CtVariableRead<?> currentRead = currentPath.getVariableRead();
+        Path chosenPath = Utils.getRandomPath(candidates);
+        List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(chosenPath);
 
-        CtExpression<Boolean> clause1 = SpoonFactory.createNullComparisonClause(chosenPathReadOwner, BinaryOperatorKind.NE);
-        CtExpression<Boolean> clause2 = SpoonFactory.createBooleanBinaryExpression(chosenPathRead, currentRead, BinaryOperatorKind.NE);
-        CtExpression<Boolean> condition = SpoonFactory.createBooleanBinaryExpression(clause1, clause2, BinaryOperatorKind.AND);
+        CtVariableRead<?> currentRead = SpoonFactory.createVariableRead(currentDeclaration);
+        clauses.add(SpoonFactory.createBooleanBinaryExpression(
+                chosenPath.getVariableRead(), currentRead, BinaryOperatorKind.NE));
 
+        CtExpression<Boolean> condition = SpoonFactory.conjunction(clauses);
         if (SpoonQueries.checkAlreadyExist(condition, traversalBody))
             return false;
 
@@ -63,7 +61,7 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(traversalBody);
         endOfHandleCurrentComment.insertBefore(ifStatement);
 
-        //System.err.println("AddRandomComparisonToCurrent:\n" + ifStatement);
+        //System.err.println("\n\nAddRandomComparisonToCurrent:\n\n" + ifStatement);
         //System.err.println("\nAddNullCompToTraversalMutator:\n\n" + traversalBody);
         return true;
     }

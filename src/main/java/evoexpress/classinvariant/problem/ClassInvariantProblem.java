@@ -12,8 +12,7 @@ import java.util.Set;
 
 public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
-    static final int MAX_ROUNDS_WITHOUT_IMPROVEMENT_RESTART = 100;
-    static final int MAX_ROUNDS_WITHOUT_IMPROVEMENT_TERMINATION = 300;
+    static final int MAX_ROUNDS_WITHOUT_IMPROVEMENT_RESTART = 200;
 
     ClassInvariantMutatorManager mutatorManager;
     ClassInvariantFitness fitnessFunction;
@@ -25,11 +24,13 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
         mutatorManager = new ClassInvariantMutatorManager(mutators);
         this.fitnessFunction = fitnessFunction;
         this.initialState = initialState;
+        roundsWithoutImprovement = 0;
     }
 
     public ClassInvariantProblem(Set<ClassInvariantMutator> mutators, ClassInvariantFitness fitnessFunction) {
         mutatorManager = new ClassInvariantMutatorManager(mutators);
         this.fitnessFunction = fitnessFunction;
+        roundsWithoutImprovement = 0;
     }
 
     @Override
@@ -58,7 +59,7 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
     @Override
     public boolean isTerminationConditionMet(SimulatedAnnealingState state) {
-        return roundsWithoutImprovement >= MAX_ROUNDS_WITHOUT_IMPROVEMENT_TERMINATION;
+        return false;
     }
 
     @Override
@@ -70,12 +71,16 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
     @Override
     public boolean shouldRestart(SimulatedAnnealingState currentState, SimulatedAnnealingState fittest) {
-        if (fittest.getFitness() > currentState.getFitness()) {
+        if (fittest.getFitness() >= currentState.getFitness()) {
             roundsWithoutImprovement++;
         } else {
             roundsWithoutImprovement = 0;
         }
-        return roundsWithoutImprovement >= MAX_ROUNDS_WITHOUT_IMPROVEMENT_RESTART;
+        if (roundsWithoutImprovement >= MAX_ROUNDS_WITHOUT_IMPROVEMENT_RESTART) {
+            roundsWithoutImprovement = 0;
+            return true;
+        }
+        return false;
     }
 
 

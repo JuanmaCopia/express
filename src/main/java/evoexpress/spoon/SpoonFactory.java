@@ -151,19 +151,24 @@ public class SpoonFactory {
 
     private static List<CtMethod<Boolean>> createSubPreconditions(List<CtParameter<?>> parameters) {
         List<CtMethod<Boolean>> subPreconditions = new ArrayList<>();
-        subPreconditions.add(createSubPreconditionMethod("initialCheck", parameters));
-        subPreconditions.add(createSubPreconditionMethod("structureCheck", parameters));
-        subPreconditions.add(createSubPreconditionMethod("primitiveCheck", parameters));
+        subPreconditions.add(createSubPreconditionMethod(LocalVarHelper.INITIAL_METHOD_NAME, parameters));
+        subPreconditions.add(createSubPreconditionMethod(LocalVarHelper.STRUCTURE_METHOD_NAME, parameters));
+        subPreconditions.add(createSubPreconditionMethod(LocalVarHelper.PRIMITIVE_METHOD_NAME, parameters));
         return subPreconditions;
     }
 
+    private static String createSubPreconditionMethodName(String name) {
+        return name + LocalVarHelper.MUTABLE_METHOD_SUFFIX;
+    }
 
     public static CtMethod<Boolean> createSubPreconditionMethod(String name, List<CtParameter<?>> parameters) {
         Set<ModifierKind> modifiers = new HashSet<>();
         modifiers.add(ModifierKind.PUBLIC);
         modifiers.add(ModifierKind.STATIC);
 
-        CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.booleanPrimitiveType(), name, parameters);
+        String methodName = createSubPreconditionMethodName(name);
+
+        CtMethod<Boolean> preconditionMethod = createMethod(modifiers, typeFactory.booleanPrimitiveType(), methodName, parameters);
 
         preconditionMethod.setBody(createReturnTrueBlock());
         return preconditionMethod;
@@ -623,6 +628,10 @@ public class SpoonFactory {
         return createIfThenStatement(condition, createReturnStatement(createLiteral(false)));
     }
 
+    public static CtIf createIfReturnTrue(CtExpression<Boolean> condition) {
+        return createIfThenStatement(condition, createReturnStatement(createLiteral(true)));
+    }
+
     public static CtExpression<Boolean> generateAndConcatenationOfNullComparisons(Path path) {
         BinaryOperatorKind operator = RandomUtils.nextBoolean() ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE;
         return generateAndConcatenationOfNullComparisons(path, operator);
@@ -630,14 +639,55 @@ public class SpoonFactory {
 
 
     public static CtExpression<Boolean> generateAndConcatenationOfNullComparisons(Path path, BinaryOperatorKind operator) {
+        return conjunction(generateNullComparisonClauses(path, operator));
+    }
+
+    public static List<CtExpression<Boolean>> generateNullComparisonClauses(Path path) {
+        return generateNullComparisonClauses(path, BinaryOperatorKind.NE);
+    }
+
+    public static List<CtExpression<Boolean>> generateNullComparisonClauses(Path path, BinaryOperatorKind operator) {
         List<CtExpression<Boolean>> clauses = new LinkedList<>();
         for (int end = 2; end < path.size(); end++) {
             CtVariableRead<?> varRead = path.subPath(end).getVariableRead();
             clauses.add(createNullComparisonClause(varRead, BinaryOperatorKind.NE));
         }
         clauses.add(createNullComparisonClause(path.getVariableRead(), operator));
-        return conjunction(clauses);
+        return clauses;
     }
+
+    public static List<CtExpression<Boolean>> generateParentPathNullComparisonClauses(Path path) {
+        List<CtExpression<Boolean>> clauses = new LinkedList<>();
+        for (int end = 2; end < path.size(); end++) {
+            CtVariableRead<?> varRead = path.subPath(end).getVariableRead();
+            clauses.add(createNullComparisonClause(varRead, BinaryOperatorKind.NE));
+        }
+        return clauses;
+    }
+
+    public static CtExpression<Boolean> generateOrConcatenationOfNullComparisons(Path path) {
+        List<CtExpression<Boolean>> clauses = new LinkedList<>();
+        for (int end = 2; end < path.size(); end++) {
+            CtVariableRead<?> varRead = path.subPath(end).getVariableRead();
+            clauses.add(createNullComparisonClause(varRead, BinaryOperatorKind.EQ));
+        }
+        clauses.add(createNullComparisonClause(path.getVariableRead(), BinaryOperatorKind.EQ));
+        return disjunction(clauses);
+    }
+
+    private static CtExpression<Boolean> disjunction(List<CtExpression<Boolean>> clauses) {
+        if (clauses.isEmpty())
+            throw new IllegalArgumentException("List of clauses must not be empty");
+        if (clauses.size() == 1)
+            return clauses.get(0);
+
+        CtExpression<Boolean> result = clauses.get(0);
+        for (int i = 1; i < clauses.size(); i++) {
+            result = (CtExpression<Boolean>) createBinaryExpression(result, clauses.get(i), BinaryOperatorKind.OR);
+        }
+        return result;
+    }
+
 
     public static CtExpression<Boolean> conjunction(List<CtExpression<Boolean>> clauses) {
         if (clauses.isEmpty())

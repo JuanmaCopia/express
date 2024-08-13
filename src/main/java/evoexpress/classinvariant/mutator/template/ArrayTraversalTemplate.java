@@ -19,7 +19,7 @@ import java.util.*;
 public class ArrayTraversalTemplate {
 
     public static CtMethod<?> instantiate(CtClass<?> ctClass, Path pathToArray) {
-        CtMethod<?> structureMethod = ctClass.getMethodsByName(LocalVarHelper.STRUCTURE_METHOD_NAME).get(0);
+        CtMethod<?> structureMethod = MutatorHelper.getMethodByName(ctClass, LocalVarHelper.STRUCTURE_METHOD_NAME);
         CtBlock<?> structureMethodBody = structureMethod.getBody();
         CtStatement lastStatement = SpoonQueries.getMark1Comment(structureMethodBody);
 
@@ -37,13 +37,19 @@ public class ArrayTraversalTemplate {
 
         CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().booleanPrimitiveType();
         List<CtParameter<?>> parameters = createParameters(pathToArray, setVar);
-        CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(), parameters);
-        traversalMethod.setSimpleName(traversalMethod.getSimpleName() + LocalVarHelper.getNextTraversalId(ctClass, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX));
+        CtTypeReference<?> arraySubtype = ((CtArrayTypeReference<?>) pathToArray.getTypeReference()).getComponentType();
+        CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(arraySubtype), parameters);
+        //traversalMethod.setSimpleName(traversalMethod.getSimpleName() + LocalVarHelper.getNextTraversalId(ctClass, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX));
 
         CtBlock<?> traversalBody = createArrayTraversalBody(pathToArray, parameters);
         traversalMethod.setBody(traversalBody);
         return traversalMethod;
     }
+
+    public static String createMethodName(CtTypeReference<?> arraySubtype) {
+        return LocalVarHelper.ARRAY_TRAVERSAL_PREFIX + arraySubtype.getSimpleName() + LocalVarHelper.MUTABLE_METHOD_SUFFIX;
+    }
+
 
     private static List<CtParameter<?>> createParameters(Path pathToArray, CtVariable<?> visitedSet) {
         List<CtParameter<?>> parameters = new ArrayList<>();
@@ -52,12 +58,6 @@ public class ArrayTraversalTemplate {
         parameters.add(SpoonFactory.createParameter(visitedSet.getType(), LocalVarHelper.SET_VAR_NAME));
         return parameters;
     }
-
-
-    public static String createMethodName() {
-        return LocalVarHelper.ARRAY_TRAVERSAL_PREFIX;
-    }
-
 
     private static CtBlock<?> createArrayTraversalBody(Path pathToArray, List<CtParameter<?>> params) {
         CtBlock<?> body = SpoonFactory.createBlock();
