@@ -28,18 +28,18 @@ public class ObjectMutator {
         List<Object> candidates = collectCandidatesForMutation(rootObject);
 //        System.err.println("\n\nNumber of candidates for mutation: " + candidates.size());
 //        System.err.println("Candidates for mutation: " + candidates);
-        TargetField targetField = selectTargetField(candidates);
-//        System.err.println("Target field: " + targetField);
-        if (targetField == null)
+        Target target = selectTarget(candidates);
+//        System.err.println("Target field: " + target);
+        if (target == null)
             return false;
 
-        Object newFieldValue = getNewValueForField(targetField, candidates);
-//        System.err.println("Current field value: " + targetField.getValue());
+        Object newFieldValue = getNewValueForTheTarget(target, candidates);
+//        System.err.println("Current field value: " + target.getValue());
 //        System.err.println("New field value: " + newFieldValue);
-        if (newFieldValue == targetField.getValue())
+        if (newFieldValue == target.getValue())
             return false;
 
-        targetField.setValue(newFieldValue);
+        target.setValue(newFieldValue);
         return true;
     }
 
@@ -63,7 +63,7 @@ public class ObjectMutator {
                 if (currentClass.isArray()) {
                     Object[] array = collectObjectsFromArray(currentObject);
                     for (Object o : array) {
-                        if (o != null && !o.getClass().isPrimitive()) {
+                        if (o != null && !TypeChecker.isPrimitiveOrBoxedPrimitive(o.getClass())) {
                             queue.offer(o);
                         }
                     }
@@ -115,6 +115,8 @@ public class ObjectMutator {
             collectedObjects[i] = Array.get(array, i);
         }
 
+        System.err.println("Collected Objects from array: " + Arrays.toString(collectedObjects));
+
         return collectedObjects;
     }
 
@@ -125,7 +127,7 @@ public class ObjectMutator {
      * @param candidates is the list of objects to select the field from
      * @return a random field to mutate
      */
-    static TargetField selectTargetField(List<Object> candidates) {
+    static Target selectTarget(List<Object> candidates) {
         List<CtTypeReference<?>> candidateTypes = selectCandidateTypes(candidates);
         if (candidateTypes.isEmpty())
             return null;
@@ -134,35 +136,45 @@ public class ObjectMutator {
         List<Object> objectsOfType = getCandidatesOfType(candidates, chosenType);
         Object chosenObject = Utils.getRandomElement(objectsOfType);
 
-        List<CtVariable<?>> referenceFields = TypeUtils.getReferenceFields(chosenType);
-        CtVariable<?> chosenField = Utils.getRandomElement(referenceFields);
+        Target targetField;
+        if (!chosenType.isArray()) {
+            List<CtVariable<?>> referenceFields = TypeUtils.getReferenceFields(chosenType);
+            CtVariable<?> chosenField = Utils.getRandomElement(referenceFields);
+            targetField = new TargetField(chosenObject, chosenField);
+        } else {
+            int index = new Random().nextInt(Array.getLength(chosenObject));
+            targetField = new TargetIndex(chosenObject, index);
+        }
 
-        return new TargetField(chosenObject, chosenField);
+        return targetField;
     }
 
     private static List<CtTypeReference<?>> selectCandidateTypes(List<Object> candidates) {
-        List<CtTypeReference<?>> candidateTypes = new ArrayList<>();
-        List<CtTypeReference<?>> userDefTypes = SpoonManager.getTypeData().getUserDefinedTypes()
-                .stream().filter(TypeUtils::hasReferenceFields).toList();
-        for (CtTypeReference<?> type : userDefTypes) {
+        List<CtTypeReference<?>> result = new ArrayList<>();
+        List<CtTypeReference<?>> candidateTypes = new LinkedList<>(SpoonManager.getTypeData().getUserDefinedTypes()
+                .stream().filter(TypeUtils::hasReferenceFields).toList());
+        candidateTypes.addAll(SpoonManager.getTypeData().getArrayTypes().stream().filter(
+                TypeUtils::isUserDefinedArrayType
+        ).toList());
+        for (CtTypeReference<?> type : candidateTypes) {
             if (!getCandidatesOfType(candidates, type).isEmpty())
-                candidateTypes.add(type);
+                result.add(type);
         }
-        return candidateTypes;
+        return result;
     }
 
     /**
      * Get a new value for the given field
      *
-     * @param targetField is the field to get the new value for
+     * @param target is the field to get the new value for
      * @param candidates  is the list of objects to get the new value from
      * @return a new value for the given field
      */
-    static Object getNewValueForField(TargetField targetField, List<Object> candidates) {
-        List<Object> possibleChoices = new ArrayList<>(getCandidatesOfType(candidates, targetField));
+    static Object getNewValueForTheTarget(Target target, List<Object> candidates) {
+        List<Object> possibleChoices = new ArrayList<>(getCandidatesOfType(candidates, target));
 
         // Add a fresh object to the possible choices
-        Class<?> fieldClass = targetField.getFieldClass();
+        Class<?> fieldClass = target.getClassOfObjective();
         if (fieldClass != null && !fieldClass.isInterface() && isUserDefinedClass(fieldClass)) {
             Object freshObject = ObjectHelper.createNewInstance(fieldClass);
             if (freshObject != null)
@@ -170,13 +182,13 @@ public class ObjectMutator {
         }
 
         // Add null to the possible choices
-        Object currentValue = targetField.getValue();
+        Object currentValue = target.getValue();
         if (currentValue != null)
             possibleChoices.add(null);
 
         if (possibleChoices.isEmpty())
             return null;
-        return possibleChoices.get(new Random().nextInt(possibleChoices.size()));
+        return Utils.getRandomElement(possibleChoices);
     }
 
     /**
@@ -188,9 +200,9 @@ public class ObjectMutator {
      * @param targetField is the field to get the candidates for
      * @return a list of candidates of the given type
      */
-    static List<Object> getCandidatesOfType(List<Object> candidates, TargetField targetField) {
+    static List<Object> getCandidatesOfType(List<Object> candidates, Target targetField) {
         return candidates.stream().filter(o -> o != targetField.getValue() &&
-                o.getClass().getName().equals(targetField.getField().getType().getQualifiedName())).toList();
+                o.getClass().getName().equals(targetField.getClassOfObjective().getName())).toList();
     }
 
 
@@ -219,45 +231,62 @@ public class ObjectMutator {
         return objectsOfType.get(Utils.nextInt(objectsOfType.size()));
     }
 
+    public interface Target {
+        Object getValue();
+        void setValue(Object newValue);
+        Class<?> getClassOfObjective();
+    }
+
     /**
      * This record represents a field of an object to mutate
      */
-    record TargetField(Object target, CtVariable<?> field) {
+    public static class TargetField implements Target {
 
-        public Object getTarget() {
-            return target;
+        private final Object owner;
+        private final CtVariable<?> field;
+
+        public TargetField(Object owner, CtVariable<?> field) {
+            this.owner = owner;
+            this.field = field;
+        }
+
+        public Object getOwner() {
+            return owner;
         }
 
         public CtVariable<?> getField() {
             return field;
         }
 
-        Class<?> getFieldClass() {
+        @Override
+        public Class<?> getClassOfObjective() {
             try {
-                Field f = target.getClass().getDeclaredField(field.getSimpleName());
+                Field f = owner.getClass().getDeclaredField(field.getSimpleName());
                 return f.getType();
             } catch (NoSuchFieldException e) {
                 return null;
             }
         }
 
-        Object getValue() {
+        @Override
+        public Object getValue() {
             Object currentValue = null;
             try {
-                Field f = target.getClass().getDeclaredField(field.getSimpleName());
+                Field f = owner.getClass().getDeclaredField(field.getSimpleName());
                 f.setAccessible(true);
-                currentValue = f.get(target);
+                currentValue = f.get(owner);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 return null;
             }
             return currentValue;
         }
 
-        void setValue(Object newValue) {
+        @Override
+        public void setValue(Object newValue) {
             try {
-                Field f = target.getClass().getDeclaredField(field.getSimpleName());
+                Field f = owner.getClass().getDeclaredField(field.getSimpleName());
                 f.setAccessible(true);
-                f.set(target, newValue);
+                f.set(owner, newValue);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 // Do nothing
                 e.printStackTrace();
@@ -266,9 +295,60 @@ public class ObjectMutator {
 
         public String toString() {
             return "TargetField{" +
-                    "targetType=" + target.getClass() +
+                    "ownerType=" + owner.getClass() +
                     ", field=" + field.getSimpleName() +
                     '}';
+        }
+
+    }
+
+    public static class TargetIndex implements Target {
+
+        private final Object owner;
+        private final int index;
+
+
+        public TargetIndex(Object array, int index) {
+            this.owner = array;
+            this.index = index;
+        }
+
+        public Object getOwner() {
+            return owner;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public Object getValue() {
+            Object currentValue = null;
+            try {
+                currentValue = Array.get(owner, index);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+            return currentValue;
+        }
+
+        public void setValue(Object newValue) {
+            try {
+                Array.set(owner, index, newValue);
+            } catch (Exception e) {
+                // Do nothing
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public Class<?> getClassOfObjective() {
+            try {
+                return owner.getClass().getComponentType();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
     }

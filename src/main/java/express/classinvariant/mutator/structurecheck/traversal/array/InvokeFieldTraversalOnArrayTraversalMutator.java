@@ -19,9 +19,7 @@ import java.util.List;
 
 public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvariantMutator {
 
-
     CtMethod<?> arrayTraversal;
-    CtMethod<?> cyclicFieldTraversal;
     CtExpression<Boolean> condition;
     CtVariable<?> setVar;
     boolean mustDeclareSet = false;
@@ -36,7 +34,7 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
             return false;
 
         arrayTraversal = Utils.getRandomElement(arrayTraversals);
-        cyclicFieldTraversal = Utils.getRandomElement(cyclicFieldsTraversals);
+        CtMethod<?> cyclicFieldTraversal = Utils.getRandomElement(cyclicFieldsTraversals);
         CtTypeReference<?> traversedElementType = SpoonQueries.getTraversedElement(cyclicFieldTraversal).getType();
 
 
@@ -78,7 +76,6 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
     @Override
     public void mutate(ClassInvariantState state) {
         CtBlock<?> arrayTraversalBody = arrayTraversal.getBody();
-        //System.err.println("InvokeFieldTraversalOnArrayTraversalMutator: BEFORE:\n" + state);
         if (mustDeclareSet) {
             arrayTraversalBody.insertBegin((CtStatement) setVar);
         }

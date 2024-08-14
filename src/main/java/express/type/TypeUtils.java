@@ -3,6 +3,7 @@ package express.type;
 import express.type.typegraph.Path;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
 
@@ -32,7 +33,7 @@ public class TypeUtils {
     }
 
     public static boolean isUserDefinedType(CtTypeReference<?> type) {
-        return isReferenceType(type) && isInSourcePath(type);
+        return isReferenceType(type) && !isArrayType(type) && isInSourcePath(type);
     }
 
     public static boolean isInSourcePath(CtTypeReference<?> type) {
@@ -193,5 +194,15 @@ public class TypeUtils {
 
     public static CtTypeReference<?> getSubType(CtTypeReference<?> typeRef, int subtypeIndex) {
         return typeRef.getActualTypeArguments().get(subtypeIndex);
+    }
+
+    public static CtTypeReference<?> getComponentType(CtArrayTypeReference<?> typeRef) {
+        return typeRef.getComponentType();
+    }
+
+    public static boolean isUserDefinedArrayType(CtTypeReference<?> a) {
+        if (!a.isArray())
+            return false;
+        return isUserDefinedType(getComponentType((CtArrayTypeReference<?>) a));
     }
 }

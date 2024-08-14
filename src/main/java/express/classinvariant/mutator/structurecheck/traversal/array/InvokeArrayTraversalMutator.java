@@ -20,9 +20,7 @@ import java.util.List;
 
 public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
 
-    CtMethod<?> traversal;
     CtBlock<?> targetBody;
-    List<Path> pathCandidates;
     CtExpression<Boolean> condition;
     CtVariable<?> setVar;
     boolean mustDeclareSet = false;
@@ -33,11 +31,11 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
             return false;
         }
 
-        traversal = Utils.getRandomElement(traversals);
+        CtMethod<?> traversal = Utils.getRandomElement(traversals);
 
         CtVariable<?> array = SpoonQueries.getTraversedElementParameter(traversal);
 
-        pathCandidates = TypeUtils.filterPathsByType(
+        List<Path> pathCandidates = TypeUtils.filterPathsByType(
                 SpoonManager.getTypeData().getArrayPaths(),
                 array.getType()
         ).stream().toList();
@@ -65,17 +63,12 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         CtExpression<Boolean> clause2 = SpoonFactory.negateExpresion(traversalCall);
         condition = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(clause1, clause2, BinaryOperatorKind.AND);
 
-        if (SpoonQueries.checkAlreadyExistSimple(condition, targetBody))
-            return false;
-
-
-        return true;
+        return !SpoonQueries.checkAlreadyExistSimple(condition, targetBody);
     }
 
 
     @Override
     public void mutate(ClassInvariantState state) {
-        //System.err.println("InvokeArrayTraversalMutator: BEFORE\n" + state.toString());
         if (mustDeclareSet) {
             targetBody.insertBegin((CtStatement) setVar);
         }
@@ -84,7 +77,7 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         CtStatement lastStatement = SpoonQueries.getMark1Comment(targetBody);
         lastStatement.insertBefore(ifStatement);
         //System.err.println("InvokeArrayTraversalMutator: added check: \n" + ifStatement.toString());
-        //System.err.println("InvokeArrayTraversalMutator: result:\n" + state.toString());
+        //System.err.println("\nInvokeArrayTraversalMutator: result:\n\n" + state.toString());
     }
 
     private CtExpression<?>[] createArguments(List<CtParameter<?>> params, CtVariable<?> visitedSetVar, CtVariableRead<?> pathRead) {

@@ -648,7 +648,7 @@ public class SpoonFactory {
 
     public static List<CtExpression<Boolean>> generateNullComparisonClauses(Path path, BinaryOperatorKind operator) {
         List<CtExpression<Boolean>> clauses = new LinkedList<>();
-        for (int end = 2; end < path.size(); end++) {
+        for (int end = 1; end < path.size(); end++) {
             CtVariableRead<?> varRead = path.subPath(end).getVariableRead();
             clauses.add(createNullComparisonClause(varRead, BinaryOperatorKind.NE));
         }
@@ -658,7 +658,7 @@ public class SpoonFactory {
 
     public static List<CtExpression<Boolean>> generateParentPathNullComparisonClauses(Path path) {
         List<CtExpression<Boolean>> clauses = new LinkedList<>();
-        for (int end = 2; end < path.size(); end++) {
+        for (int end = 1; end < path.size(); end++) {
             CtVariableRead<?> varRead = path.subPath(end).getVariableRead();
             clauses.add(createNullComparisonClause(varRead, BinaryOperatorKind.NE));
         }
@@ -667,7 +667,7 @@ public class SpoonFactory {
 
     public static CtExpression<Boolean> generateOrConcatenationOfNullComparisons(Path path) {
         List<CtExpression<Boolean>> clauses = new LinkedList<>();
-        for (int end = 2; end < path.size(); end++) {
+        for (int end = 1; end < path.size(); end++) {
             CtVariableRead<?> varRead = path.subPath(end).getVariableRead();
             clauses.add(createNullComparisonClause(varRead, BinaryOperatorKind.EQ));
         }

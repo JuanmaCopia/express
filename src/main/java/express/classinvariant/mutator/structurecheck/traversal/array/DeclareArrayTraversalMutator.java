@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class DeclareArrayTraversalMutator implements ClassInvariantMutator {
 
-    CtMethod<?> traversal;
+    List<Path> paths;
 
     @Override
     public boolean isApplicable(ClassInvariantState state) {
@@ -28,21 +28,17 @@ public class DeclareArrayTraversalMutator implements ClassInvariantMutator {
         }
 
         CtTypeReference<?> chosenTypeToTraverse = Utils.getRandomElement(nonTraversedArrayTypes);
-        List<Path> paths = SpoonManager.getTypeData().getArrayPaths().stream().filter(
+        paths = SpoonManager.getTypeData().getArrayPaths().stream().filter(
                 path -> path.getTypeReference().equals(chosenTypeToTraverse)
         ).toList();
 
-        if (paths.isEmpty()) {
-            return false;
-        }
-
-        Path chosenPath = Utils.getRandomPath(paths);
-        traversal = ArrayTraversalTemplate.instantiate(state.getCtClass(), chosenPath);
-        return true;
+        return !paths.isEmpty();
     }
 
     @Override
     public void mutate(ClassInvariantState state) {
+        Path chosenPath = Utils.getRandomPath(paths);
+        CtMethod<?> traversal = ArrayTraversalTemplate.instantiate(state.getCtClass(), chosenPath);
         state.getCtClass().addMethod(traversal);
         //System.err.println("DeclareArrayTraversalMutator:\n" + traversal.toString());
     }

@@ -25,6 +25,10 @@ public class TypeChecker {
         return BOXED_PRIMITIVES.contains(fieldType);
     }
 
+    public static boolean isBoxedPrimitive(Class<?> type) {
+        return BOXED_PRIMITIVES.contains(type);
+    }
+
     public static boolean isPrimitiveOrBoxedPrimitive(Field field) {
         return field.getType().isPrimitive() || isBoxedPrimitive(field);
     }
