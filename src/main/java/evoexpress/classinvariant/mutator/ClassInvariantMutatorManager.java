@@ -1,7 +1,7 @@
 package evoexpress.classinvariant.mutator;
 
 import evoexpress.classinvariant.state.ClassInvariantState;
-import evoexpress.output.Compiler;
+import evoexpress.compile.Compiler;
 import evoexpress.spoon.RandomUtils;
 import evoexpress.spoon.SpoonManager;
 

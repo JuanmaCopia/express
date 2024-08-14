@@ -1,7 +1,7 @@
 package evoexpress.classinvariant.fitness;
 
 import evoexpress.classinvariant.state.ClassInvariantState;
-import evoexpress.output.Compiler;
+import evoexpress.compile.Compiler;
 import evoexpress.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
 

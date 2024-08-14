@@ -2,7 +2,7 @@ package evoexpress.spoon;
 
 import evoexpress.config.Config;
 import evoexpress.instrumentation.Instrumentation;
-import evoexpress.output.InputOutputManager;
+import evoexpress.compile.InputOutputManager;
 import evoexpress.type.typegraph.TypeData;
 import spoon.Launcher;
 import spoon.reflect.declaration.*;

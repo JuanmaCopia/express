@@ -4,7 +4,7 @@ import evoexpress.classinvariant.state.ClassInvariantState;
 import evoexpress.config.Config;
 import evoexpress.execution.Executor;
 import evoexpress.object.ObjectCollector;
-import evoexpress.output.Compiler;
+import evoexpress.compile.Compiler;
 import evoexpress.reflection.Reflection;
 import evoexpress.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
