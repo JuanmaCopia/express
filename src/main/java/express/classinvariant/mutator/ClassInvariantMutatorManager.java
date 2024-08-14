@@ -16,7 +16,8 @@ public class ClassInvariantMutatorManager {
 
     public boolean performRandomMutation(ClassInvariantState state) {
         ClassInvariantMutator mutator = selectMutator(state);
-        if (mutator != null && mutator.mutate(state)) {
+        if (mutator != null) {
+            mutator.mutate(state);
             //System.err.println("Mutator applied: " + mutator.getClass().getSimpleName());
             state.setFitnessAsOutdated();
             return true;

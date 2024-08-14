@@ -25,7 +25,7 @@ public class ChangeLoopFieldsMutator implements ClassInvariantMutator {
     }
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
+    public void mutate(ClassInvariantState state) {
         List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
         CtMethod<?> traversal = traversals.get(RandomUtils.nextInt(traversals.size()));
 
@@ -54,7 +54,6 @@ public class ChangeLoopFieldsMutator implements ClassInvariantMutator {
         traversal.setBody(traversalBody);
 
         //System.err.println("ChangeTraversalFieldsMutator AFTER: \n" + chosenTraversal);
-        return true;
     }
 
 

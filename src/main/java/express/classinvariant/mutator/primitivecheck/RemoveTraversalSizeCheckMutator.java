@@ -22,22 +22,21 @@ public class RemoveTraversalSizeCheckMutator implements ClassInvariantMutator {
     }
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
-        List<CtMethod<?>> traversalMethods = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
-        CtMethod<?> traversal = traversalMethods.get(RandomUtils.nextInt(traversalMethods.size()));
-        CtBlock<?> traversalBody = traversal.getBody();
-        CtVariable<?> initialSizeVar = SpoonQueries.getInitialSizeVariable(traversalBody);
-        if (initialSizeVar == null)
-            return false;
+    public void mutate(ClassInvariantState state) {
+//        List<CtMethod<?>> traversalMethods = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
+//        CtMethod<?> traversal = traversalMethods.get(RandomUtils.nextInt(traversalMethods.size()));
+//        CtBlock<?> traversalBody = traversal.getBody();
+//        CtVariable<?> initialSizeVar = SpoonQueries.getInitialSizeVariable(traversalBody);
+//        if (initialSizeVar == null)
+//            return false;
+//
+//        List<CtIf> sizeChecks = MutatorHelper.getIfsWithVariableInCondition(traversalBody, initialSizeVar);
+//
+//        for (CtIf sizeCheck : sizeChecks) {
+//            sizeCheck.delete();
+//        }
+//        initialSizeVar.delete();
 
-        List<CtIf> sizeChecks = MutatorHelper.getIfsWithVariableInCondition(traversalBody, initialSizeVar);
-
-        for (CtIf sizeCheck : sizeChecks) {
-            sizeCheck.delete();
-        }
-        initialSizeVar.delete();
-
-        return true;
     }
 
 

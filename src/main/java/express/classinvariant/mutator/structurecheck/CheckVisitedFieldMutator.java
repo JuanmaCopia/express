@@ -17,16 +17,15 @@ import java.util.List;
 
 public class CheckVisitedFieldMutator implements ClassInvariantMutator {
 
+    CtExpression<Boolean> condition;
+    CtBlock<?> structureMethodBody;
+
     public boolean isApplicable(ClassInvariantState state) {
-        CtBlock<?> structureMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
-        return !SpoonQueries.getVisitedSetLocalVars(structureMethodBody).isEmpty();
-    }
-
-    @Override
-    public boolean mutate(ClassInvariantState state) {
-        CtBlock<?> structureMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
-
+        structureMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
         List<CtLocalVariable<?>> visitedSetVars = SpoonQueries.getVisitedSetLocalVars(structureMethodBody);
+        if (visitedSetVars.isEmpty())
+            return false;
+
         CtLocalVariable<?> setVar = visitedSetVars.get(RandomUtils.nextInt(visitedSetVars.size()));
         CtTypeReference<?> setSubType = setVar.getType().getActualTypeArguments().get(0);
 
@@ -42,23 +41,23 @@ public class CheckVisitedFieldMutator implements ClassInvariantMutator {
         if (RandomUtils.nextBoolean())
             addToSetInvocation = SpoonFactory.negateExpresion(addToSetInvocation);
 
-        CtExpression<Boolean> conjunction = SpoonFactory.createBooleanBinaryExpression(
+        condition = SpoonFactory.createBooleanBinaryExpression(
                 nullComparisonClause,
                 addToSetInvocation,
                 BinaryOperatorKind.AND
         );
 
-        if (SpoonQueries.checkAlreadyExist(conjunction, structureMethodBody))
-            return false;
+        return !SpoonQueries.checkAlreadyExist(condition, structureMethodBody);
+    }
 
-        CtIf ifStatement = SpoonFactory.createIfReturnFalse(conjunction);
-
+    @Override
+    public void mutate(ClassInvariantState state) {
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
         CtStatement lastStatement = SpoonQueries.getReturnTrueComment(structureMethodBody);
         lastStatement.insertBefore(ifStatement);
 
         //System.err.println("CheckVisitedFieldMutator:\n" + ifStatement);
         //System.err.println("Final Block:\n" + structureMethodBody);
-        return true;
     }
 
 

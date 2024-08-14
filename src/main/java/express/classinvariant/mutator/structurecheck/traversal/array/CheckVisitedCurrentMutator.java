@@ -34,14 +34,13 @@ public class CheckVisitedCurrentMutator implements ClassInvariantMutator {
     }
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
+    public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(arrayTraversal.getBody());
         endOfHandleCurrentComment.insertBefore(ifStatement);
 
         //System.err.println("CheckVisitedFieldEndOfTraversalMutator:\n" + ifStatement);
         //System.err.println("CheckVisitedCurrentMutator:\n" + arrayTraversal.getBody());
-        return true;
     }
 
 

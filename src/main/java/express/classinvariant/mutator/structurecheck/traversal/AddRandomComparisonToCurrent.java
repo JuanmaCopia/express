@@ -18,17 +18,17 @@ import java.util.List;
 
 public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
 
+    CtExpression<Boolean> condition;
+    CtBlock<?> traversalBody;
+
     public boolean isApplicable(ClassInvariantState state) {
         List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
-        return !traversals.isEmpty();
-    }
+        if (traversals.isEmpty()) {
+            return false;
+        }
 
-    @Override
-    public boolean mutate(ClassInvariantState state) {
-        List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
-        CtMethod<?> traversal = traversals.get(RandomUtils.nextInt(traversals.size()));
-        CtBlock<?> traversalBody = traversal.getBody();
-
+        CtMethod<?> traversal  =Utils.getRandomElement(traversals);
+        traversalBody = traversal.getBody();
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(traversalBody, LocalVarHelper.CURRENT_VAR_NAME);
 
         TypeGraph typeGraph = SpoonManager.getTypeData().getThisTypeGraph();
@@ -41,7 +41,6 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
         if (candidates.isEmpty())
             return false;
 
-
         Path chosenPath = Utils.getRandomPath(candidates);
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(chosenPath);
 
@@ -49,19 +48,18 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
         clauses.add(SpoonFactory.createBooleanBinaryExpression(
                 chosenPath.getVariableRead(), currentRead, BinaryOperatorKind.NE));
 
-        CtExpression<Boolean> condition = SpoonFactory.conjunction(clauses);
-        if (SpoonQueries.checkAlreadyExist(condition, traversalBody))
-            return false;
+        condition = SpoonFactory.conjunction(clauses);
+        return !SpoonQueries.checkAlreadyExist(condition, traversalBody);
+    }
 
+    @Override
+    public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
-
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(traversalBody);
         endOfHandleCurrentComment.insertBefore(ifStatement);
 
         //System.err.println("\n\nAddRandomComparisonToCurrent:\n\n" + ifStatement);
         //System.err.println("\nAddNullCompToTraversalMutator:\n\n" + traversalBody);
-        return true;
     }
-
 
 }

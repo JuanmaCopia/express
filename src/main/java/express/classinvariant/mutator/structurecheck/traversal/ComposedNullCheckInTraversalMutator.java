@@ -10,6 +10,7 @@ import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
+import express.util.Utils;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
@@ -18,17 +19,17 @@ import java.util.List;
 
 public class ComposedNullCheckInTraversalMutator implements ClassInvariantMutator {
 
+    CtExpression<Boolean> condition;
+    CtBlock<?> traversalBody;
 
     public boolean isApplicable(ClassInvariantState state) {
         List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
-        return !traversals.isEmpty();
-    }
+        if (traversals.isEmpty()) {
+            return false;
+        }
 
-    @Override
-    public boolean mutate(ClassInvariantState state) {
-        List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
-        CtMethod<?> traversal = traversals.get(RandomUtils.nextInt(traversals.size()));
-        CtBlock<?> traversalBody = traversal.getBody();
+        CtMethod<?> traversal = Utils.getRandomElement(traversals);
+        traversalBody = traversal.getBody();
 
         CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
         List<Path> paths = SpoonManager.getTypeData().getThisTypeGraph()
@@ -47,17 +48,18 @@ public class ComposedNullCheckInTraversalMutator implements ClassInvariantMutato
         clauses.addAll(SpoonFactory.generateParentPathNullComparisonClauses(path2));
         clauses.add(SpoonFactory.createNullComparisonClause(path2.getVariableRead()));
 
-        CtExpression<Boolean> condition = SpoonFactory.conjunction(clauses);
-        if (SpoonQueries.checkAlreadyExist(condition, traversalBody))
-            return false;
+        condition = SpoonFactory.conjunction(clauses);
+        return !SpoonQueries.checkAlreadyExist(condition, traversalBody);
+    }
 
+    @Override
+    public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
         CtStatement comment = SpoonQueries.getBeginOfTraversalComment(traversalBody);
         comment.insertBefore(ifStatement);
 
         //System.err.println("\nComposedNullCheckInTraversalMutator:\n" + ifStatement);
         //System.err.println("\nFinal Block:\n\n" + traversalBody);
-        return true;
     }
 
 

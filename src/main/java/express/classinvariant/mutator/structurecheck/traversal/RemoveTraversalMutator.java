@@ -23,18 +23,13 @@ public class RemoveTraversalMutator implements ClassInvariantMutator {
     }
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
+    public void mutate(ClassInvariantState state) {
         //System.err.println("RemoveTraverseWorklistMutator:\n" + traversal.toString());
-
         List<CtIf> checks = MutatorHelper.getIfsCallingMethod(state.getCtClass(), traversal.getSimpleName());
         for (CtIf check : checks) {
             check.delete();
         }
-
         state.getCtClass().removeMethod(traversal);
-        return true;
     }
-
-
 
 }

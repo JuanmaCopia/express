@@ -71,7 +71,7 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
 
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
+    public void mutate(ClassInvariantState state) {
         if (mustDeclareSet) {
             targetBody.insertBegin((CtStatement) setVar);
         }
@@ -83,8 +83,6 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
         //System.err.println("\nInvokeFieldTraversalMutator: invocation:\n" + ifStatement.toString());
         //System.err.println("\n\nInvokeFieldTraversalMutator: traversal:\n" + traversal.toString());
         //System.err.println("\nInvokeFieldTraversalMutator: AFTER\n" + state.toString());
-
-        return true;
     }
 
 

@@ -6,6 +6,6 @@ public interface ClassInvariantMutator {
 
     boolean isApplicable(ClassInvariantState state);
 
-    boolean mutate(ClassInvariantState state);
+    void mutate(ClassInvariantState state);
 
 }

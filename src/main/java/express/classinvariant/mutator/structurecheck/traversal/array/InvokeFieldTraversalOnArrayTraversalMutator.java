@@ -76,7 +76,7 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
     }
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
+    public void mutate(ClassInvariantState state) {
         CtBlock<?> arrayTraversalBody = arrayTraversal.getBody();
         //System.err.println("InvokeFieldTraversalOnArrayTraversalMutator: BEFORE:\n" + state);
         if (mustDeclareSet) {
@@ -89,7 +89,6 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
 
         //System.err.println("InvokeFieldTraversalOnArrayTraversalMutator: added check\n" + ifStatement);
         //System.err.println("InvokeFieldTraversalOnArrayTraversalMutator: result:\n" + state);
-        return true;
     }
 
     private CtExpression<?>[] createArguments(CtVariable<?> thisVar, CtVariable<?> visitedSetVar, CtVariableRead<?> pathRead) {

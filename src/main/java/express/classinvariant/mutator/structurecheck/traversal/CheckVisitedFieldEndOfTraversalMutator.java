@@ -50,14 +50,13 @@ public class CheckVisitedFieldEndOfTraversalMutator implements ClassInvariantMut
     }
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
+    public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
         CtStatement endOfTraversalComment = SpoonQueries.getEndOfTraversalComment(traversal.getBody());
         endOfTraversalComment.insertBefore(ifStatement);
 
         //System.err.println("CheckVisitedFieldEndOfTraversalMutator:\n" + ifStatement);
         //System.err.println("Final Block:\n" + traversalBody);
-        return true;
     }
 
 

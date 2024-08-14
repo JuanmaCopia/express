@@ -22,22 +22,21 @@ public class RemoveSizeCheckMutator implements ClassInvariantMutator {
     }
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
-        CtBlock<?> methodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
+    public void mutate(ClassInvariantState state) {
+//        CtBlock<?> methodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
+//
+//        CtStatement sizeCheckComment = SpoonQueries.getSizeCheckComment(methodBody);
+//        List<CtStatement> statements = methodBody.getStatements();
+//
+//        int index = statements.indexOf(sizeCheckComment);
+//        if (index == -1 || index == statements.size() - 1) {
+//            throw new RuntimeException("The current statement is not found");
+//        }
+//
+//        CtStatement sizeCheckStatement = statements.get(index + 1);
+//        sizeCheckStatement.delete();
+//        sizeCheckComment.delete();
 
-        CtStatement sizeCheckComment = SpoonQueries.getSizeCheckComment(methodBody);
-        List<CtStatement> statements = methodBody.getStatements();
-
-        int index = statements.indexOf(sizeCheckComment);
-        if (index == -1 || index == statements.size() - 1) {
-            throw new RuntimeException("The current statement is not found");
-        }
-
-        CtStatement sizeCheckStatement = statements.get(index + 1);
-        sizeCheckStatement.delete();
-        sizeCheckComment.delete();
-
-        return true;
     }
 
 

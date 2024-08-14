@@ -50,13 +50,12 @@ public class AddNullCompToTraversalMutator implements ClassInvariantMutator {
     }
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
+    public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(traversal.getBody());
         endOfHandleCurrentComment.insertBefore(ifStatement);
         //System.err.println("\nAddNullCompToTraversalMutator:\n" + ifStatement);
         //System.err.println("\nAddNullCompToTraversalMutator:\n\n" + traversalBody);
-        return true;
     }
 
 

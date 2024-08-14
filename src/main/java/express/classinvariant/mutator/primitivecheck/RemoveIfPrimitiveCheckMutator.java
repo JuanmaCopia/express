@@ -18,15 +18,14 @@ public class RemoveIfPrimitiveCheckMutator implements ClassInvariantMutator {
     }
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
-        CtMethod<?> method = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.PRIMITIVE_METHOD_NAME);
-        List<CtIf> checks = MutatorHelper.getMutableIfs(method);
-        CtIf chosenCheck = checks.get(RandomUtils.nextInt(checks.size()));
-        chosenCheck.delete();
+    public void mutate(ClassInvariantState state) {
+//        CtMethod<?> method = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.PRIMITIVE_METHOD_NAME);
+//        List<CtIf> checks = MutatorHelper.getMutableIfs(method);
+//        CtIf chosenCheck = checks.get(RandomUtils.nextInt(checks.size()));
+//        chosenCheck.delete();
 
         //System.err.println("\nRemoveCheckMutator:\n" + chosenCheck);
         //System.err.println("\nFinal Block:\n\n" + blockGene);
-        return true;
     }
 
 

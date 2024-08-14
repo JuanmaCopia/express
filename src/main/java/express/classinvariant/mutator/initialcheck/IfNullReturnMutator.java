@@ -15,31 +15,29 @@ import java.util.List;
 
 public class IfNullReturnMutator implements ClassInvariantMutator {
 
-    CtBlock<?> targetMethodBody;
     CtExpression<Boolean> condition;
+    CtBlock<?> targetMethodBody;
 
     public boolean isApplicable(ClassInvariantState state) {
-        targetMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.INITIAL_METHOD_NAME).getBody();
-
         List<Path> paths = SpoonManager.getTypeData().getReferencePaths().stream().filter(p -> p.size() > 1 && p.size() < 4).toList();
+        if (paths.isEmpty())
+            return false;
+
         Path chosenPath = Utils.getRandomPath(paths);
 
         condition = SpoonFactory.generateAndConcatenationOfNullComparisons(chosenPath);
-        if (SpoonQueries.checkAlreadyExist(condition, targetMethodBody))
-            return false;
-
-        return true;
+        targetMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.INITIAL_METHOD_NAME).getBody();
+        return !SpoonQueries.checkAlreadyExist(condition, targetMethodBody);
     }
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
+    public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
         CtStatement returnTrueComment = SpoonQueries.getReturnTrueComment(targetMethodBody);
         returnTrueComment.insertBefore(ifStatement);
 
         /*System.err.println("\nAddIfNullReturnMutator:\n" + ifStatement);
         System.err.println("\nFinal Block:\n\n" + methodBody);*/
-        return true;
     }
 
 

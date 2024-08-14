@@ -6,41 +6,52 @@ import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonQueries;
+import express.util.Utils;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtMethod;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class RemoveVisitedSetMutator implements ClassInvariantMutator {
 
-    public boolean isApplicable(ClassInvariantState state) {
-        CtBlock<?> structureMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
-        return !SpoonQueries.getVisitedSetLocalVars(structureMethodBody).isEmpty();
-    }
+    CtLocalVariable<?> chosenSetVar;
+    List<CtIf> checksToDelete;
 
-    @Override
-    public boolean mutate(ClassInvariantState state) {
+    public boolean isApplicable(ClassInvariantState state) {
         CtMethod<?> structureMethod = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME);
         CtBlock<?> structureMethodBody = structureMethod.getBody();
 
         List<CtLocalVariable<?>> visitedSetVars = SpoonQueries.getVisitedSetLocalVars(structureMethodBody);
-        CtLocalVariable<?> setVar = visitedSetVars.get(RandomUtils.nextInt(visitedSetVars.size()));
+        if (visitedSetVars.isEmpty()) {
+            return false;
+        }
+
+        chosenSetVar = Utils.getRandomElement(visitedSetVars);
 
         List<CtIf> checks = MutatorHelper.getMutableIfs(structureMethod);
+        checksToDelete = new LinkedList<>();
         for (CtIf check : checks) {
-            if (check.getCondition().toString().contains(setVar.getSimpleName())) {
-                check.delete();
-                return true;
+            if (check.getCondition().toString().contains(chosenSetVar.getSimpleName())) {
+                checksToDelete.add(check);
             }
         }
 
-        setVar.delete();
+        return true;
+    }
 
+    @Override
+    public void mutate(ClassInvariantState state) {
+        for (CtIf check : checksToDelete) {
+            check.delete();
+        }
+
+        chosenSetVar.delete();
         //System.err.println("\nRemoveCheckMutator:\n" + chosenCheck);
         //System.err.println("\nFinal Block:\n\n" + blockGene);
-        return true;
     }
 
 

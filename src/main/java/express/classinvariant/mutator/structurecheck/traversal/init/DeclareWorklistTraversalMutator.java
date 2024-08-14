@@ -45,10 +45,9 @@ public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
     }
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
+    public void mutate(ClassInvariantState state) {
         state.getCtClass().addMethod(traversal);
         //System.err.println("TraverseWorklistMutator:\n" + traversal.toString());
-        return true;
     }
 
     private Path trimPath(Path path) {

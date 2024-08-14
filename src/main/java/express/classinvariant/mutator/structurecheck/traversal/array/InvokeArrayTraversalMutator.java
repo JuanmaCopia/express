@@ -74,7 +74,7 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
 
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
+    public void mutate(ClassInvariantState state) {
         //System.err.println("InvokeArrayTraversalMutator: BEFORE\n" + state.toString());
         if (mustDeclareSet) {
             targetBody.insertBegin((CtStatement) setVar);
@@ -85,8 +85,6 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         lastStatement.insertBefore(ifStatement);
         //System.err.println("InvokeArrayTraversalMutator: added check: \n" + ifStatement.toString());
         //System.err.println("InvokeArrayTraversalMutator: result:\n" + state.toString());
-
-        return true;
     }
 
     private CtExpression<?>[] createArguments(List<CtParameter<?>> params, CtVariable<?> visitedSetVar, CtVariableRead<?> pathRead) {

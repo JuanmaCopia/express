@@ -1,4 +1,4 @@
-package express.classinvariant.mutator.all;
+package express.classinvariant.mutator.structurecheck;
 
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.state.ClassInvariantState;
@@ -12,28 +12,22 @@ import java.util.List;
 
 public class RemoveCheckMutator implements ClassInvariantMutator {
 
-    CtIf chosenCheck;
+    List<CtIf> checks;
 
     public boolean isApplicable(ClassInvariantState state) {
-        List<CtIf> checks = MutatorHelper.getMutableIfs(state.getCtClass()).stream().filter(
+        checks = MutatorHelper.getMutableIfs(state.getCtClass()).stream().filter(
                 c -> !c.getParent(CtMethod.class).getSimpleName().startsWith(LocalVarHelper.INITIAL_METHOD_NAME) &&
                         !c.getCondition().toString().contains(LocalVarHelper.TRAVERSAL_PREFIX) &&
                         !c.getCondition().toString().contains(LocalVarHelper.ARRAY_TRAVERSAL_PREFIX)
         ).toList();
-        if (checks.isEmpty())
-            return false;
-        chosenCheck = Utils.getRandomElement(checks);
-        return true;
+        return !checks.isEmpty();
     }
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
-        chosenCheck.delete();
-
+    public void mutate(ClassInvariantState state) {
+        Utils.getRandomElement(checks).delete();
         //System.err.println("\nRemoveCheckMutator:\n" + chosenCheck);
         //System.err.println("\nFinal Block:\n\n" + blockGene);
-        return true;
     }
-
 
 }

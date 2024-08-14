@@ -23,7 +23,7 @@ public class ChangeFirstElementMutator implements ClassInvariantMutator {
     }
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
+    public void mutate(ClassInvariantState state) {
         List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
         CtMethod<?> traversal = traversals.get(RandomUtils.nextInt(traversals.size()));
 
@@ -32,7 +32,7 @@ public class ChangeFirstElementMutator implements ClassInvariantMutator {
                         var.getSimpleName().equals(LocalVarHelper.FIRST_ELEMENT_VAR_NAME)
         );
         if (firstElements.isEmpty()) {
-            return false;
+            return;
         }
         CtLocalVariable<?> firstElement = (CtLocalVariable<?>) firstElements.get(0);
 
@@ -49,7 +49,7 @@ public class ChangeFirstElementMutator implements ClassInvariantMutator {
                 field -> field.getType().equals(typeOfFirstElem) && !field.getSimpleName().equals(fieldName)
         ).toList();
         if (candidateFields.isEmpty()) {
-            return false;
+            return;
         }
 
         CtVariable<?> chosenField = candidateFields.get(RandomUtils.nextInt(candidateFields.size()));
@@ -59,8 +59,6 @@ public class ChangeFirstElementMutator implements ClassInvariantMutator {
 
         //System.err.println("ChangeTraverseInitialFieldMutator: " + chosenField.getSimpleName() + " instead of " + fieldName);
         //System.err.println("Result: \n" + chosenTraversal);
-
-        return true;
     }
 
 

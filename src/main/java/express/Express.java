@@ -2,7 +2,7 @@ package express;
 
 import express.classinvariant.fitness.LengthFitness;
 import express.classinvariant.mutator.ClassInvariantMutator;
-import express.classinvariant.mutator.all.RemoveCheckMutator;
+import express.classinvariant.mutator.structurecheck.RemoveCheckMutator;
 import express.classinvariant.mutator.initialcheck.ComposeNullCheckMutator;
 import express.classinvariant.mutator.initialcheck.IfNullReturnMutator;
 import express.classinvariant.mutator.initialcheck.RemoveIfInitialCheckMutator;

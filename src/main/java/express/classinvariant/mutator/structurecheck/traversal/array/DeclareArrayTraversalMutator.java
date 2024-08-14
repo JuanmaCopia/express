@@ -42,10 +42,9 @@ public class DeclareArrayTraversalMutator implements ClassInvariantMutator {
     }
 
     @Override
-    public boolean mutate(ClassInvariantState state) {
+    public void mutate(ClassInvariantState state) {
         state.getCtClass().addMethod(traversal);
         //System.err.println("DeclareArrayTraversalMutator:\n" + traversal.toString());
-        return true;
     }
 
 }

@@ -14,15 +14,13 @@ import java.util.List;
 
 public class ComposeNullCheckMutator implements ClassInvariantMutator {
 
+    CtExpression<Boolean> condition;
+    CtBlock<?> initialCheckBody;
 
     public boolean isApplicable(ClassInvariantState state) {
-        return SpoonManager.getTypeData().getReferencePaths().stream().filter(p -> p.size() == 2).count() >= 2;
-    }
-
-    @Override
-    public boolean mutate(ClassInvariantState state) {
-        CtBlock<?> blockGene = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.INITIAL_METHOD_NAME).getBody();
         List<Path> paths = SpoonManager.getTypeData().getReferencePaths().stream().filter(p -> p.size() == 2).toList();
+        if (paths.size() < 2)
+            return false;
 
         List<Path> chosenPaths = SpoonQueries.chooseNPaths(paths, 2);
         Path path1 = chosenPaths.get(0);
@@ -33,17 +31,19 @@ public class ComposeNullCheckMutator implements ClassInvariantMutator {
         clauses.addAll(SpoonFactory.generateParentPathNullComparisonClauses(path2));
         clauses.add(SpoonFactory.createNullComparisonClause(path2.getVariableRead()));
 
-        CtExpression<Boolean> condition = SpoonFactory.conjunction(clauses);
-        if (SpoonQueries.checkAlreadyExist(condition, blockGene))
-            return false;
+        condition = SpoonFactory.conjunction(clauses);
+        initialCheckBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.INITIAL_METHOD_NAME).getBody();
+        return !SpoonQueries.checkAlreadyExist(condition, initialCheckBody);
+    }
 
+    @Override
+    public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
-        CtStatement comment = SpoonQueries.getReturnTrueComment(blockGene);
+        CtStatement comment = SpoonQueries.getReturnTrueComment(initialCheckBody);
         comment.insertBefore(ifStatement);
 
         //System.err.println("\nComposeNullCheckMutator:\n" + ifStatement);
         //System.err.println("\nFinal Block:\n\n" + blockGene);
-        return true;
     }
 
 
