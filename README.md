@@ -48,8 +48,8 @@ express.subject.src_java_version=17
 # Output Settings:
 express.output.bin_path=./output/bin
 express.output.src_path=./output/src
-express.output.precondition_class_name=Precondition
-express.output.precondition_method_name=precondition
+express.output.predicate_class_name=Predicate
+express.output.predicate_method_name=predicate
 # Search Settings:
 express.search.max_population=7
 express.search.max_generations=600
