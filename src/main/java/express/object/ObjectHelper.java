@@ -276,6 +276,16 @@ public class ObjectHelper {
         return object.getClass().getSimpleName() + id++;
     }
 
+    public static Object getFieldValue(Object object, Field field) {
+        try {
+            field.setAccessible(true);
+            return field.get(object);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 
 }

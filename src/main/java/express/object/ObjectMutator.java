@@ -39,6 +39,8 @@ public class ObjectMutator {
         if (newFieldValue == target.getValue())
             return false;
 
+//        String valueString = newFieldValue == null ? "null" : newFieldValue.getClass().getName();
+//        System.out.println("Mutated field: " + target + " with value: " + valueString);
         target.setValue(newFieldValue);
         return true;
     }
@@ -70,21 +72,11 @@ public class ObjectMutator {
                 } else {
                     Field[] fields = currentClass.getDeclaredFields();
                     for (Field field : fields) {
-                        if (field.getType().isArray()) {
-                            queue.offer(field);
-                            continue;
-                        }
-                        if (Modifier.isStatic(field.getModifiers()) || !isUserDefinedClass(field.getType())) {
-                            continue;
-                        }
-                        try {
-                            field.setAccessible(true);
-                            Object fieldValue = field.get(currentObject);
-                            if (fieldValue != null) {
+                        Class<?> fieldType = field.getType();
+                        if ((fieldType.isArray() || isUserDefinedClass(fieldType)) && !Modifier.isStatic(field.getModifiers())) {
+                            Object fieldValue = ObjectHelper.getFieldValue(currentObject, field);
+                            if (fieldValue != null)
                                 queue.offer(fieldValue);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
                     }
                 }
@@ -115,7 +107,7 @@ public class ObjectMutator {
             collectedObjects[i] = Array.get(array, i);
         }
 
-        System.err.println("Collected Objects from array: " + Arrays.toString(collectedObjects));
+        //System.err.println("Collected Objects from array: " + Arrays.toString(collectedObjects));
 
         return collectedObjects;
     }
@@ -349,6 +341,14 @@ public class ObjectMutator {
                 e.printStackTrace();
                 return null;
             }
+        }
+
+        @Override
+        public String toString() {
+            return "TargetIndex{" +
+                    "ownerType=" + owner.getClass() +
+                    ", index=" + index +
+                    '}';
         }
 
     }
