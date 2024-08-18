@@ -32,7 +32,7 @@ public class Express {
     public Express(Config config) {
         this.config = config;
         SpoonManager.initialize(config);
-        ObjectGenerator.generateObjects();
+        //ObjectGenerator.generateObjects();
     }
 
     public void run() {
@@ -144,7 +144,7 @@ public class Express {
 
     public static void main(String[] args) {
         Express express = new Express(new Config(CONFIG_FILE_PATH));
-        express.run();
+        //express.run();
     }
 
 }

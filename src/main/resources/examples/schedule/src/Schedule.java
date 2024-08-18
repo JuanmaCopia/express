@@ -111,7 +111,9 @@ public class Schedule {
         }
     }
 
-    int size() {
+    public int size() {
+        String s = "Hi, I'm Size :)";
+        System.out.println(s);
         return numProcesses;
     }
 
