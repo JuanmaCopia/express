@@ -3,9 +3,10 @@ package express.compile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.tools.DiagnosticCollector;
@@ -24,11 +25,17 @@ public class InMemoryCompiler {
     private final InMemoryClassLoader classLoader;
     private final Map<String, JavaFileObject> sourceFiles = new HashMap<>();
     private final Map<String, ByteArrayJavaFileObject> compiledClasses = new HashMap<>();
+    private List<String> classpath = new ArrayList<>();
 
     public InMemoryCompiler() {
         this.compiler = ToolProvider.getSystemJavaCompiler();
         this.fileManager = new InMemoryFileManager(compiler.getStandardFileManager(null, null, null));
         this.classLoader = new InMemoryClassLoader();
+    }
+
+    // Set the classpath for the compiler
+    public void setClasspath(List<String> classpath) {
+        this.classpath = classpath;
     }
 
     // Add or update source code
@@ -46,8 +53,17 @@ public class InMemoryCompiler {
     // Compile the source files
     public boolean compile() {
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+        List<String> options = new ArrayList<>();
+        if (!classpath.isEmpty()) {
+            options.add("-classpath");
+            options.add(String.join(":", classpath));
+        }
+
+        // Print classpath for debugging
+        System.out.println("Classpath: " + String.join(":", classpath));
+
         JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager,
-                diagnostics, null, null, sourceFiles.values());
+                diagnostics, options, null, sourceFiles.values());
 
         boolean success = task.call();
         if (!success) {
@@ -157,9 +173,12 @@ public class InMemoryCompiler {
                 java.util.Set<JavaFileObject.Kind> kinds, boolean recurse) throws IOException {
             Iterable<JavaFileObject> result = super.list(location, packageName, kinds, recurse);
             if (location == StandardLocation.CLASS_PATH && kinds.contains(JavaFileObject.Kind.CLASS)) {
-                Map<String, JavaFileObject> allClasses = new HashMap<>(compiledClasses);
-                allClasses.putAll(sourceFiles);
-                return allClasses.values();
+                // Combine the compiled classes, source files, and classes from classpath
+                List<JavaFileObject> files = new ArrayList<>();
+                compiledClasses.values().forEach(files::add);
+                sourceFiles.values().forEach(files::add);
+                result.forEach(files::add);
+                return files;
             }
             return result;
         }
@@ -169,65 +188,73 @@ public class InMemoryCompiler {
             if (file instanceof InMemoryJavaFileObject) {
                 String uri = file.toUri().toString();
                 return uri.substring(uri.indexOf(":///") + 4, uri.lastIndexOf('.')).replace('/', '.');
+            } else if (file instanceof ByteArrayJavaFileObject) {
+                return file.getName().substring(1).replace('/', '.');
             }
             return super.inferBinaryName(location, file);
         }
+
     }
 
-    public static void main(String[] args) throws Exception {
-        InMemoryCompiler compiler = new InMemoryCompiler();
-
-        String className = "HelloWorld";
-        String sourceCode = """
-                public class HelloWorld {
-                    public String greet() {
-                        Helper helper = new Helper();
-                        System.out.println(helper.help());
-                        return "Hello, World!";
-                    }
-                }
-                """;
-
-        String helperClassName = "Helper";
-        String helpersource = """
-                public class Helper {
-                    public String help() {
-                        return "I'm here to help!";
-                    }
-                }
-                """;
-
-        compiler.addSource(className, sourceCode);
-        compiler.addSource(helperClassName, helpersource);
-        if (compiler.compile()) {
-            Class<?> cls = compiler.loadClass(className);
-            Method method = cls.getDeclaredMethod("greet");
-            System.out.println(method.invoke(cls.getDeclaredConstructor().newInstance()));
-        }
-
-        // Recompile with modified source code
-        String className2 = className + "2";
-        String modifiedSourceCode = """
-                public class HelloWorld2 {
-                    public String sayHi() {
-                        Helper helper = new Helper();
-                        System.out.println(helper.help());
-                        return "Hello, Universe!";
-                    }
-                }
-                """;
-
-        // compiler.addSource(className2, modifiedSourceCode);
-        // if (compiler.compile()) {
-        // Class<?> cls = compiler.loadClass(className2);
-        // Method method = cls.getDeclaredMethod("sayHi");
-        // System.out.println(method.invoke(cls.getDeclaredConstructor().newInstance()));
-        // }
-
-        if (compiler.compileSingleClass(className2, modifiedSourceCode)) {
-            Class<?> cls = compiler.loadClass(className2);
-            Method method = cls.getDeclaredMethod("sayHi");
-            System.out.println(method.invoke(cls.getDeclaredConstructor().newInstance()));
-        }
+    public ClassLoader getClassLoader() {
+        return classLoader;
     }
+
+    // public static void main(String[] args) throws Exception {
+    // InMemoryCompiler compiler = new InMemoryCompiler();
+    //
+    // String className = "HelloWorld";
+    // String sourceCode = """
+    // public class HelloWorld {
+    // public String greet() {
+    // Helper helper = new Helper();
+    // System.out.println(helper.help());
+    // return "Hello, World!";
+    // }
+    // }
+    // """;
+    //
+    // String helperClassName = "Helper";
+    // String helpersource = """
+    // public class Helper {
+    // public String help() {
+    // return "I'm here to help!";
+    // }
+    // }
+    // """;
+    //
+    // compiler.addSource(className, sourceCode);
+    // compiler.addSource(helperClassName, helpersource);
+    // if (compiler.compile()) {
+    // Class<?> cls = compiler.loadClass(className);
+    // Method method = cls.getDeclaredMethod("greet");
+    // System.out.println(method.invoke(cls.getDeclaredConstructor().newInstance()));
+    // }
+    //
+    // // Recompile with modified source code
+    // String className2 = className + "2";
+    // String modifiedSourceCode = """
+    // public class HelloWorld2 {
+    // public String sayHi() {
+    // Helper helper = new Helper();
+    // System.out.println(helper.help());
+    // return "Hello, Universe!";
+    // }
+    // }
+    // """;
+    //
+    // // compiler.addSource(className2, modifiedSourceCode);
+    // // if (compiler.compile()) {
+    // // Class<?> cls = compiler.loadClass(className2);
+    // // Method method = cls.getDeclaredMethod("sayHi");
+    // //
+    // System.out.println(method.invoke(cls.getDeclaredConstructor().newInstance()));
+    // // }
+    //
+    // if (compiler.compileSingleClass(className2, modifiedSourceCode)) {
+    // Class<?> cls = compiler.loadClass(className2);
+    // Method method = cls.getDeclaredMethod("sayHi");
+    // System.out.println(method.invoke(cls.getDeclaredConstructor().newInstance()));
+    // }
+    // }
 }

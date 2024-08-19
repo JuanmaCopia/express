@@ -36,7 +36,7 @@ public class Instrumentation {
         for (CtVariable<?> variable : localVariableList) {
             if (variable.getType().getQualifiedName().equals(SpoonManager.getConfig().subjectClassName)) {
                 CtCodeSnippetStatement statement = codeFactory.createCodeSnippetStatement(
-                        "express.object.ObjectCollector.saveObject(" + variable.getSimpleName() + ")");
+                        "collector.ObjectCollector.saveObject(" + variable.getSimpleName() + ")");
                 method.getBody().addStatement(statement);
             }
         }

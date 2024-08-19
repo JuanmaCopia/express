@@ -1,6 +1,6 @@
 package express.execution;
 
-import express.object.ObjectCollector;
+import collector.ObjectCollector;
 import express.compile.Compiler;
 import express.reflection.Reflection;
 import express.spoon.SpoonManager;
@@ -43,7 +43,7 @@ public class Executor {
         return 0;
     }
 
-    public static void runTestSuite(String testSuiteFullyQualifiedName, URLClassLoader classLoader) {
+    public static void runTestSuite(String testSuiteFullyQualifiedName, ClassLoader classLoader) {
         try {
             Class<?> testClass = classLoader.loadClass(testSuiteFullyQualifiedName);
             List<Method> testMethods = Reflection.getRunnableTests(testClass);

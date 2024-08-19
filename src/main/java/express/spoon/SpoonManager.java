@@ -1,6 +1,7 @@
 package express.spoon;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,8 +10,8 @@ import java.util.logging.Logger;
 import express.compile.InMemoryCompiler;
 import express.compile.InputOutputManager;
 import express.config.Config;
-import express.instrumentation.Instrumentation;
 import express.type.typegraph.TypeData;
+import express.instrumentation.Instrumentation;
 import spoon.Launcher;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -48,7 +49,7 @@ public class SpoonManager {
         launcher.addInputResource(config.subjectTestSrcPath);
 
         launcher.getEnvironment().setComplianceLevel(config.subjectSrcJavaVersion);
-        launcher.getEnvironment().setShouldCompile(true);
+        launcher.getEnvironment().setShouldCompile(false);
         launcher.getEnvironment().setAutoImports(true);
         // launcher.getEnvironment().setPreserveLineNumbers(true);
         launcher.buildModel();
@@ -65,16 +66,73 @@ public class SpoonManager {
         Instrumentation.instrumentClasses(launcher.getModel());
         Instrumentation.instrumentTestSuite(testSuiteClass);
 
-        output.getCompiler().compileModel();
+        // Initialize compiler
+        cuFactory = launcher.getFactory().CompilationUnit();
+        prettyPrinter = launcher.createPrettyPrinter();
+        inMemoryCompiler = new InMemoryCompiler();
+
+        // Set the classpath to include JUnit 4 JAR file
+        List<String> classpath = new ArrayList<>();
+        classpath.add("lib/junit-4.13.2.jar");
+        classpath.add("lib/collector-1.0.jar");
+        // Update this path to the actual location of JUnit 4 JAR
+        inMemoryCompiler.setClasspath(classpath);
+        inMemoryCompiler.addSource(getSourceMap());
+
+        //testIMC();
+
+        boolean compilationResult;
+        try {
+            compilationResult = inMemoryCompiler.compile();
+        } catch (Exception e) {
+            logger.severe("Compilation failed");
+            e.printStackTrace();
+            throw new RuntimeException("Compilation failed");
+        }
+
+        if (!compilationResult) {
+            logger.severe("Compilation failed");
+            throw new RuntimeException("Compilation failed");
+        } else {
+            logger.info("Compilation successful");
+        }
+
+        //output.getCompiler().compileModel();
 
         initialized = true;
     }
+
+    // private static void test1() {
+    // InMemoryCompiler compiler = new InMemoryCompiler();
+
+    // // Add JUnit JAR to classpath
+
+    // // Set the classpath to include JUnit 4 JAR file
+    // List<String> classpath = new ArrayList<>();
+    // classpath.add("lib/junit-4.13.2.jar"); // Update this path to the actual
+    // location of JUnit 4 JAR
+    // compiler.setClasspath(classpath);
+
+    // // Add source code
+    // compiler.addSource("TestExample", "public class TestExample { @org.junit.Test
+    // public void test() { assert true; } }");
+
+    // // Compile
+    // boolean success = compiler.compile();
+    // System.out.println("Compilation success: " + success);
+    // }
 
     private static void testIMC() {
         cuFactory = launcher.getFactory().CompilationUnit();
         prettyPrinter = launcher.createPrettyPrinter();
         inMemoryCompiler = new InMemoryCompiler();
+
+        // Set the classpath to include JUnit 4 JAR file
+        List<String> classpath = new ArrayList<>();
+        classpath.add("lib/junit-4.13.2.jar"); // Update this path to the actual location of JUnit 4 JAR
+        inMemoryCompiler.setClasspath(classpath);
         inMemoryCompiler.addSource(getSourceMap());
+
         boolean compilationResult;
         try {
             compilationResult = inMemoryCompiler.compile();
@@ -156,16 +214,11 @@ public class SpoonManager {
         }
     }
 
-    private static void initializeCompiler() {
-        cuFactory = SpoonFactory.getFactory().CompilationUnit();
-        prettyPrinter = launcher.createPrettyPrinter();
-    }
-
     private static Map<String, String> getSourceMap() {
         Map<String, String> sourceMap = new HashMap<>();
         List<CtType<?>> allTypes = launcher.getFactory().Type().getAll();
         for (CtType<?> type : allTypes) {
-            sourceMap.put(type.getQualifiedName(), getOriginalSourceCode(type));
+            sourceMap.put(type.getQualifiedName(), getPrettyPrintedSourceCode(type));
         }
         return sourceMap;
     }
@@ -206,5 +259,13 @@ public class SpoonManager {
 
     public static Config getConfig() {
         return config;
+    }
+
+    public static InMemoryCompiler getInMemoryCompiler() {
+        return inMemoryCompiler;
+    }
+
+    public static ClassLoader getClassLoader() {
+        return inMemoryCompiler.getClassLoader();
     }
 }
