@@ -19,7 +19,6 @@ public class InputOutputManager {
     Config config;
 
     Launcher launcher;
-    Compiler compiler;
     URLClassLoader classLoader;
 
     File outputBinPath;
@@ -29,7 +28,6 @@ public class InputOutputManager {
     public InputOutputManager(Launcher launcher, Config config, CtPackage subjectPackage) {
         this.config = config;
         this.launcher = launcher;
-        this.compiler = new Compiler(launcher, subjectPackage);
         this.outputBinPath = Utils.createDirectory(config.outputBinPath);
         this.outputSrcPath = Utils.createDirectory(config.outputSrcPath);
         this.outputBinURL = Utils.createURL(this.outputBinPath);
@@ -40,13 +38,11 @@ public class InputOutputManager {
         CtClass<?> clsClone = cls.clone();
         clsClone.setSimpleName(config.predicateClassName);
         removeComments(clsClone);
-        compiler.addClassToPackage(clsClone);
         try {
             launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        compiler.removeClassFromPackage(clsClone);
     }
 
     private void removeComments(CtClass<?> cls) {
@@ -67,11 +63,11 @@ public class InputOutputManager {
         return outputBinURL;
     }
 
-    public Compiler getCompiler() {
-        return compiler;
-    }
+//    public Compiler getCompiler() {
+//        return compiler;
+//    }
 
-    public URLClassLoader getClassLoader() {
-        return classLoader;
-    }
+//    public URLClassLoader getClassLoader() {
+//        return classLoader;
+//    }
 }

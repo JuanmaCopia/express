@@ -1,13 +1,12 @@
 package express.execution;
 
 import collector.ObjectCollector;
-import express.compile.Compiler;
+import express.compile.InMemoryCompiler;
 import express.reflection.Reflection;
 import express.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
 
 import java.lang.reflect.Method;
-import java.net.URLClassLoader;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -67,10 +66,18 @@ public class Executor {
     }
 
     public static void printSurvivors(CtClass<?> cls) {
-        Compiler compiler = SpoonManager.getOutput().getCompiler();
-        compiler.compileModel(cls);
+        InMemoryCompiler compiler = SpoonManager.getInMemoryCompiler();
 
-        Class<?> predicateClass = Reflection.loadClass(SpoonManager.getOutput().getClassLoader(), cls.getQualifiedName());
+        compiler.compileSingleClass(cls.getQualifiedName(), SpoonManager.getPrettyPrintedSourceCode(cls));
+
+        Class<?> predicateClass;
+        try {
+            predicateClass = compiler.loadClass(cls.getQualifiedName());
+        } catch (ClassNotFoundException e) {
+            System.err.println("Error loading class: " + cls.getQualifiedName());
+            throw new RuntimeException(e);
+        }
+
         Method predicate = Reflection.loadMethod(predicateClass, SpoonManager.getConfig().predicateMethodName);
 
         for (Object invalidInstance : ObjectCollector.negativeObjects) {

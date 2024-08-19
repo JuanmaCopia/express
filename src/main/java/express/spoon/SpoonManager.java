@@ -18,12 +18,16 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.CompilationUnitFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.reflect.cu.CompilationUnitImpl;
+import spoon.support.reflect.declaration.CtCompilationUnitImpl;
+import spoon.support.reflect.declaration.CtImportImpl;
 
 public class SpoonManager {
 
@@ -50,7 +54,7 @@ public class SpoonManager {
 
         launcher.getEnvironment().setComplianceLevel(config.subjectSrcJavaVersion);
         launcher.getEnvironment().setShouldCompile(false);
-        launcher.getEnvironment().setAutoImports(true);
+        launcher.getEnvironment().setAutoImports(false);
         // launcher.getEnvironment().setPreserveLineNumbers(true);
         launcher.buildModel();
 
@@ -96,6 +100,14 @@ public class SpoonManager {
         } else {
             logger.info("Compilation successful");
         }
+
+//        CtClass<?> cls = SpoonFactory.createPredicateClass(1);
+//        System.out.println(getPrettyPrintedSourceCode(cls));
+//
+//        CtClass<?> clsclone = cls.clone();
+//        clsclone.setSimpleName("Predicate2");
+//        cls.getPackage().addType(clsclone);
+//        System.out.println(getPrettyPrintedSourceCode(clsclone));
 
         //output.getCompiler().compileModel();
 
@@ -223,15 +235,9 @@ public class SpoonManager {
         return sourceMap;
     }
 
-    private static String getOriginalSourceCode(CtType<?> type) {
-        CompilationUnit cu = cuFactory.getOrCreate(type);
-        return prettyPrinter.printCompilationUnit(cu);
-    }
-
-    private static String getPrettyPrintedSourceCode(CtType<?> type) {
-        CompilationUnit origCU = cuFactory.getOrCreate(type);
-
-        CompilationUnit cu = new CompilationUnitImpl();
+    public static String getPrettyPrintedSourceCode(CtType<?> type) {
+        CtCompilationUnit origCU = cuFactory.getOrCreate(type);
+        CtCompilationUnit cu = new CtCompilationUnitImpl();
         cu.addDeclaredType(type);
         cu.setPackageDeclaration(origCU.getPackageDeclaration());
         return prettyPrinter.printCompilationUnit(cu);

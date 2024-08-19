@@ -15,17 +15,24 @@ public class LengthFitness extends ClassInvariantFitness {
     private static final int MAX_LENGTH = 12000;
 
     Config config;
-    URLClassLoader classLoader;
+    ClassLoader classLoader;
 
     public LengthFitness() {
-        super(SpoonManager.getOutput().getCompiler());
+        super(SpoonManager.getInMemoryCompiler());
         this.config = SpoonManager.getConfig();
-        this.classLoader = SpoonManager.getOutput().getClassLoader();
+        this.classLoader = compiler.getClassLoader();
     }
 
     @Override
     double calculateFitness(CtClass<?> ctClass) {
-        Class<?> predicateClass = Reflection.loadClass(classLoader, ctClass.getQualifiedName());
+        Class<?> predicateClass;
+        try {
+            predicateClass = compiler.loadClass(ctClass.getQualifiedName());
+        } catch (ClassNotFoundException e) {
+            System.err.println("Error loading class: " + ctClass.getQualifiedName());
+            throw new RuntimeException(e);
+        }
+        //Class<?> predicateClass = Reflection.loadClass(classLoader, ctClass.getQualifiedName());
         Method predicate = Reflection.loadMethod(predicateClass, config.predicateMethodName);
 
         for (Object validInstance : ObjectCollector.positiveObjects) {
