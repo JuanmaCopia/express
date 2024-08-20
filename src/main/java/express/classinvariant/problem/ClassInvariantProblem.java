@@ -64,6 +64,8 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
     @Override
     public void printCurrentState(int round, Double temperature, SimulatedAnnealingState currentState) {
+        if (round % 50 != 0)
+            return;
         ClassInvariantState s = (ClassInvariantState) currentState;
         DecimalFormat df = new DecimalFormat("0.00");
         System.out.println(round + " | Temperature: " + df.format(temperature) + " | Fitness: " + df.format(s.getFitness()));

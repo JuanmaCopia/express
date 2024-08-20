@@ -116,7 +116,7 @@ public class Express {
     }
 
     public void printCurrentState(ClassInvariantState state) {
-        System.out.println("\n\n==============================  Search Finished  ==============================\n");
+        System.out.println("\n\n==============================  Current State  ==============================\n");
         System.out.println("Current best solution: " + state.getCtClass().toString());
         System.out.println("Fitness: " + state.getFitness());
         System.out.println("\n=================================================================================\n");
