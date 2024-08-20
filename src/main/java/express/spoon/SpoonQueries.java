@@ -270,7 +270,7 @@ public class SpoonQueries {
         for (CtMethod<?> m : traversals) {
             if (m.getSimpleName().startsWith(LocalVarHelper.ARRAY_TRAVERSAL_PREFIX)) {
                 CtVariable<?> arrayParam = m.getParameters().get(m.getParameters().size() - 1);
-                if (arrayParam.getType().equals(array)) {
+                if (arrayParam.getType().getQualifiedName().equals(array.getQualifiedName())) {
                     return m;
                 }
             }

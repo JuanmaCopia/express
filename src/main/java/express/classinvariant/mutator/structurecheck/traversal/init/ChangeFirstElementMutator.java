@@ -1,36 +1,40 @@
 package express.classinvariant.mutator.structurecheck.traversal.init;
 
-import express.classinvariant.mutator.LocalVarHelper;
+import java.util.List;
+
 import express.classinvariant.mutator.ClassInvariantMutator;
+import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.type.TypeUtils;
-import spoon.reflect.code.*;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.List;
-
 public class ChangeFirstElementMutator implements ClassInvariantMutator {
 
     public boolean isApplicable(ClassInvariantState state) {
-        List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
+        List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(),
+                LocalVarHelper.TRAVERSAL_PREFIX);
         return !traversals.isEmpty();
     }
 
     @Override
     public void mutate(ClassInvariantState state) {
-        List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
+        List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(),
+                LocalVarHelper.TRAVERSAL_PREFIX);
         CtMethod<?> traversal = traversals.get(RandomUtils.nextInt(traversals.size()));
 
         List<CtStatement> firstElements = traversal.getElements(
                 e -> e instanceof CtLocalVariable<?> var &&
-                        var.getSimpleName().equals(LocalVarHelper.FIRST_ELEMENT_VAR_NAME)
-        );
+                        var.getSimpleName().equals(LocalVarHelper.FIRST_ELEMENT_VAR_NAME));
         if (firstElements.isEmpty()) {
             return;
         }
@@ -46,8 +50,9 @@ public class ChangeFirstElementMutator implements ClassInvariantMutator {
         String fieldName = fields[fields.length - 1];
 
         List<CtVariable<?>> candidateFields = TypeUtils.getFields(parentOfFirstElement.getType()).stream().filter(
-                field -> field.getType().equals(typeOfFirstElem) && !field.getSimpleName().equals(fieldName)
-        ).toList();
+                field -> field.getType().getQualifiedName().equals(typeOfFirstElem.getQualifiedName())
+                        && !field.getSimpleName().equals(fieldName))
+                .toList();
         if (candidateFields.isEmpty()) {
             return;
         }
@@ -57,9 +62,9 @@ public class ChangeFirstElementMutator implements ClassInvariantMutator {
         CtFieldRead newFirstElementRead = SpoonFactory.createFieldRead(parentOfFirstElement, chosenField);
         firstElement.setAssignment(newFirstElementRead);
 
-        //System.err.println("ChangeTraverseInitialFieldMutator: " + chosenField.getSimpleName() + " instead of " + fieldName);
-        //System.err.println("Result: \n" + chosenTraversal);
+        // System.err.println("ChangeTraverseInitialFieldMutator: " +
+        // chosenField.getSimpleName() + " instead of " + fieldName);
+        // System.err.println("Result: \n" + chosenTraversal);
     }
-
 
 }

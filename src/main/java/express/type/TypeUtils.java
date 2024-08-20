@@ -139,7 +139,7 @@ public class TypeUtils {
             return false;
 
         for (CtVariable<?> field : type.getFields()) {
-            if (field.getType().equals(typeRef))
+            if (field.getType().getQualifiedName().equals(typeRef.getQualifiedName()))
                 return true;
         }
         return false;

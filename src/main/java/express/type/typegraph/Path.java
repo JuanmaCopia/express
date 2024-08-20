@@ -1,16 +1,17 @@
 package express.type.typegraph;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import express.spoon.SpoonFactory;
 import express.type.TypeUtils;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 public class Path {
 
@@ -73,12 +74,13 @@ public class Path {
         if (index < 0 || index >= fields.size()) {
             throw new IllegalArgumentException("Index out of bounds");
         }
-        return Pair.of(new Path(new LinkedList<>(fields.subList(0, index))), new Path(new LinkedList<>(fields.subList(index, fields.size()))));
+        return Pair.of(new Path(new LinkedList<>(fields.subList(0, index))),
+                new Path(new LinkedList<>(fields.subList(index, fields.size()))));
     }
 
     public Pair<Path, Path> splitByType(CtTypeReference<?> type) {
         for (int i = 0; i < fields.size(); i++) {
-            if (fields.get(i).getType().equals(type)) {
+            if (fields.get(i).getType().getQualifiedName().equals(type.getQualifiedName())) {
                 return split(i + 1);
             }
         }

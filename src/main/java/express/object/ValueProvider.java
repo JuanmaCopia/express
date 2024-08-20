@@ -1,12 +1,12 @@
 package express.object;
 
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.reference.CtTypeReference;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.reference.CtTypeReference;
 
 /**
  * Class to provide random values for specific types (used for object mutation)
@@ -43,14 +43,17 @@ public class ValueProvider {
     }
 
     /**
-     * Get a random value for the given reference type, by searching for a random value in the object
+     * Get a random value for the given reference type, by searching for a random
+     * value in the object
      *
      * @param type                 is the type to get the random value for
      * @param object               is the object to get the random value from
-     * @param evaluableExpressions is the list of evaluable expressions for the object
+     * @param evaluableExpressions is the list of evaluable expressions for the
+     *                             object
      * @return a random value for the given reference type
      */
-    public static Object getRandomValueForReferenceType(CtTypeReference<?> type, Object object, List<List<CtField<?>>> evaluableExpressions) {
+    public static Object getRandomValueForReferenceType(CtTypeReference<?> type, Object object,
+            List<List<CtField<?>>> evaluableExpressions) {
         List<CtField<?>> expr = getRandomExpressionOfSameType(type, evaluableExpressions);
         return eval(expr, object);
     }
@@ -59,18 +62,21 @@ public class ValueProvider {
      * Get a random expression of the same type as the given type
      *
      * @param type                 is the type to get the random expression
-     * @param evaluableExpressions is the list of evaluable expressions for the object
+     * @param evaluableExpressions is the list of evaluable expressions for the
+     *                             object
      * @return a random expression of the same type as the given type
      */
-    private static List<CtField<?>> getRandomExpressionOfSameType(CtTypeReference<?> type, List<List<CtField<?>>> evaluableExpressions) {
+    private static List<CtField<?>> getRandomExpressionOfSameType(CtTypeReference<?> type,
+            List<List<CtField<?>>> evaluableExpressions) {
         List<List<CtField<?>>> expressionsOfSameType = new ArrayList<>();
         for (List<CtField<?>> expression : evaluableExpressions) {
             CtField<?> lastField = expression.get(expression.size() - 1);
-            if (lastField.getType().equals(type)) {
+            if (lastField.getType().getQualifiedName().equals(type.getQualifiedName())) {
                 expressionsOfSameType.add(expression);
             }
         }
-        if (expressionsOfSameType.isEmpty()) return null;
+        if (expressionsOfSameType.isEmpty())
+            return null;
         Random r = new Random();
         int random = r.nextInt(expressionsOfSameType.size());
         return expressionsOfSameType.get(random);
@@ -84,7 +90,8 @@ public class ValueProvider {
      * @return the value of the expression on the object
      */
     private static Object eval(List<CtField<?>> expression, Object object) {
-        if (expression == null) return null;
+        if (expression == null)
+            return null;
         Object current = object;
         for (int i = 0; i < expression.size(); i++) {
             try {
