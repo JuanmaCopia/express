@@ -1,5 +1,6 @@
 package express.classinvariant.state;
 
+import express.classinvariant.predicate.PredicateManager;
 import express.search.simulatedannealing.state.SimulatedAnnealingState;
 import express.spoon.SpoonFactory;
 import spoon.reflect.declaration.CtClass;
@@ -13,13 +14,13 @@ public class ClassInvariantState implements SimulatedAnnealingState {
     public boolean marked;
 
     public ClassInvariantState() {
-        cls = SpoonFactory.createPredicateClass(id++);
+        cls = PredicateManager.createPredicateClass(id++);
         fitness = null;
     }
 
     public ClassInvariantState(ClassInvariantState other) {
         cls = other.getCtClass().clone();
-        cls.setSimpleName(SpoonFactory.createPredicateClassName(id++));
+        cls.setSimpleName(PredicateManager.createPredicateClassName(id++));
         fitness = other.fitness;
     }
 

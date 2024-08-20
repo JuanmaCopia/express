@@ -112,9 +112,12 @@ public class Schedule {
     }
 
     public int size() {
-        String s = "Hi, I'm Size :)";
-        System.out.println(s);
         return numProcesses;
+    }
+
+    public String test() {
+        String s = "hi";
+        return s;
     }
 
     public void upgradeProcessPrio(int prio, float ratio) {

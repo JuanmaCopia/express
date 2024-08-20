@@ -22,18 +22,14 @@ import java.util.function.Function;
 
 public class SpoonFactory {
 
-    private static Config config;
     private static Launcher launcher;
-    private static TypeData typeData;
     private static Factory factory;
     private static CodeFactory codeFactory;
     private static CoreFactory coreFactory;
     private static TypeFactory typeFactory;
 
-    public static void initialize(Config conf, Launcher spoonLauncher, TypeData data) {
-        config = conf;
+    public static void initialize(Launcher spoonLauncher) {
         launcher = spoonLauncher;
-        typeData = data;
         factory = launcher.getFactory();
         codeFactory = launcher.getFactory().Code();
         coreFactory = launcher.getFactory().Core();
@@ -62,75 +58,6 @@ public class SpoonFactory {
         return typeFactory;
     }
 
-    // ==================== Methods for creating new elements ====================
-
-    public static CtClass<?> createPredicateClass(long id) {
-        CtClass<?> predicateClass = coreFactory.createClass();
-        String className = createPredicateClassName(id);
-        predicateClass.setSimpleName(className);
-        Set<ModifierKind> modifiers = new HashSet<>();
-        modifiers.add(ModifierKind.PUBLIC);
-        predicateClass.setModifiers(modifiers);
-
-        CtClass<?> thisClass = typeData.getThisCtClass();
-//        List<CtTypeParameter> formalTypeParameters = thisClass.getFormalCtTypeParameters();
-//        predicateClass.setFormalCtTypeParameters(formalTypeParameters);
-
-        CtPackage ctPackage = thisClass.getPackage();
-        ctPackage.addType(predicateClass);
-
-        List<CtParameter<?>> parameters = new ArrayList<>();
-        parameters.add((CtParameter<?>) typeData.getThisVariable());
-        createSubPredicates(predicateClass, parameters);
-
-        return predicateClass;
-    }
-
-    public static String createPredicateClassName(long id) {
-        return config.predicateClassName + id;
-    }
-
-    private static void createSubPredicates(CtClass<?> predicateClass, List<CtParameter<?>> parameters) {
-        List<CtMethod<Boolean>> subPredicates = createSubPredicates(parameters);
-        for (CtMethod<?> subPredicate : subPredicates)
-            predicateClass.addMethod(subPredicate);
-
-        Set<ModifierKind> modifiers = new HashSet<>();
-        modifiers.add(ModifierKind.PUBLIC);
-        modifiers.add(ModifierKind.STATIC);
-
-        CtMethod<Boolean> predicateMethod = createMethod(modifiers, typeFactory.booleanPrimitiveType(),  config.predicateMethodName, parameters);
-        CtExpression<?>[] args = createArgumentsFromParameters(predicateMethod);
-
-        CtBlock<?> body = createBlock();
-        for (CtMethod<?> subPredicate : subPredicates) {
-            CtInvocation<?> subPredicateInvocation = createStaticInvocation(typeFactory.createReference(predicateClass), subPredicate.getSimpleName(), args);
-            CtExpression<Boolean> predicateNegation = (CtExpression<Boolean>) createUnaryExpression(subPredicateInvocation, UnaryOperatorKind.NOT);
-            CtIf ifStatement = createIfThenStatement(predicateNegation, createReturnStatement(codeFactory.createLiteral(false)));
-            body.addStatement(ifStatement);
-        }
-        body.addStatement(createReturnStatement(codeFactory.createLiteral(true)));
-        predicateMethod.setBody(body);
-
-        predicateClass.addMethod(predicateMethod);
-    }
-
-//    public static CtVariableRead<?> createFieldReadOfRootObject(List<CtVariable<?>> path) {
-//        List<CtVariable<?>> pathCopy = new ArrayList<>(path);
-//        CtVariable<?> rootVar = getRootObjectVar();
-//        pathCopy.add(0, rootVar);
-//        return createFieldRead(pathCopy);
-//    }
-//
-//    public static CtVariableRead<?> createFieldReadOfRootObject(CtVariable<?> var) {
-//        CtVariable<?> rootVar = getRootObjectVar();
-//        return createFieldRead(rootVar, var);
-//    }
-//
-//
-//    public static CtVariable<?> getRootObjectVar() {
-//        return SpoonManager.predicateParameters.get(0);
-//    }
 
     public static CtExpression<?>[] createArgumentsFromParameters(CtMethod<?> method) {
         List<CtParameter<?>> parameters = method.getParameters();
@@ -147,31 +74,6 @@ public class SpoonFactory {
             args[i] = createVariableRead(parameters.get(i));
         }
         return args;
-    }
-
-    private static List<CtMethod<Boolean>> createSubPredicates(List<CtParameter<?>> parameters) {
-        List<CtMethod<Boolean>> subPredicates = new ArrayList<>();
-        subPredicates.add(createSubPredicateMethod(LocalVarHelper.INITIAL_METHOD_NAME, parameters));
-        subPredicates.add(createSubPredicateMethod(LocalVarHelper.STRUCTURE_METHOD_NAME, parameters));
-        subPredicates.add(createSubPredicateMethod(LocalVarHelper.PRIMITIVE_METHOD_NAME, parameters));
-        return subPredicates;
-    }
-
-    private static String createSubPredicateMethodName(String name) {
-        return name + LocalVarHelper.MUTABLE_METHOD_SUFFIX;
-    }
-
-    public static CtMethod<Boolean> createSubPredicateMethod(String name, List<CtParameter<?>> parameters) {
-        Set<ModifierKind> modifiers = new HashSet<>();
-        modifiers.add(ModifierKind.PUBLIC);
-        modifiers.add(ModifierKind.STATIC);
-
-        String methodName = createSubPredicateMethodName(name);
-
-        CtMethod<Boolean> predicateMethod = createMethod(modifiers, typeFactory.booleanPrimitiveType(), methodName, parameters);
-
-        predicateMethod.setBody(createReturnTrueBlock());
-        return predicateMethod;
     }
 
     public static CtBlock<?> createReturnTrueBlock() {
@@ -199,12 +101,6 @@ public class SpoonFactory {
         return newMethod;
     }
 
-    public static CtClass<?> createClass(String name) {
-        CtClass<?> clazz = coreFactory.createClass();
-        clazz.setSimpleName(name);
-        return clazz;
-    }
-
     public static CtReturn createReturnStatement(CtExpression returnExpression) {
         return coreFactory.createReturn().setReturnedExpression(returnExpression);
     }
@@ -212,13 +108,6 @@ public class SpoonFactory {
     public static CtBlock<?> createBlock() {
         return coreFactory.createBlock();
     }
-
-    // public static CtReturn createReturnStatement(Object exp) {
-    // CtExpression returnExpression = parseToExpression(exp);
-    // CtReturn returnStatement = coreFactory.createReturn();
-    // returnStatement.setReturnedExpression(returnExpression);
-    // return returnStatement;
-    // }
 
     public static CtTypeReference<?> createReference(Class<?> type) {
         return typeFactory.createReference(type);
