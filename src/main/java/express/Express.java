@@ -127,7 +127,7 @@ public class Express {
     }
 
     public void saveResults(ClassInvariantState finalState) {
-        SpoonManager.getOutput().generatePredicateSourceFiles(finalState.getCtClass());
+        SpoonManager.getOutputManager().generatePredicateSourceFiles(finalState.getCtClass());
         System.out.println("\nSource code saved in: " + config.outputSrcPath);
     }
 

@@ -53,7 +53,7 @@ public class ArrayTraversalTemplate {
 
     private static List<CtParameter<?>> createParameters(Path pathToArray, CtVariable<?> visitedSet) {
         List<CtParameter<?>> parameters = new ArrayList<>();
-        parameters.add((CtParameter<?>) SpoonManager.getTypeData().getThisVariable());
+        parameters.add((CtParameter<?>) SpoonManager.getSubjectTypeData().getThisVariable());
         parameters.add(SpoonFactory.createParameter(pathToArray.getTypeReference(), LocalVarHelper.ARRAY_PARAM_NAME));
         parameters.add(SpoonFactory.createParameter(visitedSet.getType(), LocalVarHelper.SET_VAR_NAME));
         return parameters;

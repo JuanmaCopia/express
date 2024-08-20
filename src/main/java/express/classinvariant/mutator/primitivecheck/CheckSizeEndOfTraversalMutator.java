@@ -4,16 +4,7 @@ import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.classinvariant.mutator.ClassInvariantMutator;
-import express.spoon.RandomUtils;
-import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
-import express.spoon.SpoonQueries;
-import express.type.typegraph.Path;
-import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
-
-import java.util.List;
 
 public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
 
@@ -21,7 +12,7 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
         if (MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX).isEmpty())
             return false;
 
-        return !SpoonManager.getTypeData().getIntegerPaths().isEmpty();
+        return !SpoonManager.getSubjectTypeData().getIntegerPaths().isEmpty();
     }
 
     @Override

@@ -36,7 +36,7 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         CtVariable<?> array = SpoonQueries.getTraversedElementParameter(traversal);
 
         List<Path> pathCandidates = TypeUtils.filterPathsByType(
-                SpoonManager.getTypeData().getArrayPaths(),
+                SpoonManager.getSubjectTypeData().getArrayPaths(),
                 array.getType()
         ).stream().toList();
 

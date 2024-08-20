@@ -6,6 +6,7 @@ import express.spoon.SpoonManager;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import collector.ObjectCollector;
 
 /**
  * This class allows to generate a set of positive and negative objects from a given test suite.
@@ -36,7 +37,7 @@ public class ObjectGenerator {
     }
 
     public static void generatePositiveObjects() {
-        Executor.runTestSuite(SpoonManager.getTestSuiteClass().getQualifiedName(), SpoonManager.getOutput().getClassLoader());
+        Executor.runTestSuite(SpoonManager.getSubjectTestClass().getQualifiedName(), SpoonManager.getClassLoader());
     }
 
     /**

@@ -6,6 +6,7 @@ import express.classinvariant.fitness.ClassInvariantFitness;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.search.simulatedannealing.problem.SimulatedAnnealingProblem;
 import express.search.simulatedannealing.state.SimulatedAnnealingState;
+import spoon.reflect.declaration.CtClass;
 
 import java.text.DecimalFormat;
 import java.util.Set;
@@ -41,12 +42,12 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
     @Override
     public SimulatedAnnealingState nextState(SimulatedAnnealingState state) {
-        ClassInvariantState stateClone = ((ClassInvariantState) state).clone();
-        ClassInvariantState nextState = (ClassInvariantState) state;
+        ClassInvariantState currentState = (ClassInvariantState) state;
+        ClassInvariantState stateClone = currentState.clone();
         if (mutatorManager.performRandomMutation(stateClone)) {
-            nextState = stateClone;
+            return stateClone;
         }
-        return nextState;
+        return currentState;
     }
 
     @Override

@@ -1,13 +1,13 @@
 package express.execution;
 
-import express.object.ObjectCollector;
-import express.compile.Compiler;
+import collector.ObjectCollector;
+import express.compile.InMemoryCompiler;
 import express.reflection.Reflection;
 import express.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtPackage;
 
 import java.lang.reflect.Method;
-import java.net.URLClassLoader;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -43,18 +43,15 @@ public class Executor {
         return 0;
     }
 
-    public static void runTestSuite(String testSuiteFullyQualifiedName, URLClassLoader classLoader) {
+    public static void runTestSuite(String testSuiteFullyQualifiedName, ClassLoader classLoader) {
         try {
             Class<?> testClass = classLoader.loadClass(testSuiteFullyQualifiedName);
             List<Method> testMethods = Reflection.getRunnableTests(testClass);
             Object testObject = testClass.getDeclaredConstructor().newInstance();
-            int testsExecuted = 0;
-            int errors = 0;
             for (Method testMethod : testMethods) {
                 // Run the test method and let the instrumentation collect the created objects
                 try {
                     Object result = testMethod.invoke(testObject);
-                    testsExecuted++;
                 } catch (Exception e) {
                     System.err.println("error running test " + testMethod.getName() + ": " + e.getMessage());
                     throw new RuntimeException(e);
@@ -67,10 +64,22 @@ public class Executor {
     }
 
     public static void printSurvivors(CtClass<?> cls) {
-        Compiler compiler = SpoonManager.getOutput().getCompiler();
-        compiler.compileModel(cls);
+        SpoonManager.addClassToMainPackage(cls);
+        String classQualifiedName = cls.getQualifiedName();
+        String classSourceCode = SpoonManager.getPrettyPrintedSourceCode(cls);
+        SpoonManager.removeClassFromMainPackage(cls);
 
-        Class<?> predicateClass = Reflection.loadClass(SpoonManager.getOutput().getClassLoader(), cls.getQualifiedName());
+        InMemoryCompiler compiler = SpoonManager.getInMemoryCompiler();
+        compiler.compileSingleClass(classQualifiedName, classSourceCode);
+
+        Class<?> predicateClass;
+        try {
+            predicateClass = compiler.loadClass(classQualifiedName);
+        } catch (ClassNotFoundException e) {
+            System.err.println("Error loading class: " + classQualifiedName);
+            throw new RuntimeException(e);
+        }
+
         Method predicate = Reflection.loadMethod(predicateClass, SpoonManager.getConfig().predicateMethodName);
 
         for (Object invalidInstance : ObjectCollector.negativeObjects) {
@@ -82,10 +91,11 @@ public class Executor {
                 System.out.println("\n\nCould not kill:\n" + invalidInstance.toString());
             } else if (result == -1) {
                 System.err.println("\nError with" + invalidInstance.toString());
-                System.err.println("\n\n Class: " + cls.toString());
+                System.err.println("\n\n Class:\n" + classSourceCode);
                 return;
             }
         }
+
     }
 
 }

@@ -19,7 +19,7 @@ public class IfNullReturnMutator implements ClassInvariantMutator {
     CtBlock<?> targetMethodBody;
 
     public boolean isApplicable(ClassInvariantState state) {
-        List<Path> paths = SpoonManager.getTypeData().getReferencePaths().stream().filter(p -> p.size() > 1 && p.size() < 4).toList();
+        List<Path> paths = SpoonManager.getSubjectTypeData().getReferencePaths().stream().filter(p -> p.size() > 1 && p.size() < 4).toList();
         if (paths.isEmpty())
             return false;
 

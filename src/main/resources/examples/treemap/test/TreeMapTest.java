@@ -1,6 +1,6 @@
 package examples.treemap;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class TreeMapTest {
 

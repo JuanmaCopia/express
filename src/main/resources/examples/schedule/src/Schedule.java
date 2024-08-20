@@ -111,8 +111,13 @@ public class Schedule {
         }
     }
 
-    int size() {
+    public int size() {
         return numProcesses;
+    }
+
+    public String test() {
+        String s = "hi";
+        return s;
     }
 
     public void upgradeProcessPrio(int prio, float ratio) {

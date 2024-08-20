@@ -18,7 +18,7 @@ public class ComposeNullCheckMutator implements ClassInvariantMutator {
     CtBlock<?> initialCheckBody;
 
     public boolean isApplicable(ClassInvariantState state) {
-        List<Path> paths = SpoonManager.getTypeData().getReferencePaths().stream().filter(p -> p.size() == 2).toList();
+        List<Path> paths = SpoonManager.getSubjectTypeData().getReferencePaths().stream().filter(p -> p.size() == 2).toList();
         if (paths.size() < 2)
             return false;
 

@@ -31,7 +31,7 @@ public class IfNullReturnInTraversalMutator implements ClassInvariantMutator {
         traversalBody = traversal.getBody();
 
         CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
-        List<Path> paths = SpoonManager.getTypeData().getThisTypeGraph().computeSimplePathsForAlternativeVar(traversedElement).stream().filter(p -> p.size() > 1).toList();
+        List<Path> paths = SpoonManager.getSubjectTypeData().getThisTypeGraph().computeSimplePathsForAlternativeVar(traversedElement).stream().filter(p -> p.size() > 1).toList();
         paths = TypeUtils.filterPaths(paths, TypeUtils::isReferenceType).stream().toList();
         if (paths.isEmpty())
             return false;

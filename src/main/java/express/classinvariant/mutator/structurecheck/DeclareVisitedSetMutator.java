@@ -29,7 +29,7 @@ public class DeclareVisitedSetMutator implements ClassInvariantMutator {
         Set<CtTypeReference<?>> visitedSetTypes = visitedSets.stream().map(
                 v -> v.getType().getActualTypeArguments().get(0)
         ).collect(Collectors.toSet());
-        TypeData typeData = SpoonManager.getTypeData();
+        TypeData typeData = SpoonManager.getSubjectTypeData();
         candidateTypes = typeData.getReferenceTypes().stream().filter(t -> !visitedSetTypes.contains(t)).toList();
 
         return !candidateTypes.isEmpty();
