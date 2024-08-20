@@ -32,7 +32,7 @@ public class AddNullCompToTraversalMutator implements ClassInvariantMutator {
 
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(traversalBody, LocalVarHelper.CURRENT_VAR_NAME);
 
-        List<Path> candidates = SpoonManager.getTypeData().getThisTypeGraph()
+        List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream()
                 .filter(p -> TypeUtils.isReferenceType(p.getTypeReference()) && p.size() > 1)
                 .toList();

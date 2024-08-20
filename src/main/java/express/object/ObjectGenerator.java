@@ -37,7 +37,7 @@ public class ObjectGenerator {
     }
 
     public static void generatePositiveObjects() {
-        Executor.runTestSuite(SpoonManager.getTestSuiteClass().getQualifiedName(), SpoonManager.getClassLoader());
+        Executor.runTestSuite(SpoonManager.getSubjectTestClass().getQualifiedName(), SpoonManager.getClassLoader());
     }
 
     /**

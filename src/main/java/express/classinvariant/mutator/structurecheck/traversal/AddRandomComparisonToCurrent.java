@@ -4,7 +4,6 @@ import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.MutatorHelper;
-import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
@@ -31,7 +30,7 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
         traversalBody = traversal.getBody();
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(traversalBody, LocalVarHelper.CURRENT_VAR_NAME);
 
-        TypeGraph typeGraph = SpoonManager.getTypeData().getThisTypeGraph();
+        TypeGraph typeGraph = SpoonManager.getSubjectTypeData().getThisTypeGraph();
         int size = 2;
         List<Path> candidates = typeGraph
                 .computeSimplePathsForAlternativeVar(currentDeclaration)

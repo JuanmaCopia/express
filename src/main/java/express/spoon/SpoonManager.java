@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import express.compile.InMemoryCompiler;
-import express.compile.InputOutputManager;
+import express.compile.OutputManager;
 import express.config.Config;
 import express.type.typegraph.TypeData;
 import express.instrumentation.Instrumentation;
@@ -16,120 +16,99 @@ import spoon.Launcher;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.CompilationUnitFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.PrettyPrinter;
-import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.declaration.CtCompilationUnitImpl;
-import spoon.support.reflect.declaration.CtImportImpl;
 
 public class SpoonManager {
 
     private static final Logger logger = Logger.getLogger(SpoonManager.class.getName());
 
+    static Launcher launcher;
+
+    static TypeData subjectTypeData;
+    static CtClass<?> subjectClass;
+    static CtPackage subjectPackage;
+    static CtClass<?> subjectTestClass;
+
     static Config config;
-    static InputOutputManager output;
+    static OutputManager outputManager;
     static InMemoryCompiler inMemoryCompiler;
 
     static CompilationUnitFactory cuFactory;
     static PrettyPrinter prettyPrinter;
 
-    static Launcher launcher;
-    static CtClass<?> testSuiteClass;
-    static TypeData typeData;
-    static CtPackage mainPackage;
+
+
+
 
     static boolean initialized = false;
 
     public static void initialize(Config conf) {
         config = conf;
+        initializeLauncher();
+        initializeSubjectData();
+        initializeOutputManager();
+        initializeFactories();
+        peformInstrumentation();
+        initializeCompiler();
+        compileModel();
+        initialized = true;
+    }
+
+    private static void initializeLauncher() {
         launcher = new Launcher();
         launcher.addInputResource(config.subjectSrcPath);
         launcher.addInputResource(config.subjectTestSrcPath);
-
         launcher.getEnvironment().setComplianceLevel(config.subjectSrcJavaVersion);
         launcher.getEnvironment().setShouldCompile(false);
         launcher.getEnvironment().setAutoImports(false);
         // launcher.getEnvironment().setPreserveLineNumbers(true);
         launcher.buildModel();
+    }
 
-        typeData = new TypeData(launcher.getFactory().Class().get(config.subjectClassName));
-        mainPackage = typeData.getThisCtClass().getPackage();
+    private static void initializeSubjectData() {
+        subjectTypeData = new TypeData(launcher.getFactory().Class().get(config.subjectClassName));
+        subjectTestClass = launcher.getFactory().Class().get(config.subjectTestSuiteClassName);
+        subjectClass = subjectTypeData.getThisCtClass();
+        subjectPackage = subjectClass.getPackage();
+    }
 
-        output = new InputOutputManager(config);
+    private static void initializeOutputManager() {
+        outputManager = new OutputManager(config);
+    }
 
-        SpoonFactory.initialize(config, launcher, typeData);
-
-        testSuiteClass = launcher.getFactory().Class().get(config.subjectTestSuiteClassName);
-        Instrumentation.instrumentClasses(launcher.getModel());
-        Instrumentation.instrumentTestSuite(testSuiteClass);
-
-        // Initialize compiler
+    private static void initializeFactories() {
         cuFactory = launcher.getFactory().CompilationUnit();
         prettyPrinter = launcher.createPrettyPrinter();
-        inMemoryCompiler = new InMemoryCompiler();
+        SpoonFactory.initialize(config, launcher, subjectTypeData);
+    }
 
-        // Set the classpath to include JUnit 4 JAR file
+    private static void peformInstrumentation() {
+        Instrumentation.instrumentClasses(launcher.getModel());
+        Instrumentation.instrumentTestSuite(subjectTestClass);
+    }
+
+    private static void initializeCompiler() {
+        inMemoryCompiler = new InMemoryCompiler();
         List<String> classpath = new ArrayList<>();
         classpath.add("lib/junit-4.13.2.jar");
         classpath.add("lib/collector-1.0.jar");
-        // Update this path to the actual location of JUnit 4 JAR
         inMemoryCompiler.setClasspath(classpath);
         inMemoryCompiler.addSource(getSourceMap());
+    }
 
-        //testIMC();
-
-        boolean compilationResult;
-        try {
-            compilationResult = inMemoryCompiler.compile();
-        } catch (Exception e) {
-            logger.severe("Compilation failed");
-            e.printStackTrace();
-            throw new RuntimeException("Compilation failed");
-        }
-
-        if (!compilationResult) {
+    private static void compileModel() {
+        if (!inMemoryCompiler.compile()) {
             logger.severe("Compilation failed");
             throw new RuntimeException("Compilation failed");
         } else {
             logger.info("Compilation successful");
         }
-
-//        CtClass<?> cls = SpoonFactory.createPredicateClass(1);
-//        System.out.println(getPrettyPrintedSourceCode(cls));
-//
-//        CtClass<?> clsclone = cls.clone();
-//        clsclone.setSimpleName("Predicate2");
-//        cls.getPackage().addType(clsclone);
-//        System.out.println(getPrettyPrintedSourceCode(clsclone));
-
-        //output.getCompiler().compileModel();
-
-        initialized = true;
     }
-
-    // private static void test1() {
-    // InMemoryCompiler compiler = new InMemoryCompiler();
-
-    // // Add JUnit JAR to classpath
-
-    // // Set the classpath to include JUnit 4 JAR file
-    // List<String> classpath = new ArrayList<>();
-    // classpath.add("lib/junit-4.13.2.jar"); // Update this path to the actual
-    // location of JUnit 4 JAR
-    // compiler.setClasspath(classpath);
-
-    // // Add source code
-    // compiler.addSource("TestExample", "public class TestExample { @org.junit.Test
-    // public void test() { assert true; } }");
-
-    // // Compile
-    // boolean success = compiler.compile();
-    // System.out.println("Compilation success: " + success);
-    // }
 
     private static void testIMC() {
         cuFactory = launcher.getFactory().CompilationUnit();
@@ -241,33 +220,33 @@ public class SpoonManager {
     }
 
     public static void addClassToMainPackage(CtClass<?> cls) {
-        if (mainPackage.getType(cls.getSimpleName()) == null) {
-            mainPackage.addType(cls);
+        if (subjectPackage.getType(cls.getSimpleName()) == null) {
+            subjectPackage.addType(cls);
         }
     }
 
     public static void removeClassFromMainPackage(CtClass<?> cls) {
-        mainPackage.removeType(cls);
+        subjectPackage.removeType(cls);
     }
 
     public static boolean isInitialized() {
         return initialized;
     }
 
-    public static TypeData getTypeData() {
-        return typeData;
+    public static TypeData getSubjectTypeData() {
+        return subjectTypeData;
     }
 
     public static Launcher getLauncher() {
         return launcher;
     }
 
-    public static CtClass<?> getTestSuiteClass() {
-        return testSuiteClass;
+    public static CtClass<?> getSubjectTestClass() {
+        return subjectTestClass;
     }
 
-    public static InputOutputManager getOutput() {
-        return output;
+    public static OutputManager getOutputManager() {
+        return outputManager;
     }
 
     public static Config getConfig() {

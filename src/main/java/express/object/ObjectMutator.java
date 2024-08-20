@@ -86,7 +86,7 @@ public class ObjectMutator {
     }
 
     private static boolean isUserDefinedClass(Class<?> cls) {
-        List<CtTypeReference<?>> userDefTypes = SpoonManager.getTypeData().getUserDefinedTypes();
+        List<CtTypeReference<?>> userDefTypes = SpoonManager.getSubjectTypeData().getUserDefinedTypes();
         return userDefTypes.stream().anyMatch(t -> t.getQualifiedName().equals(cls.getName()));
     }
 
@@ -143,9 +143,9 @@ public class ObjectMutator {
 
     private static List<CtTypeReference<?>> selectCandidateTypes(List<Object> candidates) {
         List<CtTypeReference<?>> result = new ArrayList<>();
-        List<CtTypeReference<?>> candidateTypes = new LinkedList<>(SpoonManager.getTypeData().getUserDefinedTypes()
+        List<CtTypeReference<?>> candidateTypes = new LinkedList<>(SpoonManager.getSubjectTypeData().getUserDefinedTypes()
                 .stream().filter(TypeUtils::hasReferenceFields).toList());
-        candidateTypes.addAll(SpoonManager.getTypeData().getArrayTypes().stream().filter(
+        candidateTypes.addAll(SpoonManager.getSubjectTypeData().getArrayTypes().stream().filter(
                 TypeUtils::isUserDefinedArrayType
         ).toList());
         for (CtTypeReference<?> type : candidateTypes) {

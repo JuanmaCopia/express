@@ -4,7 +4,6 @@ import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.classinvariant.mutator.ClassInvariantMutator;
-import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
@@ -32,7 +31,7 @@ public class ComposedNullCheckInTraversalMutator implements ClassInvariantMutato
         traversalBody = traversal.getBody();
 
         CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
-        List<Path> paths = SpoonManager.getTypeData().getThisTypeGraph()
+        List<Path> paths = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(traversedElement).stream()
                 .filter(p -> TypeUtils.isReferenceType(p.getTypeReference()) && p.size() == 2)
                 .toList();

@@ -36,7 +36,7 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
         CtVariable<?> initialElement = SpoonQueries.getTraversedElementParameter(traversal);
 
         List<Path> pathCandidates = TypeUtils.filterPathsByType(
-                SpoonManager.getTypeData().getSimplePaths(),
+                SpoonManager.getSubjectTypeData().getSimplePaths(),
                 initialElement.getType()
         ).stream().toList();
 

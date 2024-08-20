@@ -30,7 +30,7 @@ public class WorklistTraversalTemplate {
 
     private static List<CtParameter<?>> createParameters(Path leftPath, CtVariable<?> visitedSet) {
         List<CtParameter<?>> parameters = new ArrayList<>();
-        parameters.add((CtParameter<?>) SpoonManager.getTypeData().getThisVariable());
+        parameters.add((CtParameter<?>) SpoonManager.getSubjectTypeData().getThisVariable());
         parameters.add(SpoonFactory.createParameter(leftPath.getTypeReference(), LocalVarHelper.TRAVERSED_ELEMENT_VAR_NAME));
         parameters.add(SpoonFactory.createParameter(visitedSet.getType(), visitedSet.getSimpleName()));
         return parameters;

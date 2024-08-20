@@ -4,8 +4,6 @@ import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.classinvariant.mutator.ClassInvariantMutator;
-import express.spoon.RandomUtils;
-import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
 import express.type.typegraph.Path;
@@ -18,7 +16,7 @@ public class AddSizeCheckMutator implements ClassInvariantMutator {
     public boolean isApplicable(ClassInvariantState state) {
         CtBlock<?> methodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
 
-        List<Path> integerFields = SpoonManager.getTypeData().getIntegerPaths();
+        List<Path> integerFields = SpoonManager.getSubjectTypeData().getIntegerPaths();
         return !integerFields.isEmpty() && !SpoonQueries.getVisitedSetLocalVars(methodBody).isEmpty();
     }
 

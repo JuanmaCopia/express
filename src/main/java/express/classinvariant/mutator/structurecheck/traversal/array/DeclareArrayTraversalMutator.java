@@ -21,14 +21,14 @@ public class DeclareArrayTraversalMutator implements ClassInvariantMutator {
     @Override
     public boolean isApplicable(ClassInvariantState state) {
         Set<CtTypeReference<?>> traversedArrayTypes = MutatorHelper.getTraversedArrayTypes(state.getCtClass());
-        Set<CtTypeReference<?>>  nonTraversedArrayTypes = new HashSet<>(SpoonManager.getTypeData().getArrayTypes());
+        Set<CtTypeReference<?>>  nonTraversedArrayTypes = new HashSet<>(SpoonManager.getSubjectTypeData().getArrayTypes());
         nonTraversedArrayTypes.removeAll(traversedArrayTypes);
         if (nonTraversedArrayTypes.isEmpty()) {
             return false;
         }
 
         CtTypeReference<?> chosenTypeToTraverse = Utils.getRandomElement(nonTraversedArrayTypes);
-        paths = SpoonManager.getTypeData().getArrayPaths().stream().filter(
+        paths = SpoonManager.getSubjectTypeData().getArrayPaths().stream().filter(
                 path -> path.getTypeReference().equals(chosenTypeToTraverse)
         ).toList();
 

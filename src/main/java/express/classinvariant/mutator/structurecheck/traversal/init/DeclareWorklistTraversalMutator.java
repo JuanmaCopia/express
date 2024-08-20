@@ -24,14 +24,14 @@ public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
     @Override
     public boolean isApplicable(ClassInvariantState state) {
         Set<CtTypeReference<?>> traversedTypes = MutatorHelper.getTraversedTypes(state.getCtClass());
-        Set<CtTypeReference<?>>  nonTraversedTypes = new HashSet<>(SpoonManager.getTypeData().getCyclicTypes());
+        Set<CtTypeReference<?>>  nonTraversedTypes = new HashSet<>(SpoonManager.getSubjectTypeData().getCyclicTypes());
         nonTraversedTypes.removeAll(traversedTypes);
         if (nonTraversedTypes.isEmpty()) {
             return false;
         }
 
         CtTypeReference<?> chosenTypeToTraverse = Utils.getRandomElement(nonTraversedTypes);
-        List<Path> paths = SpoonManager.getTypeData().getCyclicPaths().stream().filter(
+        List<Path> paths = SpoonManager.getSubjectTypeData().getCyclicPaths().stream().filter(
                 path -> path.getTypeReference().equals(chosenTypeToTraverse)
         ).toList();
 

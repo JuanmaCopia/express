@@ -29,7 +29,7 @@ public class CheckVisitedFieldMutator implements ClassInvariantMutator {
         CtLocalVariable<?> setVar = visitedSetVars.get(RandomUtils.nextInt(visitedSetVars.size()));
         CtTypeReference<?> setSubType = setVar.getType().getActualTypeArguments().get(0);
 
-        List<Path> candidates = SpoonManager.getTypeData().getSimplePathsOfType(setSubType);
+        List<Path> candidates = SpoonManager.getSubjectTypeData().getSimplePathsOfType(setSubType);
         if (candidates.isEmpty())
             return false;
 

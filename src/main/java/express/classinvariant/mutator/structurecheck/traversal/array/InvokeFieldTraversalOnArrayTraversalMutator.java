@@ -42,7 +42,7 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
                 arrayTraversal.getBody(), LocalVarHelper.CURRENT_VAR_NAME
         );
 
-        List<Path> candidates = SpoonManager.getTypeData().getThisTypeGraph()
+        List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream().filter(
                         p -> p.getTypeReference().isSubtypeOf(traversedElementType)
                 ).toList();

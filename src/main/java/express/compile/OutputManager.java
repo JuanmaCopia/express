@@ -12,14 +12,14 @@ import spoon.support.compiler.VirtualFile;
 import java.io.File;
 import java.net.URL;
 
-public class InputOutputManager {
+public class OutputManager {
 
     Config config;
     File outputBinPath;
     File outputSrcPath;
     URL outputBinURL;
 
-    public InputOutputManager(Config config) {
+    public OutputManager(Config config) {
         this.config = config;
         this.outputBinPath = Utils.createDirectory(config.outputBinPath);
         this.outputSrcPath = Utils.createDirectory(config.outputSrcPath);
