@@ -20,7 +20,6 @@ public class ClassInvariantState implements SimulatedAnnealingState {
     public ClassInvariantState(ClassInvariantState other) {
         cls = other.getCtClass().clone();
         cls.setSimpleName(SpoonFactory.createPredicateClassName(id++));
-        other.getCtClass().getPackage().addType(cls);
         fitness = other.fitness;
     }
 

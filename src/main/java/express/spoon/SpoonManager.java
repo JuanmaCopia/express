@@ -17,10 +17,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtCompilationUnit;
-import spoon.reflect.declaration.CtImport;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.CompilationUnitFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
@@ -43,6 +40,7 @@ public class SpoonManager {
     static Launcher launcher;
     static CtClass<?> testSuiteClass;
     static TypeData typeData;
+    static CtPackage mainPackage;
 
     static boolean initialized = false;
 
@@ -59,10 +57,9 @@ public class SpoonManager {
         launcher.buildModel();
 
         typeData = new TypeData(launcher.getFactory().Class().get(config.subjectClassName));
+        mainPackage = typeData.getThisCtClass().getPackage();
 
-        output = new InputOutputManager(launcher, config, typeData.getThisCtClass().getPackage());
-        launcher.setBinaryOutputDirectory(output.getOutputBinPath());
-        launcher.setSourceOutputDirectory(output.getOutputSrcPath());
+        output = new InputOutputManager(config);
 
         SpoonFactory.initialize(config, launcher, typeData);
 
@@ -241,6 +238,16 @@ public class SpoonManager {
         cu.addDeclaredType(type);
         cu.setPackageDeclaration(origCU.getPackageDeclaration());
         return prettyPrinter.printCompilationUnit(cu);
+    }
+
+    public static void addClassToMainPackage(CtClass<?> cls) {
+        if (mainPackage.getType(cls.getSimpleName()) == null) {
+            mainPackage.addType(cls);
+        }
+    }
+
+    public static void removeClassFromMainPackage(CtClass<?> cls) {
+        mainPackage.removeType(cls);
     }
 
     public static boolean isInitialized() {
