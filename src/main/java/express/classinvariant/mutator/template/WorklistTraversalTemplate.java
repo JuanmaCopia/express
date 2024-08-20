@@ -18,25 +18,7 @@ import java.util.Set;
 
 public class WorklistTraversalTemplate {
 
-    public static CtMethod<?> instantiate(CtClass<?> ctClass, Path initialField, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn, int splitIndex) {
-        CtMethod<?> structureMethod = MutatorHelper.getMethodByName(ctClass, LocalVarHelper.STRUCTURE_METHOD_NAME);
-        CtBlock<?> structureMethodBody = structureMethod.getBody();
-        CtStatement lastStatement = SpoonQueries.getMark1Comment(structureMethodBody);
-
-        CtVariable<?> setVar = MutatorHelper.handleVisitedSetVariable(structureMethodBody, lastStatement, initialField.getTypeReference());
-
-        return createTraversalMethod(ctClass, initialField, loopFields, setVar, useBreakInsteadOfReturn, splitIndex);
-    }
-
-    private static List<CtParameter<?>> createParameters(Path leftPath, CtVariable<?> visitedSet) {
-        List<CtParameter<?>> parameters = new ArrayList<>();
-        parameters.add((CtParameter<?>) SpoonManager.getSubjectTypeData().getThisVariable());
-        parameters.add(SpoonFactory.createParameter(leftPath.getTypeReference(), LocalVarHelper.TRAVERSED_ELEMENT_VAR_NAME));
-        parameters.add(SpoonFactory.createParameter(visitedSet.getType(), visitedSet.getSimpleName()));
-        return parameters;
-    }
-
-    public static CtMethod<?> createTraversalMethod(CtClass<?> ctClass, Path initialField, List<CtVariable<?>> loopFields, CtVariable<?> setVar, boolean useBreakInsteadOfReturn, int splitIndex) {
+    public static CtMethod<?> instantiate(Path initialField, List<CtVariable<?>> loopFields, boolean useBreakInsteadOfReturn, int splitIndex) {
         Set<ModifierKind> modifiers = new HashSet<>();
         modifiers.add(ModifierKind.PRIVATE);
         modifiers.add(ModifierKind.STATIC);
@@ -46,13 +28,21 @@ public class WorklistTraversalTemplate {
         Path rightPath = splitPaths.getRight();
 
         CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().booleanPrimitiveType();
-        List<CtParameter<?>> parameters = createParameters(leftPath, setVar);
+        List<CtParameter<?>> parameters = createParameters(leftPath, initialField.getTypeReference());
         CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(leftPath.getTypeReference()), parameters);
-        //traversalMethod.setSimpleName(traversalMethod.getSimpleName() + LocalVarHelper.getNextTraversalId(ctClass, LocalVarHelper.TRAVERSAL_PREFIX));
 
         CtBlock<?> traversalBody = createTraversalBody(rightPath, parameters, loopFields, useBreakInsteadOfReturn);
         traversalMethod.setBody(traversalBody);
         return traversalMethod;
+    }
+
+    private static List<CtParameter<?>> createParameters(Path leftPath, CtTypeReference<?> setSubtype) {
+        List<CtParameter<?>> parameters = new ArrayList<>();
+        CtVariable<?> setVar = SpoonFactory.createVisitedSetDeclaration(setSubtype);
+        parameters.add((CtParameter<?>) SpoonManager.getSubjectTypeData().getThisVariable());
+        parameters.add(SpoonFactory.createParameter(leftPath.getTypeReference(), LocalVarHelper.TRAVERSED_ELEMENT_VAR_NAME));
+        parameters.add(SpoonFactory.createParameter(setVar.getType(), LocalVarHelper.SET_VAR_NAME));
+        return parameters;
     }
 
     public static String createMethodName(CtTypeReference<?> type) {

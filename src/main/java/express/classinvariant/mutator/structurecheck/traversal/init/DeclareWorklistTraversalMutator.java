@@ -69,7 +69,7 @@ public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
 
         boolean useBreakInsteadOfReturn = RandomUtils.nextBoolean();
         int splitIndex = RandomUtils.nextInt(1, chosenPath.size());
-        return WorklistTraversalTemplate.instantiate(state.getCtClass(), chosenPath, loopFields, useBreakInsteadOfReturn, splitIndex);
+        return WorklistTraversalTemplate.instantiate(chosenPath, loopFields, useBreakInsteadOfReturn, splitIndex);
     }
 
 }

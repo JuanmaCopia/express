@@ -36,7 +36,7 @@ public class MutatorHelper {
         if (setVar != null)
             return setVar;
 
-        return declareVisitedSetVariable(methodBody, statement, setSubtype);
+        return declareVisitedSetVariable(statement, setSubtype);
     }
 
     private static CtVariable<?> pickVisitedSetVariable(CtBlock<?> methodBody, CtTypeReference<?> setSubtype) {
@@ -46,7 +46,7 @@ public class MutatorHelper {
         return setVars.get(RandomUtils.nextInt(setVars.size()));
     }
 
-    public static CtVariable<?> declareVisitedSetVariable(CtBlock<?> methodBody, CtStatement statement, CtTypeReference<?> setSubtype) {
+    public static CtVariable<?> declareVisitedSetVariable(CtStatement statement, CtTypeReference<?> setSubtype) {
         CtVariable<?> setVar = SpoonFactory.createVisitedSetDeclaration(setSubtype);
         statement.insertBefore((CtStatement) setVar);
         return setVar;
