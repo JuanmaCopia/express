@@ -74,7 +74,7 @@ public class TypeGraph {
 
     private CtVariable<?> searchVariableOfType(CtTypeReference<?> type) {
         for (CtVariable<?> node : adjacencyList.keySet()) {
-            if (node.getType().equals(type))
+            if (node.getType().getQualifiedName().equals(type.getQualifiedName()))
                 return node;
         }
         return null;
@@ -92,10 +92,20 @@ public class TypeGraph {
         }
     }
 
+//    public Set<CtTypeReference<?>> computeTypes() {
+//        Set<CtTypeReference<?>> types = new HashSet<>();
+//        for (CtVariable<?> node : adjacencyList.keySet())
+//            types.add(node.getType());
+//        return new HashSet<>(types);
+//    }
+
     public Set<CtTypeReference<?>> computeTypes() {
         Set<CtTypeReference<?>> types = new HashSet<>();
-        for (CtVariable<?> node : adjacencyList.keySet())
-            types.add(node.getType());
+        for (CtVariable<?> node : adjacencyList.keySet()) {
+            CtTypeReference<?> type = node.getType();
+            if (!type.getActualTypeArguments().isEmpty() || !type.isGenerics())
+                types.add(type);
+        }
         return new HashSet<>(types);
     }
 

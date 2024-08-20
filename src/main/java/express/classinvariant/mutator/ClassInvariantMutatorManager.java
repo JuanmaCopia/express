@@ -3,6 +3,7 @@ package express.classinvariant.mutator;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ public class ClassInvariantMutatorManager {
         ClassInvariantMutator mutator = selectMutator(state);
         if (mutator != null) {
             mutator.mutate(state);
-            //System.err.println("Mutator applied: " + mutator.getClass().getSimpleName());
+            // System.err.println("Mutator applied: " + mutator.getClass().getSimpleName());
             state.setFitnessAsOutdated();
             return true;
         }
@@ -32,5 +33,18 @@ public class ClassInvariantMutatorManager {
             return null;
         return possibleMutators.get(RandomUtils.nextInt(possibleMutators.size()));
     }
+
+//    private List<ClassInvariantMutator> getApplicableMutators(ClassInvariantState state) {
+//        List<ClassInvariantMutator> applicableMutators = new ArrayList<>();
+//        for (ClassInvariantMutator mutator : mutators) {
+//            String stateStr = state.toString();
+//            if (mutator.isApplicable(state)) {
+//                applicableMutators.add(mutator);
+//            }
+//            if (!stateStr.equals(state.toString()))
+//                throw new IllegalStateException("The following mutator has changed the state: " + mutator.getClass().getSimpleName());
+//        }
+//        return applicableMutators;
+//    }
 
 }

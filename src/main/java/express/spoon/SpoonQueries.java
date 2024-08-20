@@ -1,14 +1,35 @@
 package express.spoon;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
 import express.classinvariant.mutator.LocalVarHelper;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
-import spoon.reflect.code.*;
-import spoon.reflect.declaration.*;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtWhile;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
-
-import java.util.*;
 
 public class SpoonQueries {
 
@@ -65,7 +86,6 @@ public class SpoonQueries {
         return list.stream().filter(var -> TypeUtils.isReferenceType(var.getType())).toList();
     }
 
-
     public static List<CtVariable<?>> getVariablesOfType(List<CtVariable<?>> list, Class<?> type) {
         return getVariablesOfType(list, SpoonFactory.getTypeFactory().createReference(type));
     }
@@ -79,12 +99,12 @@ public class SpoonQueries {
     }
 
     public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
-                                                                          Class<?> type) {
+            Class<?> type) {
         return getAllReachableLocalVariablesOfType(statement, SpoonFactory.getTypeFactory().createReference(type));
     }
 
     public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
-                                                                          CtTypeReference<?> type) {
+            CtTypeReference<?> type) {
         return statement.map(new PotentialVariableDeclarationFunction())
                 .map(e -> e instanceof CtLocalVariable && ((CtVariable<?>) e).getType().isSubtypeOf(type))
                 .list();
@@ -116,7 +136,6 @@ public class SpoonQueries {
 
         return list.stream().filter(var -> TypeUtils.isUserDefinedType(var)).toList();
     }
-
 
     public static boolean containsReturnStatement(CtBlock<?> block) {
         return !block.getElements(e -> e instanceof CtReturn).isEmpty();
@@ -172,49 +191,56 @@ public class SpoonQueries {
     }
 
     public static CtStatement getEndHandleCurrentComment(CtBlock<?> block) {
-        List<CtElement> handleCurrentEndComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isEndOfHandleCurrentComment).toList();
+        List<CtElement> handleCurrentEndComments = block.getElements(e -> e instanceof CtComment).stream()
+                .filter(SpoonQueries::isEndOfHandleCurrentComment).toList();
         if (handleCurrentEndComments.isEmpty())
             return null;
         return (CtStatement) handleCurrentEndComments.get(RandomUtils.nextInt(handleCurrentEndComments.size()));
     }
 
     public static CtStatement getReturnTrueComment(CtBlock<?> block) {
-        List<CtElement> returnTrueComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isReturnTrueComment).toList();
+        List<CtElement> returnTrueComments = block.getElements(e -> e instanceof CtComment).stream()
+                .filter(SpoonQueries::isReturnTrueComment).toList();
         if (returnTrueComments.isEmpty())
             return null;
         return (CtStatement) returnTrueComments.get(RandomUtils.nextInt(returnTrueComments.size()));
     }
 
     public static CtStatement getMark1Comment(CtBlock<?> block) {
-        List<CtElement> returnMark1Comments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isReturnMark1Comment).toList();
+        List<CtElement> returnMark1Comments = block.getElements(e -> e instanceof CtComment).stream()
+                .filter(SpoonQueries::isReturnMark1Comment).toList();
         if (returnMark1Comments.isEmpty())
             return null;
         return (CtStatement) returnMark1Comments.get(RandomUtils.nextInt(returnMark1Comments.size()));
     }
 
     public static CtStatement getEndOfTraversalComment(CtBlock<?> block) {
-        List<CtElement> traversalEndComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isEndOfTraversalComment).toList();
+        List<CtElement> traversalEndComments = block.getElements(e -> e instanceof CtComment).stream()
+                .filter(SpoonQueries::isEndOfTraversalComment).toList();
         if (traversalEndComments.isEmpty())
             return null;
         return (CtStatement) traversalEndComments.get(RandomUtils.nextInt(traversalEndComments.size()));
     }
 
     public static CtStatement getBeginOfTraversalComment(CtBlock<?> block) {
-        List<CtElement> matchingComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isBeginOfTraversalComment).toList();
+        List<CtElement> matchingComments = block.getElements(e -> e instanceof CtComment).stream()
+                .filter(SpoonQueries::isBeginOfTraversalComment).toList();
         if (matchingComments.isEmpty())
             return null;
         return (CtStatement) matchingComments.get(RandomUtils.nextInt(matchingComments.size()));
     }
 
     public static CtStatement getEndOfTraversedFieldsComment(CtBlock<?> block) {
-        List<CtElement> matchingComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isEndOfTraversedFieldsComment).toList();
+        List<CtElement> matchingComments = block.getElements(e -> e instanceof CtComment).stream()
+                .filter(SpoonQueries::isEndOfTraversedFieldsComment).toList();
         if (matchingComments.isEmpty())
             return null;
         return (CtStatement) matchingComments.get(RandomUtils.nextInt(matchingComments.size()));
     }
 
     public static CtStatement getSizeCheckComment(CtBlock<?> block) {
-        List<CtElement> matchingComments = block.getElements(e -> e instanceof CtComment).stream().filter(SpoonQueries::isSizeCheckComment).toList();
+        List<CtElement> matchingComments = block.getElements(e -> e instanceof CtComment).stream()
+                .filter(SpoonQueries::isSizeCheckComment).toList();
         if (matchingComments.isEmpty())
             return null;
         return (CtStatement) matchingComments.get(RandomUtils.nextInt(matchingComments.size()));
@@ -252,21 +278,26 @@ public class SpoonQueries {
         return null;
     }
 
-//    public static List<List<CtVariable<?>>> getNonUsedInitialPathsToCyclicField(CtBlock<?> code) {
-//        List<List<CtVariable<?>>> nonUsedInitialPathsToCyclicField = new LinkedList<>();
-//
-//        TypeGraph typeGraph = TypeGraph.getInstance();
-//        List<List<CtVariable<?>>> pathsToCyclicFields = typeGraph.getPathsToCyclicFields();
-//
-//        List<CtLocalVariable<?>> currentVars = getLocalVariablesMathingPrefix(code, LocalVarHelper.CURRENT_VAR_NAME);
-//        for (List<CtVariable<?>> path : pathsToCyclicFields) {
-//            CtVariableRead<?> varRead = SpoonFactory.createFieldReadOfRootObject(path);
-//            if (currentVars.stream().noneMatch(var -> var.getAssignment().equals(varRead)))
-//                nonUsedInitialPathsToCyclicField.add(path);
-//        }
-//
-//        return nonUsedInitialPathsToCyclicField;
-//    }
+    // public static List<List<CtVariable<?>>>
+    // getNonUsedInitialPathsToCyclicField(CtBlock<?> code) {
+    // List<List<CtVariable<?>>> nonUsedInitialPathsToCyclicField = new
+    // LinkedList<>();
+    //
+    // TypeGraph typeGraph = TypeGraph.getInstance();
+    // List<List<CtVariable<?>>> pathsToCyclicFields =
+    // typeGraph.getPathsToCyclicFields();
+    //
+    // List<CtLocalVariable<?>> currentVars = getLocalVariablesMathingPrefix(code,
+    // LocalVarHelper.CURRENT_VAR_NAME);
+    // for (List<CtVariable<?>> path : pathsToCyclicFields) {
+    // CtVariableRead<?> varRead = SpoonFactory.createFieldReadOfRootObject(path);
+    // if (currentVars.stream().noneMatch(var ->
+    // var.getAssignment().equals(varRead)))
+    // nonUsedInitialPathsToCyclicField.add(path);
+    // }
+    //
+    // return nonUsedInitialPathsToCyclicField;
+    // }
 
     public static CtVariable<?> getTraversalSetParameter(CtMethod<?> traversal) {
         return traversal.getParameters().get(traversal.getParameters().size() - 1);
@@ -277,7 +308,8 @@ public class SpoonQueries {
     }
 
     public static CtVariable<?> getTraversalWorklistVariable(CtMethod<?> traversal) {
-        return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var && var.getSimpleName().startsWith(LocalVarHelper.WORKLIST_VAR_NAME)).get(0);
+        return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var
+                && var.getSimpleName().startsWith(LocalVarHelper.WORKLIST_VAR_NAME)).get(0);
     }
 
     public static CtTypeReference<?> getTraversedType(CtMethod<?> traversal) {
@@ -285,7 +317,8 @@ public class SpoonQueries {
     }
 
     public static CtVariable<?> getTraversalCurrentVariable(CtMethod<?> traversal) {
-        return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var && var.getSimpleName().startsWith(LocalVarHelper.CURRENT_VAR_NAME)).get(0);
+        return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var
+                && var.getSimpleName().startsWith(LocalVarHelper.CURRENT_VAR_NAME)).get(0);
     }
 
     public static List<CtIf> getTraversalIfsForTraversedFields(CtBlock<?> traversalBody) {
@@ -341,7 +374,8 @@ public class SpoonQueries {
         return false;
     }
 
-    public static List<CtLocalVariable<?>> getLocalVariablesMathingPrefix(List<CtStatement> statements, String varPrefix) {
+    public static List<CtLocalVariable<?>> getLocalVariablesMathingPrefix(List<CtStatement> statements,
+            String varPrefix) {
         List<CtLocalVariable<?>> setVars = new ArrayList<>();
         for (CtStatement statement : statements) {
             if (statement instanceof CtLocalVariable<?> var && var.getSimpleName().startsWith(varPrefix))
@@ -380,7 +414,7 @@ public class SpoonQueries {
             return null;
         for (CtLocalVariable<?> setVar : visitedSetVars) {
             CtTypeReference<?> subtype = setVar.getType().getActualTypeArguments().get(0);
-            if (subtype.equals(setSubtype)) {
+            if (subtype.getQualifiedName().equals(setSubtype.getQualifiedName())) {
                 return setVar;
             }
         }
@@ -500,13 +534,13 @@ public class SpoonQueries {
         CtExpression<?> rightOperand1 = condition1.getRightHandOperand();
         CtExpression<?> leftOperand2 = condition2.getLeftHandOperand();
         CtExpression<?> rightOperand2 = condition2.getRightHandOperand();
-        if (!leftOperand1.toString().equals(leftOperand2.toString()) && !leftOperand1.toString().equals(rightOperand2.toString()))
+        if (!leftOperand1.toString().equals(leftOperand2.toString())
+                && !leftOperand1.toString().equals(rightOperand2.toString()))
             return false;
-        if (!rightOperand1.toString().equals(leftOperand2.toString()) && !rightOperand1.toString().equals(rightOperand2.toString()))
+        if (!rightOperand1.toString().equals(leftOperand2.toString())
+                && !rightOperand1.toString().equals(rightOperand2.toString()))
             return false;
         return true;
     }
-
-
 
 }

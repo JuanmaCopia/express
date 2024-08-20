@@ -15,10 +15,12 @@ import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class SpoonFactory {
 
@@ -326,8 +328,38 @@ public class SpoonFactory {
 
     public static CtTypeReference<?> createTypeWithSubtypeReference(Class<?> type, CtTypeReference<?> subtype) {
         CtTypeReference<?> resultType = typeFactory.createReference(type);
-        resultType.addActualTypeArgument(subtype);
+        resultType.addActualTypeArgument(convertToWildcard(subtype));
         return resultType;
+    }
+
+    public static CtTypeReference<?> convertToWildcard(CtTypeReference<?> typeRef) {
+        List<CtTypeReference<?>> originalTypeArguments = typeRef.getActualTypeArguments();
+        if (originalTypeArguments.isEmpty()) {
+            if (typeRef.isGenerics())
+                return coreFactory.createWildcardReference();
+            return typeRef;
+        }
+
+        // Create wildcard references for each type argument
+        List<CtWildcardReference> wildcardArguments = originalTypeArguments.stream()
+                .map(arg -> coreFactory.createWildcardReference())
+                .collect(Collectors.toList());
+
+        // Create a copy of the original type reference
+        CtTypeReference<?> wildcardTypeRef = typeRef.clone();
+
+        wildcardTypeRef.setActualTypeArguments(wildcardArguments);
+        return wildcardTypeRef;
+    }
+
+    public static CtTypeReference<?> convertToRawType(CtTypeReference<?> typeRef) {
+        // Create a copy of the original type reference
+        CtTypeReference<?> rawTypeRef = typeRef.clone();
+
+        // Clear the actual type arguments to convert to raw type
+        rawTypeRef.getActualTypeArguments().clear();
+
+        return rawTypeRef;
     }
 
 //    public static CtTypeReference<?> createTypeWithSubtypeReference(Class<?> type, CtTypeReference<?> subtype) {

@@ -1,9 +1,9 @@
 package express.type.typegraph;
 
+import java.util.Objects;
+
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.util.Objects;
 
 public class GraphNode {
     CtVariable<?> field;
@@ -24,10 +24,12 @@ public class GraphNode {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         GraphNode node = (GraphNode) o;
-        return field.equals(node.field) && type.equals(node.type);
+        return field.equals(node.field) && type.getQualifiedName().equals(node.type.getQualifiedName());
     }
 
     @Override

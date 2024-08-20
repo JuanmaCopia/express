@@ -1,14 +1,19 @@
 package express.type;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
+
 import express.type.typegraph.Path;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
-
-import java.util.*;
-import java.util.function.Predicate;
 
 public class TypeUtils {
 
@@ -40,7 +45,8 @@ public class TypeUtils {
         return !type.getTypeDeclaration().isShadow();
     }
 
-    public static Set<CtTypeReference<?>> filterTypes(Collection<CtTypeReference<?>> typeRefs, Predicate<CtTypeReference<?>> predicate) {
+    public static Set<CtTypeReference<?>> filterTypes(Collection<CtTypeReference<?>> typeRefs,
+            Predicate<CtTypeReference<?>> predicate) {
         Set<CtTypeReference<?>> resultTypes = new HashSet<>();
         for (CtTypeReference<?> typeRef : typeRefs) {
             if (predicate.test(typeRef)) {
@@ -50,7 +56,8 @@ public class TypeUtils {
         return resultTypes;
     }
 
-    public static Set<CtVariable<?>> filterFields(Collection<CtVariable<?>> fields, Predicate<CtTypeReference<?>> predicate) {
+    public static Set<CtVariable<?>> filterFields(Collection<CtVariable<?>> fields,
+            Predicate<CtTypeReference<?>> predicate) {
         Set<CtVariable<?>> resultFields = new HashSet<>();
         for (CtVariable<?> field : fields) {
             if (predicate.test(field.getType())) {
@@ -75,7 +82,7 @@ public class TypeUtils {
         Set<Path> resultPaths = new HashSet<>();
         for (Path path : paths) {
             CtTypeReference<?> pathType = path.getTypeReference();
-            if (pathType.equals(type)) {
+            if (pathType.getQualifiedName().equals(type.getQualifiedName())) {
                 resultPaths.add(path);
             }
         }
@@ -157,7 +164,7 @@ public class TypeUtils {
 
         List<CtVariable<?>> cyclicFields = new ArrayList<>();
         for (CtVariable<?> field : typeDeclaration.getFields()) {
-            if (field.getType().equals(type))
+            if (field.getType().getQualifiedName().equals(type.getQualifiedName()))
                 cyclicFields.add(field);
         }
         return cyclicFields;
