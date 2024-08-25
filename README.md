@@ -39,10 +39,10 @@ Example of BinTree case study configuration:
 
 ```
 # Subject Settings:
-express.subject.src_path=./src/main/resources/examples/schedule
-express.subject.test_src_path=./src/main/resources/examples/schedule
-express.subject.class_name=examples.schedule.Schedule
-express.subject.test_suite_class_name=examples.schedule.ScheduleTest
+express.subject.src_path=./src/examples/java/casestudies/schedule
+express.subject.test_src_path=./src/examples/java/casestudies/schedule
+express.subject.class_name=casestudies.schedule.Schedule
+express.subject.test_suite_class_name=casestudies.schedule.ScheduleTest
 express.subject.src_java_version=17
 # Output Settings:
 express.output.bin_path=./output/bin
