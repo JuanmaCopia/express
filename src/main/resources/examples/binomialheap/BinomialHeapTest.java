@@ -1,6 +1,6 @@
 package examples.binomialheap;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class BinomialHeapTest {
 

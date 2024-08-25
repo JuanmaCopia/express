@@ -1,4 +1,4 @@
-package examples.bintree;
+package examples.arrayexample;
 
 public class ArrayExample {
 
@@ -11,11 +11,11 @@ public class ArrayExample {
     public void addNode(int index, int data) {
         Node newNode = Node(data);
         if (nodes[index] == null) {
-            nodes[index] = newNode;
+            nodes[index] = new Node();
         } else {
             Node curr = nodes[index];
             while (curr.next != null) {
-                curr = curr.next
+                curr = curr.next;
             }
             curr.next = newNode;
         }

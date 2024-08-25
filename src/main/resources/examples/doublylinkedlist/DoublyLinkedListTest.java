@@ -1,6 +1,6 @@
 package examples.doublylinkedlist;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class DoublyLinkedListTest {
 
