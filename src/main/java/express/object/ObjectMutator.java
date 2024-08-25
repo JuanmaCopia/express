@@ -158,8 +158,8 @@ public class ObjectMutator {
     /**
      * Get a new value for the given field
      *
-     * @param target is the field to get the new value for
-     * @param candidates  is the list of objects to get the new value from
+     * @param target     is the field to get the new value for
+     * @param candidates is the list of objects to get the new value from
      * @return a new value for the given field
      */
     static Object getNewValueForTheTarget(Target target, List<Object> candidates) {
@@ -225,7 +225,9 @@ public class ObjectMutator {
 
     public interface Target {
         Object getValue();
+
         void setValue(Object newValue);
+
         Class<?> getClassOfObjective();
     }
 

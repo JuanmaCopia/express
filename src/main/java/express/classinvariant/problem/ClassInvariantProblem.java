@@ -1,12 +1,11 @@
 package express.classinvariant.problem;
 
-import express.classinvariant.mutator.ClassInvariantMutatorManager;
-import express.classinvariant.state.ClassInvariantState;
 import express.classinvariant.fitness.ClassInvariantFitness;
 import express.classinvariant.mutator.ClassInvariantMutator;
+import express.classinvariant.mutator.ClassInvariantMutatorManager;
+import express.classinvariant.state.ClassInvariantState;
 import express.search.simulatedannealing.problem.SimulatedAnnealingProblem;
 import express.search.simulatedannealing.state.SimulatedAnnealingState;
-import spoon.reflect.declaration.CtClass;
 
 import java.text.DecimalFormat;
 import java.util.Set;
@@ -27,7 +26,7 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
         this.restartRounds = restartRounds;
     }
 
-    public ClassInvariantProblem(Set<ClassInvariantMutator> mutators, ClassInvariantFitness fitnessFunction,  int restartRounds) {
+    public ClassInvariantProblem(Set<ClassInvariantMutator> mutators, ClassInvariantFitness fitnessFunction, int restartRounds) {
         mutatorManager = new ClassInvariantMutatorManager(mutators);
         this.fitnessFunction = fitnessFunction;
         this.restartRounds = restartRounds;

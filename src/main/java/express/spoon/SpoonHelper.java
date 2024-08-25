@@ -5,8 +5,6 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
 import java.util.Objects;

@@ -1,13 +1,13 @@
 package express.classinvariant.mutator.primitivecheck;
 
+import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
-import express.classinvariant.mutator.ClassInvariantMutator;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
 import express.type.typegraph.Path;
-import spoon.reflect.code.*;
+import spoon.reflect.code.CtBlock;
 
 import java.util.List;
 

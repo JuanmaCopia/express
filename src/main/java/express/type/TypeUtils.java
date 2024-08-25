@@ -1,19 +1,14 @@
 package express.type;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Predicate;
-
 import express.type.typegraph.Path;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
+
+import java.util.*;
+import java.util.function.Predicate;
 
 public class TypeUtils {
 
@@ -46,7 +41,7 @@ public class TypeUtils {
     }
 
     public static Set<CtTypeReference<?>> filterTypes(Collection<CtTypeReference<?>> typeRefs,
-            Predicate<CtTypeReference<?>> predicate) {
+                                                      Predicate<CtTypeReference<?>> predicate) {
         Set<CtTypeReference<?>> resultTypes = new HashSet<>();
         for (CtTypeReference<?> typeRef : typeRefs) {
             if (predicate.test(typeRef)) {
@@ -57,7 +52,7 @@ public class TypeUtils {
     }
 
     public static Set<CtVariable<?>> filterFields(Collection<CtVariable<?>> fields,
-            Predicate<CtTypeReference<?>> predicate) {
+                                                  Predicate<CtTypeReference<?>> predicate) {
         Set<CtVariable<?>> resultFields = new HashSet<>();
         for (CtVariable<?> field : fields) {
             if (predicate.test(field.getType())) {

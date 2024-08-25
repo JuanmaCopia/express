@@ -1,17 +1,16 @@
 package express.type.typegraph;
 
+import express.spoon.SpoonFactory;
+import express.type.TypeUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtTypeReference;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-
-import express.spoon.SpoonFactory;
-import express.type.TypeUtils;
-import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtTypeReference;
 
 public class Path {
 

@@ -4,7 +4,6 @@ import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
-import express.spoon.RandomUtils;
 import express.util.Utils;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtMethod;

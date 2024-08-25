@@ -1,35 +1,14 @@
 package express.spoon;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
 import express.classinvariant.mutator.LocalVarHelper;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldRead;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtVariableAccess;
-import spoon.reflect.code.CtWhile;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.code.*;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
+
+import java.util.*;
 
 public class SpoonQueries {
 
@@ -99,12 +78,12 @@ public class SpoonQueries {
     }
 
     public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
-            Class<?> type) {
+                                                                          Class<?> type) {
         return getAllReachableLocalVariablesOfType(statement, SpoonFactory.getTypeFactory().createReference(type));
     }
 
     public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
-            CtTypeReference<?> type) {
+                                                                          CtTypeReference<?> type) {
         return statement.map(new PotentialVariableDeclarationFunction())
                 .map(e -> e instanceof CtLocalVariable && ((CtVariable<?>) e).getType().isSubtypeOf(type))
                 .list();
@@ -375,7 +354,7 @@ public class SpoonQueries {
     }
 
     public static List<CtLocalVariable<?>> getLocalVariablesMathingPrefix(List<CtStatement> statements,
-            String varPrefix) {
+                                                                          String varPrefix) {
         List<CtLocalVariable<?>> setVars = new ArrayList<>();
         for (CtStatement statement : statements) {
             if (statement instanceof CtLocalVariable<?> var && var.getSimpleName().startsWith(varPrefix))

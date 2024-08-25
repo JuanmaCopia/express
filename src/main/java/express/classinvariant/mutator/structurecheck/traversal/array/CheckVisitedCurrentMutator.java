@@ -7,7 +7,10 @@ import express.classinvariant.state.ClassInvariantState;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonQueries;
 import express.util.Utils;
-import spoon.reflect.code.*;
+import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 

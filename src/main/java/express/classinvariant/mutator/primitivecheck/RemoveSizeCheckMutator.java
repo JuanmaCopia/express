@@ -5,9 +5,8 @@ import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.SpoonQueries;
-import spoon.reflect.code.*;
-
-import java.util.List;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtStatement;
 
 public class RemoveSizeCheckMutator implements ClassInvariantMutator {
 

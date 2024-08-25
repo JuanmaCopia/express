@@ -1,14 +1,13 @@
 package express.classinvariant.fitness;
 
+import collector.ObjectCollector;
 import express.config.Config;
 import express.execution.Executor;
-import collector.ObjectCollector;
 import express.reflection.Reflection;
 import express.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
 
 import java.lang.reflect.Method;
-import java.net.URLClassLoader;
 
 public class LengthFitness extends ClassInvariantFitness {
 

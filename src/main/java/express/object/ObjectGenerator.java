@@ -1,12 +1,12 @@
 package express.object;
 
+import collector.ObjectCollector;
 import express.execution.Executor;
 import express.spoon.SpoonManager;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-import collector.ObjectCollector;
 
 /**
  * This class allows to generate a set of positive and negative objects from a given test suite.
@@ -16,7 +16,7 @@ import collector.ObjectCollector;
  *
  * @author Facundo Molina <facundo.molina@imdea.org>
  * @author Juan Manuel Copia <juanmanuel.copia@imdea.org>
- +
+ * +
  */
 public class ObjectGenerator {
 

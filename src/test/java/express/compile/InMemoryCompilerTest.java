@@ -3,6 +3,8 @@ package express.compile;
 import express.config.Config;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
@@ -12,9 +14,6 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.reflect.Method;
 import java.util.List;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 

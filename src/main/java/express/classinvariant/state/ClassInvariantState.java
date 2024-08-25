@@ -2,7 +2,6 @@ package express.classinvariant.state;
 
 import express.classinvariant.predicate.PredicateManager;
 import express.search.simulatedannealing.state.SimulatedAnnealingState;
-import express.spoon.SpoonFactory;
 import spoon.reflect.declaration.CtClass;
 
 public class ClassInvariantState implements SimulatedAnnealingState {

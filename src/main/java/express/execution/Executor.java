@@ -5,7 +5,6 @@ import express.compile.InMemoryCompiler;
 import express.reflection.Reflection;
 import express.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtPackage;
 
 import java.lang.reflect.Method;
 import java.util.List;

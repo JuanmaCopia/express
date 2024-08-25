@@ -6,7 +6,9 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 public class TypeData {
 

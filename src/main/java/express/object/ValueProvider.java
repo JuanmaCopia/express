@@ -1,12 +1,12 @@
 package express.object;
 
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.reference.CtTypeReference;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.reference.CtTypeReference;
 
 /**
  * Class to provide random values for specific types (used for object mutation)
@@ -53,7 +53,7 @@ public class ValueProvider {
      * @return a random value for the given reference type
      */
     public static Object getRandomValueForReferenceType(CtTypeReference<?> type, Object object,
-            List<List<CtField<?>>> evaluableExpressions) {
+                                                        List<List<CtField<?>>> evaluableExpressions) {
         List<CtField<?>> expr = getRandomExpressionOfSameType(type, evaluableExpressions);
         return eval(expr, object);
     }
@@ -67,7 +67,7 @@ public class ValueProvider {
      * @return a random expression of the same type as the given type
      */
     private static List<CtField<?>> getRandomExpressionOfSameType(CtTypeReference<?> type,
-            List<List<CtField<?>>> evaluableExpressions) {
+                                                                  List<List<CtField<?>>> evaluableExpressions) {
         List<List<CtField<?>>> expressionsOfSameType = new ArrayList<>();
         for (List<CtField<?>> expression : evaluableExpressions) {
             CtField<?> lastField = expression.get(expression.size() - 1);

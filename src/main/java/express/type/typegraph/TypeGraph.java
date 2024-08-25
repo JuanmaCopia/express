@@ -52,8 +52,7 @@ public class TypeGraph {
             if (initialVar == null)
                 return new HashSet<>();
             shouldReplace = true;
-        }
-        else {
+        } else {
             initialVar = source;
         }
         Set<Path> allPaths = new HashSet<>();
@@ -113,8 +112,8 @@ public class TypeGraph {
      * Get all the possible paths of length minor or equal to k from the source node to any other
      * node in the graph.
      *
-     * @param source   the source node
-     * @param k        the maximum length of the paths
+     * @param source the source node
+     * @param k      the maximum length of the paths
      * @return the list of all the possible paths of length minor or equal to k
      */
     public Set<Path> computeAllPathsOfLengthK(CtVariable<?> source, int k) {

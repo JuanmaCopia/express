@@ -1,14 +1,16 @@
 package express.classinvariant.mutator.template;
 
-import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.mutator.LocalVarHelper;
+import express.classinvariant.mutator.MutatorHelper;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
-import express.spoon.SpoonQueries;
 import express.type.typegraph.Path;
 import org.apache.commons.lang3.tuple.Pair;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.ArrayList;

@@ -1,5 +1,7 @@
 package examples.arrayexample;
 
+import examples.arrayexample.ArrayExample.Node;
+
 public class ArrayExample {
 
     Node[] nodes;

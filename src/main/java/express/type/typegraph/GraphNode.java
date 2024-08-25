@@ -1,9 +1,9 @@
 package express.type.typegraph;
 
-import java.util.Objects;
-
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.Objects;
 
 public class GraphNode {
     CtVariable<?> field;

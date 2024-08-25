@@ -1,7 +1,7 @@
 package express.classinvariant.mutator.template;
 
-import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.mutator.LocalVarHelper;
+import express.classinvariant.mutator.MutatorHelper;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
@@ -87,7 +87,6 @@ public class ArrayTraversalTemplate {
 
         // Create a CtFieldRead for 'array.length'
         CtVariableRead<?> arrayRead = SpoonFactory.createVariableRead(arrayVar);
-
 
 
         // Create a CtFieldReference for the "length" field of the array

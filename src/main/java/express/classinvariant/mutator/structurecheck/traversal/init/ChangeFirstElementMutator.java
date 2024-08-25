@@ -1,7 +1,5 @@
 package express.classinvariant.mutator.structurecheck.traversal.init;
 
-import java.util.List;
-
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
@@ -17,6 +15,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.List;
 
 public class ChangeFirstElementMutator implements ClassInvariantMutator {
 
@@ -50,8 +50,8 @@ public class ChangeFirstElementMutator implements ClassInvariantMutator {
         String fieldName = fields[fields.length - 1];
 
         List<CtVariable<?>> candidateFields = TypeUtils.getFields(parentOfFirstElement.getType()).stream().filter(
-                field -> field.getType().getQualifiedName().equals(typeOfFirstElem.getQualifiedName())
-                        && !field.getSimpleName().equals(fieldName))
+                        field -> field.getType().getQualifiedName().equals(typeOfFirstElem.getQualifiedName())
+                                && !field.getSimpleName().equals(fieldName))
                 .toList();
         if (candidateFields.isEmpty()) {
             return;

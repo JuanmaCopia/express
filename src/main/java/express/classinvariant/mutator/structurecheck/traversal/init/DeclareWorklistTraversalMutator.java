@@ -1,9 +1,5 @@
 package express.classinvariant.mutator.structurecheck.traversal.init;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.mutator.template.WorklistTraversalTemplate;
@@ -16,6 +12,10 @@ import express.util.Utils;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
 

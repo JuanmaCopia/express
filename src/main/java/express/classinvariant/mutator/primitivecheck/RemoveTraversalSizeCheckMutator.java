@@ -4,14 +4,6 @@ import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
-import express.spoon.RandomUtils;
-import express.spoon.SpoonQueries;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
-
-import java.util.List;
 
 public class RemoveTraversalSizeCheckMutator implements ClassInvariantMutator {
 

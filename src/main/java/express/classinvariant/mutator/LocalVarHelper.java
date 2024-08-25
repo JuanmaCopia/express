@@ -57,7 +57,7 @@ public class LocalVarHelper {
     }
 
     public static String getCurrentVarName(CtBlock<?> code) {
-        return CURRENT_VAR_NAME ;
+        return CURRENT_VAR_NAME;
     }
 
 //    public static String getVisitedSetVarName(CtBlock<?> code) {

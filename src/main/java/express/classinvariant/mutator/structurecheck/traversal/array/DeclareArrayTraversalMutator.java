@@ -21,7 +21,7 @@ public class DeclareArrayTraversalMutator implements ClassInvariantMutator {
     @Override
     public boolean isApplicable(ClassInvariantState state) {
         Set<CtTypeReference<?>> traversedArrayTypes = MutatorHelper.getTraversedArrayTypes(state.getCtClass());
-        Set<CtTypeReference<?>>  nonTraversedArrayTypes = new HashSet<>(SpoonManager.getSubjectTypeData().getArrayTypes());
+        Set<CtTypeReference<?>> nonTraversedArrayTypes = new HashSet<>(SpoonManager.getSubjectTypeData().getArrayTypes());
         nonTraversedArrayTypes.removeAll(traversedArrayTypes);
         if (nonTraversedArrayTypes.isEmpty()) {
             return false;

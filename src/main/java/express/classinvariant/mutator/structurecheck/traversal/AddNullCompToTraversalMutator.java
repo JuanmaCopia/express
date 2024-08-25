@@ -1,9 +1,9 @@
 package express.classinvariant.mutator.structurecheck.traversal;
 
-import express.classinvariant.mutator.MutatorHelper;
-import express.classinvariant.mutator.LocalVarHelper;
-import express.classinvariant.state.ClassInvariantState;
 import express.classinvariant.mutator.ClassInvariantMutator;
+import express.classinvariant.mutator.LocalVarHelper;
+import express.classinvariant.mutator.MutatorHelper;
+import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;

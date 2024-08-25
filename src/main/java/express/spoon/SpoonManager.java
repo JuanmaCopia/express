@@ -1,22 +1,25 @@
 package express.spoon;
 
+import express.classinvariant.predicate.PredicateManager;
+import express.compile.InMemoryCompiler;
+import express.compile.OutputManager;
+import express.config.Config;
+import express.instrumentation.Instrumentation;
+import express.type.typegraph.TypeData;
+import spoon.Launcher;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.CompilationUnitFactory;
+import spoon.reflect.visitor.PrettyPrinter;
+import spoon.support.reflect.declaration.CtCompilationUnitImpl;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import express.classinvariant.predicate.PredicateManager;
-import express.compile.InMemoryCompiler;
-import express.compile.OutputManager;
-import express.config.Config;
-import express.type.typegraph.TypeData;
-import express.instrumentation.Instrumentation;
-import spoon.Launcher;
-import spoon.reflect.declaration.*;
-import spoon.reflect.factory.CompilationUnitFactory;
-import spoon.reflect.visitor.PrettyPrinter;
-import spoon.support.reflect.declaration.CtCompilationUnitImpl;
 
 public class SpoonManager {
 

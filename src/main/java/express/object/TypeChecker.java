@@ -1,8 +1,8 @@
 package express.object;
 
 import java.lang.reflect.Field;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 public class TypeChecker {
 

@@ -3,7 +3,6 @@ package express.classinvariant.predicate;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.config.Config;
 import express.spoon.SpoonFactory;
-import express.spoon.SpoonManager;
 import express.type.typegraph.TypeData;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
@@ -76,7 +75,6 @@ public class PredicateManager {
 
         predicateClass.addMethod(predicateMethod);
     }
-
 
 
     private static List<CtMethod<Boolean>> createSubPredicates(List<CtParameter<?>> parameters) {

@@ -3,7 +3,6 @@ package express.classinvariant.mutator;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 

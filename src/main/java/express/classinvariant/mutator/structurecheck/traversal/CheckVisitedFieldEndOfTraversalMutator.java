@@ -1,16 +1,19 @@
 package express.classinvariant.mutator.structurecheck.traversal;
 
+import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
-import express.classinvariant.mutator.ClassInvariantMutator;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import express.util.Utils;
-import spoon.reflect.code.*;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
