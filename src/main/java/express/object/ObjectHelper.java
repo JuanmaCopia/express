@@ -2,8 +2,15 @@ package express.object;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class ObjectHelper {
 
@@ -11,22 +18,26 @@ public class ObjectHelper {
         return deepCopy(original, new HashMap<>());
     }
 
-    public static Object deepCopy(Object original, HashMap<Object, Object> objectMap) {
+    public static Object deepCopy(Object original, Map<Object, Object> objectMap) {
         if (original == null) {
             return null;
-        } else if (isWrapperType(original)) {
+        } else if (TypeChecker.isUserDefinedClass(original.getClass())) {
+            return copyObject(original, objectMap);
+        } else if (TypeChecker.isWrapperType(original)) {
             return copyPrimitiveWrapper(original);
         } else if (original instanceof String) {
             return String.copyValueOf(((String) original).toCharArray());
         } else if (original instanceof Collection<?>) {
             return copyCollection((Collection<?>) original, objectMap);
+        } else if (original instanceof Map<?, ?>) {
+            return copyMap((Map<?, ?>) original, objectMap);
         } else if (original.getClass().isArray()) {
             return copyArray(original, objectMap);
         }
         return copyObject(original, objectMap);
     }
 
-    private static Object copyObject(Object original, HashMap<Object, Object> objectMap) {
+    private static Object copyObject(Object original, Map<Object, Object> objectMap) {
         if (objectMap.containsKey(original))
             return objectMap.get(original);
 
@@ -50,10 +61,12 @@ public class ObjectHelper {
                 else {
                     fieldCopy = deepCopy(fieldValue, objectMap);
                 }
-/*                if (copy == null)
-                    System.out.println("ERROR: copy is null");
-                if (fieldCopy == null)
-                    System.out.println("FieldCopy is null");*/
+                /*
+                 * if (copy == null)
+                 * System.out.println("ERROR: copy is null");
+                 * if (fieldCopy == null)
+                 * System.out.println("FieldCopy is null");
+                 */
                 field.set(copy, fieldCopy);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -63,8 +76,7 @@ public class ObjectHelper {
         return copy;
     }
 
-
-    private static Object copyArray(Object array, HashMap<Object, Object> objectMap) {
+    private static Object copyArray(Object array, Map<Object, Object> objectMap) {
         if (objectMap.containsKey(array))
             return objectMap.get(array);
 
@@ -75,15 +87,15 @@ public class ObjectHelper {
             objectMap.put(array, arrayCopy);
         } else {
             arrayCopy = copyObjectArray(array, objectMap);
+            objectMap.put(array, arrayCopy);
         }
 
         return arrayCopy;
     }
 
-    private static Object copyObjectArray(Object array, HashMap<Object, Object> objectMap) {
+    private static Object copyObjectArray(Object array, Map<Object, Object> objectMap) {
         Object[] original = (Object[]) array;
         Object[] copy = Arrays.copyOf(original, original.length);
-        objectMap.put(array, copy);
         for (int i = 0; i < original.length; i++) {
             copy[i] = deepCopy(original[i], objectMap);
         }
@@ -112,8 +124,7 @@ public class ObjectHelper {
         }
     }
 
-
-    public static <T extends Collection<E>, E> T copyCollection(T collection, HashMap<Object, Object> objectMap) {
+    public static <T extends Collection<E>, E> T copyCollection(T collection, Map<Object, Object> objectMap) {
         try {
             if (objectMap.containsKey(collection))
                 return (T) objectMap.get(collection);
@@ -122,13 +133,31 @@ public class ObjectHelper {
             objectMap.put(collection, copy);
 
             for (E e : collection) {
-                if (e instanceof Collection<?>) {
-                    copy.add((E) copyCollection((Collection<?>) e, objectMap));
-                } else if (isWrapperType(e)) {
-                    copy.add((E) copyPrimitiveWrapper(e));
-                } else {
-                    copy.add((E) deepCopy(e, objectMap));
-                }
+                copy.add((E) deepCopy(e, objectMap));
+            }
+
+            return copy;
+        } catch (Exception e) {
+            // Handle exception if instantiation fails
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static <T extends Map<K, V>, K, V> T copyMap(T map, Map<Object, Object> objectMap) {
+        try {
+            if (objectMap.containsKey(map))
+                return (T) objectMap.get(map);
+
+            T copy = (T) createNewInstance(map.getClass());
+            objectMap.put(map, copy);
+
+            for (Map.Entry<K, V> entry : map.entrySet()) {
+                K key = entry.getKey();
+                V value = entry.getValue();
+                key = (K) deepCopy(key, objectMap);
+                value = (V) deepCopy(value, objectMap);
+                copy.put(key, value);
             }
 
             return copy;
@@ -154,22 +183,12 @@ public class ObjectHelper {
                 instance = constructor.newInstance();
             }
         } catch (Exception e) {
-            //System.err.println("\n\nError creating new instance of class: " + clazz.getName());
+            // System.err.println("\n\nError creating new instance of class: " +
+            // clazz.getName());
             e.printStackTrace();
             throw new RuntimeException("Error creating new instance of class: " + clazz.getName());
         }
         return instance;
-    }
-
-    public static boolean isWrapperType(Object obj) {
-        return obj instanceof Integer ||
-                obj instanceof Double ||
-                obj instanceof Float ||
-                obj instanceof Long ||
-                obj instanceof Short ||
-                obj instanceof Byte ||
-                obj instanceof Character ||
-                obj instanceof Boolean;
     }
 
     public static Object copyPrimitiveWrapper(Object original) {
@@ -204,10 +223,14 @@ public class ObjectHelper {
     public static void calculateHash(Object object, Map<Object, String> objToHash, List<String> hashList) {
         if (object == null) {
             hashList.add("null");
-        } else if (isWrapperType(object) || object instanceof String) {
-            //hashList.add(object.getClass().getSimpleName());
+        } else if (TypeChecker.isUserDefinedClass(object.getClass())) {
+            hashObject(object, objToHash, hashList);
+        } else if (TypeChecker.isWrapperType(object) || object instanceof String) {
+            // hashList.add(object.getClass().getSimpleName());
         } else if (object instanceof Collection<?>) {
             hashCollection((Collection<?>) object, objToHash, hashList);
+        } else if (object instanceof Map<?,?>) {
+            hashMap((Map<?,?>) object, objToHash, hashList);
         } else if (object.getClass().isArray()) {
             hashArray(object, objToHash, hashList);
         } else {
@@ -243,6 +266,22 @@ public class ObjectHelper {
 
         for (Object element : object) {
             calculateHash(element, objToHash, hashList);
+        }
+    }
+
+    private static void hashMap(Map<?, ?> object, Map<Object, String> objToHash, List<String> hashList) {
+        if (objToHash.containsKey(object)) {
+            hashList.add(objToHash.get(object));
+            return;
+        }
+
+        String objectHash = createObjectHash(object);
+        objToHash.put(object, objectHash);
+        hashList.add(objectHash);
+
+        for (Map.Entry<?, ?> entry : object.entrySet()) {
+            calculateHash(entry.getKey(), objToHash, hashList);
+            calculateHash(entry.getValue(), objToHash, hashList);
         }
     }
 
@@ -285,6 +324,5 @@ public class ObjectHelper {
             return null;
         }
     }
-
 
 }

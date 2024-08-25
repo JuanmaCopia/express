@@ -1,7 +1,11 @@
 package express.object;
 
+import express.spoon.SpoonManager;
+import spoon.reflect.reference.CtTypeReference;
+
 import java.lang.reflect.Field;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class TypeChecker {
@@ -43,6 +47,15 @@ public class TypeChecker {
 
     public static boolean isString(Class<?> clazz) {
         return clazz.equals(String.class);
+    }
+
+    public static boolean isWrapperType(Object obj) {
+        return BOXED_PRIMITIVES.contains(obj.getClass());
+    }
+
+    public static boolean isUserDefinedClass(Class<?> cls) {
+        List<CtTypeReference<?>> userDefTypes = SpoonManager.getSubjectTypeData().getUserDefinedTypes();
+        return userDefTypes.stream().anyMatch(t -> t.getQualifiedName().equals(cls.getName()));
     }
 
 }

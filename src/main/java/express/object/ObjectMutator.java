@@ -73,7 +73,7 @@ public class ObjectMutator {
                     Field[] fields = currentClass.getDeclaredFields();
                     for (Field field : fields) {
                         Class<?> fieldType = field.getType();
-                        if ((fieldType.isArray() || isUserDefinedClass(fieldType)) && !Modifier.isStatic(field.getModifiers())) {
+                        if ((fieldType.isArray() || TypeChecker.isUserDefinedClass(fieldType)) && !Modifier.isStatic(field.getModifiers())) {
                             Object fieldValue = ObjectHelper.getFieldValue(currentObject, field);
                             if (fieldValue != null)
                                 queue.offer(fieldValue);
@@ -83,11 +83,6 @@ public class ObjectMutator {
             }
         }
         return visited.stream().toList();
-    }
-
-    private static boolean isUserDefinedClass(Class<?> cls) {
-        List<CtTypeReference<?>> userDefTypes = SpoonManager.getSubjectTypeData().getUserDefinedTypes();
-        return userDefTypes.stream().anyMatch(t -> t.getQualifiedName().equals(cls.getName()));
     }
 
     public static Object[] collectObjectsFromArray(Object array) {
@@ -167,7 +162,7 @@ public class ObjectMutator {
 
         // Add a fresh object to the possible choices
         Class<?> fieldClass = target.getClassOfObjective();
-        if (fieldClass != null && !fieldClass.isInterface() && isUserDefinedClass(fieldClass)) {
+        if (fieldClass != null && !fieldClass.isInterface() && TypeChecker.isUserDefinedClass(fieldClass)) {
             Object freshObject = ObjectHelper.createNewInstance(fieldClass);
             if (freshObject != null)
                 possibleChoices.add(freshObject);
