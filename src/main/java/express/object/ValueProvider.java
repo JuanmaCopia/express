@@ -1,111 +1,96 @@
 package express.object;
 
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.reference.CtTypeReference;
+import express.util.Utils;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
-/**
- * Class to provide random values for specific types (used for object mutation)
- *
- * @author Facundo Molina <facundo.molina@imdea.org>
- */
+
 public class ValueProvider {
 
-    /**
-     * Get a random value for the given primitive type
-     *
-     * @param type is the type to get the random value for
-     * @return a random value for the given primitive type
-     */
-    public static Object getRandomValueForPrimitiveType(CtTypeReference<?> type) {
-        Random r = new Random();
-        if (type.getSimpleName().equals("int"))
-            return r.nextInt(100);
-        if (type.getSimpleName().equals("double"))
-            return r.nextDouble();
-        if (type.getSimpleName().equals("float"))
-            return r.nextFloat();
-        if (type.getSimpleName().equals("long"))
-            return r.nextLong();
-        if (type.getSimpleName().equals("short"))
-            return (short) r.nextInt(100);
-        if (type.getSimpleName().equals("byte"))
-            return (byte) r.nextInt(100);
-        if (type.getSimpleName().equals("char"))
-            return (char) r.nextInt(100);
-        if (type.getSimpleName().equals("boolean"))
-            return r.nextBoolean();
-        throw new IllegalArgumentException("Type not supported: " + type);
-    }
+    public static final byte MAX_BYTE = 100;
+    public static final short MAX_SHORT = 100;
+    public static final int MAX_INT = 100;
 
-    /**
-     * Get a random value for the given reference type, by searching for a random
-     * value in the object
-     *
-     * @param type                 is the type to get the random value for
-     * @param object               is the object to get the random value from
-     * @param evaluableExpressions is the list of evaluable expressions for the
-     *                             object
-     * @return a random value for the given reference type
-     */
-    public static Object getRandomValueForReferenceType(CtTypeReference<?> type, Object object,
-                                                        List<List<CtField<?>>> evaluableExpressions) {
-        List<CtField<?>> expr = getRandomExpressionOfSameType(type, evaluableExpressions);
-        return eval(expr, object);
-    }
-
-    /**
-     * Get a random expression of the same type as the given type
-     *
-     * @param type                 is the type to get the random expression
-     * @param evaluableExpressions is the list of evaluable expressions for the
-     *                             object
-     * @return a random expression of the same type as the given type
-     */
-    private static List<CtField<?>> getRandomExpressionOfSameType(CtTypeReference<?> type,
-                                                                  List<List<CtField<?>>> evaluableExpressions) {
-        List<List<CtField<?>>> expressionsOfSameType = new ArrayList<>();
-        for (List<CtField<?>> expression : evaluableExpressions) {
-            CtField<?> lastField = expression.get(expression.size() - 1);
-            if (lastField.getType().getQualifiedName().equals(type.getQualifiedName())) {
-                expressionsOfSameType.add(expression);
-            }
+    public static Object getFieldValue(Object owner, Field field) {
+        Object currentValue = null;
+        try {
+            //Field f = owner.getClass().getDeclaredField(field.getName());
+            field.setAccessible(true);
+            currentValue = field.get(owner);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
-        if (expressionsOfSameType.isEmpty())
-            return null;
-        Random r = new Random();
-        int random = r.nextInt(expressionsOfSameType.size());
-        return expressionsOfSameType.get(random);
+        return currentValue;
     }
 
-    /**
-     * Evaluate the given expression on the given object
-     *
-     * @param expression is the expression to evaluate
-     * @param object     is the object to evaluate the expression on
-     * @return the value of the expression on the object
-     */
-    private static Object eval(List<CtField<?>> expression, Object object) {
-        if (expression == null)
-            return null;
-        Object current = object;
-        for (int i = 0; i < expression.size(); i++) {
-            try {
-                Field f = current.getClass().getDeclaredField(expression.get(i).getSimpleName());
-                f.setAccessible(true);
-                current = f.get(current);
-                if (current == null) {
-                    return null;
-                }
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                return null;
-            }
+    public static void setFieldValue(Object owner, Field field, Object newValue) {
+        try {
+            //Field f = owner.getClass().getDeclaredField(field.getName());
+            field.setAccessible(true);
+            field.set(owner, newValue);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
-        return current;
     }
+
+    public static Object createNewInstance(Class<?> clazz) throws NewInstanceCreationException {
+        if (TypeChecker.isBoxedPrimitive(clazz))
+            return createNewBoxedPrimitiveInstance(clazz);
+        if (clazz.isArray())
+            return createNewArrayInstance(clazz);
+
+        Object instance = null;
+        try {
+            Class<?> declaringClass = clazz.getDeclaringClass();
+            if (!Modifier.isStatic(clazz.getModifiers()) && declaringClass != null) {
+                Constructor<?> constructor = clazz.getDeclaredConstructor(declaringClass);
+                constructor.setAccessible(true);
+                Object param = declaringClass.getDeclaredConstructor().newInstance();
+                instance = constructor.newInstance(param);
+            } else {
+                Constructor<?> constructor = clazz.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                instance = constructor.newInstance();
+            }
+        } catch (Exception e) {
+            throw new NewInstanceCreationException(clazz.getName());
+        }
+        return instance;
+    }
+
+    private static Object createNewBoxedPrimitiveInstance(Class<?> clazz) {
+        if (clazz.equals(Boolean.class))
+            return Utils.nextBoolean();
+        if (clazz.equals(Byte.class))
+            return (byte) Utils.nextInt(MAX_BYTE);
+        if (clazz.equals(Character.class))
+            return (char) Utils.nextInt(Character.MAX_VALUE);
+        if (clazz.equals(Short.class))
+            return (short) Utils.nextInt(MAX_SHORT);
+        if (clazz.equals(Integer.class))
+            return Utils.nextInt(MAX_INT);
+        if (clazz.equals(Long.class))
+            return Utils.nextInt(MAX_INT);
+        if (clazz.equals(Float.class))
+            return Utils.nextInt(MAX_INT);
+        if (clazz.equals(Double.class))
+            return Utils.nextInt(MAX_INT);
+        return null;
+    }
+
+    private static Object createNewArrayInstance(Class<?> clazz) {
+        if (!clazz.isArray())
+            throw new IllegalArgumentException("This method is only for array types");
+        Class<?> componentType = clazz.getComponentType();
+        int length = Utils.nextInt(MAX_INT + 1);
+
+        return Array.newInstance(componentType, length);
+    }
+
+
 
 }
