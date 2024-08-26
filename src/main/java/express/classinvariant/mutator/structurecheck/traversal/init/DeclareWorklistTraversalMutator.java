@@ -38,7 +38,7 @@ public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
             return false;
         }
 
-        Path chosenPath = trimPath(Utils.getRandomPath(paths));
+        Path chosenPath = MutatorHelper.trimPath(Utils.getRandomPath(paths));
         traversal = instantiateTraversalMethod(chosenPath, state);
         return true;
     }
@@ -47,18 +47,6 @@ public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
     public void mutate(ClassInvariantState state) {
         state.getCtClass().addMethod(traversal);
         // System.err.println("TraverseWorklistMutator:\n" + traversal.toString());
-    }
-
-    private Path trimPath(Path path) {
-        CtTypeReference<?> type = path.getTypeReference();
-        int i = 0;
-        for (CtVariable<?> field : path.getFieldChain()) {
-            i++;
-            if (field.getType().getQualifiedName().equals(type.getQualifiedName()) && i < path.size()) {
-                return path.subPath(i);
-            }
-        }
-        return path;
     }
 
     private CtMethod<?> instantiateTraversalMethod(Path chosenPath, ClassInvariantState state) {

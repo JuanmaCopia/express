@@ -45,6 +45,8 @@ public class CheckVisitedFieldEndOfTraversalMutator implements ClassInvariantMut
 
         CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
         CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(visitedSetVar, chosenVarRead);
+        if (Utils.nextBoolean())
+            addToSetInvocation = SpoonFactory.negateExpresion(addToSetInvocation);
         clauses.add(addToSetInvocation);
 
         condition = SpoonFactory.conjunction(clauses);

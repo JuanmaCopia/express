@@ -69,6 +69,7 @@ public class Express {
         // Traversal Modification Mutators
         mutators.add(new ChangeLoopFieldsMutator());
         mutators.add(new ChangeFirstElementMutator());
+        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
         // Traversal Invocation Mutators
         mutators.add(new InvokeArrayTraversalMutator());
         mutators.add(new InvokeFieldTraversalMutator());
@@ -89,7 +90,7 @@ public class Express {
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         mutators.add(new RemoveCheckMutator());
         // Structure Check Mutators
-        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
+        //mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
         mutators.add(new AddNullCompToTraversalMutator());
         mutators.add(new AddRandomComparisonToCurrent());
         mutators.add(new DeclareVisitedSetMutator());

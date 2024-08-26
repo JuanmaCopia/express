@@ -4,6 +4,7 @@ import express.classinvariant.mutator.template.ArrayTraversalTemplate;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonQueries;
+import express.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
@@ -189,6 +190,18 @@ public class MutatorHelper {
         if (!(check.getThenStatement() instanceof CtBlock<?> block))
             throw new IllegalArgumentException("Expected block statement");
         block.insertBegin(comment);
+    }
+
+    public static Path trimPath(Path path) {
+        CtTypeReference<?> type = path.getTypeReference();
+        int i = 0;
+        for (CtVariable<?> field : path.getFieldChain()) {
+            i++;
+            if (field.getType().getQualifiedName().equals(type.getQualifiedName()) && i < path.size()) {
+                return path.subPath(i);
+            }
+        }
+        return path;
     }
 
 
