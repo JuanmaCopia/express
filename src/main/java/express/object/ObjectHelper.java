@@ -35,7 +35,7 @@ public class ObjectHelper {
 
         Object copy;
         try {
-            copy = ValueProvider.createNewInstance(original.getClass());
+            copy = ValueProvider.createNewReferenceTypeInstance(original.getClass());
         } catch (NewInstanceCreationException e) {
             throw new RuntimeException(e);
         }
@@ -123,7 +123,7 @@ public class ObjectHelper {
             if (objectMap.containsKey(collection))
                 return (T) objectMap.get(collection);
 
-            T copy = (T) ValueProvider.createNewInstance(collection.getClass());
+            T copy = (T) ValueProvider.createNewReferenceTypeInstance(collection.getClass());
             objectMap.put(collection, copy);
 
             for (E e : collection) {
@@ -143,7 +143,7 @@ public class ObjectHelper {
             if (objectMap.containsKey(map))
                 return (T) objectMap.get(map);
 
-            T copy = (T) ValueProvider.createNewInstance(map.getClass());
+            T copy = (T) ValueProvider.createNewReferenceTypeInstance(map.getClass());
             objectMap.put(map, copy);
 
             for (Map.Entry<K, V> entry : map.entrySet()) {
@@ -200,8 +200,8 @@ public class ObjectHelper {
             // hashList.add(object.getClass().getSimpleName());
         } else if (object instanceof Collection<?>) {
             hashCollection((Collection<?>) object, objToHash, hashList);
-        } else if (object instanceof Map<?,?>) {
-            hashMap((Map<?,?>) object, objToHash, hashList);
+        } else if (object instanceof Map<?, ?>) {
+            hashMap((Map<?, ?>) object, objToHash, hashList);
         } else if (object.getClass().isArray()) {
             hashArray(object, objToHash, hashList);
         } else {
@@ -287,60 +287,58 @@ public class ObjectHelper {
     }
 
     public static void collectReachableObjects(Object object, Set<Object> collected) {
-        if (object == null || !collected.add(object) || !ObjectMutator.isMutableObject(object))
+        if (object == null)
+            return;
+        Class<?> clazz = object.getClass();
+        // The object it is always collected
+        if (
+                TypeChecker.isString(clazz) ||
+                        TypeChecker.isBoxedPrimitive(clazz) ||
+                        !collected.add(object) ||
+                        !ObjectMutator.isMutableHeapClass(clazz)
+        )
             return;
 
         if (TypeChecker.isUserDefinedClass(object.getClass())) {
             collectUserDefinedObject(object, collected);
         } else if (object instanceof Collection<?>) {
             collectCollection((Collection<?>) object, collected);
-        } else if (object instanceof Map<?,?>) {
-            collectMap((Map<?,?>) object, collected);
+        } else if (object instanceof Map<?, ?>) {
+            collectMap((Map<?, ?>) object, collected);
         } else if (object.getClass().isArray()) {
             collectArray(object, collected);
         }
     }
 
     private static void collectArray(Object object, Set<Object> collected) {
-        if (!collected.add(object))
-            return;
-
         Object[] array = (Object[]) object;
         for (Object element : array) {
             collectReachableObjects(element, collected);
         }
     }
 
-    private static void collectMap(Map<?,?> object, Set<Object> collected) {
-        if (!collected.add(object))
-            return;
-
-        for (Map.Entry<?,?> entry : object.entrySet()) {
+    private static void collectMap(Map<?, ?> object, Set<Object> collected) {
+        for (Map.Entry<?, ?> entry : object.entrySet()) {
             collectReachableObjects(entry.getKey(), collected);
             collectReachableObjects(entry.getValue(), collected);
         }
     }
 
     private static void collectCollection(Collection<?> object, Set<Object> collected) {
-        if (!collected.add(object))
-            return;
-
         for (Object element : object) {
             collectReachableObjects(element, collected);
         }
     }
 
     private static void collectUserDefinedObject(Object object, Set<Object> collected) {
-        if (!collected.add(object))
-            return;
-
         Field[] fields = object.getClass().getDeclaredFields();
         for (Field field : fields) {
-            if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()))
+            // TODO: Handle static fields
+            if (Modifier.isStatic(field.getModifiers()))
                 continue;
             try {
                 field.setAccessible(true);
-                Object fieldValue = field.get(object);
+                Object fieldValue = ReflectionUtils.getFieldValue(object, field);
                 collectReachableObjects(fieldValue, collected);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -366,7 +364,7 @@ public class ObjectHelper {
      * Filter the objects in the list by the given type.
      *
      * @param objects the list of objects
-     * @param type the type to filter by
+     * @param type    the type to filter by
      * @return the set of objects of the given type
      */
     public static Set<Object> filterObjectsByType(Collection<Object> objects, Class<?> type) {
@@ -378,29 +376,6 @@ public class ObjectHelper {
         }
         return filtered;
     }
-
-    public static boolean isMutableCollection(Collection<?> collection) {
-        try {
-            // Attempt to add a null value (assuming null values are allowed)
-            collection.add(null);
-            // If no exception, it's mutable, remove the element added.
-            collection.remove(null);
-            return true;
-        } catch (UnsupportedOperationException e) {
-            return false;
-        } catch (Exception e) {
-            // Other exceptions can be thrown, like NullPointerException,
-            // which might indicate that nulls are not allowed, but the collection could still be mutable.
-            return false;
-        }
-    }
-
-
-
-
-
-
-
 
     private static long id = 0;
 

@@ -1,15 +1,11 @@
 package express.object;
 
+import express.util.Utils;
+
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
-import express.util.Utils;
+import java.util.*;
 
 public class ObjectMutator {
 
@@ -18,14 +14,15 @@ public class ObjectMutator {
      *
      * @param rootObject is the object to mutate
      */
-    public static boolean mutate(Object rootObject) {
+    public static boolean mutateHeap(Object rootObject) {
         Set<Object> reachableObjects = ObjectHelper.collectReachableObjects(rootObject);
-        List<Object> candidates = reachableObjects.stream().filter(ObjectMutator::isMutableObject).toList();
+        List<Object> candidates = reachableObjects.stream().filter(ObjectMutator::isMutableHeapObject).toList();
+
         if (candidates.isEmpty())
             return false;
 
         Object toBeMutated = selectObjectForMutation(candidates);
-        return mutateObject(toBeMutated);
+        return mutateHeapOfObject(toBeMutated, reachableObjects);
     }
 
     static Object selectObjectForMutation(Collection<Object> allObjects) {
@@ -37,113 +34,250 @@ public class ObjectMutator {
         return Utils.getRandomElement(candidatesOfChosenType);
     }
 
-    private static boolean mutateObject(Object objectToBeMutated) {
+    private static boolean mutateHeapOfObject(Object objectToBeMutated, Collection<Object> reachableObjects) {
         if (objectToBeMutated == null)
             throw new IllegalArgumentException("Object to be mutated cannot be null");
 
-        if (objectToBeMutated instanceof Collection<?>) {
-            return mutateCollection((Collection<?>) objectToBeMutated);
-        } else if (objectToBeMutated instanceof Map<?, ?>) {
-            return mutateMap((Map<?, ?>) objectToBeMutated);
-        } else if (objectToBeMutated.getClass().isArray()) {
+        if (TypeChecker.isUserDefinedClass(objectToBeMutated.getClass()))
+            return mutateHeapUserDefinedObject(objectToBeMutated, reachableObjects);
+        if (objectToBeMutated instanceof Collection<?> collection)
+            return mutateCollection(collection);
+        if (objectToBeMutated instanceof Map<?, ?> map)
+            return mutateMap(map);
+        if (objectToBeMutated.getClass().isArray())
             return mutateArray(objectToBeMutated);
-        }
 
-        return mutateUserDefinedObject(objectToBeMutated);
+        return false;
     }
 
-    private static boolean mutateCollection(Collection<Object> objectToBeMutated) {
-        if (!ObjectHelper.isMutableCollection(objectToBeMutated))
-            return false;
+    private static boolean mutateCollection(Collection<?> objectToBeMutated) {
+        boolean success;
+        int attempts = 0;
+        do {
+            attempts++;
+            int option = Utils.nextInt(5);
+            success = switch (option) {
+                case 0 -> removeElement(objectToBeMutated);
+                case 1 -> addNewInstance(objectToBeMutated);
+                case 2 -> replaceElement(objectToBeMutated);
+                case 3 -> clearCollection(objectToBeMutated);
+                case 4 -> swapElements(objectToBeMutated);
+                default -> false;
+            };
+        } while (!success && attempts < 10);
 
-        int option = Utils.nextInt(5) + 1;
-        switch (option) {
-            case 1:
-                removeElement(objectToBeMutated);
-                break;
-            case 2:
-                addNewInstance(objectToBeMutated);
-                break;
-            case 3:
-                replaceElement(objectToBeMutated);
-                break;
-            case 4:
-                clearCollection(objectToBeMutated);
-                break;
-            case 5:
-                swapElements(objectToBeMutated);
-                break;
+        if (!success) {
+            ObjectGenerator.logger
+                    .warning("Could not mutate the collection of type: " + objectToBeMutated.getClass().getName());
         }
+
+        return success;
+    }
+
+    private static boolean removeElement(Collection<?> collection) {
+        if (collection.isEmpty())
+            return false;
+        List<?> list = new ArrayList<>(collection);
+        int index = new Random().nextInt(list.size());
+        collection.remove(list.get(index));
         return true;
     }
 
-    private static void removeElement(Collection<?> collection) {
-        if (!collection.isEmpty()) {
-            List<?> list = new ArrayList<>(collection);
-            int index = new Random().nextInt(list.size());
-            collection.remove(list.get(index));
-        }
-    }
-
-    private static void addNewInstance(Collection<Object> collection) {
+    private static <T> boolean addNewInstance(Collection<T> collection) {
         try {
-            Class<?> elementType = collection.iterator().next().getClass();
-            Object newInstance = ValueProvider.createNewInstance(elementType);
+            Class<T> elementType = ReflectionUtils.getClassOfObjectsInCollection(collection);
+            T newInstance = ValueProvider.createNewReferenceTypeInstance(elementType);
             collection.add(newInstance);
+            return true;
         } catch (NewInstanceCreationException e) {
-            e.printStackTrace();
+            ObjectGenerator.logger.warning(e.getMessage());
         }
+        return false;
     }
 
-    private static void replaceElement(Collection<Object> collection) {
-        if (!collection.isEmpty()) {
-            try {
-                List<Object> list = new ArrayList<>(collection);
-                int index = Utils.nextInt(list.size());
-                Object elemToReplace = list.get(index);
+    private static <T> boolean replaceElement(Collection<T> collection) {
+        if (collection.isEmpty())
+            return false;
 
-                Class<?> elementType = elemToReplace.getClass();
-                Object newInstance = ValueProvider.createNewInstance(elementType);
+        try {
+            Class<T> elementType = ReflectionUtils.getClassOfObjectsInCollection(collection);
+            T newInstance = ValueProvider.createNewReferenceTypeInstance(elementType);
 
-                list.set(index, newInstance);
-
-                collection.clear();
-                collection.addAll(list);
-            } catch (NewInstanceCreationException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private static void clearCollection(Collection<?> collection) {
-        collection.clear();
-    }
-
-    private static void swapElements(Collection<Object> collection) {
-        if (collection.size() > 1) {
-            List<Object> list = new ArrayList<>(collection);
-            int index1 = Utils.nextInt(list.size());
-            int index2;
-            do {
-                index2 = Utils.nextInt(list.size());
-            } while (index1 == index2);
-
-            Object temp = list.get(index1);
-            list.set(index1, list.get(index2));
-            list.set(index2, temp);
+            List<T> list = new ArrayList<>(collection);
+            int index = Utils.nextInt(list.size());
+            list.set(index, newInstance);
 
             collection.clear();
             collection.addAll(list);
+            return true;
+        } catch (NewInstanceCreationException e) {
+            ObjectGenerator.logger.warning(e.getMessage());
         }
+        return false;
+    }
+
+    private static boolean clearCollection(Collection<?> collection) {
+        if (collection.isEmpty())
+            return false;
+        collection.clear();
+        return true;
+    }
+
+    private static <T> boolean swapElements(Collection<T> collection) {
+        if (collection.size() <= 1)
+            return false;
+
+        List<T> list = new ArrayList<>(collection);
+        int index1 = Utils.nextInt(list.size());
+        int index2;
+        do {
+            index2 = Utils.nextInt(list.size());
+        } while (index1 == index2);
+
+        T temp = list.get(index1);
+        list.set(index1, list.get(index2));
+        list.set(index2, temp);
+
+        collection.clear();
+        collection.addAll(list);
+        return true;
     }
 
     private static boolean mutateMap(Map<?, ?> objectToBeMutated) {
+        if (objectToBeMutated == null) {
+            throw new IllegalArgumentException("Map to be mutated cannot be null");
+        }
+
+        boolean success;
+        int attempts = 0;
+        do {
+            attempts++;
+            int option = Utils.nextInt(4);
+            success = switch (option) {
+                case 0 -> removeRandomEntry(objectToBeMutated);
+                case 1 -> addNewEntry(objectToBeMutated);
+                case 2 -> removeAndAddEntry(objectToBeMutated);
+                case 3 -> clearMap(objectToBeMutated);
+                default -> false;
+            };
+        } while (!success && attempts < 10);
+
+        if (!success) {
+            ObjectGenerator.logger
+                    .warning("Could not mutate the map of type: " + objectToBeMutated.getClass().getName());
+        }
+
+        return success;
+    }
+
+    private static boolean removeRandomEntry(Map<?, ?> map) {
+        if (map.isEmpty())
+            return false;
+        int index = Utils.nextInt(map.size());
+        Object key = map.keySet().toArray()[index];
+        map.remove(key);
+        return true;
+    }
+
+    private static <K, V> boolean addNewEntry(Map<K, V> map) {
+        Class<K> keyClass = ReflectionUtils.getKeyClass(map);
+        Class<V> valueClass = ReflectionUtils.getValueClass(map);
+        try {
+            K key = ValueProvider.createNewReferenceTypeInstance(keyClass);
+            V value = ValueProvider.createNewReferenceTypeInstance(valueClass);
+            map.put(key, value);
+            return true;
+        } catch (NewInstanceCreationException e) {
+            ObjectGenerator.logger.warning(e.getMessage());
+        }
+        return false;
+    }
+
+    private static boolean removeAndAddEntry(Map<?, ?> map) {
+        boolean removed = removeRandomEntry(map);
+        boolean added = addNewEntry(map);
+        return removed || added;
+    }
+
+    private static boolean clearMap(Map<?, ?> map) {
+        if (map.isEmpty())
+            return false;
+        map.clear();
+        return true;
     }
 
     private static boolean mutateArray(Object objectToBeMutated) {
+        if (!objectToBeMutated.getClass().isArray()) {
+            throw new IllegalArgumentException("Object to be mutated must be an array");
+        }
+
+        boolean success;
+        int attempts = 0;
+        do {
+            attempts++;
+            int option = Utils.nextInt(3);
+            success = switch (option) {
+                case 0 -> assignNullToRandomIndex(objectToBeMutated);
+                case 1 -> setNewValueAtRandomIndex(objectToBeMutated);
+                case 2 -> swapRandomElements(objectToBeMutated);
+                default -> false;
+            };
+        } while (!success && attempts < 10);
+
+        if (!success) {
+            ObjectGenerator.logger
+                    .warning("Could not mutate the array of type: " + objectToBeMutated.getClass().getName());
+        }
+
+        return success;
     }
 
-    private static boolean mutateUserDefinedObject(Object objectToBeMutated) {
+    private static boolean assignNullToRandomIndex(Object array) {
+        int length = Array.getLength(array);
+        if (length == 0) {
+            return false;
+        }
+        int index = Utils.nextInt(length);
+        Array.set(array, index, null);
+        return true;
+    }
+
+    private static boolean setNewValueAtRandomIndex(Object array) {
+        int length = Array.getLength(array);
+        if (length == 0) {
+            return false;
+        }
+        int index = Utils.nextInt(length);
+        Class<?> componentType = array.getClass().getComponentType();
+
+        Object newValue = null;
+        try {
+            newValue = ValueProvider.createNewReferenceTypeInstance(componentType);
+        } catch (NewInstanceCreationException e) {
+            ObjectGenerator.logger.warning(e.getMessage());
+            return false;
+        }
+        Array.set(array, index, newValue);
+        return true;
+    }
+
+    private static boolean swapRandomElements(Object array) {
+        int length = Array.getLength(array);
+        if (length <= 1) {
+            return false;
+        }
+        int index1 = Utils.nextInt(length);
+        int index2 = Utils.nextInt(length);
+        while (index1 == index2) {
+            index2 = Utils.nextInt(length);
+        }
+        Object temp = Array.get(array, index1);
+        Array.set(array, index1, Array.get(array, index2));
+        Array.set(array, index2, temp);
+        return true;
+    }
+
+    private static boolean mutateHeapUserDefinedObject(Object objectToBeMutated, Collection<Object> allObjects) {
         Class<?> type = objectToBeMutated.getClass();
         if (!TypeChecker.isUserDefinedClass(type))
             throw new IllegalArgumentException("Object to be mutated must be a user-defined class");
@@ -152,40 +286,39 @@ public class ObjectMutator {
         if (fields.length == 0)
             return false;
 
-        Field
+        Field fieldToMutate = selectRandomReferenceField(fields);
 
-        for (Field field : fields) {
-            if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()))
-                continue;
-            try {
-                field.setAccessible(true);
-                Object fieldValue = field.get(object);
-                collectMutableObjects(fieldValue, collected);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        return mutateReferenceField(objectToBeMutated, fieldToMutate, allObjects);
     }
 
-    public static void mutateReferenceField(Object targetObject, Field field, Collection<Object> allObjects) {
+    private static Field selectRandomReferenceField(Field[] fields) {
+        List<Field> candidates = Arrays.stream(fields).filter(f -> !Modifier.isStatic(f.getModifiers()) && !TypeChecker.isPrimitiveOrBoxedPrimitive(f.getType())).toList();
+        return Utils.getRandomElement(candidates);
+    }
+
+
+    public static boolean mutateReferenceField(Object targetObject, Field field, Collection<Object> allObjects) {
         Class<?> type = field.getType();
         if (type.isPrimitive())
             throw new IllegalArgumentException("This method is only for reference types");
 
         Set<Object> candidates = calculateCandidateReferenceValues(targetObject, field, allObjects);
+        if (candidates.isEmpty())
+            return false;
         Object newValue = Utils.getRandomElement(candidates);
-        ValueProvider.setFieldValue(targetObject, field, newValue);
+        ReflectionUtils.setFieldValue(targetObject, field, newValue);
+        return true;
     }
 
     public static Set<Object> calculateCandidateReferenceValues(Object targetObject, Field field,
-            Collection<Object> allObjects) {
+                                                                Collection<Object> allObjects) {
         Class<?> type = field.getType();
         if (type.isPrimitive())
             throw new IllegalArgumentException("This method is only for reference types");
 
         Set<Object> candidates = ObjectHelper.filterObjectsByType(allObjects, type);
 
-        Object currentValue = ValueProvider.getFieldValue(targetObject, field);
+        Object currentValue = ReflectionUtils.getFieldValue(targetObject, field);
         if (currentValue != null) {
             // Add null as a candidate
             candidates.add(null);
@@ -196,9 +329,9 @@ public class ObjectMutator {
 
         Object newInstance = null;
         try {
-            newInstance = ValueProvider.createNewInstance(type);
+            newInstance = ValueProvider.createNewReferenceTypeInstance(type);
         } catch (NewInstanceCreationException e) {
-            if (isMutableClass(type))
+            if (isMutableHeapClass(type))
                 throw new RuntimeException(e);
         }
         if (newInstance != null) {
@@ -209,21 +342,24 @@ public class ObjectMutator {
         return candidates;
     }
 
-    public static boolean isMutableObject(Object o) {
+    public static boolean isMutableHeapObject(Object o) {
         if (o == null)
             return false;
-        if (TypeChecker.isUserDefinedClass(o.getClass()))
-            return true;
-        return (o instanceof Collection<?> c && ObjectHelper.isMutableCollection(c)) || o instanceof Map<?, ?>
-                || o.getClass().isArray();
+        return isMutableHeapClass(o.getClass());
     }
 
-    public static boolean isMutableClass(Class<?> clazz) {
+    public static boolean isMutableHeapClass(Class<?> clazz) {
         if (clazz == null)
             throw new IllegalArgumentException("Class cannot be null");
         if (TypeChecker.isUserDefinedClass(clazz))
             return true;
-        return Collection.class.isAssignableFrom(clazz) || Map.class.isAssignableFrom(clazz) || clazz.isArray();
+        if (TypeChecker.isCollectionOfReferenceType(clazz))
+            return true;
+        if (TypeChecker.isMapOfReferenceType(clazz))
+            return true;
+        if (TypeChecker.isArrayOfReferenceType(clazz))
+            return true;
+        return false;
     }
 
 }

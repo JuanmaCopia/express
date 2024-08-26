@@ -4,8 +4,7 @@ import collector.ObjectCollector;
 import express.execution.Executor;
 import express.spoon.SpoonManager;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -24,6 +23,11 @@ public class ObjectGenerator {
 
     private static final Map<String, Object> hashcodeToObjects = new HashMap<>();
 
+    public static final List<Object> positiveObjects = new ArrayList<>();
+    public static final List<Object> allNegativeObjects = new ArrayList<>();
+    public static final List<Object> negativeHeapObjects = new ArrayList<>();
+    public static final List<Object> negativePrimitiveObjects = new ArrayList<>();
+
     /**
      * Generate the set of positive and negative objects.
      */
@@ -31,35 +35,43 @@ public class ObjectGenerator {
         if (!SpoonManager.isInitialized())
             throw new IllegalStateException("SpoonManager must be initialized before generating objects");
         generatePositiveObjects();
-        generateNegativeObjects();
-        logger.info("Positive Objects Generated: " + ObjectCollector.positiveObjects.size());
-        logger.info("Negative Objects Generated: " + ObjectCollector.negativeObjects.size());
+        generateNegativeHeapObjects();
+        setAllNegativeObjects();
+        logger.info("Positive Objects Generated: " + positiveObjects.size());
+        logger.info("Negative Heap Objects Generated: " + negativeHeapObjects.size());
+        logger.info("Negative Primitive Objects Generated: " + negativePrimitiveObjects.size());
     }
 
     public static void generatePositiveObjects() {
         Executor.runTestSuite(SpoonManager.getSubjectTestClass().getQualifiedName(), SpoonManager.getClassLoader());
+        positiveObjects.addAll(ObjectCollector.positiveObjects);
     }
 
     /**
      * Generate the negative objects by randomly mutating the positive objects.
      */
-    private static void generateNegativeObjects() {
+    private static void generateNegativeHeapObjects() {
         for (Object positiveObject : ObjectCollector.positiveObjects) {
             for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
                 Object copy = ObjectHelper.deepCopy(positiveObject);
-                boolean wasMutated = ObjectMutator.mutate(copy);
+                boolean wasMutated = ObjectMutator.mutateHeap(copy);
                 if (wasMutated)
-                    addNegativeObjectIfNotExists(copy);
+                    addNegativeObjectIfNotExists(copy, negativeHeapObjects);
             }
         }
     }
 
-    private static void addNegativeObjectIfNotExists(Object object) {
+    private static void addNegativeObjectIfNotExists(Object object, Collection<Object> negativeCollection) {
         String hash = ObjectHelper.calculateHash(object);
         if (!hashcodeToObjects.containsKey(hash)) {
             hashcodeToObjects.put(hash, object);
-            ObjectCollector.negativeObjects.add(object);
+            negativeCollection.add(object);
         }
+    }
+
+    private static void setAllNegativeObjects() {
+        allNegativeObjects.addAll(negativeHeapObjects);
+        allNegativeObjects.addAll(negativePrimitiveObjects);
     }
 
 

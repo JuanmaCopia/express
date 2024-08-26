@@ -4,9 +4,7 @@ import express.spoon.SpoonManager;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TypeChecker {
 
@@ -56,6 +54,48 @@ public class TypeChecker {
     public static boolean isUserDefinedClass(Class<?> cls) {
         List<CtTypeReference<?>> userDefTypes = SpoonManager.getSubjectTypeData().getUserDefinedTypes();
         return userDefTypes.stream().anyMatch(t -> t.getQualifiedName().equals(cls.getName()));
+    }
+
+    public static boolean isArrayOfReferenceType(Class<?> clazz) {
+        if (!clazz.isArray())
+            return false;
+
+        Class<?> componentType = clazz.getComponentType();
+        return !TypeChecker.isPrimitiveOrBoxedPrimitive(componentType);
+    }
+
+    public static boolean isArrayOfPrimitiveType(Class<?> clazz) {
+        if (!clazz.isArray())
+            return false;
+
+        Class<?> componentType = clazz.getComponentType();
+        return TypeChecker.isPrimitiveOrBoxedPrimitive(componentType);
+    }
+
+    public static boolean isMapOfReferenceType(Class<?> clazz) {
+        if (!Map.class.isAssignableFrom(clazz))
+            return false;
+
+        Class<?> typeOfKeys = ReflectionUtils.getGenericClass(clazz, 0);
+        if (typeOfKeys != null && !TypeChecker.isPrimitiveOrBoxedPrimitive(typeOfKeys))
+            return true;
+
+        Class<?> typeOfValues = ReflectionUtils.getGenericClass(clazz, 1);
+        if (typeOfValues != null && !TypeChecker.isPrimitiveOrBoxedPrimitive(typeOfValues))
+            return true;
+
+        return false;
+    }
+
+    public static boolean isCollectionOfReferenceType(Class<?> clazz) {
+        if (!Collection.class.isAssignableFrom(clazz))
+            return false;
+
+        Class<?> typeOfObjects = ReflectionUtils.getGenericClass(clazz, 0);
+        if (typeOfObjects == null)
+            return false;
+
+        return !TypeChecker.isPrimitiveOrBoxedPrimitive(typeOfObjects);
     }
 
 }

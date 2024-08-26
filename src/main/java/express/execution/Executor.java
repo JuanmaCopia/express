@@ -1,7 +1,7 @@
 package express.execution;
 
-import collector.ObjectCollector;
 import express.compile.InMemoryCompiler;
+import express.object.ObjectGenerator;
 import express.reflection.Reflection;
 import express.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
@@ -81,7 +81,7 @@ public class Executor {
 
         Method predicate = Reflection.loadMethod(predicateClass, SpoonManager.getConfig().predicateMethodName);
 
-        for (Object invalidInstance : ObjectCollector.negativeObjects) {
+        for (Object invalidInstance : ObjectGenerator.allNegativeObjects) {
             Object[] args = new Object[1];
             args[0] = invalidInstance;
 
