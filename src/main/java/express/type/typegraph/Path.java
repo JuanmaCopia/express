@@ -70,7 +70,7 @@ public class Path {
     }
 
     public Pair<Path, Path> split(int index) {
-        if (index < 0 || index >= fields.size()) {
+        if (index < 0 || index > fields.size()) {
             throw new IllegalArgumentException("Index out of bounds");
         }
         return Pair.of(new Path(new LinkedList<>(fields.subList(0, index))),
