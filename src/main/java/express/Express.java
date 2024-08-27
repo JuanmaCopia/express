@@ -69,12 +69,17 @@ public class Express {
         // Traversal Modification Mutators
         mutators.add(new ChangeLoopFieldsMutator());
         mutators.add(new ChangeFirstElementMutator());
+        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
         // Traversal Invocation Mutators
         mutators.add(new InvokeArrayTraversalMutator());
         mutators.add(new InvokeFieldTraversalMutator());
         mutators.add(new InvokeFieldTraversalOnArrayTraversalMutator());
         mutators.add(new RemoveTraversalInvocationMutator());
-        ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness(), config.restartRounds);
+        ClassInvariantProblem problem = new ClassInvariantProblem(
+                mutators,
+                new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativeHeapObjects),
+                config.restartRounds
+        );
         SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature, config.coolingRate);
         ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, schedule);
         return (ClassInvariantState) simulatedAnnealing.startSearch();
@@ -85,7 +90,7 @@ public class Express {
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         mutators.add(new RemoveCheckMutator());
         // Structure Check Mutators
-        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
+        //mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
         mutators.add(new AddNullCompToTraversalMutator());
         mutators.add(new AddRandomComparisonToCurrent());
         mutators.add(new DeclareVisitedSetMutator());
@@ -93,7 +98,12 @@ public class Express {
         mutators.add(new IfNullReturnInTraversalMutator());
         mutators.add(new ComposedNullCheckInTraversalMutator());
         mutators.add(new CheckVisitedCurrentMutator());
-        ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness(), initialState, config.restartRounds);
+        ClassInvariantProblem problem = new ClassInvariantProblem(
+                mutators,
+                new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativeHeapObjects),
+                initialState,
+                config.restartRounds
+        );
         SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature, config.coolingRate);
         ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, schedule);
         return (ClassInvariantState) simulatedAnnealing.startSearch();
@@ -107,7 +117,12 @@ public class Express {
         mutators.add(new RemoveIfPrimitiveCheckMutator());
         mutators.add(new RemoveSizeCheckMutator());
         mutators.add(new RemoveTraversalSizeCheckMutator());
-        ClassInvariantProblem problem = new ClassInvariantProblem(mutators, new LengthFitness(), initialState, config.restartRounds);
+        ClassInvariantProblem problem = new ClassInvariantProblem(
+                mutators,
+                new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativePrimitiveObjects),
+                initialState,
+                config.restartRounds
+        );
         SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature, config.coolingRate);
         ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, schedule);
         return (ClassInvariantState) simulatedAnnealing.startSearch();

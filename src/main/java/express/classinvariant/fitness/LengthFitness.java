@@ -1,6 +1,5 @@
 package express.classinvariant.fitness;
 
-import collector.ObjectCollector;
 import express.config.Config;
 import express.execution.Executor;
 import express.reflection.Reflection;
@@ -8,6 +7,7 @@ import express.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 
 public class LengthFitness extends ClassInvariantFitness {
 
@@ -16,10 +16,15 @@ public class LengthFitness extends ClassInvariantFitness {
     Config config;
     ClassLoader classLoader;
 
-    public LengthFitness() {
+    Collection<Object> positiveObjects;
+    Collection<Object> negativeObjects;
+
+    public LengthFitness(Collection<Object> positiveObjects, Collection<Object> negativeObjects) {
         super(SpoonManager.getInMemoryCompiler());
         this.config = SpoonManager.getConfig();
         this.classLoader = compiler.getClassLoader();
+        this.positiveObjects = positiveObjects;
+        this.negativeObjects = negativeObjects;
     }
 
     @Override
@@ -34,7 +39,7 @@ public class LengthFitness extends ClassInvariantFitness {
         //Class<?> predicateClass = Reflection.loadClass(classLoader, ctClass.getQualifiedName());
         Method predicate = Reflection.loadMethod(predicateClass, config.predicateMethodName);
 
-        for (Object validInstance : ObjectCollector.positiveObjects) {
+        for (Object validInstance : positiveObjects) {
             Object[] args = new Object[1];
             args[0] = validInstance;
             int result = Executor.runPredicate(predicate, args);
@@ -48,9 +53,9 @@ public class LengthFitness extends ClassInvariantFitness {
             }
         }
 
-        double fitness = ObjectCollector.negativeObjects.size() * -1;
+        double fitness = negativeObjects.size() * -1;
 
-        for (Object invalidInstance : ObjectCollector.negativeObjects) {
+        for (Object invalidInstance : negativeObjects) {
             Object[] args = new Object[1];
             args[0] = invalidInstance;
             int result = Executor.runPredicate(predicate, args);

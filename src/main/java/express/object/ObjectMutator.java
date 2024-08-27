@@ -1,22 +1,12 @@
 package express.object;
 
-import express.spoon.SpoonManager;
-import express.type.TypeUtils;
 import express.util.Utils;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-/**
- * This class provides methods to perform random mutations on a given object
- *
- * @author Facundo Molina <facundo.molina@imdea.org>
- * @author Juan Manuel Copia <juanmanuel.copia@imdea.org>
- */
 public class ObjectMutator {
 
     /**
@@ -24,330 +14,352 @@ public class ObjectMutator {
      *
      * @param rootObject is the object to mutate
      */
-    public static boolean mutate(Object rootObject) {
-        List<Object> candidates = collectCandidatesForMutation(rootObject);
-//        System.err.println("\n\nNumber of candidates for mutation: " + candidates.size());
-//        System.err.println("Candidates for mutation: " + candidates);
-        Target target = selectTarget(candidates);
-//        System.err.println("Target field: " + target);
-        if (target == null)
+    public static boolean mutateHeap(Object rootObject) {
+        Set<Object> reachableObjects = ObjectHelper.collectReachableObjects(rootObject);
+        List<Object> candidates = reachableObjects.stream().filter(ObjectMutator::isMutableHeapObject).toList();
+
+        if (candidates.isEmpty())
             return false;
 
-        Object newFieldValue = getNewValueForTheTarget(target, candidates);
-//        System.err.println("Current field value: " + target.getValue());
-//        System.err.println("New field value: " + newFieldValue);
-        if (newFieldValue == target.getValue())
-            return false;
+        Object toBeMutated = selectObjectForMutation(candidates);
+        return mutateHeapOfObject(toBeMutated, reachableObjects);
+    }
 
-//        String valueString = newFieldValue == null ? "null" : newFieldValue.getClass().getName();
-//        System.out.println("Mutated field: " + target + " with value: " + valueString);
-        target.setValue(newFieldValue);
+    static Object selectObjectForMutation(Collection<Object> allObjects) {
+        Set<Class<?>> candidateTypes = ObjectHelper.filterTypes(allObjects);
+
+        Class<?> chosenType = Utils.getRandomElement(candidateTypes);
+        Set<Object> candidatesOfChosenType = ObjectHelper.filterObjectsByType(allObjects, chosenType);
+
+        return Utils.getRandomElement(candidatesOfChosenType);
+    }
+
+    private static boolean mutateHeapOfObject(Object objectToBeMutated, Collection<Object> reachableObjects) {
+        if (objectToBeMutated == null)
+            throw new IllegalArgumentException("Object to be mutated cannot be null");
+
+        if (TypeChecker.isUserDefinedClass(objectToBeMutated.getClass()))
+            return mutateHeapUserDefinedObject(objectToBeMutated, reachableObjects);
+        if (objectToBeMutated instanceof Collection<?> collection)
+            return mutateCollection(collection);
+        if (objectToBeMutated instanceof Map<?, ?> map)
+            return mutateMap(map);
+        if (objectToBeMutated.getClass().isArray())
+            return mutateArray(objectToBeMutated);
+
+        return false;
+    }
+
+    private static boolean mutateCollection(Collection<?> objectToBeMutated) {
+        boolean success;
+        int attempts = 0;
+        do {
+            attempts++;
+            int option = Utils.nextInt(5);
+            success = switch (option) {
+                case 0 -> removeElement(objectToBeMutated);
+                case 1 -> addNewInstance(objectToBeMutated);
+                case 2 -> replaceElement(objectToBeMutated);
+                case 3 -> clearCollection(objectToBeMutated);
+                case 4 -> swapElements(objectToBeMutated);
+                default -> false;
+            };
+        } while (!success && attempts < 10);
+
+        if (!success) {
+            ObjectGenerator.logger
+                    .warning("Could not mutate the collection of type: " + objectToBeMutated.getClass().getName());
+        }
+
+        return success;
+    }
+
+    private static boolean removeElement(Collection<?> collection) {
+        if (collection.isEmpty())
+            return false;
+        List<?> list = new ArrayList<>(collection);
+        int index = new Random().nextInt(list.size());
+        collection.remove(list.get(index));
         return true;
     }
 
-    /**
-     * Collect all the objects that can be mutated from the given root object
-     *
-     * @param rootObject is the root object to start the search from
-     * @return a list of objects that can be mutated
-     */
-    static List<Object> collectCandidatesForMutation(Object rootObject) {
-        Queue<Object> queue = new ArrayDeque<>();
-        Set<Object> visited = new HashSet<>();
-        queue.offer(rootObject);
-
-        while (!queue.isEmpty()) {
-            Object currentObject = queue.poll();
-            if (!visited.contains(currentObject)) {
-                visited.add(currentObject);
-
-                Class<?> currentClass = currentObject.getClass();
-                if (currentClass.isArray()) {
-                    Object[] array = collectObjectsFromArray(currentObject);
-                    for (Object o : array) {
-                        if (o != null && !TypeChecker.isPrimitiveOrBoxedPrimitive(o.getClass())) {
-                            queue.offer(o);
-                        }
-                    }
-                } else {
-                    Field[] fields = currentClass.getDeclaredFields();
-                    for (Field field : fields) {
-                        Class<?> fieldType = field.getType();
-                        if ((fieldType.isArray() || TypeChecker.isUserDefinedClass(fieldType)) && !Modifier.isStatic(field.getModifiers())) {
-                            Object fieldValue = ObjectHelper.getFieldValue(currentObject, field);
-                            if (fieldValue != null)
-                                queue.offer(fieldValue);
-                        }
-                    }
-                }
-            }
+    private static <T> boolean addNewInstance(Collection<T> collection) {
+        try {
+            Class<T> elementType = ReflectionUtils.getClassOfObjectsInCollection(collection);
+            T newInstance = ValueProvider.createNewReferenceTypeInstance(elementType);
+            collection.add(newInstance);
+            return true;
+        } catch (NewInstanceCreationException e) {
+            ObjectGenerator.logger.warning(e.getMessage());
         }
-        return visited.stream().toList();
+        return false;
     }
 
-    public static Object[] collectObjectsFromArray(Object array) {
-        // Check if the provided object is an array
-        if (!array.getClass().isArray()) {
-            throw new IllegalArgumentException("Provided object is not an array");
+    private static <T> boolean replaceElement(Collection<T> collection) {
+        if (collection.isEmpty())
+            return false;
+
+        try {
+            Class<T> elementType = ReflectionUtils.getClassOfObjectsInCollection(collection);
+            T newInstance = ValueProvider.createNewReferenceTypeInstance(elementType);
+
+            List<T> list = new ArrayList<>(collection);
+            int index = Utils.nextInt(list.size());
+            list.set(index, newInstance);
+
+            collection.clear();
+            collection.addAll(list);
+            return true;
+        } catch (NewInstanceCreationException e) {
+            ObjectGenerator.logger.warning(e.getMessage());
+        }
+        return false;
+    }
+
+    private static boolean clearCollection(Collection<?> collection) {
+        if (collection.isEmpty())
+            return false;
+        collection.clear();
+        return true;
+    }
+
+    private static <T> boolean swapElements(Collection<T> collection) {
+        if (collection.size() <= 1)
+            return false;
+
+        List<T> list = new ArrayList<>(collection);
+        int index1 = Utils.nextInt(list.size());
+        int index2;
+        do {
+            index2 = Utils.nextInt(list.size());
+        } while (index1 == index2);
+
+        T temp = list.get(index1);
+        list.set(index1, list.get(index2));
+        list.set(index2, temp);
+
+        collection.clear();
+        collection.addAll(list);
+        return true;
+    }
+
+    private static boolean mutateMap(Map<?, ?> objectToBeMutated) {
+        if (objectToBeMutated == null) {
+            throw new IllegalArgumentException("Map to be mutated cannot be null");
         }
 
-        // Get the length of the array
+        boolean success;
+        int attempts = 0;
+        do {
+            attempts++;
+            int option = Utils.nextInt(4);
+            success = switch (option) {
+                case 0 -> removeRandomEntry(objectToBeMutated);
+                case 1 -> addNewEntry(objectToBeMutated);
+                case 2 -> removeAndAddEntry(objectToBeMutated);
+                case 3 -> clearMap(objectToBeMutated);
+                default -> false;
+            };
+        } while (!success && attempts < 10);
+
+        if (!success) {
+            ObjectGenerator.logger
+                    .warning("Could not mutate the map of type: " + objectToBeMutated.getClass().getName());
+        }
+
+        return success;
+    }
+
+    private static boolean removeRandomEntry(Map<?, ?> map) {
+        if (map.isEmpty())
+            return false;
+        int index = Utils.nextInt(map.size());
+        Object key = map.keySet().toArray()[index];
+        map.remove(key);
+        return true;
+    }
+
+    private static <K, V> boolean addNewEntry(Map<K, V> map) {
+        Class<K> keyClass = ReflectionUtils.getKeyClass(map);
+        Class<V> valueClass = ReflectionUtils.getValueClass(map);
+        try {
+            K key = ValueProvider.createNewReferenceTypeInstance(keyClass);
+            V value = ValueProvider.createNewReferenceTypeInstance(valueClass);
+            map.put(key, value);
+            return true;
+        } catch (NewInstanceCreationException e) {
+            ObjectGenerator.logger.warning(e.getMessage());
+        }
+        return false;
+    }
+
+    private static boolean removeAndAddEntry(Map<?, ?> map) {
+        boolean removed = removeRandomEntry(map);
+        boolean added = addNewEntry(map);
+        return removed || added;
+    }
+
+    private static boolean clearMap(Map<?, ?> map) {
+        if (map.isEmpty())
+            return false;
+        map.clear();
+        return true;
+    }
+
+    private static boolean mutateArray(Object objectToBeMutated) {
+        if (!objectToBeMutated.getClass().isArray()) {
+            throw new IllegalArgumentException("Object to be mutated must be an array");
+        }
+
+        boolean success;
+        int attempts = 0;
+        do {
+            attempts++;
+            int option = Utils.nextInt(3);
+            success = switch (option) {
+                case 0 -> assignNullToRandomIndex(objectToBeMutated);
+                case 1 -> setNewValueAtRandomIndex(objectToBeMutated);
+                case 2 -> swapRandomElements(objectToBeMutated);
+                default -> false;
+            };
+        } while (!success && attempts < 10);
+
+        if (!success) {
+            ObjectGenerator.logger
+                    .warning("Could not mutate the array of type: " + objectToBeMutated.getClass().getName());
+        }
+
+        return success;
+    }
+
+    private static boolean assignNullToRandomIndex(Object array) {
         int length = Array.getLength(array);
-
-        // Create an array to hold the collected objects
-        Object[] collectedObjects = new Object[length];
-
-        // Iterate over the array and collect each element
-        for (int i = 0; i < length; i++) {
-            collectedObjects[i] = Array.get(array, i);
+        if (length == 0) {
+            return false;
         }
+        int index = Utils.nextInt(length);
+        Array.set(array, index, null);
+        return true;
+    }
 
-        //System.err.println("Collected Objects from array: " + Arrays.toString(collectedObjects));
+    private static boolean setNewValueAtRandomIndex(Object array) {
+        int length = Array.getLength(array);
+        if (length == 0) {
+            return false;
+        }
+        int index = Utils.nextInt(length);
+        Class<?> componentType = array.getClass().getComponentType();
 
-        return collectedObjects;
+        Object newValue = null;
+        try {
+            newValue = ValueProvider.createNewReferenceTypeInstance(componentType);
+        } catch (NewInstanceCreationException e) {
+            ObjectGenerator.logger.warning(e.getMessage());
+            return false;
+        }
+        Array.set(array, index, newValue);
+        return true;
+    }
+
+    private static boolean swapRandomElements(Object array) {
+        int length = Array.getLength(array);
+        if (length <= 1) {
+            return false;
+        }
+        int index1 = Utils.nextInt(length);
+        int index2 = Utils.nextInt(length);
+        while (index1 == index2) {
+            index2 = Utils.nextInt(length);
+        }
+        Object temp = Array.get(array, index1);
+        Array.set(array, index1, Array.get(array, index2));
+        Array.set(array, index2, temp);
+        return true;
+    }
+
+    private static boolean mutateHeapUserDefinedObject(Object objectToBeMutated, Collection<Object> allObjects) {
+        Class<?> type = objectToBeMutated.getClass();
+        if (!TypeChecker.isUserDefinedClass(type))
+            throw new IllegalArgumentException("Object to be mutated must be a user-defined class");
+
+        Field[] fields = type.getDeclaredFields();
+        if (fields.length == 0)
+            return false;
+
+        Field fieldToMutate = selectRandomReferenceField(fields);
+
+        return mutateReferenceField(objectToBeMutated, fieldToMutate, allObjects);
+    }
+
+    private static Field selectRandomReferenceField(Field[] fields) {
+        List<Field> candidates = Arrays.stream(fields).filter(f -> !Modifier.isStatic(f.getModifiers()) && !TypeChecker.isPrimitiveOrBoxedPrimitive(f.getType())).toList();
+        return Utils.getRandomElement(candidates);
     }
 
 
-    /**
-     * Select a random field to mutate from the given list of candidates
-     *
-     * @param candidates is the list of objects to select the field from
-     * @return a random field to mutate
-     */
-    static Target selectTarget(List<Object> candidates) {
-        List<CtTypeReference<?>> candidateTypes = selectCandidateTypes(candidates);
-        if (candidateTypes.isEmpty())
-            return null;
+    public static boolean mutateReferenceField(Object targetObject, Field field, Collection<Object> allObjects) {
+        Class<?> type = field.getType();
+        if (type.isPrimitive())
+            throw new IllegalArgumentException("This method is only for reference types");
 
-        CtTypeReference<?> chosenType = Utils.getRandomElement(candidateTypes);
-        List<Object> objectsOfType = getCandidatesOfType(candidates, chosenType);
-        Object chosenObject = Utils.getRandomElement(objectsOfType);
-
-        Target targetField;
-        if (!chosenType.isArray()) {
-            List<CtVariable<?>> referenceFields = TypeUtils.getReferenceFields(chosenType);
-            CtVariable<?> chosenField = Utils.getRandomElement(referenceFields);
-            targetField = new TargetField(chosenObject, chosenField);
-        } else {
-            int index = new Random().nextInt(Array.getLength(chosenObject));
-            targetField = new TargetIndex(chosenObject, index);
-        }
-
-        return targetField;
+        Set<Object> candidates = calculateCandidateReferenceValues(targetObject, field, allObjects);
+        if (candidates.isEmpty())
+            return false;
+        Object newValue = Utils.getRandomElement(candidates);
+        ReflectionUtils.setFieldValue(targetObject, field, newValue);
+        return true;
     }
 
-    private static List<CtTypeReference<?>> selectCandidateTypes(List<Object> candidates) {
-        List<CtTypeReference<?>> result = new ArrayList<>();
-        List<CtTypeReference<?>> candidateTypes = new LinkedList<>(SpoonManager.getSubjectTypeData().getUserDefinedTypes()
-                .stream().filter(TypeUtils::hasReferenceFields).toList());
-        candidateTypes.addAll(SpoonManager.getSubjectTypeData().getArrayTypes().stream().filter(
-                TypeUtils::isUserDefinedArrayType
-        ).toList());
-        for (CtTypeReference<?> type : candidateTypes) {
-            if (!getCandidatesOfType(candidates, type).isEmpty())
-                result.add(type);
+    public static Set<Object> calculateCandidateReferenceValues(Object targetObject, Field field,
+                                                                Collection<Object> allObjects) {
+        Class<?> type = field.getType();
+        if (type.isPrimitive())
+            throw new IllegalArgumentException("This method is only for reference types");
+
+        Set<Object> candidates = ObjectHelper.filterObjectsByType(allObjects, type);
+
+        Object currentValue = ReflectionUtils.getFieldValue(targetObject, field);
+        if (currentValue != null) {
+            // Add null as a candidate
+            candidates.add(null);
+
+            // Remove the current value from the candidates
+            candidates.remove(currentValue);
         }
-        return result;
+
+        Object newInstance = null;
+        try {
+            newInstance = ValueProvider.createNewReferenceTypeInstance(type);
+        } catch (NewInstanceCreationException e) {
+            if (isMutableHeapClass(type))
+                throw new RuntimeException(e);
+        }
+        if (newInstance != null) {
+            // Add new instance of the class as a candidate
+            candidates.add(newInstance);
+        }
+
+        return candidates;
     }
 
-    /**
-     * Get a new value for the given field
-     *
-     * @param target     is the field to get the new value for
-     * @param candidates is the list of objects to get the new value from
-     * @return a new value for the given field
-     */
-    static Object getNewValueForTheTarget(Target target, List<Object> candidates) {
-        List<Object> possibleChoices = new ArrayList<>(getCandidatesOfType(candidates, target));
-
-        // Add a fresh object to the possible choices
-        Class<?> fieldClass = target.getClassOfObjective();
-        if (fieldClass != null && !fieldClass.isInterface() && TypeChecker.isUserDefinedClass(fieldClass)) {
-            Object freshObject = ObjectHelper.createNewInstance(fieldClass);
-            if (freshObject != null)
-                possibleChoices.add(freshObject);
-        }
-
-        // Add null to the possible choices
-        Object currentValue = target.getValue();
-        if (currentValue != null)
-            possibleChoices.add(null);
-
-        if (possibleChoices.isEmpty())
-            return null;
-        return Utils.getRandomElement(possibleChoices);
+    public static boolean isMutableHeapObject(Object o) {
+        if (o == null)
+            return false;
+        return isMutableHeapClass(o.getClass());
     }
 
-    /**
-     * Get all the possible candidates for the given target field. A candidate
-     * is an object of the same type as the field and different from the current
-     * value (to avoid assigning the same value to the field that it already has)
-     *
-     * @param candidates  is the list of objects to get the candidates from
-     * @param targetField is the field to get the candidates for
-     * @return a list of candidates of the given type
-     */
-    static List<Object> getCandidatesOfType(List<Object> candidates, Target targetField) {
-        return candidates.stream().filter(o -> o != targetField.getValue() &&
-                o.getClass().getName().equals(targetField.getClassOfObjective().getName())).toList();
-    }
-
-
-    /**
-     * Get all the possible candidates for the given type
-     *
-     * @param candidates is the list of objects to get the candidates from
-     * @param type       is the type to get the candidates for
-     * @return a list of candidates of the given type
-     */
-    static List<Object> getCandidatesOfType(List<Object> candidates, CtTypeReference<?> type) {
-        return candidates.stream().filter(o -> o.getClass().getTypeName().equals(type.getQualifiedName())).toList();
-    }
-
-    /**
-     * Get a random reference of the given type from the given list of references
-     *
-     * @param references is the list of references to get the random reference from
-     * @param type       is the type of the reference to get
-     * @return a random reference of the given type
-     */
-    static Object getRandomReferenceOfType(List<Object> references, CtTypeReference<?> type) {
-        List<Object> objectsOfType = getCandidatesOfType(references, type);
-        if (objectsOfType.isEmpty())
-            return null;
-        return objectsOfType.get(Utils.nextInt(objectsOfType.size()));
-    }
-
-    public interface Target {
-        Object getValue();
-
-        void setValue(Object newValue);
-
-        Class<?> getClassOfObjective();
-    }
-
-    /**
-     * This record represents a field of an object to mutate
-     */
-    public static class TargetField implements Target {
-
-        private final Object owner;
-        private final CtVariable<?> field;
-
-        public TargetField(Object owner, CtVariable<?> field) {
-            this.owner = owner;
-            this.field = field;
-        }
-
-        public Object getOwner() {
-            return owner;
-        }
-
-        public CtVariable<?> getField() {
-            return field;
-        }
-
-        @Override
-        public Class<?> getClassOfObjective() {
-            try {
-                Field f = owner.getClass().getDeclaredField(field.getSimpleName());
-                return f.getType();
-            } catch (NoSuchFieldException e) {
-                return null;
-            }
-        }
-
-        @Override
-        public Object getValue() {
-            Object currentValue = null;
-            try {
-                Field f = owner.getClass().getDeclaredField(field.getSimpleName());
-                f.setAccessible(true);
-                currentValue = f.get(owner);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                return null;
-            }
-            return currentValue;
-        }
-
-        @Override
-        public void setValue(Object newValue) {
-            try {
-                Field f = owner.getClass().getDeclaredField(field.getSimpleName());
-                f.setAccessible(true);
-                f.set(owner, newValue);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                // Do nothing
-                e.printStackTrace();
-            }
-        }
-
-        public String toString() {
-            return "TargetField{" +
-                    "ownerType=" + owner.getClass() +
-                    ", field=" + field.getSimpleName() +
-                    '}';
-        }
-
-    }
-
-    public static class TargetIndex implements Target {
-
-        private final Object owner;
-        private final int index;
-
-
-        public TargetIndex(Object array, int index) {
-            this.owner = array;
-            this.index = index;
-        }
-
-        public Object getOwner() {
-            return owner;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public Object getValue() {
-            Object currentValue = null;
-            try {
-                currentValue = Array.get(owner, index);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-            return currentValue;
-        }
-
-        public void setValue(Object newValue) {
-            try {
-                Array.set(owner, index, newValue);
-            } catch (Exception e) {
-                // Do nothing
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public Class<?> getClassOfObjective() {
-            try {
-                return owner.getClass().getComponentType();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "TargetIndex{" +
-                    "ownerType=" + owner.getClass() +
-                    ", index=" + index +
-                    '}';
-        }
-
+    public static boolean isMutableHeapClass(Class<?> clazz) {
+        if (clazz == null)
+            throw new IllegalArgumentException("Class cannot be null");
+        if (TypeChecker.isUserDefinedClass(clazz))
+            return true;
+        if (TypeChecker.isCollectionOfReferenceType(clazz))
+            return true;
+        if (TypeChecker.isMapOfReferenceType(clazz))
+            return true;
+        if (TypeChecker.isArrayOfReferenceType(clazz))
+            return true;
+        return false;
     }
 
 }

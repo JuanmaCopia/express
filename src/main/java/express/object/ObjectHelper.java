@@ -1,16 +1,8 @@
 package express.object;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ObjectHelper {
 
@@ -41,9 +33,11 @@ public class ObjectHelper {
         if (objectMap.containsKey(original))
             return objectMap.get(original);
 
-        Object copy = createNewInstance(original.getClass());
-        if (copy == null) {
-            throw new RuntimeException("Copy is null, its class was: " + original.getClass().getName());
+        Object copy;
+        try {
+            copy = ValueProvider.createNewReferenceTypeInstance(original.getClass());
+        } catch (NewInstanceCreationException e) {
+            throw new RuntimeException(e);
         }
 
         objectMap.put(original, copy);
@@ -129,7 +123,7 @@ public class ObjectHelper {
             if (objectMap.containsKey(collection))
                 return (T) objectMap.get(collection);
 
-            T copy = (T) createNewInstance(collection.getClass());
+            T copy = (T) ValueProvider.createNewReferenceTypeInstance(collection.getClass());
             objectMap.put(collection, copy);
 
             for (E e : collection) {
@@ -149,7 +143,7 @@ public class ObjectHelper {
             if (objectMap.containsKey(map))
                 return (T) objectMap.get(map);
 
-            T copy = (T) createNewInstance(map.getClass());
+            T copy = (T) ValueProvider.createNewReferenceTypeInstance(map.getClass());
             objectMap.put(map, copy);
 
             for (Map.Entry<K, V> entry : map.entrySet()) {
@@ -166,29 +160,6 @@ public class ObjectHelper {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public static Object createNewInstance(Class<?> clazz) {
-        Object instance = null;
-        try {
-            Class<?> declaringClass = clazz.getDeclaringClass();
-            if (!Modifier.isStatic(clazz.getModifiers()) && declaringClass != null) {
-                Constructor<?> constructor = clazz.getDeclaredConstructor(declaringClass);
-                constructor.setAccessible(true);
-                Object param = declaringClass.getDeclaredConstructor().newInstance();
-                instance = constructor.newInstance(param);
-            } else {
-                Constructor<?> constructor = clazz.getDeclaredConstructor();
-                constructor.setAccessible(true);
-                instance = constructor.newInstance();
-            }
-        } catch (Exception e) {
-            // System.err.println("\n\nError creating new instance of class: " +
-            // clazz.getName());
-            e.printStackTrace();
-            throw new RuntimeException("Error creating new instance of class: " + clazz.getName());
-        }
-        return instance;
     }
 
     public static Object copyPrimitiveWrapper(Object original) {
@@ -229,8 +200,8 @@ public class ObjectHelper {
             // hashList.add(object.getClass().getSimpleName());
         } else if (object instanceof Collection<?>) {
             hashCollection((Collection<?>) object, objToHash, hashList);
-        } else if (object instanceof Map<?,?>) {
-            hashMap((Map<?,?>) object, objToHash, hashList);
+        } else if (object instanceof Map<?, ?>) {
+            hashMap((Map<?, ?>) object, objToHash, hashList);
         } else if (object.getClass().isArray()) {
             hashArray(object, objToHash, hashList);
         } else {
@@ -309,20 +280,107 @@ public class ObjectHelper {
         }
     }
 
+    public static Set<Object> collectReachableObjects(Object object) {
+        Set<Object> collected = new HashSet<>();
+        collectReachableObjects(object, collected);
+        return collected;
+    }
+
+    public static void collectReachableObjects(Object object, Set<Object> collected) {
+        if (object == null)
+            return;
+        Class<?> clazz = object.getClass();
+        // The object it is always collected
+        if (
+                TypeChecker.isString(clazz) ||
+                        TypeChecker.isBoxedPrimitive(clazz) ||
+                        !collected.add(object) ||
+                        !ObjectMutator.isMutableHeapClass(clazz)
+        )
+            return;
+
+        if (TypeChecker.isUserDefinedClass(object.getClass())) {
+            collectUserDefinedObject(object, collected);
+        } else if (object instanceof Collection<?>) {
+            collectCollection((Collection<?>) object, collected);
+        } else if (object instanceof Map<?, ?>) {
+            collectMap((Map<?, ?>) object, collected);
+        } else if (object.getClass().isArray()) {
+            collectArray(object, collected);
+        }
+    }
+
+    private static void collectArray(Object object, Set<Object> collected) {
+        Object[] array = (Object[]) object;
+        for (Object element : array) {
+            collectReachableObjects(element, collected);
+        }
+    }
+
+    private static void collectMap(Map<?, ?> object, Set<Object> collected) {
+        for (Map.Entry<?, ?> entry : object.entrySet()) {
+            collectReachableObjects(entry.getKey(), collected);
+            collectReachableObjects(entry.getValue(), collected);
+        }
+    }
+
+    private static void collectCollection(Collection<?> object, Set<Object> collected) {
+        for (Object element : object) {
+            collectReachableObjects(element, collected);
+        }
+    }
+
+    private static void collectUserDefinedObject(Object object, Set<Object> collected) {
+        Field[] fields = object.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            // TODO: Handle static fields
+            if (Modifier.isStatic(field.getModifiers()))
+                continue;
+            try {
+                field.setAccessible(true);
+                Object fieldValue = ReflectionUtils.getFieldValue(object, field);
+                collectReachableObjects(fieldValue, collected);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Filter the types of the objects in the list.
+     *
+     * @param objects the list of objects
+     * @return the set of types of the objects
+     */
+    public static Set<Class<?>> filterTypes(Collection<Object> objects) {
+        Set<Class<?>> types = new HashSet<>();
+        for (Object object : objects) {
+            types.add(object.getClass());
+        }
+        return types;
+    }
+
+    /**
+     * Filter the objects in the list by the given type.
+     *
+     * @param objects the list of objects
+     * @param type    the type to filter by
+     * @return the set of objects of the given type
+     */
+    public static Set<Object> filterObjectsByType(Collection<Object> objects, Class<?> type) {
+        Set<Object> filtered = new HashSet<>();
+        for (Object object : objects) {
+            if (object.getClass().equals(type)) {
+                filtered.add(object);
+            }
+        }
+        return filtered;
+    }
+
     private static long id = 0;
 
     private static String createObjectHash(Object object) {
         return object.getClass().getSimpleName() + id++;
-    }
-
-    public static Object getFieldValue(Object object, Field field) {
-        try {
-            field.setAccessible(true);
-            return field.get(object);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
 }
