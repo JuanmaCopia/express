@@ -1,10 +1,17 @@
 package express.spoon;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import express.classinvariant.predicate.PredicateManager;
 import express.compile.InMemoryCompiler;
 import express.compile.OutputManager;
 import express.config.Config;
 import express.instrumentation.Instrumentation;
+import express.type.TypeUtils;
 import express.type.typegraph.TypeData;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
@@ -14,12 +21,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.CompilationUnitFactory;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.reflect.declaration.CtCompilationUnitImpl;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 
 public class SpoonManager {
 
@@ -60,6 +61,7 @@ public class SpoonManager {
         launcher.getEnvironment().setComplianceLevel(config.subjectSrcJavaVersion);
         launcher.getEnvironment().setShouldCompile(false);
         launcher.getEnvironment().setAutoImports(false);
+        // launcher.getEnvironment().setPrettyPrintingMode(Environment.PRETTY_PRINTING_MODE.FULLYQUALIFIED);
         // launcher.getEnvironment().setPreserveLineNumbers(true);
         launcher.buildModel();
     }
@@ -109,7 +111,8 @@ public class SpoonManager {
         Map<String, String> sourceMap = new HashMap<>();
         List<CtType<?>> allTypes = launcher.getFactory().Type().getAll();
         for (CtType<?> type : allTypes) {
-            sourceMap.put(type.getQualifiedName(), getPrettyPrintedSourceCode(type));
+            if (TypeUtils.isUserDefinedType(type.getReference()))
+                sourceMap.put(type.getQualifiedName(), getPrettyPrintedSourceCode(type));
         }
         return sourceMap;
     }
