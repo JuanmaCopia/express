@@ -1,17 +1,23 @@
 package express.instrumentation;
 
+import java.util.List;
+import java.util.Set;
+
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
+import express.type.TypeUtils;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetStatement;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.visitor.filter.TypeFilter;
-
-import java.util.List;
-import java.util.Set;
 
 public class Instrumentation {
 
@@ -34,7 +40,7 @@ public class Instrumentation {
         CodeFactory codeFactory = SpoonFactory.getCodeFactory();
         List<CtVariable<?>> localVariableList = SpoonQueries.getLocalVariablesFromElement(method);
         for (CtVariable<?> variable : localVariableList) {
-            if (variable.getType().getQualifiedName().equals(SpoonManager.getConfig().subjectClassName)) {
+            if (variable.getType().isSubtypeOf(SpoonManager.getSubjectTypeData().getThisTypeReference())) {
                 CtCodeSnippetStatement statement = codeFactory.createCodeSnippetStatement(
                         "collector.ObjectCollector.saveObject(" + variable.getSimpleName() + ")");
                 method.getBody().addStatement(statement);

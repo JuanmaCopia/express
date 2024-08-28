@@ -2,7 +2,14 @@ package express.object;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ObjectHelper {
 
@@ -291,12 +298,10 @@ public class ObjectHelper {
             return;
         Class<?> clazz = object.getClass();
         // The object it is always collected
-        if (
-                TypeChecker.isString(clazz) ||
-                        TypeChecker.isBoxedPrimitive(clazz) ||
-                        !collected.add(object) ||
-                        !ObjectMutator.isMutableHeapClass(clazz)
-        )
+        if (TypeChecker.isString(clazz) ||
+                TypeChecker.isBoxedPrimitive(clazz) ||
+                !collected.add(object) ||
+                !ObjectMutator.isMutableHeapClass(clazz))
             return;
 
         if (TypeChecker.isUserDefinedClass(object.getClass())) {
@@ -370,7 +375,7 @@ public class ObjectHelper {
     public static Set<Object> filterObjectsByType(Collection<Object> objects, Class<?> type) {
         Set<Object> filtered = new HashSet<>();
         for (Object object : objects) {
-            if (object.getClass().equals(type)) {
+            if (type.isAssignableFrom(object.getClass())) {
                 filtered.add(object);
             }
         }

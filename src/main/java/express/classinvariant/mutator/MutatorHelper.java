@@ -1,18 +1,30 @@
 package express.classinvariant.mutator;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
 import express.classinvariant.mutator.template.ArrayTraversalTemplate;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonQueries;
 import express.type.typegraph.Path;
-import spoon.reflect.code.*;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.util.*;
 
 public class MutatorHelper {
 
@@ -25,14 +37,16 @@ public class MutatorHelper {
     }
 
     public static CtMethod<?> getMethodByName(CtClass<?> clazz, String methodNamePrefix) {
-        return clazz.getMethods().stream().filter(m -> m.getSimpleName().startsWith(methodNamePrefix)).findFirst().orElse(null);
+        return clazz.getMethods().stream().filter(m -> m.getSimpleName().startsWith(methodNamePrefix)).findFirst()
+                .orElse(null);
     }
 
     public static List<CtMethod<?>> getMethodsByName(CtClass<?> clazz, String methodNamePrefix) {
         return clazz.getMethods().stream().filter(m -> m.getSimpleName().startsWith(methodNamePrefix)).toList();
     }
 
-    public static CtVariable<?> handleVisitedSetVariable(CtBlock<?> methodBody, CtStatement statement, CtTypeReference<?> setSubtype) {
+    public static CtVariable<?> handleVisitedSetVariable(CtBlock<?> methodBody, CtStatement statement,
+            CtTypeReference<?> setSubtype) {
         CtVariable<?> setVar = pickVisitedSetVariable(methodBody, setSubtype);
         if (setVar != null)
             return setVar;
@@ -53,7 +67,6 @@ public class MutatorHelper {
         return setVar;
     }
 
-
     public static List<CtMethod<?>> getMutableMethods(CtClass<?> clazz) {
         return clazz.getMethods().stream().filter(MutatorHelper::isMutableMethod).toList();
     }
@@ -65,7 +78,6 @@ public class MutatorHelper {
     public static List<CtIf> getMutableIfs(CtMethod<?> method) {
         return method.getBody().getElements(MutatorHelper::isMutableIf);
     }
-
 
     public static List<CtIf> getMutableIfs(CtClass<?> ctClass) {
         return getMutableIfs(getMutableMethods(ctClass));
@@ -123,7 +135,8 @@ public class MutatorHelper {
     }
 
     public static boolean isReturnFalseStatement(CtStatement statement) {
-        return statement instanceof CtReturn<?> returnStatement && returnStatement.getReturnedExpression().toString().equals("false");
+        return statement instanceof CtReturn<?> returnStatement
+                && returnStatement.getReturnedExpression().toString().equals("false");
     }
 
     public static List<CtIf> getIfsWithVariableInCondition(CtBlock<?> block, CtVariable<?> var) {
@@ -165,17 +178,20 @@ public class MutatorHelper {
     }
 
     public static List<CtMethod<?>> getAllTraversalsOfReferenceObjects(CtClass<?> cls) {
-        List<CtMethod<?>> traversals = new LinkedList<>(MutatorHelper.getMethodsByName(cls, LocalVarHelper.TRAVERSAL_PREFIX));
-        List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(cls, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX).stream().filter(
-                ArrayTraversalTemplate::isReferenceArrayTraversal
-        ).toList();
+        List<CtMethod<?>> traversals = new LinkedList<>(
+                MutatorHelper.getMethodsByName(cls, LocalVarHelper.TRAVERSAL_PREFIX));
+        List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(cls, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX)
+                .stream().filter(
+                        ArrayTraversalTemplate::isReferenceArrayTraversal)
+                .toList();
 
         traversals.addAll(arrayTraversals);
         return traversals;
     }
 
     public static List<CtMethod<?>> getAllTraversals(CtClass<?> cls) {
-        List<CtMethod<?>> traversals = new LinkedList<>(MutatorHelper.getMethodsByName(cls, LocalVarHelper.TRAVERSAL_PREFIX));
+        List<CtMethod<?>> traversals = new LinkedList<>(
+                MutatorHelper.getMethodsByName(cls, LocalVarHelper.TRAVERSAL_PREFIX));
         List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(cls, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX);
         traversals.addAll(arrayTraversals);
         return traversals;
@@ -192,17 +208,16 @@ public class MutatorHelper {
         block.insertBegin(comment);
     }
 
-    public static Path trimPath(Path path) {
-        CtTypeReference<?> type = path.getTypeReference();
-        int i = 0;
-        for (CtVariable<?> field : path.getFieldChain()) {
-            i++;
-            if (field.getType().getQualifiedName().equals(type.getQualifiedName()) && i < path.size()) {
-                return path.subPath(i);
-            }
-        }
-        return path;
-    }
-
+//    public static Path trimPath(Path path) {
+//        CtTypeReference<?> type = path.getTypeReference();
+//        int i = 0;
+//        for (CtVariable<?> field : path.getFieldChain()) {
+//            i++;
+//            if (field.getType().isSubtypeOf(type) && i < path.size()) {
+//                return path.subPath(i);
+//            }
+//        }
+//        return path;
+//    }
 
 }

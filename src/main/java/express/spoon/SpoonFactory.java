@@ -1,6 +1,7 @@
 package express.spoon;
 
 import express.classinvariant.mutator.LocalVarHelper;
+import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import org.apache.commons.lang3.ClassUtils;
 import spoon.Launcher;
@@ -326,39 +327,19 @@ public class SpoonFactory {
 
     public static CtTypeReference<?> createTypeWithSubtypeReference(Class<?> type, CtTypeReference<?> subtype) {
         CtTypeReference<?> resultType = typeFactory.createReference(type);
-        resultType.addActualTypeArgument(convertToWildcard(subtype));
+        resultType.addActualTypeArgument(TypeUtils.convertGenericsToWildcard(subtype));
         return resultType;
     }
 
-    public static CtTypeReference<?> convertToWildcard(CtTypeReference<?> typeRef) {
-        List<CtTypeReference<?>> originalTypeArguments = typeRef.getActualTypeArguments();
-        if (originalTypeArguments.isEmpty()) {
-            if (typeRef.isGenerics())
-                return coreFactory.createWildcardReference();
-            return typeRef;
-        }
-
-        // Create wildcard references for each type argument
-        List<CtWildcardReference> wildcardArguments = originalTypeArguments.stream()
-                .map(arg -> coreFactory.createWildcardReference())
-                .collect(Collectors.toList());
-
-        // Create a copy of the original type reference
-        CtTypeReference<?> wildcardTypeRef = typeRef.clone();
-
-        wildcardTypeRef.setActualTypeArguments(wildcardArguments);
-        return wildcardTypeRef;
-    }
-
-    public static CtTypeReference<?> convertToRawType(CtTypeReference<?> typeRef) {
-        // Create a copy of the original type reference
-        CtTypeReference<?> rawTypeRef = typeRef.clone();
-
-        // Clear the actual type arguments to convert to raw type
-        rawTypeRef.getActualTypeArguments().clear();
-
-        return rawTypeRef;
-    }
+//    public static CtTypeReference<?> convertToRawType(CtTypeReference<?> typeRef) {
+//        // Create a copy of the original type reference
+//        CtTypeReference<?> rawTypeRef = typeRef.clone();
+//
+//        // Clear the actual type arguments to convert to raw type
+//        rawTypeRef.getActualTypeArguments().clear();
+//
+//        return rawTypeRef;
+//    }
 
 //    public static CtTypeReference<?> createTypeWithSubtypeReference(Class<?> type, CtTypeReference<?> subtype) {
 //        CtTypeReference<?> resultType = typeFactory.createReference(type);
@@ -400,16 +381,13 @@ public class SpoonFactory {
         return parameter;
     }
 
-    public static CtIf createVisitedCheck(CtVariable<?> setVariable, Object argument, boolean negate, boolean useBreak) {
+    public static CtIf createVisitedCheck(CtVariable<?> setVariable, Object argument, boolean negate) {
         CtExpression<?> condition = SpoonFactory.createAddToSetInvocation(setVariable, argument);
         if (negate)
             condition = SpoonFactory.createUnaryExpression(condition, UnaryOperatorKind.NOT);
 
         CtStatement thenBlock;
-        if (useBreak)
-            thenBlock = SpoonFactory.createBreakStatement();
-        else
-            thenBlock = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
+        thenBlock = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
 
         return SpoonFactory.createIfThenStatement((CtExpression<Boolean>) condition, thenBlock);
     }
@@ -475,64 +453,12 @@ public class SpoonFactory {
         return coreFactory.createBreak();
     }
 
-    public static List<CtVariableAccess> createVariableWrites(
-            CtVariable<?> var,
-            CtTypeReference<?> typeRef,
-            boolean includeVar) {
-        return createVariableAccesses(
-                var,
-                typeRef,
-                includeVar,
-                SpoonFactory::createVariableWrite,
-                SpoonFactory::createFieldWrite);
-    }
 
-    /**
-     * Creates a list of variable accesses of the given type from the given
-     * variable.
-     *
-     * @param var               the variable from which to consider possible reads.
-     * @param typeRef           the type of the required variable read
-     * @param createFieldAccess the function to create the variable access
-     * @return a list of variable accesses of the given type
-     */
-    public static List<CtVariableAccess> createVariableAccesses(
-            CtVariable<?> var,
-            CtTypeReference<?> typeRef,
-            boolean includeVar,
-            Function<CtVariable<?>, CtVariableAccess> createVariableAccess,
-            BiFunction<CtVariable<?>, CtVariable<?>, CtVariableAccess> createFieldAccess) {
-        List<CtVariableAccess> varAccesses = new ArrayList<>();
-        if (includeVar && var.getType().isSubtypeOf(typeRef))
-            varAccesses.add(createVariableAccess.apply(var));
-
-        varAccesses.addAll(SpoonQueries.getFieldsOfType(var, typeRef).stream().map(
-                field -> createFieldAccess.apply(var, field)).toList());
-        return varAccesses;
-    }
-
-    public static CtFieldWrite<?> createFieldWrite(CtVariable<?> variable, CtVariable<?> field) {
-        return createFieldWrite(createVariableRead(variable), field);
-    }
-
-    public static CtFieldWrite<?> createFieldWrite(CtExpression<?> variable, CtVariable<?> field) {
+    public static CtFieldWrite<?> createVariableWrite(CtExpression<?> variable, CtVariable<?> field) {
         CtFieldWrite fieldWrite = coreFactory.createFieldWrite();
         fieldWrite.setTarget(variable);
         fieldWrite.setVariable(field.getReference());
         return fieldWrite;
-    }
-
-    public static List<CtVariableAccess> createVariableReads(
-            CtVariable<?> var,
-            CtTypeReference<?> typeRef,
-            boolean includeVar) {
-        return createVariableAccesses(
-                var,
-                typeRef,
-                includeVar,
-                SpoonFactory::createVariableRead,
-
-                SpoonFactory::createFieldRead);
     }
 
     public static CtFieldRead<?> createFieldRead(CtVariable<?> variable, CtVariable<?> field) {

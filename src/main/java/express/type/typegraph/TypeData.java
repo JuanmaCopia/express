@@ -172,8 +172,8 @@ public class TypeData {
         return new LinkedList<>(userDefinedTypes);
     }
 
-    public List<Path> getSimplePathsOfType(CtTypeReference<?> type) {
-        return simplePaths.stream().filter(p -> p.getTypeReference().equals(type)).toList();
+    public List<Path> getAssignableSimplePaths(CtTypeReference<?> type) {
+        return simplePaths.stream().filter(p -> p.getTypeReference().isSubtypeOf(type)).toList();
     }
 
 }

@@ -35,15 +35,20 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
         traversal = Utils.getRandomElement(traversals);
         CtVariable<?> initialElement = SpoonQueries.getTraversedElementParameter(traversal);
 
+        //System.err.println("\nInvokeFieldTraversalMutator: initialElement: " + initialElement.toString());
+
         List<Path> pathCandidates = TypeUtils.filterPathsByType(
                 SpoonManager.getSubjectTypeData().getSimplePaths(),
                 initialElement.getType()
-        ).stream().toList();
+        ).stream().filter(TypeUtils::hasOnlyOneCyclicField).toList();
 
-        if (pathCandidates.isEmpty())
+        if (pathCandidates.isEmpty()) {
+            //System.err.println("\nInvokeFieldTraversalMutator: pathCandidates is empty");
             return false;
+        }
 
         Path chosenPath = Utils.getRandomPath(pathCandidates);
+        //chosenPath = MutatorHelper.trimPath(chosenPath);
 
         targetBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
         CtVariable<?> formalParameter = SpoonQueries.getTraversalSetParameter(traversal);

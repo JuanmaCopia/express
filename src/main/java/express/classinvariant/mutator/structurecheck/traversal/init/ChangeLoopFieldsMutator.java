@@ -37,7 +37,7 @@ public class ChangeLoopFieldsMutator implements ClassInvariantMutator {
         List<CtVariable<?>> loopFields = TypeUtils.getCyclicFieldsOfType(traversedNode);
         List<CtVariable<?>> newLoopFields = MutatorHelper.selectRandomVariablesFromList(loopFields);
 
-        List<CtIf> newIfs = WorklistTraversalTemplate.createIfsForLoopFields(newLoopFields, currentVar, visitedSet, worklist, RandomUtils.nextBoolean());
+        List<CtIf> newIfs = WorklistTraversalTemplate.createIfsForLoopFields(newLoopFields, currentVar, visitedSet, worklist);
 
         CtBlock<?> traversalBody = traversal.getBody();
 

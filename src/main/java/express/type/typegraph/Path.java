@@ -47,20 +47,6 @@ public class Path {
         return getLast().getType();
     }
 
-    public boolean isPrimitiveOrBoxedPrimitive() {
-        return TypeUtils.isPrimitiveOrBoxedPrimitiveType(getTypeReference());
-    }
-
-    public boolean isSimple() {
-        Set<CtVariable<?>> visited = new HashSet<>();
-        for (CtVariable<?> field : fields) {
-            if (!visited.add(field)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public boolean isEmpty() {
         return fields.isEmpty();
     }
@@ -75,15 +61,6 @@ public class Path {
         }
         return Pair.of(new Path(new LinkedList<>(fields.subList(0, index))),
                 new Path(new LinkedList<>(fields.subList(index, fields.size()))));
-    }
-
-    public Pair<Path, Path> splitByType(CtTypeReference<?> type) {
-        for (int i = 0; i < fields.size(); i++) {
-            if (fields.get(i).getType().getQualifiedName().equals(type.getQualifiedName())) {
-                return split(i + 1);
-            }
-        }
-        throw new IllegalArgumentException("Type not found in path");
     }
 
     public Path subPath(int start, int end) {
@@ -131,18 +108,6 @@ public class Path {
 
     public CtVariableRead<?> getVariableRead() {
         return SpoonFactory.createFieldRead(fields);
-    }
-
-    public CtVariableRead<?> getVariableReadOwner() {
-        if (fields.size() <= 1)
-            throw new IllegalArgumentException("Path has no owner");
-        return SpoonFactory.createFieldRead(new LinkedList(fields.subList(0, fields.size() - 1)));
-    }
-
-    public Path getParentPath() {
-        if (fields.size() <= 1)
-            throw new IllegalArgumentException("Path has no parent");
-        return new Path(new LinkedList<>(fields.subList(0, fields.size() - 1)));
     }
 
     public Path clone() {

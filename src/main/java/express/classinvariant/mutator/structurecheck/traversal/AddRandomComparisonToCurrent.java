@@ -1,5 +1,7 @@
 package express.classinvariant.mutator.structurecheck.traversal;
 
+import java.util.List;
+
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
@@ -7,13 +9,18 @@ import express.classinvariant.state.ClassInvariantState;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
+import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import express.type.typegraph.TypeGraph;
 import express.util.Utils;
-import spoon.reflect.code.*;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtMethod;
-
-import java.util.List;
 
 public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
 
@@ -37,8 +44,8 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
         List<Path> candidates = typeGraph
                 .computeSimplePathsForAlternativeVar(currentDeclaration)
                 .stream()
-                .filter(p -> p.size() > size &&
-                        currentDeclaration.getType().getQualifiedName().equals(p.getTypeReference().getQualifiedName()))
+                .filter(p -> p.size() > size
+                        && TypeUtils.areRelated(currentDeclaration.getType(), p.getTypeReference()))
                 .toList();
         if (candidates.isEmpty())
             return false;

@@ -1,32 +1,23 @@
 package express.type;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import express.type.typegraph.Path;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
 
-import java.util.*;
-import java.util.function.Predicate;
-
 public class TypeUtils {
-
-    public static List<CtVariable<?>> getFields(CtTypeReference<?> typeRef) {
-        CtType<?> declaration = typeRef.getTypeDeclaration();
-        if (declaration == null)
-            throw new IllegalArgumentException("Type is not declared in the current project");
-
-        return new ArrayList<>(declaration.getFields());
-    }
-
-    public static List<CtVariable<?>> getReferenceFields(CtTypeReference<?> typeRef) {
-        return new LinkedList<>(filterFields(getFields(typeRef), TypeUtils::isReferenceType));
-    }
-
-    public static boolean hasReferenceFields(CtTypeReference<?> type) {
-        return getFields(type).stream().anyMatch(f -> isReferenceType(f.getType()));
-    }
 
     public static boolean isUserDefinedType(CtVariable<?> var) {
         return isUserDefinedType(var.getType());
@@ -41,7 +32,7 @@ public class TypeUtils {
     }
 
     public static Set<CtTypeReference<?>> filterTypes(Collection<CtTypeReference<?>> typeRefs,
-                                                      Predicate<CtTypeReference<?>> predicate) {
+            Predicate<CtTypeReference<?>> predicate) {
         Set<CtTypeReference<?>> resultTypes = new HashSet<>();
         for (CtTypeReference<?> typeRef : typeRefs) {
             if (predicate.test(typeRef)) {
@@ -52,7 +43,7 @@ public class TypeUtils {
     }
 
     public static Set<CtVariable<?>> filterFields(Collection<CtVariable<?>> fields,
-                                                  Predicate<CtTypeReference<?>> predicate) {
+            Predicate<CtTypeReference<?>> predicate) {
         Set<CtVariable<?>> resultFields = new HashSet<>();
         for (CtVariable<?> field : fields) {
             if (predicate.test(field.getType())) {
@@ -77,7 +68,7 @@ public class TypeUtils {
         Set<Path> resultPaths = new HashSet<>();
         for (Path path : paths) {
             CtTypeReference<?> pathType = path.getTypeReference();
-            if (pathType.getQualifiedName().equals(type.getQualifiedName())) {
+            if (pathType.isSubtypeOf(type)) {
                 resultPaths.add(path);
             }
         }
@@ -129,37 +120,25 @@ public class TypeUtils {
     }
 
     public static boolean isCyclicType(CtTypeReference<?> typeRef) {
-        CtType<?> type = typeRef.getTypeDeclaration();
-        if (type == null)
+        if (typeRef == null || !isUserDefinedType(typeRef))
             return false;
+        CtType<?> typeDeclaration = typeRef.getTypeDeclaration();
 
-        for (CtVariable<?> field : type.getFields()) {
-            if (field.getType().getQualifiedName().equals(typeRef.getQualifiedName()))
+        for (CtVariable<?> field : getAllFields(typeDeclaration)) {
+            if (field.getType().isSubtypeOf(typeRef))
                 return true;
         }
         return false;
     }
 
-    public static List<CtVariable<?>> getFieldsOfType(CtTypeReference<?> type) {
-        if (type == null)
-            throw new IllegalArgumentException("Type is null");
-        CtType<?> typeDeclaration = type.getTypeDeclaration();
-        if (typeDeclaration == null)
-            throw new IllegalArgumentException("Type is not declared in the current project");
+    public static List<CtVariable<?>> getCyclicFieldsOfType(CtTypeReference<?> typeRef) {
+        if (typeRef == null || !isUserDefinedType(typeRef))
+            throw new IllegalArgumentException("Type is null or not user-defined");
 
-        return new ArrayList<>(typeDeclaration.getFields());
-    }
-
-    public static List<CtVariable<?>> getCyclicFieldsOfType(CtTypeReference<?> type) {
-        if (type == null)
-            throw new IllegalArgumentException("Type is null");
-        CtType<?> typeDeclaration = type.getTypeDeclaration();
-        if (typeDeclaration == null)
-            throw new IllegalArgumentException("Type is not declared in the current project");
-
+        CtType<?> typeDeclaration = typeRef.getTypeDeclaration();
         List<CtVariable<?>> cyclicFields = new ArrayList<>();
-        for (CtVariable<?> field : typeDeclaration.getFields()) {
-            if (field.getType().getQualifiedName().equals(type.getQualifiedName()))
+        for (CtVariable<?> field :  getAllFields(typeDeclaration)) {
+            if (field.getType().isSubtypeOf(typeRef))
                 cyclicFields.add(field);
         }
         return cyclicFields;
@@ -194,7 +173,7 @@ public class TypeUtils {
         return false;
     }
 
-    public static CtTypeReference<?> getSubType(CtTypeReference<?> typeRef, int subtypeIndex) {
+    public static CtTypeReference<?> getActualTypeArgument(CtTypeReference<?> typeRef, int subtypeIndex) {
         return typeRef.getActualTypeArguments().get(subtypeIndex);
     }
 
@@ -202,9 +181,102 @@ public class TypeUtils {
         return typeRef.getComponentType();
     }
 
+    public static boolean isAssignableArray(CtArrayTypeReference<?> array1, CtArrayTypeReference<?> array2) {
+        CtTypeReference<?> componentType1 = getComponentType(array1);
+        int count1 = 0;
+        while (componentType1.isArray()) {
+            count1++;
+            componentType1 = getComponentType((CtArrayTypeReference<?>) componentType1);
+        }
+
+        CtTypeReference<?> componentType2 = getComponentType(array2);
+        int count2 = 0;
+        while (componentType2.isArray()) {
+            count2++;
+            componentType2 = getComponentType((CtArrayTypeReference<?>) componentType2);
+        }
+
+        return count1 == count2 && componentType2.isSubtypeOf(componentType1);
+    }
+
     public static boolean isUserDefinedArrayType(CtTypeReference<?> a) {
         if (!a.isArray())
             return false;
         return isUserDefinedType(getComponentType((CtArrayTypeReference<?>) a));
+    }
+
+    public static boolean areRelated(CtTypeReference<?> a, CtTypeReference<?> b) {
+        return a.isSubtypeOf(b) || b.isSubtypeOf(a);
+    }
+
+    // public static boolean areEquals(CtTypeReference<?> a, CtTypeReference<?> b) {
+    // CtTypeReference<?> aWildcard = convertGenericsToWildcard(a);
+    // CtTypeReference<?> bWildcard = convertGenericsToWildcard(b);
+    // return aWildcard.getQualifiedName().equals(bWildcard.getQualifiedName());
+    // }
+
+    public static CtTypeReference<?> convertGenericsToWildcard(CtTypeReference<?> typeRef) {
+        List<CtTypeReference<?>> originalTypeArguments = typeRef.getActualTypeArguments();
+        if (originalTypeArguments.isEmpty()) {
+            if (typeRef.isGenerics())
+                return typeRef.getFactory().Core().createWildcardReference();
+            return typeRef;
+        }
+
+        // Create wildcard references for each type argument
+        List<CtWildcardReference> wildcardArguments = originalTypeArguments.stream()
+                .map(arg -> typeRef.getFactory().Core().createWildcardReference())
+                .collect(Collectors.toList());
+
+        // Create a copy of the original type reference
+        CtTypeReference<?> wildcardTypeRef = typeRef.clone();
+
+        wildcardTypeRef.setActualTypeArguments(wildcardArguments);
+        return wildcardTypeRef;
+    }
+
+    public static Set<CtField<?>> getAllFields(CtTypeReference<?> type) {
+        if (type == null || !isUserDefinedType(type))
+            throw new IllegalArgumentException("Type is null or not user-defined");
+        return getAllFields(type.getTypeDeclaration());
+    }
+
+    public static Set<CtField<?>> getAllFields(CtType<?> type) {
+        Set<CtField<?>> fields = new HashSet<>();
+
+        // Collect fields from the current type
+        fields.addAll(type.getFields());
+
+        // Traverse the superclasses and collect accessible fields
+        CtTypeReference<?> superClassRef = type.getSuperclass();
+        while (superClassRef != null) {
+            CtType<?> superClass = superClassRef.getTypeDeclaration();
+            if (superClass != null) {
+                for (CtField<?> field : superClass.getFields()) {
+                    // Add the field if it's public or protected
+                    if (field.isPublic() || field.isProtected()) {
+                        fields.add(field);
+                    }
+                }
+                superClassRef = superClass.getSuperclass();
+            } else {
+                break;
+            }
+        }
+
+        return fields;
+    }
+
+    public static boolean hasOnlyOneCyclicField(Path path) {
+        List<CtVariable<?>> fields = path.getFieldChain();
+        int count = 0;
+        for (CtVariable<?> field : fields) {
+            if (isCyclicType(field.getType())) {
+                if (++count > 1) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

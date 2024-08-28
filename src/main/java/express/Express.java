@@ -14,7 +14,6 @@ import express.classinvariant.mutator.structurecheck.traversal.array.CheckVisite
 import express.classinvariant.mutator.structurecheck.traversal.array.DeclareArrayTraversalMutator;
 import express.classinvariant.mutator.structurecheck.traversal.array.InvokeArrayTraversalMutator;
 import express.classinvariant.mutator.structurecheck.traversal.array.InvokeFieldTraversalOnArrayTraversalMutator;
-import express.classinvariant.mutator.structurecheck.traversal.init.ChangeFirstElementMutator;
 import express.classinvariant.mutator.structurecheck.traversal.init.ChangeLoopFieldsMutator;
 import express.classinvariant.mutator.structurecheck.traversal.init.DeclareWorklistTraversalMutator;
 import express.classinvariant.mutator.structurecheck.traversal.init.InvokeFieldTraversalMutator;
@@ -38,7 +37,20 @@ public class Express {
     public Express(Config config) {
         this.config = config;
         SpoonManager.initialize(config);
+        printObjectGenerationStart();
         ObjectGenerator.generateObjects();
+        printObjectsInformation();
+    }
+
+    private void printObjectGenerationStart() {
+        System.out.println("\nGenerating Objects...\n");
+    }
+
+    private void printObjectsInformation() {
+        System.out.println("\n--------------- Objects Information -------------- ");
+        System.out.println("Positive Objects: " + ObjectGenerator.positiveObjects);
+        System.out.println("Negative Heap Objects: " + ObjectGenerator.negativeHeapObjects);
+        System.out.println("Negative Primitive Objects: " + ObjectGenerator.negativePrimitiveObjects);
     }
 
     public void run() {
@@ -68,8 +80,6 @@ public class Express {
         mutators.add(new RemoveTraversalMutator());
         // Traversal Modification Mutators
         mutators.add(new ChangeLoopFieldsMutator());
-        mutators.add(new ChangeFirstElementMutator());
-        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
         // Traversal Invocation Mutators
         mutators.add(new InvokeArrayTraversalMutator());
         mutators.add(new InvokeFieldTraversalMutator());
@@ -90,7 +100,7 @@ public class Express {
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         mutators.add(new RemoveCheckMutator());
         // Structure Check Mutators
-        //mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
+        mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
         mutators.add(new AddNullCompToTraversalMutator());
         mutators.add(new AddRandomComparisonToCurrent());
         mutators.add(new DeclareVisitedSetMutator());

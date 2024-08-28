@@ -48,7 +48,7 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         targetBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
 
         CtVariable<?> formalParameter = SpoonQueries.getTraversalSetParameter(traversal);
-        CtTypeReference<?> setSubType = TypeUtils.getSubType(formalParameter.getType(), 0);
+        CtTypeReference<?> setSubType = TypeUtils.getActualTypeArgument(formalParameter.getType(), 0);
         setVar = SpoonQueries.searchVisitedSetInBlock(targetBody, setSubType);
         if (setVar == null) {
             mustDeclareSet = true;

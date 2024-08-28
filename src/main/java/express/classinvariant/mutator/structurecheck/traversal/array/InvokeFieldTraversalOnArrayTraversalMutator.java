@@ -44,7 +44,8 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
 
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream().filter(
-                        p -> p.getTypeReference().isSubtypeOf(traversedElementType)
+                        p -> p.getTypeReference().isSubtypeOf(traversedElementType) &&
+                                TypeUtils.hasOnlyOneCyclicField(p)
                 ).toList();
         if (candidates.isEmpty())
             return false;
@@ -52,7 +53,7 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
         Path chosenPath = Utils.getRandomPath(candidates);
 
         CtVariable<?> formalParameter = SpoonQueries.getTraversalSetParameter(cyclicFieldTraversal);
-        CtTypeReference<?> setSubType = TypeUtils.getSubType(formalParameter.getType(), 0);
+        CtTypeReference<?> setSubType = TypeUtils.getActualTypeArgument(formalParameter.getType(), 0);
         setVar = SpoonQueries.searchVisitedSetInBlock(arrayTraversal.getBody(), setSubType);
         if (setVar == null) {
             mustDeclareSet = true;

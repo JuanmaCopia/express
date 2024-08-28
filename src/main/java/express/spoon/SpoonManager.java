@@ -45,9 +45,10 @@ public class SpoonManager {
     public static void initialize(Config conf) {
         config = conf;
         initializeLauncher();
+        initializeFactories();
         initializeSubjectData();
         initializeOutputManager();
-        initializeFactories();
+        initializePredicateManager();
         performInstrumentation();
         initializeCompiler();
         compileModel();
@@ -81,6 +82,9 @@ public class SpoonManager {
         cuFactory = launcher.getFactory().CompilationUnit();
         prettyPrinter = launcher.createPrettyPrinter();
         SpoonFactory.initialize(launcher);
+    }
+
+    private static void initializePredicateManager() {
         PredicateManager.initialize(config, subjectTypeData);
     }
 
