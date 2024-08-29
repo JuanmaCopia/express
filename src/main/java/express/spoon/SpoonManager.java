@@ -104,10 +104,10 @@ public class SpoonManager {
 
     private static void compileModel() {
         if (!inMemoryCompiler.compile()) {
-            logger.severe("Compilation failed");
+            System.err.println("Compilation failed!");
             throw new RuntimeException("Compilation failed");
         } else {
-            logger.info("Compilation successful");
+            System.out.println("Compilation successful!");
         }
     }
 

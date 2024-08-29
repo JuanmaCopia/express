@@ -54,7 +54,7 @@ public class Express {
     }
 
     private void printObjectGenerationStart() {
-        System.out.println("\nGenerating Objects...\n");
+        System.out.println("Generating Objects...\n");
     }
 
     private void printObjectsInformation() {
