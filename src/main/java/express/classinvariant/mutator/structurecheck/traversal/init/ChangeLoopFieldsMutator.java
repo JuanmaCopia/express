@@ -8,6 +8,7 @@ import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonQueries;
 import express.type.TypeUtils;
+import express.util.Utils;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
@@ -19,17 +20,26 @@ import java.util.List;
 
 public class ChangeLoopFieldsMutator implements ClassInvariantMutator {
 
+    CtVariable<?> worklist;
+    CtMethod<?> traversal;
+
     public boolean isApplicable(ClassInvariantState state) {
         List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
-        return !traversals.isEmpty();
+        if (traversals.isEmpty()) {
+            return false;
+        }
+
+        traversal = Utils.getRandomElement(traversals);
+        worklist = SpoonQueries.getTraversalWorklistVariable(traversal);
+        if (worklist == null) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public void mutate(ClassInvariantState state) {
-        List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
-        CtMethod<?> traversal = traversals.get(RandomUtils.nextInt(traversals.size()));
-
-        CtVariable<?> worklist = SpoonQueries.getTraversalWorklistVariable(traversal);
         CtVariable<?> visitedSet = SpoonQueries.getTraversalSetParameter(traversal);
         CtVariable<?> currentVar = SpoonQueries.getTraversalCurrentVariable(traversal);
         CtTypeReference<?> traversedNode = currentVar.getType();

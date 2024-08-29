@@ -69,7 +69,7 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
 
         CtExpression<Boolean> clause1 = SpoonFactory.generateAndConcatenationOfNullComparisons(chosenPath, BinaryOperatorKind.NE);
         CtExpression<Boolean> clause2 = SpoonFactory.negateExpresion(traversalCall);
-        condition = (CtExpression<Boolean>) SpoonFactory.createBinaryExpression(clause1, clause2, BinaryOperatorKind.AND);
+        condition = SpoonFactory.createBinaryExpression(clause1, clause2, BinaryOperatorKind.AND);
 
         return !SpoonQueries.checkAlreadyExistSimple(condition, arrayTraversal.getBody());
     }

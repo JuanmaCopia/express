@@ -279,4 +279,9 @@ public class TypeUtils {
         }
         return true;
     }
+
+    public static boolean hasMultipleLoopFields(CtTypeReference<?> type) {
+        List<CtVariable<?>> loopFields = TypeUtils.getCyclicFieldsOfType(type);
+        return loopFields.size() > 1;
+    }
 }

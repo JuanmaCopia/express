@@ -339,7 +339,7 @@ public class SpoonFactory {
         return expression;
     }
 
-    public static CtExpression<?> createBinaryExpression(
+    public static <T> CtExpression<T> createBinaryExpression(
             Object varLeft,
             Object varRight,
             BinaryOperatorKind op) {
@@ -349,9 +349,9 @@ public class SpoonFactory {
         return createBinaryExpression(left, right, op);
     }
 
-    private static CtExpression<?> createBinaryExpression(CtExpression<?> left, CtExpression<?> right,
+    private static <T> CtExpression<T> createBinaryExpression(CtExpression<?> left, CtExpression<?> right,
                                                           BinaryOperatorKind op) {
-        CtBinaryOperator<?> expression = coreFactory.createBinaryOperator();
+        CtBinaryOperator<T> expression = coreFactory.createBinaryOperator();
         expression.setLeftHandOperand(left);
         expression.setRightHandOperand(right);
         expression.setKind(op);
@@ -432,6 +432,20 @@ public class SpoonFactory {
         return SpoonFactory.createIfThenStatement((CtExpression<Boolean>) condition, thenBlock);
     }
 
+    public static CtIf createVisitedCheck(CtVariable<?> setVariable, Object argument, boolean negate, boolean useBreak) {
+        CtExpression<?> condition = SpoonFactory.createAddToSetInvocation(setVariable, argument);
+        if (negate)
+            condition = SpoonFactory.createUnaryExpression(condition, UnaryOperatorKind.NOT);
+
+        CtStatement thenBlock;
+        if (useBreak)
+            thenBlock = SpoonFactory.createBreakStatement();
+        else
+            thenBlock = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
+
+        return SpoonFactory.createIfThenStatement((CtExpression<Boolean>) condition, thenBlock);
+    }
+
     public static CtExpression<Boolean> negateExpresion(CtExpression<Boolean> expression) {
         return (CtExpression<Boolean>) createUnaryExpression(expression, UnaryOperatorKind.NOT);
     }
@@ -447,8 +461,7 @@ public class SpoonFactory {
         if (minus > 0)
             sizeMinus = createBinaryExpression(sizeInvocation, minus, BinaryOperatorKind.MINUS);
 
-        CtBinaryOperator<Boolean> condition = (CtBinaryOperator<Boolean>) SpoonFactory
-                .createBinaryExpression(sizeMinus, integerField, BinaryOperatorKind.NE);
+        CtExpression<Boolean> condition = SpoonFactory.createBinaryExpression(sizeMinus, integerField, BinaryOperatorKind.NE);
         CtReturn<?> returnStatement = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
         return SpoonFactory.createIfThenStatement(condition, returnStatement);
     }
@@ -522,7 +535,6 @@ public class SpoonFactory {
         return generateAndConcatenationOfNullComparisons(path, operator);
     }
 
-
     public static CtExpression<Boolean> generateAndConcatenationOfNullComparisons(Path path, BinaryOperatorKind operator) {
         return conjunction(generateNullComparisonClauses(path, operator));
     }
@@ -568,7 +580,7 @@ public class SpoonFactory {
 
         CtExpression<Boolean> result = clauses.get(0);
         for (int i = 1; i < clauses.size(); i++) {
-            result = (CtExpression<Boolean>) createBinaryExpression(result, clauses.get(i), BinaryOperatorKind.OR);
+            result = createBinaryExpression(result, clauses.get(i), BinaryOperatorKind.OR);
         }
         return result;
     }
@@ -582,7 +594,7 @@ public class SpoonFactory {
 
         CtExpression<Boolean> result = clauses.get(0);
         for (int i = 1; i < clauses.size(); i++) {
-            result = (CtExpression<Boolean>) createBinaryExpression(result, clauses.get(i), BinaryOperatorKind.AND);
+            result = createBinaryExpression(result, clauses.get(i), BinaryOperatorKind.AND);
         }
         return result;
     }
@@ -593,23 +605,23 @@ public class SpoonFactory {
 
     public static CtExpression<Boolean> createNullComparisonClause(CtVariableRead<?> varRead) {
         BinaryOperatorKind operator = RandomUtils.nextBoolean() ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE;
-        return (CtExpression<Boolean>) createBinaryExpression(varRead, parseToExpression(null), operator);
+        return createBinaryExpression(varRead, parseToExpression(null), operator);
     }
 
     public static CtExpression<Boolean> createNullComparisonClause(CtVariableRead<?> varRead, BinaryOperatorKind operator) {
-        return (CtExpression<Boolean>) createBinaryExpression(varRead, parseToExpression(null), operator);
+        return createBinaryExpression(varRead, parseToExpression(null), operator);
     }
 
     public static CtExpression<Boolean> createNullComparisonClause(CtVariable<?> varRead, BinaryOperatorKind operator) {
-        return (CtExpression<Boolean>) createBinaryExpression(createVariableRead(varRead), parseToExpression(null), operator);
+        return createBinaryExpression(createVariableRead(varRead), parseToExpression(null), operator);
     }
 
     public static CtExpression<Boolean> createNotEqualComparisonClause(CtVariableRead<?> varRead, CtVariableRead<?> varRead2) {
-        return (CtExpression<Boolean>) createBinaryExpression(varRead, varRead2, BinaryOperatorKind.NE);
+        return createBinaryExpression(varRead, varRead2, BinaryOperatorKind.NE);
     }
 
     public static CtExpression<Boolean> createBooleanBinaryExpression(Object left, Object right, BinaryOperatorKind operator) {
-        return (CtExpression<Boolean>) createBinaryExpression(left, right, operator);
+        return createBinaryExpression(left, right, operator);
     }
 
 

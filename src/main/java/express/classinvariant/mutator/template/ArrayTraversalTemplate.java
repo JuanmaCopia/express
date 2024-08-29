@@ -101,7 +101,7 @@ public class ArrayTraversalTemplate {
         lengthFieldRead.setTarget(arrayRead);
 
         // Create the condition: i < array.length
-        CtBinaryOperator<Boolean> condition = (CtBinaryOperator<Boolean>) SpoonFactory.createBinaryExpression(
+        CtExpression<Boolean> condition = SpoonFactory.createBinaryExpression(
                 init,
                 lengthFieldRead,
                 BinaryOperatorKind.LT

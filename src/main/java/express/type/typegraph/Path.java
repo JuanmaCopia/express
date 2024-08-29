@@ -74,8 +74,8 @@ public class Path {
         return subPath(0, end);
     }
 
-    public void add(CtVariable<?> newFirst) {
-        fields.add(newFirst);
+    public void add(CtVariable<?> newField) {
+        fields.add(newField);
     }
 
     public CtVariable<?> removeLast() {

@@ -28,6 +28,7 @@ import express.classinvariant.mutator.structurecheck.traversal.array.DeclareArra
 import express.classinvariant.mutator.structurecheck.traversal.array.InvokeArrayTraversalMutator;
 import express.classinvariant.mutator.structurecheck.traversal.array.InvokeFieldTraversalOnArrayTraversalMutator;
 import express.classinvariant.mutator.structurecheck.traversal.init.ChangeLoopFieldsMutator;
+import express.classinvariant.mutator.structurecheck.traversal.init.DeclareSimpleTraversalMutator;
 import express.classinvariant.mutator.structurecheck.traversal.init.DeclareWorklistTraversalMutator;
 import express.classinvariant.mutator.structurecheck.traversal.init.InvokeFieldTraversalMutator;
 import express.classinvariant.problem.ClassInvariantProblem;
@@ -86,6 +87,7 @@ public class Express {
         mutators.add(new RemoveIfInitialCheckMutator());
         // Traversal Declaration Mutators
         mutators.add(new DeclareWorklistTraversalMutator());
+        mutators.add(new DeclareSimpleTraversalMutator());
         mutators.add(new DeclareArrayTraversalMutator());
         mutators.add(new RemoveTraversalMutator());
         // Traversal Modification Mutators

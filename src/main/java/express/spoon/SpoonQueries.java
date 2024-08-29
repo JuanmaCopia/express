@@ -154,8 +154,10 @@ public class SpoonQueries {
     }
 
     public static CtVariable<?> getTraversalWorklistVariable(CtMethod<?> traversal) {
-        return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var
-                && var.getSimpleName().startsWith(LocalVarHelper.WORKLIST_VAR_NAME)).get(0);
+        List<CtLocalVariable<?>> localVars = traversal.getBody().getElements(var -> var.getSimpleName().startsWith(LocalVarHelper.WORKLIST_VAR_NAME));
+        if (localVars.isEmpty())
+            return null;
+        return localVars.get(0);
     }
 
     public static CtVariable<?> getTraversalCurrentVariable(CtMethod<?> traversal) {
