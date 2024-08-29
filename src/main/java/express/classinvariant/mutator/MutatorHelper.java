@@ -62,7 +62,7 @@ public class MutatorHelper {
     }
 
     public static CtVariable<?> declareVisitedSetVariable(CtStatement statement, CtTypeReference<?> setSubtype) {
-        CtVariable<?> setVar = SpoonFactory.createVisitedSetDeclaration(setSubtype);
+        CtVariable<?> setVar = SpoonFactory.createVisitedIdentitySetDeclaration(setSubtype);
         statement.insertBefore((CtStatement) setVar);
         return setVar;
     }

@@ -52,7 +52,7 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         setVar = SpoonQueries.searchVisitedSetInBlock(targetBody, setSubType);
         if (setVar == null) {
             mustDeclareSet = true;
-            setVar = SpoonFactory.createVisitedSetDeclaration(setSubType);
+            setVar = SpoonFactory.createVisitedIdentitySetDeclaration(setSubType);
         } else {
             mustDeclareSet = false;
         }

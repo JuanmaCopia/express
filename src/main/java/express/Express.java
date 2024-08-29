@@ -1,15 +1,28 @@
 package express;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import express.classinvariant.fitness.LengthFitness;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.initialcheck.ComposeNullCheckMutator;
 import express.classinvariant.mutator.initialcheck.IfNullReturnMutator;
 import express.classinvariant.mutator.initialcheck.RemoveIfInitialCheckMutator;
-import express.classinvariant.mutator.primitivecheck.*;
+import express.classinvariant.mutator.primitivecheck.AddSizeCheckMutator;
+import express.classinvariant.mutator.primitivecheck.CheckSizeEndOfTraversalMutator;
+import express.classinvariant.mutator.primitivecheck.RemoveIfPrimitiveCheckMutator;
+import express.classinvariant.mutator.primitivecheck.RemoveSizeCheckMutator;
+import express.classinvariant.mutator.primitivecheck.RemoveTraversalSizeCheckMutator;
 import express.classinvariant.mutator.structurecheck.CheckVisitedFieldMutator;
 import express.classinvariant.mutator.structurecheck.DeclareVisitedSetMutator;
 import express.classinvariant.mutator.structurecheck.RemoveCheckMutator;
-import express.classinvariant.mutator.structurecheck.traversal.*;
+import express.classinvariant.mutator.structurecheck.traversal.AddNullCompToTraversalMutator;
+import express.classinvariant.mutator.structurecheck.traversal.AddRandomComparisonToCurrent;
+import express.classinvariant.mutator.structurecheck.traversal.CheckVisitedFieldEndOfTraversalMutator;
+import express.classinvariant.mutator.structurecheck.traversal.ComposedNullCheckInTraversalMutator;
+import express.classinvariant.mutator.structurecheck.traversal.IfNullReturnInTraversalMutator;
+import express.classinvariant.mutator.structurecheck.traversal.RemoveTraversalInvocationMutator;
+import express.classinvariant.mutator.structurecheck.traversal.RemoveTraversalMutator;
 import express.classinvariant.mutator.structurecheck.traversal.array.CheckVisitedCurrentMutator;
 import express.classinvariant.mutator.structurecheck.traversal.array.DeclareArrayTraversalMutator;
 import express.classinvariant.mutator.structurecheck.traversal.array.InvokeArrayTraversalMutator;
@@ -25,9 +38,6 @@ import express.execution.Executor;
 import express.object.ObjectGenerator;
 import express.search.simulatedannealing.schedule.SimulatedAnnealingSchedule;
 import express.spoon.SpoonManager;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class Express {
 
@@ -47,10 +57,10 @@ public class Express {
     }
 
     private void printObjectsInformation() {
-        System.out.println("\n--------------- Objects Information -------------- ");
-        System.out.println("Positive Objects: " + ObjectGenerator.positiveObjects);
-        System.out.println("Negative Heap Objects: " + ObjectGenerator.negativeHeapObjects);
-        System.out.println("Negative Primitive Objects: " + ObjectGenerator.negativePrimitiveObjects);
+        System.out.println("\n------------------ Objects Information ------------------\n");
+        System.out.println("Positive Objects Collected: " + ObjectGenerator.positiveObjects.size());
+        System.out.println("Negative Heap Objects Generated: " + ObjectGenerator.negativeHeapObjects.size());
+        System.out.println("Negative Primitive Objects Generated: " + ObjectGenerator.negativePrimitiveObjects.size());
     }
 
     public void run() {
@@ -64,7 +74,7 @@ public class Express {
         ClassInvariantState currentState = startInitialSearch();
         printCurrentState(currentState);
         currentState = startStructureCheckSearch(currentState);
-        //currentState = startPrimitiveCheck(currentState);
+        // currentState = startPrimitiveCheck(currentState);
         return currentState;
     }
 
@@ -88,9 +98,9 @@ public class Express {
         ClassInvariantProblem problem = new ClassInvariantProblem(
                 mutators,
                 new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativeHeapObjects),
-                config.restartRounds
-        );
-        SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature, config.coolingRate);
+                config.restartRounds);
+        SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature,
+                config.coolingRate);
         ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, schedule);
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
@@ -112,9 +122,9 @@ public class Express {
                 mutators,
                 new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativeHeapObjects),
                 initialState,
-                config.restartRounds
-        );
-        SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature, config.coolingRate);
+                config.restartRounds);
+        SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature,
+                config.coolingRate);
         ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, schedule);
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
@@ -131,9 +141,9 @@ public class Express {
                 mutators,
                 new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativePrimitiveObjects),
                 initialState,
-                config.restartRounds
-        );
-        SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature, config.coolingRate);
+                config.restartRounds);
+        SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature,
+                config.coolingRate);
         ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, schedule);
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }

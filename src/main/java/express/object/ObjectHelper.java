@@ -2,19 +2,12 @@ package express.object;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ObjectHelper {
 
     public static Object deepCopy(Object original) {
-        return deepCopy(original, new HashMap<>());
+        return deepCopy(original, new IdentityHashMap<>());
     }
 
     public static Object deepCopy(Object original, Map<Object, Object> objectMap) {
@@ -194,7 +187,7 @@ public class ObjectHelper {
     public static String calculateHash(Object object) {
         id = 0;
         List<String> hashList = new LinkedList<>();
-        calculateHash(object, new HashMap<>(), hashList);
+        calculateHash(object, new IdentityHashMap<>(), hashList);
         return String.join("", hashList);
     }
 
@@ -288,7 +281,7 @@ public class ObjectHelper {
     }
 
     public static Set<Object> collectReachableObjects(Object object) {
-        Set<Object> collected = new HashSet<>();
+        Set<Object> collected = Collections.newSetFromMap(new IdentityHashMap<>());
         collectReachableObjects(object, collected);
         return collected;
     }
@@ -358,7 +351,7 @@ public class ObjectHelper {
      * @return the set of types of the objects
      */
     public static Set<Class<?>> filterTypes(Collection<Object> objects) {
-        Set<Class<?>> types = new HashSet<>();
+        Set<Class<?>> types = Collections.newSetFromMap(new IdentityHashMap<>());
         for (Object object : objects) {
             types.add(object.getClass());
         }
@@ -373,7 +366,7 @@ public class ObjectHelper {
      * @return the set of objects of the given type
      */
     public static Set<Object> filterObjectsByType(Collection<Object> objects, Class<?> type) {
-        Set<Object> filtered = new HashSet<>();
+        Set<Object> filtered = Collections.newSetFromMap(new IdentityHashMap<>());
         for (Object object : objects) {
             if (type.isAssignableFrom(object.getClass())) {
                 filtered.add(object);

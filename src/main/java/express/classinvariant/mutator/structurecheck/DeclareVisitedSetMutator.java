@@ -42,7 +42,7 @@ public class DeclareVisitedSetMutator implements ClassInvariantMutator {
     @Override
     public void mutate(ClassInvariantState state) {
         CtTypeReference<?> chosenType = candidateTypes.get(RandomUtils.nextInt(candidateTypes.size()));
-        CtVariable<?> setVar = SpoonFactory.createVisitedSetDeclaration(chosenType);
+        CtVariable<?> setVar = SpoonFactory.createVisitedIdentitySetDeclaration(chosenType);
         structureMethodBody.insertBegin((CtStatement) setVar);
         // System.err.println("DeclareVisitedSetMutator:\n" + setVar);
     }

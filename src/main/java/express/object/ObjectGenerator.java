@@ -37,9 +37,6 @@ public class ObjectGenerator {
         generatePositiveObjects();
         generateNegativeHeapObjects();
         setAllNegativeObjects();
-        logger.info("Positive Objects Generated: " + positiveObjects.size());
-        logger.info("Negative Heap Objects Generated: " + negativeHeapObjects.size());
-        logger.info("Negative Primitive Objects Generated: " + negativePrimitiveObjects.size());
     }
 
     public static void generatePositiveObjects() {

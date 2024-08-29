@@ -41,7 +41,7 @@ public class WorklistTraversalTemplate {
 
     private static List<CtParameter<?>> createParameters(Path leftPath, CtTypeReference<?> setSubtype) {
         List<CtParameter<?>> parameters = new ArrayList<>();
-        CtVariable<?> setVar = SpoonFactory.createVisitedSetDeclaration(setSubtype);
+        CtVariable<?> setVar = SpoonFactory.createVisitedIdentitySetDeclaration(setSubtype);
         parameters.add((CtParameter<?>) SpoonManager.getSubjectTypeData().getThisVariable());
         parameters.add(SpoonFactory.createParameter(TypeUtils.convertGenericsToWildcard(leftPath.getTypeReference()), LocalVarHelper.TRAVERSED_ELEMENT_VAR_NAME));
         parameters.add(SpoonFactory.createParameter(setVar.getType(), LocalVarHelper.SET_VAR_NAME));

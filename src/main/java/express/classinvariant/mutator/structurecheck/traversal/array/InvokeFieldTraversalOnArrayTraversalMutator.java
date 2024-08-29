@@ -57,7 +57,7 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
         setVar = SpoonQueries.searchVisitedSetInBlock(arrayTraversal.getBody(), setSubType);
         if (setVar == null) {
             mustDeclareSet = true;
-            setVar = SpoonFactory.createVisitedSetDeclaration(setSubType);
+            setVar = SpoonFactory.createVisitedIdentitySetDeclaration(setSubType);
         } else {
             mustDeclareSet = false;
         }
