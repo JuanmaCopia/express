@@ -35,17 +35,15 @@ public class ObjectHelper {
 
         Object copy;
         try {
-            copy = ValueProvider.createNewReferenceTypeInstance(original.getClass());
+            copy = ReflectionUtils.createNewReferenceTypeInstance(original.getClass());
         } catch (NewInstanceCreationException e) {
             throw new RuntimeException(e);
         }
 
         objectMap.put(original, copy);
 
-        Field[] fields = original.getClass().getDeclaredFields();
+        List<Field> fields = ReflectionUtils.getAccessibleFields(original.getClass());
         for (Field field : fields) {
-            if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()))
-                continue;
             try {
                 field.setAccessible(true);
                 Object fieldValue = field.get(original);
@@ -123,7 +121,7 @@ public class ObjectHelper {
             if (objectMap.containsKey(collection))
                 return (T) objectMap.get(collection);
 
-            T copy = (T) ValueProvider.createNewReferenceTypeInstance(collection.getClass());
+            T copy = (T) ReflectionUtils.createNewReferenceTypeInstance(collection.getClass());
             objectMap.put(collection, copy);
 
             for (E e : collection) {
@@ -143,7 +141,7 @@ public class ObjectHelper {
             if (objectMap.containsKey(map))
                 return (T) objectMap.get(map);
 
-            T copy = (T) ValueProvider.createNewReferenceTypeInstance(map.getClass());
+            T copy = (T) ReflectionUtils.createNewReferenceTypeInstance(map.getClass());
             objectMap.put(map, copy);
 
             for (Map.Entry<K, V> entry : map.entrySet()) {
@@ -266,10 +264,8 @@ public class ObjectHelper {
         objToHash.put(object, objectHash);
         hashList.add(objectHash);
 
-        Field[] fields = object.getClass().getDeclaredFields();
+        List<Field> fields = ReflectionUtils.getAccessibleFields(object.getClass());
         for (Field field : fields) {
-            if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()))
-                continue;
             try {
                 field.setAccessible(true);
                 Object fieldValue = field.get(object);
@@ -329,11 +325,8 @@ public class ObjectHelper {
     }
 
     private static void collectUserDefinedObject(Object object, Set<Object> collected) {
-        Field[] fields = object.getClass().getDeclaredFields();
+        List<Field> fields = ReflectionUtils.getAccessibleFields(object.getClass());
         for (Field field : fields) {
-            // TODO: Handle static fields
-            if (Modifier.isStatic(field.getModifiers()))
-                continue;
             try {
                 field.setAccessible(true);
                 Object fieldValue = ReflectionUtils.getFieldValue(object, field);

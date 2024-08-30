@@ -1,15 +1,52 @@
 package express.object;
 
+import sun.misc.Unsafe;
+
 import java.lang.reflect.*;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class ReflectionUtils {
 
+    @SuppressWarnings("unchecked")
+    public static <K> K createNewReferenceTypeInstance(Class<K> clazz) throws NewInstanceCreationException {
+        if (TypeChecker.isPrimitiveOrBoxedPrimitive(clazz) || TypeChecker.isArrayOfPrimitiveType(clazz))
+            throw new IllegalArgumentException("Class is not of reference type: " + clazz.getName());
+        if (clazz.isArray())
+            return (K) ValueProvider.createNewArrayInstance(clazz);
+
+        K instance = null;
+        try {
+            Class<?> declaringClass = clazz.getDeclaringClass();
+            if (!Modifier.isStatic(clazz.getModifiers()) && declaringClass != null) {
+                Constructor<K> constructor = clazz.getDeclaredConstructor(declaringClass);
+                constructor.setAccessible(true);
+                Object param = declaringClass.getDeclaredConstructor().newInstance();
+                instance = constructor.newInstance(param);
+            } else {
+                Constructor<K> constructor = clazz.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                instance = constructor.newInstance();
+            }
+        } catch (Exception e) {
+            try {
+                Field f = Unsafe.class.getDeclaredField("theUnsafe");
+                f.setAccessible(true);
+                Unsafe unsafe = (Unsafe) f.get(null);
+                // Create instance without calling constructor
+                return (K) unsafe.allocateInstance(clazz);
+            } catch (Exception ex) {
+                throw new NewInstanceCreationException(clazz, ex);
+            }
+        }
+        return instance;
+    }
+
     public static Object getFieldValue(Object owner, Field field) {
         Object currentValue = null;
         try {
-            //Field f = owner.getClass().getDeclaredField(field.getName());
             field.setAccessible(true);
             currentValue = field.get(owner);
         } catch (IllegalAccessException e) {
@@ -20,10 +57,22 @@ public class ReflectionUtils {
 
     public static void setFieldValue(Object owner, Field field, Object newValue) {
         try {
-            //Field f = owner.getClass().getDeclaredField(field.getName());
+            // Make the field accessible if it's private or protected
             field.setAccessible(true);
-            field.set(owner, newValue);
-        } catch (IllegalAccessException e) {
+
+            // Check if the field is final
+            if (Modifier.isFinal(field.getModifiers())) {
+                // Use Unsafe to modify the final field
+                Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+                unsafeField.setAccessible(true);
+                Unsafe unsafe = (Unsafe) unsafeField.get(null);
+
+                unsafe.putObject(owner, unsafe.objectFieldOffset(field), newValue);
+            } else {
+                // For non-final fields, use regular reflection
+                field.set(owner, newValue);
+            }
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -78,4 +127,29 @@ public class ReflectionUtils {
         return null;
     }
 
+    public static List<Field> getAccessibleFields(Object object) {
+        return getAccessibleFields(object.getClass());
+    }
+
+    public static List<Field> getAccessibleFields(Class<?> clazz) {
+        List<Field> accessibleFields = Arrays.stream(clazz.getDeclaredFields()).filter(f -> !Modifier.isStatic(f.getModifiers())).toList();
+        Class<?> subClass = clazz;
+        Class<?> current = clazz.getSuperclass();
+        while (current != null && TypeChecker.isUserDefinedClass(current)) {
+            Field[] fields = current.getDeclaredFields();
+            for (Field field : fields) {
+                if (!Modifier.isStatic(field.getModifiers()) && !Modifier.isPrivate(field.getModifiers())) {
+                    if (subClass.getPackageName().equals(current.getPackageName())) {
+                        accessibleFields.add(field);
+                    } else if (Modifier.isPublic(field.getModifiers())){
+                        accessibleFields.add(field);
+                    }
+                }
+            }
+            subClass = current;
+            current = current.getSuperclass();
+        }
+        return accessibleFields;
+    }
+    
 }

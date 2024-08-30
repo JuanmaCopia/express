@@ -60,33 +60,19 @@ public class Instrumentation {
     public static void instrumentClasses(CtModel model) {
         List<CtClass<?>> classes = model.getRootPackage().getElements(new TypeFilter<>(CtClass.class));
         for (CtClass<?> clazz : classes) {
-            addEmptyConstructor(clazz);
-            setPrivateFieldsAccessible(clazz);
+            if (TypeUtils.isUserDefinedType(clazz.getReference())) {
+                setPrivateFieldsAccessible(clazz);
+            }
         }
-    }
-
-    private static void addEmptyConstructor(CtClass clazz) {
-        CtConstructor constructor = getEmptyConstructor(clazz);
-        CtBlock<?> body = null;
-        if (constructor != null) {
-            body = constructor.getBody();
-            clazz.removeConstructor(constructor);
-        }
-        if (body == null) {
-            body = SpoonFactory.getCoreFactory().createBlock();
-        }
-        constructor = SpoonFactory.getCoreFactory().createConstructor();
-        constructor.setBody(body);
-        constructor.setModifiers(Set.of(ModifierKind.PUBLIC));
-        clazz.addConstructor(constructor);
     }
 
     private static void setPrivateFieldsAccessible(CtClass<?> clazz) {
-        clazz.getFields().forEach(f -> f.setVisibility(ModifierKind.PUBLIC));
-    }
-
-    private static CtConstructor<?> getEmptyConstructor(CtClass<?> clazz) {
-        return clazz.getConstructors().stream().filter(c -> c.getParameters().isEmpty()).findFirst().orElse(null);
+        clazz.getFields().forEach(f -> {
+            ModifierKind visibility = f.getVisibility();
+            if (visibility != null && visibility.equals(ModifierKind.PRIVATE)) {
+                f.setVisibility(ModifierKind.PROTECTED);
+            }
+        });
     }
 
 }

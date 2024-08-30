@@ -71,7 +71,7 @@ public class SimpleTraversalTemplate {
             pathNullCheck = SpoonFactory.createIfReturnTrue(nullPathCheckCond);
         }
 
-        CtTypeReference<?> firstElemType = firstElementRead.getType();
+        CtTypeReference<?> firstElemType = TypeUtils.convertGenericsToWildcard(firstElementRead.getType());
 
         CtVariable<?> visitedSet = params.get(params.size() - 1);
 
