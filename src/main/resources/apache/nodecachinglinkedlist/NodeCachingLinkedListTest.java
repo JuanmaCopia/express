@@ -116,4 +116,32 @@ public class NodeCachingLinkedListTest {
         t.removeLast();
     }
 
+    @Test
+    public void test10() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+    }
+
 }
