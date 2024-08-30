@@ -3,10 +3,7 @@ package express.object;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.*;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ReflectionUtils {
 
@@ -132,7 +129,7 @@ public class ReflectionUtils {
     }
 
     public static List<Field> getAccessibleFields(Class<?> clazz) {
-        List<Field> accessibleFields = Arrays.stream(clazz.getDeclaredFields()).filter(f -> !Modifier.isStatic(f.getModifiers())).toList();
+        List<Field> accessibleFields = new LinkedList<>(Arrays.stream(clazz.getDeclaredFields()).filter(f -> !Modifier.isStatic(f.getModifiers())).toList());
         Class<?> subClass = clazz;
         Class<?> current = clazz.getSuperclass();
         while (current != null && TypeChecker.isUserDefinedClass(current)) {

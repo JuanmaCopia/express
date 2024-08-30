@@ -58,11 +58,8 @@ public class Instrumentation {
     }
 
     public static void instrumentClasses(CtModel model) {
-        List<CtClass<?>> classes = model.getRootPackage().getElements(new TypeFilter<>(CtClass.class));
-        for (CtClass<?> clazz : classes) {
-            if (TypeUtils.isUserDefinedType(clazz.getReference())) {
-                setPrivateFieldsAccessible(clazz);
-            }
+        for (CtClass<?> clazz : TypeUtils.getAllUserDefinedClassesInModel(model)) {
+            setPrivateFieldsAccessible(clazz);
         }
     }
 

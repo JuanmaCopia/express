@@ -68,7 +68,7 @@ public class SpoonManager {
     }
 
     private static void initializeSubjectData() {
-        subjectTypeData = new TypeData(launcher.getFactory().Class().get(config.subjectClassName));
+        subjectTypeData = new TypeData(launcher.getModel(), launcher.getFactory().Class().get(config.subjectClassName));
         subjectTestClass = launcher.getFactory().Class().get(config.subjectTestSuiteClassName);
         subjectClass = subjectTypeData.getThisCtClass();
         subjectPackage = subjectClass.getPackage();

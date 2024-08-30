@@ -9,12 +9,15 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import express.type.typegraph.Path;
+import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
 
 public class TypeUtils {
@@ -124,7 +127,7 @@ public class TypeUtils {
             return false;
         CtType<?> typeDeclaration = typeRef.getTypeDeclaration();
 
-        for (CtVariable<?> field : getAllFields(typeDeclaration)) {
+        for (CtVariable<?> field : getAccessibleFields(typeDeclaration)) {
             if (field.getType().isSubtypeOf(typeRef))
                 return true;
         }
@@ -137,7 +140,7 @@ public class TypeUtils {
 
         CtType<?> typeDeclaration = typeRef.getTypeDeclaration();
         List<CtVariable<?>> cyclicFields = new ArrayList<>();
-        for (CtVariable<?> field :  getAllFields(typeDeclaration)) {
+        for (CtVariable<?> field :  getAccessibleFields(typeDeclaration)) {
             if (field.getType().isSubtypeOf(typeRef))
                 cyclicFields.add(field);
         }
@@ -235,36 +238,30 @@ public class TypeUtils {
         return wildcardTypeRef;
     }
 
-    public static Set<CtField<?>> getAllFields(CtTypeReference<?> type) {
+    public static Set<CtField<?>> getAccessibleFields(CtTypeReference<?> type) {
         if (type == null || !isUserDefinedType(type))
             throw new IllegalArgumentException("Type is null or not user-defined");
-        return getAllFields(type.getTypeDeclaration());
+        return getAccessibleFields(type.getTypeDeclaration());
     }
 
-    public static Set<CtField<?>> getAllFields(CtType<?> type) {
-        Set<CtField<?>> fields = new HashSet<>();
-
-        // Collect fields from the current type
-        fields.addAll(type.getFields());
-
-        // Traverse the superclasses and collect accessible fields
-        CtTypeReference<?> superClassRef = type.getSuperclass();
-        while (superClassRef != null) {
-            CtType<?> superClass = superClassRef.getTypeDeclaration();
-            if (superClass != null) {
-                for (CtField<?> field : superClass.getFields()) {
-                    // Add the field if it's public or protected
-                    if (field.isPublic() || field.isProtected()) {
-                        fields.add(field);
+    public static Set<CtField<?>> getAccessibleFields(CtType<?> type) {
+        Set<CtField<?>> accessibleFields = type.getFields().stream().filter(f -> !f.isStatic()).collect(Collectors.toSet());
+        CtTypeReference<?> subClass = type.getReference();
+        CtTypeReference<?> current = type.getSuperclass();
+        while (current != null && isUserDefinedType(current)) {
+            for (CtField<?> field : current.getTypeDeclaration().getFields()) {
+                if (!field.isStatic() && !field.isPrivate()) {
+                    if (subClass.getPackage().equals(current.getPackage())) {
+                        accessibleFields.add(field);
+                    } else if (field.isPublic()) {
+                        accessibleFields.add(field);
                     }
                 }
-                superClassRef = superClass.getSuperclass();
-            } else {
-                break;
             }
+            subClass = current;
+            current = current.getSuperclass();
         }
-
-        return fields;
+        return accessibleFields;
     }
 
     public static boolean hasOnlyOneCyclicField(Path path) {
@@ -283,5 +280,16 @@ public class TypeUtils {
     public static boolean hasMultipleLoopFields(CtTypeReference<?> type) {
         List<CtVariable<?>> loopFields = TypeUtils.getCyclicFieldsOfType(type);
         return loopFields.size() > 1;
+    }
+
+    public static Set<CtClass<?>> getAllUserDefinedClassesInModel(CtModel model) {
+        List<CtClass<?>> classes = model.getRootPackage().getElements(new TypeFilter<>(CtClass.class));
+        Set<CtClass<?>> userDefClasses = new HashSet<>();
+        for (CtClass<?> clazz : classes) {
+            if (TypeUtils.isUserDefinedType(clazz.getReference())) {
+                userDefClasses.add(clazz);
+            }
+        }
+        return userDefClasses;
     }
 }

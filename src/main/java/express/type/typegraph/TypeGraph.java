@@ -29,7 +29,7 @@ public class TypeGraph {
             if (declaration == null)
                 continue; // Type is not declared in the current project
 
-            Set<CtField<?>> fields = TypeUtils.getAllFields(declaration);
+            Set<CtField<?>> fields = TypeUtils.getAccessibleFields(declaration);
             for (CtVariable<?> field : fields) {
                 currentAdjacency.add(field);
                 if (!adjacencyList.containsKey(field))

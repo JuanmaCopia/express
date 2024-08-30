@@ -1,6 +1,7 @@
 package express.object;
 
 import express.spoon.SpoonManager;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.reflect.Field;
@@ -52,7 +53,7 @@ public class TypeChecker {
     }
 
     public static boolean isUserDefinedClass(Class<?> cls) {
-        List<CtTypeReference<?>> userDefTypes = SpoonManager.getSubjectTypeData().getUserDefinedTypes();
+        Set<CtClass<?>> userDefTypes = SpoonManager.getSubjectTypeData().getUserDefinedClasses();
         return userDefTypes.stream().anyMatch(t -> t.getQualifiedName().equals(cls.getName()));
     }
 
