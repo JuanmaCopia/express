@@ -5,32 +5,32 @@ import java.util.Set;
 
 import express.classinvariant.fitness.LengthFitness;
 import express.classinvariant.mutator.ClassInvariantMutator;
-import express.classinvariant.mutator.initialcheck.ComposeNullCheckMutator;
-import express.classinvariant.mutator.initialcheck.IfNullReturnMutator;
-import express.classinvariant.mutator.initialcheck.RemoveIfInitialCheckMutator;
-import express.classinvariant.mutator.primitivecheck.AddSizeCheckMutator;
-import express.classinvariant.mutator.primitivecheck.CheckSizeEndOfTraversalMutator;
-import express.classinvariant.mutator.primitivecheck.RemoveIfPrimitiveCheckMutator;
-import express.classinvariant.mutator.primitivecheck.RemoveSizeCheckMutator;
-import express.classinvariant.mutator.primitivecheck.RemoveTraversalSizeCheckMutator;
-import express.classinvariant.mutator.structurecheck.CheckVisitedFieldMutator;
-import express.classinvariant.mutator.structurecheck.DeclareVisitedSetMutator;
-import express.classinvariant.mutator.structurecheck.RemoveCheckMutator;
-import express.classinvariant.mutator.structurecheck.traversal.AddNullCompToTraversalMutator;
-import express.classinvariant.mutator.structurecheck.traversal.AddRandomComparisonToCurrent;
-import express.classinvariant.mutator.structurecheck.traversal.CheckVisitedFieldEndOfTraversalMutator;
-import express.classinvariant.mutator.structurecheck.traversal.ComposedNullCheckInTraversalMutator;
-import express.classinvariant.mutator.structurecheck.traversal.IfNullReturnInTraversalMutator;
-import express.classinvariant.mutator.structurecheck.traversal.RemoveTraversalInvocationMutator;
-import express.classinvariant.mutator.structurecheck.traversal.RemoveTraversalMutator;
-import express.classinvariant.mutator.structurecheck.traversal.array.CheckVisitedCurrentMutator;
-import express.classinvariant.mutator.structurecheck.traversal.array.DeclareArrayTraversalMutator;
-import express.classinvariant.mutator.structurecheck.traversal.array.InvokeArrayTraversalMutator;
-import express.classinvariant.mutator.structurecheck.traversal.array.InvokeFieldTraversalOnArrayTraversalMutator;
-import express.classinvariant.mutator.structurecheck.traversal.init.ChangeLoopFieldsMutator;
-import express.classinvariant.mutator.structurecheck.traversal.init.DeclareSimpleTraversalMutator;
-import express.classinvariant.mutator.structurecheck.traversal.init.DeclareWorklistTraversalMutator;
-import express.classinvariant.mutator.structurecheck.traversal.init.InvokeFieldTraversalMutator;
+import express.classinvariant.mutator.stage1.ComposeNullCheckMutator;
+import express.classinvariant.mutator.stage1.IfNullReturnMutator;
+import express.classinvariant.mutator.stage1.RemoveIfInitialCheckMutator;
+import express.classinvariant.mutator.stage4.AddSizeCheckMutator;
+import express.classinvariant.mutator.stage4.CheckSizeEndOfTraversalMutator;
+import express.classinvariant.mutator.stage4.RemoveIfPrimitiveCheckMutator;
+import express.classinvariant.mutator.stage4.RemoveSizeCheckMutator;
+import express.classinvariant.mutator.stage4.RemoveTraversalSizeCheckMutator;
+import express.classinvariant.mutator.stage3.CheckVisitedFieldMutator;
+import express.classinvariant.mutator.stage3.DeclareVisitedSetMutator;
+import express.classinvariant.mutator.stage3.RemoveCheckMutator;
+import express.classinvariant.mutator.stage3.AddNullCompToTraversalMutator;
+import express.classinvariant.mutator.stage3.AddRandomComparisonToCurrent;
+import express.classinvariant.mutator.stage3.CheckVisitedFieldEndOfTraversalMutator;
+import express.classinvariant.mutator.stage3.ComposedNullCheckInTraversalMutator;
+import express.classinvariant.mutator.stage3.IfNullReturnInTraversalMutator;
+import express.classinvariant.mutator.stage2.RemoveTraversalInvocationMutator;
+import express.classinvariant.mutator.stage2.RemoveTraversalMutator;
+import express.classinvariant.mutator.stage3.CheckVisitedCurrentOnArrayTraversalMutator;
+import express.classinvariant.mutator.stage2.DeclareArrayTraversalMutator;
+import express.classinvariant.mutator.stage2.InvokeArrayTraversalMutator;
+import express.classinvariant.mutator.stage2.InvokeFieldTraversalOnArrayTraversalMutator;
+import express.classinvariant.mutator.stage2.ChangeLoopFieldsMutator;
+import express.classinvariant.mutator.stage2.DeclareSimpleTraversalMutator;
+import express.classinvariant.mutator.stage2.DeclareWorklistTraversalMutator;
+import express.classinvariant.mutator.stage2.InvokeFieldTraversalMutator;
 import express.classinvariant.problem.ClassInvariantProblem;
 import express.classinvariant.search.ClassInvariantSearch;
 import express.classinvariant.state.ClassInvariantState;
@@ -67,7 +67,7 @@ public class Express {
     }
 
     public void run() {
-        printStart();
+        printConfiguration();
         elapsedTime = System.currentTimeMillis();
         ClassInvariantState finalState = startSearch();
         elapsedTime = System.currentTimeMillis() - elapsedTime;
@@ -76,19 +76,33 @@ public class Express {
     }
 
     private ClassInvariantState startSearch() {
-        ClassInvariantState currentState = startInitialSearch();
-        printCurrentState(currentState);
+        ClassInvariantState currentState = initializationStageSearch();
+        currentState = traversalStageSearch(currentState);
         currentState = startStructureCheckSearch(currentState);
         // currentState = startPrimitiveCheck(currentState);
         return currentState;
     }
 
-    public ClassInvariantState startInitialSearch() {
+    public ClassInvariantState initializationStageSearch() {
+        printStartOfPhase("Initialization");
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         // Initial Check Mutators
         mutators.add(new ComposeNullCheckMutator());
         mutators.add(new IfNullReturnMutator());
         mutators.add(new RemoveIfInitialCheckMutator());
+        ClassInvariantProblem problem = new ClassInvariantProblem(
+                mutators,
+                new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativeHeapObjects),
+                config.restartRounds);
+        SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature,
+                config.coolingRate);
+        ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, schedule);
+        return (ClassInvariantState) simulatedAnnealing.startSearch();
+    }
+
+    public ClassInvariantState traversalStageSearch(ClassInvariantState currentState) {
+        printStartOfPhase("Traversal", currentState);
+        Set<ClassInvariantMutator> mutators = new HashSet<>();
         // Traversal Declaration Mutators
         mutators.add(new DeclareWorklistTraversalMutator());
         mutators.add(new DeclareSimpleTraversalMutator());
@@ -104,6 +118,7 @@ public class Express {
         ClassInvariantProblem problem = new ClassInvariantProblem(
                 mutators,
                 new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativeHeapObjects),
+                currentState,
                 config.restartRounds);
         SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature,
                 config.coolingRate);
@@ -111,8 +126,8 @@ public class Express {
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
 
-    public ClassInvariantState startStructureCheckSearch(ClassInvariantState initialState) {
-        printStartOfPhase("Structure Search");
+    public ClassInvariantState startStructureCheckSearch(ClassInvariantState currentState) {
+        printStartOfPhase("Structural Property Check", currentState);
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         mutators.add(new RemoveCheckMutator());
         // Structure Check Mutators
@@ -123,11 +138,11 @@ public class Express {
         mutators.add(new CheckVisitedFieldMutator());
         mutators.add(new IfNullReturnInTraversalMutator());
         mutators.add(new ComposedNullCheckInTraversalMutator());
-        mutators.add(new CheckVisitedCurrentMutator());
+        mutators.add(new CheckVisitedCurrentOnArrayTraversalMutator());
         ClassInvariantProblem problem = new ClassInvariantProblem(
                 mutators,
                 new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativeHeapObjects),
-                initialState,
+                currentState,
                 config.restartRounds);
         SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature,
                 config.coolingRate);
@@ -173,7 +188,16 @@ public class Express {
     }
 
     public void printStartOfPhase(String phase) {
-        System.out.println("\n\n==============================  " + phase + "  ==============================\n");
+        printStartOfPhase(phase, null);
+    }
+
+    public void printStartOfPhase(String phase, ClassInvariantState state) {
+        if (state != null) {
+            System.out.println("\n\n==============================  Current State  ==============================\n");
+            System.out.println("Current best solution: " + state.getCtClass().toString());
+            System.out.println("Fitness: " + state.getFitness());
+        }
+        System.out.println("\n\n==============================  " + phase + " Stage  ==============================\n");
     }
 
     public void saveResults(ClassInvariantState finalState) {
@@ -187,9 +211,8 @@ public class Express {
         System.out.println("\n=================================================================================\n");
     }
 
-    public void printStart() {
+    public void printConfiguration() {
         System.out.println("\n" + config.toString());
-        System.out.println("\n==============================  Search Started  ==============================\n");
     }
 
     public static void main(String[] args) {
