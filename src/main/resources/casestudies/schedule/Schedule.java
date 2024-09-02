@@ -1,4 +1,4 @@
-package examples.schedule;
+package casestudies.schedule;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -45,6 +45,8 @@ public class Express {
     private static final String CONFIG_FILE_PATH = "config.properties";
     Config config;
 
+    long elapsedTime;
+
     public Express(Config config) {
         this.config = config;
         SpoonManager.initialize(config);
@@ -66,7 +68,9 @@ public class Express {
 
     public void run() {
         printStart();
+        elapsedTime = System.currentTimeMillis();
         ClassInvariantState finalState = startSearch();
+        elapsedTime = System.currentTimeMillis() - elapsedTime;
         printResults(finalState);
         saveResults(finalState);
     }
@@ -154,6 +158,9 @@ public class Express {
         System.out.println("\n\n==============================  Search Finished  ==============================\n");
         System.out.println("Best solution: " + finalState.getCtClass().toString());
         System.out.println("Fitness: " + finalState.getFitness());
+        System.out.println("Elapsed time: " + elapsedTime / 1000 + " s");
+        System.out.println("Elapsed time during compilation: " + LengthFitness.compilationTime / 1000 + " s");
+        System.out.println("Elapsed time during fitness function evaluation: " + LengthFitness.fitnessEvaluationTime / 1000 + " s");
         printNotKilledMutants(finalState);
         System.out.println("\n=================================================================================\n");
     }

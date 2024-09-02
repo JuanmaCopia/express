@@ -1,4 +1,4 @@
-package examples.schedule;
+package casestudies.schedule;
 
 public class List {
 

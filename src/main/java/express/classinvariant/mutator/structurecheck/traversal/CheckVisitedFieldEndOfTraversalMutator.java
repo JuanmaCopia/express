@@ -38,6 +38,12 @@ public class CheckVisitedFieldEndOfTraversalMutator implements ClassInvariantMut
 
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph().computeSimplePathsForAlternativeVar(traversedElement).stream().filter(p -> p.size() == 2).toList();
         candidates = TypeUtils.filterPathsByType(candidates, setSubType).stream().toList();
+        if (candidates.isEmpty()) {
+            System.err.println("No candidates found for traversed element: " + traversedElement);
+            System.err.println("Traversed element type: " + traversedElement.getType());
+            System.err.println("Set subtype: " + setSubType);
+            System.err.println("Traversal: " + traversal);
+        }
 
         Path chosenPath = Utils.getRandomPath(candidates);
 

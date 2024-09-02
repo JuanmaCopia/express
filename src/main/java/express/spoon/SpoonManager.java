@@ -14,6 +14,7 @@ import express.instrumentation.Instrumentation;
 import express.type.TypeUtils;
 import express.type.typegraph.TypeData;
 import spoon.Launcher;
+import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtPackage;
@@ -62,7 +63,7 @@ public class SpoonManager {
         launcher.getEnvironment().setComplianceLevel(config.subjectSrcJavaVersion);
         launcher.getEnvironment().setShouldCompile(false);
         launcher.getEnvironment().setAutoImports(false);
-        // launcher.getEnvironment().setPrettyPrintingMode(Environment.PRETTY_PRINTING_MODE.FULLYQUALIFIED);
+        launcher.getEnvironment().setPrettyPrintingMode(Environment.PRETTY_PRINTING_MODE.FULLYQUALIFIED);
         // launcher.getEnvironment().setPreserveLineNumbers(true);
         launcher.buildModel();
     }

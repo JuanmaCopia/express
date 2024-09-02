@@ -41,28 +41,30 @@ public class ObjectGenerator {
 
     public static void generatePositiveObjects() {
         Executor.runTestSuite(SpoonManager.getSubjectTestClass().getQualifiedName(), SpoonManager.getClassLoader());
-        positiveObjects.addAll(ObjectCollector.positiveObjects);
+        for (Object object : ObjectCollector.positiveObjects) {
+            addObjectIfNotPresent(object, positiveObjects);
+        }
     }
 
     /**
      * Generate the negative objects by randomly mutating the positive objects.
      */
     private static void generateNegativeHeapObjects() {
-        for (Object positiveObject : ObjectCollector.positiveObjects) {
+        for (Object positiveObject : positiveObjects) {
             for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
                 Object copy = ObjectHelper.deepCopy(positiveObject);
                 boolean wasMutated = ObjectMutator.mutateHeap(copy);
                 if (wasMutated)
-                    addNegativeObjectIfNotExists(copy, negativeHeapObjects);
+                    addObjectIfNotPresent(copy, negativeHeapObjects);
             }
         }
     }
 
-    private static void addNegativeObjectIfNotExists(Object object, Collection<Object> negativeCollection) {
+    private static void addObjectIfNotPresent(Object object, Collection<Object> collection) {
         String hash = ObjectHelper.calculateHash(object);
         if (!hashcodeToObjects.containsKey(hash)) {
             hashcodeToObjects.put(hash, object);
-            negativeCollection.add(object);
+            collection.add(object);
         }
     }
 
