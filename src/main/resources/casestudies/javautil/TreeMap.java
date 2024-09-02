@@ -2378,12 +2378,12 @@ public class TreeMap<K, V>
         }
 
         final class AscendingEntrySetView extends EntrySetView {
-            public Iterator<Entry<K, V>> iterator() {
+            public Iterator<Map.Entry<K, V>> iterator() {
                 return new SubMapEntryIterator(absLowest(), absHighFence());
             }
         }
 
-        public Set<Entry<K, V>> entrySet() {
+        public Set<Map.Entry<K, V>> entrySet() {
             EntrySetView es = entrySetView;
             return (es != null) ? es : (entrySetView = new AscendingEntrySetView());
         }
@@ -2481,12 +2481,12 @@ public class TreeMap<K, V>
         }
 
         final class DescendingEntrySetView extends EntrySetView {
-            public Iterator<Entry<K, V>> iterator() {
+            public Iterator<Map.Entry<K, V>> iterator() {
                 return new DescendingSubMapEntryIterator(absHighest(), absLowFence());
             }
         }
 
-        public Set<Entry<K, V>> entrySet() {
+        public Set<Map.Entry<K, V>> entrySet() {
             EntrySetView es = entrySetView;
             return (es != null) ? es : (entrySetView = new DescendingEntrySetView());
         }
