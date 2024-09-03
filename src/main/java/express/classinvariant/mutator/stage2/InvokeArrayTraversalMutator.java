@@ -71,7 +71,8 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
     @Override
     public void mutate(ClassInvariantState state) {
         if (mustDeclareSet) {
-            targetBody.insertBegin((CtStatement) setVar);
+            CtStatement separatorLabel = SpoonQueries.getSeparatorLabelComment(targetBody);
+            separatorLabel.insertAfter((CtStatement) setVar);
         }
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_2_LABEL);
