@@ -1,4 +1,4 @@
-package casestudies.javautil;
+package casestudies.javautil.treemap;
 
 import org.junit.Test;
 

@@ -1,6 +1,7 @@
 package express.object;
 
 import express.spoon.SpoonManager;
+import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import express.util.Utils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -24,6 +25,9 @@ public class ObjectMutator {
         Pair<Field, Object> fieldTuple = ReflectionUtils.evaluatePath(rootObject, chosenPath);
         Field field = fieldTuple.getLeft();
         Object fieldValue = fieldTuple.getRight();
+
+        if (fieldValue == null && !TypeUtils.isUserDefinedType(chosenPath.getTypeReference()))
+            return false;
 
         Object newValue;
         if (fieldValue == null) {
