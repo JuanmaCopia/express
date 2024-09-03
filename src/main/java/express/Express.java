@@ -21,6 +21,7 @@ import express.search.simulatedannealing.schedule.SimulatedAnnealingSchedule;
 import express.spoon.SpoonManager;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Express {
@@ -84,7 +85,12 @@ public class Express {
     }
 
     public ClassInvariantState traversalStageSearch(ClassInvariantState currentState) {
+        List<Object> survivors = Executor.obtainSurvivors(currentState.getCtClass(), ObjectGenerator.negativeHeapObjects);
+        //System.err.println("Survivors: " + survivors.size() + " from " + ObjectGenerator.negativeHeapObjects.size());
+        currentState.setFitness(-survivors.size());
+
         printStartOfPhase("Traversal", currentState);
+
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         // Traversal Declaration Mutators
         mutators.add(new DeclareWorklistTraversalMutator());
@@ -98,10 +104,10 @@ public class Express {
         mutators.add(new InvokeFieldTraversalMutator());
         mutators.add(new InvokeFieldTraversalOnArrayTraversalMutator());
         mutators.add(new RemoveIfStage2Mutator());
-        currentState.setFitness(-ObjectGenerator.negativeHeapObjects.size());
+
         ClassInvariantProblem problem = new ClassInvariantProblem(
                 mutators,
-                new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativeHeapObjects),
+                new LengthFitness(ObjectGenerator.positiveObjects, survivors),
                 currentState,
                 config.restartRounds);
         SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature,
