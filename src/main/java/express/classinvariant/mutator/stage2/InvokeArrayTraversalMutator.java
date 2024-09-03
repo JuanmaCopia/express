@@ -59,9 +59,10 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         CtExpression<?>[] args = createArguments(traversal.getParameters(), setVar, chosenPath.getVariableRead());
         CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(traversal, args);
 
-        CtExpression<Boolean> clause1 = SpoonFactory.generateAndConcatenationOfNullComparisons(chosenPath, BinaryOperatorKind.NE);
-        CtExpression<Boolean> clause2 = SpoonFactory.negateExpresion(traversalCall);
-        condition = SpoonFactory.createBinaryExpression(clause1, clause2, BinaryOperatorKind.AND);
+        List<CtExpression<Boolean>> clauses = SpoonFactory.generateNullComparisonClauses(chosenPath);
+        clauses.remove(0);
+        clauses.add(SpoonFactory.negateExpresion(traversalCall));
+        condition = SpoonFactory.conjunction(clauses);
 
         return !SpoonQueries.checkAlreadyExistSimple(condition, targetBody);
     }
@@ -72,10 +73,10 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         if (mustDeclareSet) {
             targetBody.insertBegin((CtStatement) setVar);
         }
-        
+
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_2_LABEL);
-        CtStatement lastStatement = SpoonQueries.getSeparatorLabelComment(targetBody);
-        lastStatement.insertBefore(ifStatement);
+        CtStatement returnTrueLabel = SpoonQueries.getReturnTrueLabel(targetBody);
+        returnTrueLabel.insertBefore(ifStatement);
         //System.err.println("InvokeArrayTraversalMutator: added check: \n" + ifStatement.toString());
         //System.err.println("\nInvokeArrayTraversalMutator: result:\n\n" + state.toString());
     }
