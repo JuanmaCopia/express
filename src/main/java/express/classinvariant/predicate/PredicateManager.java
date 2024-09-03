@@ -79,7 +79,6 @@ public class PredicateManager {
 
     private static List<CtMethod<Boolean>> createSubPredicates(List<CtParameter<?>> parameters) {
         List<CtMethod<Boolean>> subPredicates = new ArrayList<>();
-        subPredicates.add(createSubPredicateMethod(LocalVarHelper.INITIAL_METHOD_NAME, parameters));
         subPredicates.add(createSubPredicateMethod(LocalVarHelper.STRUCTURE_METHOD_NAME, parameters));
         subPredicates.add(createSubPredicateMethod(LocalVarHelper.PRIMITIVE_METHOD_NAME, parameters));
         return subPredicates;
@@ -98,7 +97,15 @@ public class PredicateManager {
 
         CtMethod<Boolean> predicateMethod = SpoonFactory.createMethod(modifiers, SpoonFactory.getTypeFactory().booleanPrimitiveType(), methodName, parameters);
 
-        predicateMethod.setBody(SpoonFactory.createReturnTrueBlock());
+        predicateMethod.setBody(createReturnTrueBlock());
         return predicateMethod;
+    }
+
+    public static CtBlock<?> createReturnTrueBlock() {
+        CtBlock<Boolean> block = SpoonFactory.getCoreFactory().createBlock();
+        block.addStatement(SpoonFactory.createComment(LocalVarHelper.SEPARATOR_LABEL));
+        block.addStatement(SpoonFactory.createComment(LocalVarHelper.RETURN_TRUE_LABEL));
+        block.addStatement(SpoonFactory.createReturnStatement(SpoonFactory.getCodeFactory().createLiteral(true)));
+        return block;
     }
 }

@@ -21,7 +21,7 @@ public class ArrayTraversalTemplate {
     public static CtMethod<?> instantiate(CtClass<?> ctClass, Path pathToArray) {
         CtMethod<?> structureMethod = MutatorHelper.getMethodByName(ctClass, LocalVarHelper.STRUCTURE_METHOD_NAME);
         CtBlock<?> structureMethodBody = structureMethod.getBody();
-        CtStatement lastStatement = SpoonQueries.getMark1Comment(structureMethodBody);
+        CtStatement lastStatement = SpoonQueries.getSeparatorLabelComment(structureMethodBody);
 
         CtTypeReference<?> arraySubtype = ((CtArrayTypeReference<?>) pathToArray.getTypeReference()).getComponentType();
 

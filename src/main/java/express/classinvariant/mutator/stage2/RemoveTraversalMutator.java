@@ -1,6 +1,7 @@
 package express.classinvariant.mutator.stage2;
 
 import express.classinvariant.mutator.ClassInvariantMutator;
+import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.util.Utils;
@@ -25,7 +26,7 @@ public class RemoveTraversalMutator implements ClassInvariantMutator {
     @Override
     public void mutate(ClassInvariantState state) {
         //System.err.println("RemoveTraverseWorklistMutator:\n" + traversal.toString());
-        List<CtIf> checks = MutatorHelper.getIfsCallingMethod(state.getCtClass(), traversal.getSimpleName());
+        List<CtIf> checks = MutatorHelper.getIfsCallingMethod(state.getCtClass(), LocalVarHelper.STAGE_2_LABEL, traversal.getSimpleName());
         for (CtIf check : checks) {
             check.delete();
         }

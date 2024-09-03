@@ -25,6 +25,7 @@ public class ObjectGenerator {
 
     public static final List<Object> positiveObjects = new ArrayList<>();
     public static final List<Object> allNegativeObjects = new ArrayList<>();
+    public static final List<Object> negativeInitializationObjects = new ArrayList<>();
     public static final List<Object> negativeHeapObjects = new ArrayList<>();
     public static final List<Object> negativePrimitiveObjects = new ArrayList<>();
 
@@ -35,6 +36,7 @@ public class ObjectGenerator {
         if (!SpoonManager.isInitialized())
             throw new IllegalStateException("SpoonManager must be initialized before generating objects");
         generatePositiveObjects();
+        generateNegativeInitializationObjects();
         generateNegativeHeapObjects();
         setAllNegativeObjects();
     }
@@ -43,6 +45,17 @@ public class ObjectGenerator {
         Executor.runTestSuite(SpoonManager.getSubjectTestClass().getQualifiedName(), SpoonManager.getClassLoader());
         for (Object object : ObjectCollector.positiveObjects) {
             addObjectIfNotPresent(object, positiveObjects);
+        }
+    }
+
+    private static void generateNegativeInitializationObjects() {
+        for (Object positiveObject : positiveObjects) {
+            for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
+                Object copy = ObjectHelper.deepCopy(positiveObject);
+                boolean wasMutated = ObjectMutator.mutateForInitialization(copy);
+                if (wasMutated)
+                    addObjectIfNotPresent(copy, negativeInitializationObjects);
+            }
         }
     }
 
@@ -69,6 +82,7 @@ public class ObjectGenerator {
     }
 
     private static void setAllNegativeObjects() {
+        //allNegativeObjects.addAll(negativeInitializationObjects);
         allNegativeObjects.addAll(negativeHeapObjects);
         allNegativeObjects.addAll(negativePrimitiveObjects);
     }

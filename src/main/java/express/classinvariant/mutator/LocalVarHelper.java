@@ -15,9 +15,16 @@ public class LocalVarHelper {
     public static final String MUTABLE_METHOD_SUFFIX = "_M_";
     public static final String IMMUTABLE_METHOD_SUFFIX = "_I_";
 
-    public static final String INITIAL_METHOD_NAME = "initialCheck";
-    public static final String STRUCTURE_METHOD_NAME = "structureCheck";
-    public static final String PRIMITIVE_METHOD_NAME = "primitiveCheck";
+    public static final String STRUCTURE_METHOD_NAME = "repOkStructure";
+    public static final String PRIMITIVE_METHOD_NAME = "repOkPrimitive";
+
+    public static final String SEPARATOR_LABEL = "SEPARATOR_LABEL";
+    public static final String RETURN_TRUE_LABEL = "RETURN_TRUE_LABEL";
+
+    public static final String STAGE_1_LABEL = "STAGE_1_LABEL";
+    public static final String STAGE_2_LABEL = "STAGE_2_LABEL";
+    public static final String STAGE_3_LABEL = "STAGE_3_LABEL";
+    public static final String STAGE_4_LABEL = "STAGE_4_LABEL";
 
     public static final String LOCAL_VAR_PREFIX = "var_";
     public static final String SET_VAR_NAME = "visited_";

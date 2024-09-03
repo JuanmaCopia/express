@@ -1,30 +1,18 @@
 package express.classinvariant.mutator;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
 import express.classinvariant.mutator.template.ArrayTraversalTemplate;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonQueries;
-import express.type.typegraph.Path;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtThisAccess;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MutatorHelper {
 
@@ -46,7 +34,7 @@ public class MutatorHelper {
     }
 
     public static CtVariable<?> handleVisitedSetVariable(CtBlock<?> methodBody, CtStatement statement,
-            CtTypeReference<?> setSubtype) {
+                                                         CtTypeReference<?> setSubtype) {
         CtVariable<?> setVar = pickVisitedSetVariable(methodBody, setSubtype);
         if (setVar != null)
             return setVar;
@@ -67,46 +55,47 @@ public class MutatorHelper {
         return setVar;
     }
 
-    public static List<CtMethod<?>> getMutableMethods(CtClass<?> clazz) {
-        return clazz.getMethods().stream().filter(MutatorHelper::isMutableMethod).toList();
+    public static Set<CtMethod<?>> getMutableMethods(CtClass<?> clazz) {
+        return clazz.getMethods().stream().filter(MutatorHelper::isMutableMethod).collect(Collectors.toSet());
     }
 
     public static boolean isMutableMethod(CtMethod<?> method) {
         return method.getSimpleName().contains(LocalVarHelper.MUTABLE_METHOD_SUFFIX);
     }
 
-    public static List<CtIf> getMutableIfs(CtMethod<?> method) {
-        return method.getBody().getElements(MutatorHelper::isMutableIf);
+/*    public static List<CtIf> getMutableIfs(CtMethod<?> method, String labelComment) {
+        return method.getBody().getElements(ifStatement -> isMutableIf(ifStatement, labelComment));
+    }*/
+
+    public static List<CtIf> getMutableIfs(CtClass<?> ctClass, String labelComment) {
+        List<CtIf> mutableIfs = new LinkedList<>();
+        getMutableMethods(ctClass).forEach(
+                method -> mutableIfs.addAll(getMutableIfs(method.getBody(), labelComment))
+        );
+        return mutableIfs;
     }
 
-    public static List<CtIf> getMutableIfs(CtClass<?> ctClass) {
-        return getMutableIfs(getMutableMethods(ctClass));
+    public static List<CtIf> getMutableIfs(CtBlock<?> methodBody, String labelComment) {
+        return methodBody.getElements(ifStatement -> isMutableIf(ifStatement, labelComment));
     }
 
-    public static List<CtIf> getMutableIfs(Collection<CtMethod<?>> methods) {
-        List<CtIf> ifs = new LinkedList<>();
-        for (CtMethod<?> method : methods) {
-            ifs.addAll(method.getBody().getElements(MutatorHelper::isMutableIf));
-        }
-        return ifs;
-    }
-
-    public static boolean isMutableIf(CtIf ifStatement) {
-        if (ifStatement.getParent(CtIf.class) != null)
+    public static boolean isMutableIf(CtIf ifStatement, String labelComment) {
+        CtBlock<?> thenBlock = ifStatement.getThenStatement();
+        if (thenBlock == null)
             return false;
-        if (ifStatement.getThenStatement() instanceof CtBlock<?> block &&
-                block.getStatement(0) instanceof CtComment comment &&
-                comment.getContent().contains(LocalVarHelper.IMMUTABLE_COMMENT))
-            return false;
-        if (!isIfReturnFalse(ifStatement))
-            return false;
-
-        CtMethod<?> method = ifStatement.getParent(CtMethod.class);
-        return isMutableMethod(method);
+        return isLabel(thenBlock.getStatement(0), labelComment);
     }
 
-    public static List<CtIf> getIfsCallingMethod(CtClass<?> clazz, String methodName) {
-        return getMutableIfs(clazz).stream().filter(e -> callsMethod(e, methodName)).toList();
+    public static boolean isLabel(CtElement element, String label) {
+        if (!(element instanceof CtComment comment))
+            return false;
+        return comment.getContent().equals(label);
+    }
+
+    public static List<CtIf> getIfsCallingMethod(CtClass<?> clazz, String label, String methodName) {
+        return getMutableMethods(clazz).stream().map(m -> getMutableIfs(m.getBody(), label)).flatMap(List::stream).filter(
+                ifStatement -> callsMethod(ifStatement, methodName)
+        ).toList();
     }
 
     public static boolean callsMethod(CtIf e, String methodName) {
@@ -117,37 +106,6 @@ public class MutatorHelper {
         return e.toString().contains(method.getSimpleName());
     }
 
-    public static boolean isIfReturnFalse(CtIf ifStatement) {
-        if (ifStatement == null || ifStatement.getThenStatement() == null)
-            return false;
-        if (ifStatement.getThenStatement() instanceof CtBlock<?> ifBlock) {
-            return isReturnFalseBlock(ifBlock);
-        }
-        return isReturnFalseStatement(ifStatement.getThenStatement());
-    }
-
-    public static boolean isReturnFalseBlock(CtBlock<?> block) {
-        List<CtStatement> statements = block.getStatements();
-        if (statements.isEmpty())
-            return false;
-        CtStatement lastStatement = statements.get(statements.size() - 1);
-        return isReturnFalseStatement(lastStatement);
-    }
-
-    public static boolean isReturnFalseStatement(CtStatement statement) {
-        return statement instanceof CtReturn<?> returnStatement
-                && returnStatement.getReturnedExpression().toString().equals("false");
-    }
-
-    public static List<CtIf> getIfsWithVariableInCondition(CtBlock<?> block, CtVariable<?> var) {
-        List<CtIf> ifs = block.getElements(Objects::nonNull);
-        List<CtIf> ifsWithVar = new LinkedList<>();
-        for (CtIf ifStatement : ifs) {
-            if (ifStatement.getCondition().toString().contains(var.getSimpleName()))
-                ifsWithVar.add(ifStatement);
-        }
-        return ifsWithVar;
-    }
 
     public static CtTypeReference<?> getTraversedType(CtMethod<?> traversal) {
         return traversal.getParameters().get(2).getType().getActualTypeArguments().get(0);
@@ -197,16 +155,35 @@ public class MutatorHelper {
         return traversals;
     }
 
-    public static CtParameter<?> createThisParameter(CtThisAccess<?> thisAccess) {
-        return SpoonFactory.createParameter(thisAccess.getType(), LocalVarHelper.THIS_PARAM_NAME);
-    }
-
     public static void addImmutableComment(CtIf check) {
         CtComment comment = SpoonFactory.createComment(LocalVarHelper.IMMUTABLE_COMMENT);
         if (!(check.getThenStatement() instanceof CtBlock<?> block))
             throw new IllegalArgumentException("Expected block statement");
         block.insertBegin(comment);
     }
+
+/*    public static boolean isIfReturnFalse(CtIf ifStatement) {
+        if (ifStatement == null || ifStatement.getThenStatement() == null)
+            return false;
+        if (ifStatement.getThenStatement() instanceof CtBlock<?> ifBlock) {
+            return isReturnFalseBlock(ifBlock);
+        }
+        return isReturnFalseStatement(ifStatement.getThenStatement());
+    }
+
+    public static boolean isReturnFalseBlock(CtBlock<?> block) {
+        List<CtStatement> statements = block.getStatements();
+        if (statements.isEmpty())
+            return false;
+        CtStatement lastStatement = statements.get(statements.size() - 1);
+        return isReturnFalseStatement(lastStatement);
+    }
+
+    public static boolean isReturnFalseStatement(CtStatement statement) {
+        return statement instanceof CtReturn<?> returnStatement
+                && returnStatement.getReturnedExpression().toString().equals("false");
+    }*/
+
 
 //    public static Path trimPath(Path path) {
 //        CtTypeReference<?> type = path.getTypeReference();

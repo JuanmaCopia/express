@@ -1,5 +1,8 @@
 package express.object;
 
+import express.type.typegraph.Path;
+import org.apache.commons.lang3.tuple.Pair;
+import spoon.reflect.declaration.CtVariable;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.*;
@@ -50,6 +53,14 @@ public class ReflectionUtils {
             throw new RuntimeException(e);
         }
         return currentValue;
+    }
+
+    public static Field getFieldByName(Object object, String fieldName) {
+        Field result = getAccessibleFields(object).stream().filter(f -> f.getName().equals(fieldName)).findFirst().orElse(null);
+        if (result == null) {
+            throw new IllegalArgumentException("Field not found: " + fieldName);
+        }
+        return result;
     }
 
     public static void setFieldValue(Object owner, Field field, Object newValue) {
@@ -138,7 +149,7 @@ public class ReflectionUtils {
                 if (!Modifier.isStatic(field.getModifiers()) && !Modifier.isPrivate(field.getModifiers())) {
                     if (subClass.getPackageName().equals(current.getPackageName())) {
                         accessibleFields.add(field);
-                    } else if (Modifier.isPublic(field.getModifiers())){
+                    } else if (Modifier.isPublic(field.getModifiers())) {
                         accessibleFields.add(field);
                     }
                 }
@@ -148,5 +159,61 @@ public class ReflectionUtils {
         }
         return accessibleFields;
     }
-    
+
+
+    public static boolean canBeEvaluated(Object rootObject, Path path) {
+        if (rootObject == null || path == null || path.size() < 2) {
+            throw new IllegalArgumentException();
+        }
+        if (path.size() == 2) {
+            return true;
+        }
+        LinkedList<CtVariable<?>> fields = path.getFieldChain();
+        fields.removeFirst();
+        fields.removeLast();
+        Object currentObject = rootObject;
+        for (CtVariable<?> field : fields) {
+            Field fieldObject = getFieldByName(currentObject, field.getSimpleName());
+            currentObject = getFieldValue(currentObject, fieldObject);
+            if (currentObject == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static Pair<Field, Object> evaluatePath(Object rootObject, Path path) {
+        if (rootObject == null || path == null || path.size() < 2) {
+            throw new IllegalArgumentException();
+        }
+        LinkedList<CtVariable<?>> fields = path.getFieldChain();
+        fields.removeFirst();
+        Object currentObject = rootObject;
+        Field fieldObject = null;
+        for (CtVariable<?> field : fields) {
+            fieldObject = getFieldByName(currentObject, field.getSimpleName());
+            currentObject = getFieldValue(currentObject, fieldObject);
+        }
+        return Pair.of(fieldObject, currentObject);
+    }
+
+    public static void setPathValue(Object rootObject, Path path, Object newValue) {
+        if (rootObject == null || path == null || path.size() < 2) {
+            throw new IllegalArgumentException();
+        }
+        if (path.size() == 2) {
+            setFieldValue(rootObject, getFieldByName(rootObject, path.getLast().getSimpleName()), newValue);
+        }
+        LinkedList<CtVariable<?>> fields = path.getFieldChain();
+        fields.removeFirst();
+        CtVariable<?> lastField = fields.removeLast();
+        Object currentObject = rootObject;
+        Field fieldObject = null;
+        for (CtVariable<?> field : fields) {
+            fieldObject = getFieldByName(currentObject, field.getSimpleName());
+            currentObject = getFieldValue(currentObject, fieldObject);
+        }
+        Field fieldToSet = getFieldByName(currentObject, lastField.getSimpleName());
+        setFieldValue(currentObject, fieldToSet, newValue);
+    }
 }

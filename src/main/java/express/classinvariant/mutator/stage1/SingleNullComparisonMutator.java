@@ -16,30 +16,23 @@ import spoon.reflect.code.CtStatement;
 
 import java.util.List;
 
-public class ComposeNullCheckMutator implements ClassInvariantMutator {
+public class SingleNullComparisonMutator implements ClassInvariantMutator {
 
     CtExpression<Boolean> condition;
     CtBlock<?> targetMethodBody;
 
     public boolean isApplicable(ClassInvariantState state) {
-        List<Path> paths = SpoonManager.getSubjectTypeData().getReferencePaths().stream().filter(p -> p.size() == 2).toList();
-        if (paths.size() < 2)
+        List<Path> paths = SpoonManager.getSubjectTypeData().getReferencePaths().stream().filter(p -> p.size() > 1 && p.size() < 4).toList();
+        if (paths.isEmpty())
             return false;
 
-        List<Path> chosenPaths = SpoonQueries.chooseNPaths(paths, 2);
-        Path path1 = chosenPaths.get(0);
-        Path path2 = chosenPaths.get(1);
+        Path chosenPath = Utils.getRandomPath(paths);
 
-        List<CtExpression<Boolean>> clauses1 = SpoonFactory.generateParentPathNullComparisonClauses(path1);
-        clauses1.remove(0);
-        clauses1.add(SpoonFactory.createNullComparisonClause(path1.getVariableRead()));
+        List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(chosenPath);
+        clauses.remove(0);
+        clauses.add(SpoonFactory.createNullComparisonClause(chosenPath.getVariableRead()));
 
-        List<CtExpression<Boolean>> clauses2 = SpoonFactory.generateParentPathNullComparisonClauses(path2);
-        clauses2.remove(0);
-        clauses2.add(SpoonFactory.createNullComparisonClause(path2.getVariableRead()));
-
-        clauses1.addAll(clauses2);
-        condition = SpoonFactory.conjunction(clauses1);
+        condition = SpoonFactory.conjunction(clauses);
         targetMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
         return !SpoonQueries.checkAlreadyExist(condition, targetMethodBody);
     }
@@ -49,8 +42,7 @@ public class ComposeNullCheckMutator implements ClassInvariantMutator {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_1_LABEL);
         selectMutationOption(ifStatement);
 
-        //System.err.println("\nComposeNullCheckMutator:\n" + ifStatement);
-        //System.err.println("\nFinal Block:\n\n" + blockGene);
+        //System.err.println("\nFinal Block:\n\n" + targetMethodBody);
     }
 
     private void selectMutationOption(CtIf ifStatement) {
@@ -72,13 +64,13 @@ public class ComposeNullCheckMutator implements ClassInvariantMutator {
     private void appendEndOfBlock(CtIf ifStatement) {
         CtStatement separatorLabel = SpoonQueries.getSeparatorLabelComment(targetMethodBody);
         separatorLabel.insertBefore(ifStatement);
-        //System.err.println("\nComposeNullCheckMutator appended:\n" + ifStatement);
+        //System.err.println("\nSingleNullComparisonMutator appended:\n" + ifStatement);
     }
 
     private void replaceIfStatement(List<CtIf> mutableIfs, CtIf ifStatement) {
         CtIf chosenIf = Utils.getRandomElement(mutableIfs);
         chosenIf.replace(ifStatement);
-        //System.err.println("\nComposeNullCheckMutator replaced:\n" + chosenIf + "\nwith:\n" + ifStatement);
+        //System.err.println("\nSingleNullComparisonMutator replaced:\n" + chosenIf + "\nwith:\n" + ifStatement);
     }
 
 

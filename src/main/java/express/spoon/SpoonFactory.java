@@ -14,12 +14,8 @@ import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtWildcardReference;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class SpoonFactory {
 
@@ -75,14 +71,6 @@ public class SpoonFactory {
             args[i] = createVariableRead(parameters.get(i));
         }
         return args;
-    }
-
-    public static CtBlock<?> createReturnTrueBlock() {
-        CtBlock<Boolean> block = coreFactory.createBlock();
-        block.addStatement(createComment("Mark1"));
-        block.addStatement(createComment("Return true"));
-        block.addStatement(createReturnStatement(codeFactory.createLiteral(true)));
-        return block;
     }
 
     public static CtReturn<Boolean> createReturnTrueStatement() {
@@ -350,7 +338,7 @@ public class SpoonFactory {
     }
 
     private static <T> CtExpression<T> createBinaryExpression(CtExpression<?> left, CtExpression<?> right,
-                                                          BinaryOperatorKind op) {
+                                                              BinaryOperatorKind op) {
         CtBinaryOperator<T> expression = coreFactory.createBinaryOperator();
         expression.setLeftHandOperand(left);
         expression.setRightHandOperand(right);
@@ -522,6 +510,14 @@ public class SpoonFactory {
         return coreFactory.createComment().setContent(content);
     }
 
+    public static CtIf createIfReturnFalse(CtExpression<Boolean> condition, String labelString) {
+        CtComment commentLabel = createComment(labelString);
+        CtIf ifStatement = createIfThenStatement(condition, createReturnStatement(createLiteral(false)));
+        CtBlock<?> thenBlock = ifStatement.getThenStatement();
+        thenBlock.insertBegin(commentLabel);
+        return ifStatement;
+    }
+
     public static CtIf createIfReturnFalse(CtExpression<Boolean> condition) {
         return createIfThenStatement(condition, createReturnStatement(createLiteral(false)));
     }
@@ -541,6 +537,11 @@ public class SpoonFactory {
 
     public static List<CtExpression<Boolean>> generateNullComparisonClauses(Path path) {
         return generateNullComparisonClauses(path, BinaryOperatorKind.NE);
+    }
+
+    public static List<CtExpression<Boolean>> generateNullComparisonClauses(Path path, boolean notEqual) {
+        BinaryOperatorKind operator = notEqual ? BinaryOperatorKind.NE : BinaryOperatorKind.EQ;
+        return generateNullComparisonClauses(path, operator);
     }
 
     public static List<CtExpression<Boolean>> generateNullComparisonClauses(Path path, BinaryOperatorKind operator) {
@@ -623,8 +624,6 @@ public class SpoonFactory {
     public static CtExpression<Boolean> createBooleanBinaryExpression(Object left, Object right, BinaryOperatorKind operator) {
         return createBinaryExpression(left, right, operator);
     }
-
-
 
 
 }

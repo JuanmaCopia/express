@@ -1,13 +1,45 @@
 package express.object;
 
+import express.spoon.SpoonManager;
+import express.type.typegraph.Path;
 import express.util.Utils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 public class ObjectMutator {
+
+    public static boolean mutateForInitialization(Object rootObject) {
+        List<Path> referencePaths = SpoonManager.getSubjectTypeData().getReferencePaths();
+        List<Path> candidatePaths = referencePaths.stream().filter(
+                path -> path.size() > 1 && path.size() < 4 && ReflectionUtils.canBeEvaluated(rootObject, path)
+        ).toList();
+        if (candidatePaths.isEmpty()) {
+            return false;
+        }
+
+        Path chosenPath = Utils.getRandomPath(candidatePaths);
+        Pair<Field, Object> fieldTuple = ReflectionUtils.evaluatePath(rootObject, chosenPath);
+        Field field = fieldTuple.getLeft();
+        Object fieldValue = fieldTuple.getRight();
+
+        Object newValue;
+        if (fieldValue == null) {
+            try {
+                newValue = ReflectionUtils.createNewReferenceTypeInstance(field.getType());
+                ReflectionUtils.setPathValue(rootObject, chosenPath, newValue);
+            } catch (NewInstanceCreationException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            newValue = null;
+        }
+
+        ReflectionUtils.setPathValue(rootObject, chosenPath, newValue);
+        return true;
+    }
 
     /**
      * Perform a random mutation on the given object

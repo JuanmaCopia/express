@@ -1,7 +1,6 @@
 package express.spoon;
 
 import express.classinvariant.mutator.LocalVarHelper;
-import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
@@ -71,16 +70,17 @@ public class SpoonQueries {
         return comment.getContent().equals("End of traversal");
     }
 
-    public static boolean isReturnTrueComment(CtElement element) {
+    public static boolean isReturnTrueLabel(CtElement element) {
         if (!(element instanceof CtComment comment))
             return false;
-        return comment.getContent().equals("Return true");
+        return comment.getContent().equals(LocalVarHelper.RETURN_TRUE_LABEL);
     }
 
-    public static boolean isReturnMark1Comment(CtElement element) {
+
+    public static boolean isSeparatorLabel(CtElement element) {
         if (!(element instanceof CtComment comment))
             return false;
-        return comment.getContent().equals("Mark1");
+        return comment.getContent().equals(LocalVarHelper.SEPARATOR_LABEL);
     }
 
     public static CtStatement getEndHandleCurrentComment(CtBlock<?> block) {
@@ -91,17 +91,17 @@ public class SpoonQueries {
         return (CtStatement) handleCurrentEndComments.get(RandomUtils.nextInt(handleCurrentEndComments.size()));
     }
 
-    public static CtStatement getReturnTrueComment(CtBlock<?> block) {
+    public static CtStatement getReturnTrueLabel(CtBlock<?> block) {
         List<CtElement> returnTrueComments = block.getElements(e -> e instanceof CtComment).stream()
-                .filter(SpoonQueries::isReturnTrueComment).toList();
+                .filter(SpoonQueries::isReturnTrueLabel).toList();
         if (returnTrueComments.isEmpty())
             return null;
         return (CtStatement) returnTrueComments.get(RandomUtils.nextInt(returnTrueComments.size()));
     }
 
-    public static CtStatement getMark1Comment(CtBlock<?> block) {
+    public static CtStatement getSeparatorLabelComment(CtBlock<?> block) {
         List<CtElement> returnMark1Comments = block.getElements(e -> e instanceof CtComment).stream()
-                .filter(SpoonQueries::isReturnMark1Comment).toList();
+                .filter(SpoonQueries::isSeparatorLabel).toList();
         if (returnMark1Comments.isEmpty())
             return null;
         return (CtStatement) returnMark1Comments.get(RandomUtils.nextInt(returnMark1Comments.size()));
@@ -208,7 +208,7 @@ public class SpoonQueries {
     }
 
     public static List<CtLocalVariable<?>> getLocalVariablesMatchingPrefix(List<CtStatement> statements,
-                                                                          String varPrefix) {
+                                                                           String varPrefix) {
         List<CtLocalVariable<?>> setVars = new ArrayList<>();
         for (CtStatement statement : statements) {
             if (statement instanceof CtLocalVariable<?> var && var.getSimpleName().startsWith(varPrefix))

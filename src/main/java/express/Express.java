@@ -1,36 +1,16 @@
 package express;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import express.classinvariant.fitness.LengthFitness;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.stage1.ComposeNullCheckMutator;
-import express.classinvariant.mutator.stage1.IfNullReturnMutator;
-import express.classinvariant.mutator.stage1.RemoveIfInitialCheckMutator;
+import express.classinvariant.mutator.stage1.RemoveIfStage1Mutator;
+import express.classinvariant.mutator.stage1.SingleNullComparisonMutator;
+import express.classinvariant.mutator.stage2.*;
+import express.classinvariant.mutator.stage3.*;
 import express.classinvariant.mutator.stage4.AddSizeCheckMutator;
 import express.classinvariant.mutator.stage4.CheckSizeEndOfTraversalMutator;
-import express.classinvariant.mutator.stage4.RemoveIfPrimitiveCheckMutator;
 import express.classinvariant.mutator.stage4.RemoveSizeCheckMutator;
 import express.classinvariant.mutator.stage4.RemoveTraversalSizeCheckMutator;
-import express.classinvariant.mutator.stage3.CheckVisitedFieldMutator;
-import express.classinvariant.mutator.stage3.DeclareVisitedSetMutator;
-import express.classinvariant.mutator.stage3.RemoveCheckMutator;
-import express.classinvariant.mutator.stage3.AddNullCompToTraversalMutator;
-import express.classinvariant.mutator.stage3.AddRandomComparisonToCurrent;
-import express.classinvariant.mutator.stage3.CheckVisitedFieldEndOfTraversalMutator;
-import express.classinvariant.mutator.stage3.ComposedNullCheckInTraversalMutator;
-import express.classinvariant.mutator.stage3.IfNullReturnInTraversalMutator;
-import express.classinvariant.mutator.stage2.RemoveTraversalInvocationMutator;
-import express.classinvariant.mutator.stage2.RemoveTraversalMutator;
-import express.classinvariant.mutator.stage3.CheckVisitedCurrentOnArrayTraversalMutator;
-import express.classinvariant.mutator.stage2.DeclareArrayTraversalMutator;
-import express.classinvariant.mutator.stage2.InvokeArrayTraversalMutator;
-import express.classinvariant.mutator.stage2.InvokeFieldTraversalOnArrayTraversalMutator;
-import express.classinvariant.mutator.stage2.ChangeLoopFieldsMutator;
-import express.classinvariant.mutator.stage2.DeclareSimpleTraversalMutator;
-import express.classinvariant.mutator.stage2.DeclareWorklistTraversalMutator;
-import express.classinvariant.mutator.stage2.InvokeFieldTraversalMutator;
 import express.classinvariant.problem.ClassInvariantProblem;
 import express.classinvariant.search.ClassInvariantSearch;
 import express.classinvariant.state.ClassInvariantState;
@@ -39,6 +19,9 @@ import express.execution.Executor;
 import express.object.ObjectGenerator;
 import express.search.simulatedannealing.schedule.SimulatedAnnealingSchedule;
 import express.spoon.SpoonManager;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Express {
 
@@ -78,7 +61,7 @@ public class Express {
     private ClassInvariantState startSearch() {
         ClassInvariantState currentState = initializationStageSearch();
         currentState = traversalStageSearch(currentState);
-        currentState = startStructureCheckSearch(currentState);
+        //currentState = startStructureCheckSearch(currentState);
         // currentState = startPrimitiveCheck(currentState);
         return currentState;
     }
@@ -88,11 +71,11 @@ public class Express {
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         // Initial Check Mutators
         mutators.add(new ComposeNullCheckMutator());
-        mutators.add(new IfNullReturnMutator());
-        mutators.add(new RemoveIfInitialCheckMutator());
+        mutators.add(new SingleNullComparisonMutator());
+        mutators.add(new RemoveIfStage1Mutator());
         ClassInvariantProblem problem = new ClassInvariantProblem(
                 mutators,
-                new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativeHeapObjects),
+                new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativeInitializationObjects),
                 config.restartRounds);
         SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature,
                 config.coolingRate);
@@ -114,7 +97,8 @@ public class Express {
         mutators.add(new InvokeArrayTraversalMutator());
         mutators.add(new InvokeFieldTraversalMutator());
         mutators.add(new InvokeFieldTraversalOnArrayTraversalMutator());
-        mutators.add(new RemoveTraversalInvocationMutator());
+        mutators.add(new RemoveIfStage2Mutator());
+        currentState.setFitness(-ObjectGenerator.negativeHeapObjects.size());
         ClassInvariantProblem problem = new ClassInvariantProblem(
                 mutators,
                 new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativeHeapObjects),
@@ -129,7 +113,7 @@ public class Express {
     public ClassInvariantState startStructureCheckSearch(ClassInvariantState currentState) {
         printStartOfPhase("Structural Property Check", currentState);
         Set<ClassInvariantMutator> mutators = new HashSet<>();
-        mutators.add(new RemoveCheckMutator());
+        //mutators.add(new RemoveCheckMutator());
         // Structure Check Mutators
         mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
         mutators.add(new AddNullCompToTraversalMutator());
@@ -155,7 +139,6 @@ public class Express {
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         mutators.add(new CheckSizeEndOfTraversalMutator());
         mutators.add(new AddSizeCheckMutator());
-        mutators.add(new RemoveIfPrimitiveCheckMutator());
         mutators.add(new RemoveSizeCheckMutator());
         mutators.add(new RemoveTraversalSizeCheckMutator());
         ClassInvariantProblem problem = new ClassInvariantProblem(
@@ -176,7 +159,7 @@ public class Express {
         System.out.println("Elapsed time: " + elapsedTime / 1000 + " s");
         System.out.println("Elapsed time during compilation: " + LengthFitness.compilationTime / 1000 + " s");
         System.out.println("Elapsed time during fitness function evaluation: " + LengthFitness.fitnessEvaluationTime / 1000 + " s");
-        printNotKilledMutants(finalState);
+        //printNotKilledMutants(finalState);
         System.out.println("\n=================================================================================\n");
     }
 

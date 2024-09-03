@@ -80,9 +80,9 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
         if (mustDeclareSet) {
             targetBody.insertBegin((CtStatement) setVar);
         }
-
-        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
-        CtStatement lastStatement = SpoonQueries.getMark1Comment(targetBody);
+        
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_2_LABEL);
+        CtStatement lastStatement = SpoonQueries.getSeparatorLabelComment(targetBody);
         lastStatement.insertBefore(ifStatement);
 
         //System.err.println("\nInvokeFieldTraversalMutator: invocation:\n" + ifStatement.toString());

@@ -72,9 +72,9 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         if (mustDeclareSet) {
             targetBody.insertBegin((CtStatement) setVar);
         }
-
-        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
-        CtStatement lastStatement = SpoonQueries.getMark1Comment(targetBody);
+        
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_2_LABEL);
+        CtStatement lastStatement = SpoonQueries.getSeparatorLabelComment(targetBody);
         lastStatement.insertBefore(ifStatement);
         //System.err.println("InvokeArrayTraversalMutator: added check: \n" + ifStatement.toString());
         //System.err.println("\nInvokeArrayTraversalMutator: result:\n\n" + state.toString());

@@ -53,7 +53,7 @@ public class CheckVisitedFieldMutator implements ClassInvariantMutator {
     @Override
     public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
-        CtStatement lastStatement = SpoonQueries.getReturnTrueComment(structureMethodBody);
+        CtStatement lastStatement = SpoonQueries.getReturnTrueLabel(structureMethodBody);
         lastStatement.insertBefore(ifStatement);
 
         //System.err.println("CheckVisitedFieldMutator:\n" + ifStatement);

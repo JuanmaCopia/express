@@ -81,7 +81,7 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
             arrayTraversalBody.insertBegin((CtStatement) setVar);
         }
 
-        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_2_LABEL);
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(arrayTraversalBody);
         endOfHandleCurrentComment.insertBefore(ifStatement);
 
