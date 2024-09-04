@@ -1,9 +1,5 @@
 package express.classinvariant.mutator.stage2;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.mutator.template.WorklistTraversalTemplate;
@@ -16,6 +12,10 @@ import express.util.Utils;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
 
@@ -39,8 +39,8 @@ public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
             return false;
         }
 
-        Path chosenPath = Utils.getRandomPath(paths);
-        traversal = instantiateTraversalMethod(chosenPath, state);
+        Path chosenPath = Utils.getRandomElement(paths);
+        traversal = instantiateTraversalMethod(chosenPath);
         return true;
     }
 
@@ -50,12 +50,16 @@ public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
         //System.err.println("DeclareWorklistTraversalMutator:\n" + traversal.toString());
     }
 
-    private CtMethod<?> instantiateTraversalMethod(Path chosenPath, ClassInvariantState state) {
+    private CtMethod<?> instantiateTraversalMethod(Path chosenPath) {
         List<CtVariable<?>> loopFields = TypeUtils.getCyclicFieldsOfType(chosenPath.getTypeReference());
 
         loopFields = MutatorHelper.selectRandomVariablesFromList(loopFields);
 
-        int splitIndex = RandomUtils.nextInt(1, chosenPath.size() + 1);
+        int bound = chosenPath.size();
+        if (chosenPath.size() == 1) {
+            bound++;
+        }
+        int splitIndex = RandomUtils.nextInt(1, bound);
         return WorklistTraversalTemplate.instantiate(chosenPath, loopFields, splitIndex);
     }
 

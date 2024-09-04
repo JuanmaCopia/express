@@ -38,7 +38,7 @@ public class DeclareSimpleTraversalMutator implements ClassInvariantMutator {
             return false;
         }
 
-        Path chosenPath = Utils.getRandomPath(paths);
+        Path chosenPath = Utils.getRandomElement(paths);
         traversal = instantiateTraversalMethod(chosenPath);
         return true;
     }
@@ -54,7 +54,11 @@ public class DeclareSimpleTraversalMutator implements ClassInvariantMutator {
 
         CtVariable<?> chosenLoopField = Utils.getRandomElement(loopFields);
 
-        int splitIndex = RandomUtils.nextInt(1, chosenPath.size() + 1);
+        int bound = chosenPath.size();
+        if (chosenPath.size() == 1) {
+            bound++;
+        }
+        int splitIndex = RandomUtils.nextInt(1, bound);
         boolean checkCircular = RandomUtils.nextBoolean();
         return SimpleTraversalTemplate.instantiate(chosenPath, chosenLoopField, splitIndex, checkCircular);
     }

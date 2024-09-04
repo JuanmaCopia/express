@@ -62,12 +62,13 @@ public class ObjectMutator {
     }
 
     static Object selectObjectForMutation(Collection<Object> allObjects) {
-        Set<Class<?>> candidateTypes = ObjectHelper.filterTypes(allObjects);
+        /*Set<Class<?>> candidateTypes = ObjectHelper.filterTypes(allObjects);
 
         Class<?> chosenType = Utils.getRandomElement(candidateTypes);
         Set<Object> candidatesOfChosenType = ObjectHelper.filterObjectsByType(allObjects, chosenType);
 
-        return Utils.getRandomElement(candidatesOfChosenType);
+        return Utils.getRandomElement(candidatesOfChosenType);*/
+        return Utils.getRandomElement(allObjects);
     }
 
     private static boolean mutateHeapOfObject(Object objectToBeMutated, Collection<Object> reachableObjects) {
