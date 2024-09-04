@@ -17,6 +17,14 @@ import java.util.stream.Collectors;
 
 public class MutatorHelper {
 
+    public static CtExpression<?>[] createTraversalArguments(CtVariable<?> thisVar, CtVariable<?> visitedSetVar, CtVariableRead<?> pathRead) {
+        CtExpression<?>[] args = new CtExpression[3];
+        args[0] = SpoonFactory.createVariableRead(thisVar);
+        args[1] = pathRead;
+        args[2] = SpoonFactory.createVariableRead(visitedSetVar);
+        return args;
+    }
+
     public static void selectMutationOption(CtIf ifStatement, CtBlock<?> targetMethodBody, CtStatement insertBeforeStatement, String label) {
         List<CtIf> mutableIfs = MutatorHelper.getMutableIfs(targetMethodBody, label);
         int option = 1;

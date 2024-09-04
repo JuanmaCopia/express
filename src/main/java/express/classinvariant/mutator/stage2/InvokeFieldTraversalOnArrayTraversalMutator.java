@@ -64,7 +64,7 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
         }
 
         CtVariable<?> thisVar = arrayTraversal.getParameters().get(0);
-        CtExpression<?>[] args = createArguments(thisVar, setVar, chosenPath.getVariableRead());
+        CtExpression<?>[] args = MutatorHelper.createTraversalArguments(thisVar, setVar, chosenPath.getVariableRead());
 
         CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(cyclicFieldTraversal, args);
 
@@ -90,12 +90,4 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
         //System.err.println("InvokeFieldTraversalOnArrayTraversalMutator: result:\n" + state);
     }
 
-    private CtExpression<?>[] createArguments(CtVariable<?> thisVar, CtVariable<?> visitedSetVar, CtVariableRead<?> pathRead) {
-        CtExpression<?>[] args = new CtExpression[3];
-        args[0] = SpoonFactory.createVariableRead(thisVar);
-        args[1] = pathRead;
-        args[2] = SpoonFactory.createVariableRead(visitedSetVar);
-        return args;
-    }
-    
 }

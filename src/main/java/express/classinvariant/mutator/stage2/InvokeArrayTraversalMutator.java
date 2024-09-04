@@ -12,7 +12,6 @@ import express.type.typegraph.Path;
 import express.util.Utils;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -56,7 +55,7 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         } else {
             mustDeclareSet = false;
         }
-        CtExpression<?>[] args = createArguments(traversal.getParameters(), setVar, chosenPath.getVariableRead());
+        CtExpression<?>[] args = MutatorHelper.createTraversalArguments(traversal.getParameters().get(0), setVar, chosenPath.getVariableRead());
         CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(traversal, args);
 
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateNullComparisonClauses(chosenPath);
@@ -78,17 +77,9 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_2_LABEL);
         CtStatement insertBeforeLabel = SpoonQueries.getReturnTrueLabel(targetMethodBody);
         MutatorHelper.selectMutationOption(ifStatement, targetMethodBody, insertBeforeLabel, LocalVarHelper.STAGE_2_LABEL);
-        
+
         //System.err.println("InvokeArrayTraversalMutator: added check: \n" + ifStatement.toString());
         //System.err.println("\nInvokeArrayTraversalMutator: result:\n\n" + state.toString());
-    }
-
-    private CtExpression<?>[] createArguments(List<CtParameter<?>> params, CtVariable<?> visitedSetVar, CtVariableRead<?> pathRead) {
-        CtExpression<?>[] args = new CtExpression[params.size()];
-        args[0] = SpoonFactory.createVariableRead(params.get(0));
-        args[1] = pathRead;
-        args[2] = SpoonFactory.createVariableRead(visitedSetVar);
-        return args;
     }
 
 }

@@ -12,7 +12,6 @@ import express.type.typegraph.Path;
 import express.util.Utils;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -57,7 +56,7 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
             mustDeclareSet = false;
         }
 
-        CtExpression<?>[] args = createArguments(traversal.getParameters(), setVar, chosenPath.getVariableRead());
+        CtExpression<?>[] args = MutatorHelper.createTraversalArguments(traversal.getParameters().get(0), setVar, chosenPath.getVariableRead());
         CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(traversal, args);
 
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateNullComparisonClauses(chosenPath);
@@ -84,14 +83,6 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
 
         //System.err.println("\n\InvokeFieldTraversalMutator: traversal:\n" + traversal.toString());
         //System.err.println("\InvokeFieldTraversalMutator: AFTER\n" + state.toString());
-    }
-
-    private CtExpression<?>[] createArguments(List<CtParameter<?>> params, CtVariable<?> visitedSetVar, CtVariableRead<?> pathRead) {
-        CtExpression<?>[] args = new CtExpression[params.size()];
-        args[0] = SpoonFactory.createVariableRead(params.get(0));
-        args[1] = pathRead;
-        args[2] = SpoonFactory.createVariableRead(visitedSetVar);
-        return args;
     }
 
 }
