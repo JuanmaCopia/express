@@ -1,5 +1,6 @@
 package express.object;
 
+import express.spoon.RandomUtils;
 import express.spoon.SpoonManager;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
@@ -62,13 +63,15 @@ public class ObjectMutator {
     }
 
     static Object selectObjectForMutation(Collection<Object> allObjects) {
-        /*Set<Class<?>> candidateTypes = ObjectHelper.filterTypes(allObjects);
+        if (RandomUtils.nextBoolean())
+            return Utils.getRandomElement(allObjects);
+        
+        Set<Class<?>> candidateTypes = ObjectHelper.filterTypes(allObjects);
 
         Class<?> chosenType = Utils.getRandomElement(candidateTypes);
         Set<Object> candidatesOfChosenType = ObjectHelper.filterObjectsByType(allObjects, chosenType);
 
-        return Utils.getRandomElement(candidatesOfChosenType);*/
-        return Utils.getRandomElement(allObjects);
+        return Utils.getRandomElement(candidatesOfChosenType);
     }
 
     private static boolean mutateHeapOfObject(Object objectToBeMutated, Collection<Object> reachableObjects) {
