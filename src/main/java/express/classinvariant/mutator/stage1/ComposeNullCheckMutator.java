@@ -8,7 +8,6 @@ import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
 import express.type.typegraph.Path;
-import express.util.Utils;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
@@ -47,39 +46,11 @@ public class ComposeNullCheckMutator implements ClassInvariantMutator {
     @Override
     public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_1_LABEL);
-        selectMutationOption(ifStatement);
-
+        CtStatement insertBeforeLabel = SpoonQueries.getSeparatorLabelComment(targetMethodBody);
+        MutatorHelper.selectMutationOption(ifStatement, targetMethodBody, insertBeforeLabel, LocalVarHelper.STAGE_1_LABEL);
+        
         //System.err.println("\nComposeNullCheckMutator:\n" + ifStatement);
         //System.err.println("\nFinal Block:\n\n" + blockGene);
     }
-
-    private void selectMutationOption(CtIf ifStatement) {
-        List<CtIf> mutableIfs = MutatorHelper.getMutableIfs(targetMethodBody, LocalVarHelper.STAGE_1_LABEL);
-        int option = 1;
-        if (!mutableIfs.isEmpty()) {
-            option = 2;
-        }
-        switch (Utils.nextInt(option)) {
-            case 0:
-                appendEndOfBlock(ifStatement);
-                break;
-            case 1:
-                replaceIfStatement(mutableIfs, ifStatement);
-                break;
-        }
-    }
-
-    private void appendEndOfBlock(CtIf ifStatement) {
-        CtStatement separatorLabel = SpoonQueries.getSeparatorLabelComment(targetMethodBody);
-        separatorLabel.insertBefore(ifStatement);
-        //System.err.println("\nComposeNullCheckMutator appended:\n" + ifStatement);
-    }
-
-    private void replaceIfStatement(List<CtIf> mutableIfs, CtIf ifStatement) {
-        CtIf chosenIf = Utils.getRandomElement(mutableIfs);
-        chosenIf.replace(ifStatement);
-        //System.err.println("\nComposeNullCheckMutator replaced:\n" + chosenIf + "\nwith:\n" + ifStatement);
-    }
-
 
 }

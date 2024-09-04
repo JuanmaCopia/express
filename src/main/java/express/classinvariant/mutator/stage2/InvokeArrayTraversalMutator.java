@@ -20,7 +20,7 @@ import java.util.List;
 
 public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
 
-    CtBlock<?> targetBody;
+    CtBlock<?> targetMethodBody;
     CtExpression<Boolean> condition;
     CtVariable<?> setVar;
     boolean mustDeclareSet = false;
@@ -45,11 +45,11 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
 
         Path chosenPath = Utils.getRandomPath(pathCandidates);
 
-        targetBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
+        targetMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
 
         CtVariable<?> formalParameter = SpoonQueries.getTraversalSetParameter(traversal);
         CtTypeReference<?> setSubType = TypeUtils.getActualTypeArgument(formalParameter.getType(), 0);
-        setVar = SpoonQueries.searchVisitedSetInBlock(targetBody, setSubType);
+        setVar = SpoonQueries.searchVisitedSetInBlock(targetMethodBody, setSubType);
         if (setVar == null) {
             mustDeclareSet = true;
             setVar = SpoonFactory.createVisitedIdentitySetDeclaration(setSubType);
@@ -64,20 +64,21 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         clauses.add(SpoonFactory.negateExpresion(traversalCall));
         condition = SpoonFactory.conjunction(clauses);
 
-        return !SpoonQueries.checkAlreadyExistSimple(condition, targetBody);
+        return !SpoonQueries.checkAlreadyExistSimple(condition, targetMethodBody);
     }
 
 
     @Override
     public void mutate(ClassInvariantState state) {
         if (mustDeclareSet) {
-            CtStatement separatorLabel = SpoonQueries.getSeparatorLabelComment(targetBody);
+            CtStatement separatorLabel = SpoonQueries.getSeparatorLabelComment(targetMethodBody);
             separatorLabel.insertAfter((CtStatement) setVar);
         }
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_2_LABEL);
-        CtStatement returnTrueLabel = SpoonQueries.getReturnTrueLabel(targetBody);
-        returnTrueLabel.insertBefore(ifStatement);
+        CtStatement insertBeforeLabel = SpoonQueries.getReturnTrueLabel(targetMethodBody);
+        MutatorHelper.selectMutationOption(ifStatement, targetMethodBody, insertBeforeLabel, LocalVarHelper.STAGE_2_LABEL);
+        
         //System.err.println("InvokeArrayTraversalMutator: added check: \n" + ifStatement.toString());
         //System.err.println("\nInvokeArrayTraversalMutator: result:\n\n" + state.toString());
     }

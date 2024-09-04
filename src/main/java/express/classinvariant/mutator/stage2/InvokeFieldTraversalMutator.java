@@ -21,7 +21,7 @@ import java.util.List;
 public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
 
     CtMethod<?> traversal;
-    CtBlock<?> targetBody;
+    CtBlock<?> targetMethodBody;
     CtExpression<Boolean> condition;
     CtVariable<?> setVar;
     boolean mustDeclareSet = false;
@@ -35,25 +35,21 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
         traversal = Utils.getRandomElement(traversals);
         CtVariable<?> initialElement = SpoonQueries.getTraversedElementParameter(traversal);
 
-        //System.err.println("\nInvokeFieldTraversalMutator: initialElement: " + initialElement.toString());
-
         List<Path> pathCandidates = TypeUtils.filterPathsByType(
                 SpoonManager.getSubjectTypeData().getSimplePaths(),
                 initialElement.getType()
         ).stream().filter(TypeUtils::hasOnlyOneCyclicField).toList();
 
         if (pathCandidates.isEmpty()) {
-            //System.err.println("\nInvokeFieldTraversalMutator: pathCandidates is empty");
             return false;
         }
 
         Path chosenPath = Utils.getRandomPath(pathCandidates);
-        //chosenPath = MutatorHelper.trimPath(chosenPath);
 
-        targetBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
+        targetMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
         CtVariable<?> formalParameter = SpoonQueries.getTraversalSetParameter(traversal);
         CtTypeReference<?> setSubType = formalParameter.getType().getActualTypeArguments().get(0);
-        setVar = SpoonQueries.searchVisitedSetInBlock(targetBody, setSubType);
+        setVar = SpoonQueries.searchVisitedSetInBlock(targetMethodBody, setSubType);
         if (setVar == null) {
             mustDeclareSet = true;
             setVar = SpoonFactory.createVisitedIdentitySetDeclaration(setSubType);
@@ -69,29 +65,26 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
         clauses.add(SpoonFactory.negateExpresion(traversalCall));
         condition = SpoonFactory.conjunction(clauses);
 
-        if (SpoonQueries.checkAlreadyExistSimple(condition, targetBody))
+        if (SpoonQueries.checkAlreadyExistSimple(condition, targetMethodBody))
             return false;
 
         return true;
     }
 
-
     @Override
     public void mutate(ClassInvariantState state) {
         if (mustDeclareSet) {
-            CtStatement separatorLabel = SpoonQueries.getSeparatorLabelComment(targetBody);
+            CtStatement separatorLabel = SpoonQueries.getSeparatorLabelComment(targetMethodBody);
             separatorLabel.insertAfter((CtStatement) setVar);
         }
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_2_LABEL);
-        CtStatement returnTrueLabel = SpoonQueries.getReturnTrueLabel(targetBody);
-        returnTrueLabel.insertBefore(ifStatement);
+        CtStatement insertBeforeLabel = SpoonQueries.getReturnTrueLabel(targetMethodBody);
+        MutatorHelper.selectMutationOption(ifStatement, targetMethodBody, insertBeforeLabel, LocalVarHelper.STAGE_2_LABEL);
 
-        //System.err.println("\nInvokeFieldTraversalMutator: invocation:\n" + ifStatement.toString());
-        //System.err.println("\n\nInvokeFieldTraversalMutator: traversal:\n" + traversal.toString());
-        //System.err.println("\nInvokeFieldTraversalMutator: AFTER\n" + state.toString());
+        //System.err.println("\n\InvokeFieldTraversalMutator: traversal:\n" + traversal.toString());
+        //System.err.println("\InvokeFieldTraversalMutator: AFTER\n" + state.toString());
     }
-
 
     private CtExpression<?>[] createArguments(List<CtParameter<?>> params, CtVariable<?> visitedSetVar, CtVariableRead<?> pathRead) {
         CtExpression<?>[] args = new CtExpression[params.size()];

@@ -4,6 +4,7 @@ import express.classinvariant.mutator.template.ArrayTraversalTemplate;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonQueries;
+import express.util.Utils;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -15,6 +16,22 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class MutatorHelper {
+
+    public static void selectMutationOption(CtIf ifStatement, CtBlock<?> targetMethodBody, CtStatement insertBeforeStatement, String label) {
+        List<CtIf> mutableIfs = MutatorHelper.getMutableIfs(targetMethodBody, label);
+        int option = 1;
+        if (!mutableIfs.isEmpty()) {
+            option = 2;
+        }
+        switch (Utils.nextInt(option)) {
+            case 0:
+                insertBeforeStatement.insertBefore(ifStatement);
+                break;
+            case 1:
+                Utils.getRandomElement(mutableIfs).replace(ifStatement);
+                break;
+        }
+    }
 
     public static List<CtVariable<?>> selectRandomVariablesFromList(List<CtVariable<?>> list) {
         List<CtVariable<?>> candidates = new ArrayList<>(list);

@@ -20,6 +20,7 @@ import java.util.List;
 public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvariantMutator {
 
     CtMethod<?> arrayTraversal;
+    CtBlock<?> arrayTraversalBody;
     CtExpression<Boolean> condition;
     CtVariable<?> setVar;
     boolean mustDeclareSet = false;
@@ -70,20 +71,20 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
         CtExpression<Boolean> clause1 = SpoonFactory.generateAndConcatenationOfNullComparisons(chosenPath, BinaryOperatorKind.NE);
         CtExpression<Boolean> clause2 = SpoonFactory.negateExpresion(traversalCall);
         condition = SpoonFactory.createBinaryExpression(clause1, clause2, BinaryOperatorKind.AND);
+        arrayTraversalBody = arrayTraversal.getBody();
 
         return !SpoonQueries.checkAlreadyExistSimple(condition, arrayTraversal.getBody());
     }
 
     @Override
     public void mutate(ClassInvariantState state) {
-        CtBlock<?> arrayTraversalBody = arrayTraversal.getBody();
         if (mustDeclareSet) {
             arrayTraversalBody.insertBegin((CtStatement) setVar);
         }
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_2_LABEL);
-        CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(arrayTraversalBody);
-        endOfHandleCurrentComment.insertBefore(ifStatement);
+        CtComment insertBeforeLabel = SpoonQueries.getEndOfHandleCurrentComment(arrayTraversalBody);
+        MutatorHelper.selectMutationOption(ifStatement, arrayTraversalBody, insertBeforeLabel, LocalVarHelper.STAGE_2_LABEL);
 
         //System.err.println("InvokeFieldTraversalOnArrayTraversalMutator: added check\n" + ifStatement);
         //System.err.println("InvokeFieldTraversalOnArrayTraversalMutator: result:\n" + state);
@@ -96,6 +97,5 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
         args[2] = SpoonFactory.createVariableRead(visitedSetVar);
         return args;
     }
-
-
+    
 }
