@@ -187,6 +187,15 @@ public class MutatorHelper {
         block.insertBegin(comment);
     }
 
+    public static CtIf getFirstIf(CtBlock<?> block) {
+        for (CtStatement statement : block.getStatements()) {
+            if (statement instanceof CtIf ifStatement) {
+                return ifStatement;
+            }
+        }
+        return null;
+    }
+
 /*    public static boolean isIfReturnFalse(CtIf ifStatement) {
         if (ifStatement == null || ifStatement.getThenStatement() == null)
             return false;

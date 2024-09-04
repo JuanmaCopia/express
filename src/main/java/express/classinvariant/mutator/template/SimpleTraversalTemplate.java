@@ -126,7 +126,7 @@ public class SimpleTraversalTemplate {
 
             CtExpression<Boolean> currentNullCheck = SpoonFactory.createNullComparisonClause(currentDeclaration, BinaryOperatorKind.EQ);
             CtIf ifCircularCheck = SpoonFactory.createIfReturnFalse(currentNullCheck);
-            
+
             body.insertEnd(ifCircularCheck);
         }
 

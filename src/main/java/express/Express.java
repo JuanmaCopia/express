@@ -99,6 +99,7 @@ public class Express {
         mutators.add(new RemoveTraversalMutator());
         // Traversal Modification Mutators
         mutators.add(new ChangeLoopFieldsMutator());
+        mutators.add(new ChangeTraversalRootElement());
         // Traversal Invocation Mutators
         mutators.add(new InvokeArrayTraversalMutator());
         mutators.add(new InvokeFieldTraversalMutator());
