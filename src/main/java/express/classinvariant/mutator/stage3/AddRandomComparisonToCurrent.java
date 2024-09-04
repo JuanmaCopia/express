@@ -1,7 +1,5 @@
 package express.classinvariant.mutator.stage3;
 
-import java.util.List;
-
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
@@ -13,14 +11,10 @@ import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import express.type.typegraph.TypeGraph;
 import express.util.Utils;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
+
+import java.util.List;
 
 public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
 
@@ -52,6 +46,7 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
 
         Path chosenPath = Utils.getRandomPath(candidates);
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(chosenPath);
+        clauses.remove(0);
 
         CtVariableRead<?> currentRead = SpoonFactory.createVariableRead(currentDeclaration);
         clauses.add(SpoonFactory.createBooleanBinaryExpression(
@@ -63,7 +58,7 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
 
     @Override
     public void mutate(ClassInvariantState state) {
-        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_3_LABEL);
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(traversalBody);
         endOfHandleCurrentComment.insertBefore(ifStatement);
 

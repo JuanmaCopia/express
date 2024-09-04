@@ -16,7 +16,7 @@ import spoon.reflect.declaration.CtMethod;
 
 import java.util.List;
 
-public class AddNullCompToTraversalMutator implements ClassInvariantMutator {
+public class NullComparisonFromCurrentMutator implements ClassInvariantMutator {
 
     CtMethod<?> traversal;
     CtExpression<Boolean> condition;
@@ -34,7 +34,7 @@ public class AddNullCompToTraversalMutator implements ClassInvariantMutator {
 
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream()
-                .filter(p -> TypeUtils.isReferenceType(p.getTypeReference()) && p.size() > 1)
+                .filter(p -> TypeUtils.isReferenceType(p.getTypeReference()) && !p.isEmpty() && TypeUtils.hasOnlyOneCyclicField(p))
                 .toList();
 
         if (candidates.isEmpty()) {
@@ -42,6 +42,7 @@ public class AddNullCompToTraversalMutator implements ClassInvariantMutator {
         }
 
         Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
+
         condition = SpoonFactory.generateAndConcatenationOfNullComparisons(chosenPath);
         if (SpoonQueries.checkAlreadyExist(condition, traversalBody))
             return false;
@@ -51,7 +52,7 @@ public class AddNullCompToTraversalMutator implements ClassInvariantMutator {
 
     @Override
     public void mutate(ClassInvariantState state) {
-        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_3_LABEL);
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(traversal.getBody());
         endOfHandleCurrentComment.insertBefore(ifStatement);
         //System.err.println("\nAddNullCompToTraversalMutator:\n" + ifStatement);

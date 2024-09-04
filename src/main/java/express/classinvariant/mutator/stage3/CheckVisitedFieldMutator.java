@@ -8,6 +8,7 @@ import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
+import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import express.util.Utils;
 import spoon.reflect.code.*;
@@ -21,38 +22,40 @@ public class CheckVisitedFieldMutator implements ClassInvariantMutator {
     CtBlock<?> structureMethodBody;
 
     public boolean isApplicable(ClassInvariantState state) {
+        List<Path> paths = SpoonManager.getSubjectTypeData().getReferencePaths().stream().filter(
+                p -> p.size() > 1 && TypeUtils.hasOnlyOneCyclicField(p)
+        ).toList();
+        if (paths.isEmpty())
+            return false;
+
+        Path chosenPath = Utils.getRandomPath(paths);
+        CtTypeReference<?> typeOfPath = chosenPath.getTypeReference();
+
         structureMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
-        List<CtLocalVariable<?>> visitedSetVars = SpoonQueries.getVisitedSetLocalVars(structureMethodBody);
-        if (visitedSetVars.isEmpty())
+        List<CtLocalVariable<?>> visitedSetVars = SpoonQueries.getVisitedSetLocalVars(structureMethodBody).stream().filter(
+                v -> typeOfPath.isSubtypeOf(v.getType().getActualTypeArguments().get(0))).toList();
+        if (visitedSetVars.isEmpty()) {
             return false;
+        }
 
-        CtLocalVariable<?> setVar = visitedSetVars.get(RandomUtils.nextInt(visitedSetVars.size()));
-        CtTypeReference<?> setSubType = setVar.getType().getActualTypeArguments().get(0);
+        CtLocalVariable<?> setVar = Utils.getRandomElement(visitedSetVars);
 
-        List<Path> candidates = SpoonManager.getSubjectTypeData().getAssignableSimplePaths(setSubType);
-        if (candidates.isEmpty())
-            return false;
+        List<CtExpression<Boolean>> clauses = SpoonFactory.generateNullComparisonClauses(chosenPath);
+        clauses.remove(0);
 
-        Path chosenPath = Utils.getRandomPath(candidates);
-        CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
-
-        CtExpression<Boolean> nullComparisonClause = SpoonFactory.generateAndConcatenationOfNullComparisons(chosenPath, BinaryOperatorKind.NE);
-        CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(setVar, chosenVarRead);
+        CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(setVar, chosenPath.getVariableRead());
         if (RandomUtils.nextBoolean())
             addToSetInvocation = SpoonFactory.negateExpresion(addToSetInvocation);
+        clauses.add(addToSetInvocation);
 
-        condition = SpoonFactory.createBooleanBinaryExpression(
-                nullComparisonClause,
-                addToSetInvocation,
-                BinaryOperatorKind.AND
-        );
+        condition = SpoonFactory.conjunction(clauses);
 
         return !SpoonQueries.checkAlreadyExist(condition, structureMethodBody);
     }
 
     @Override
     public void mutate(ClassInvariantState state) {
-        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_3_LABEL);
         CtStatement lastStatement = SpoonQueries.getReturnTrueLabel(structureMethodBody);
         lastStatement.insertBefore(ifStatement);
 

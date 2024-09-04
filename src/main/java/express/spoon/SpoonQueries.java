@@ -217,10 +217,6 @@ public class SpoonQueries {
         return setVars;
     }
 
-    public static List<CtVariable<?>> getLocalVariablesFromElement(CtElement element) {
-        return element.getElements(e -> e instanceof CtLocalVariable);
-    }
-
     public static boolean isTraversalLoop(CtElement element) {
         if (!(element instanceof CtWhile loop))
             return false;

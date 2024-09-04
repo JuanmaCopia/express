@@ -15,7 +15,7 @@ import spoon.reflect.code.CtStatement;
 
 import java.util.List;
 
-public class ComposeNullCheckMutator implements ClassInvariantMutator {
+public class MultipleNullComparisonMutator implements ClassInvariantMutator {
 
     CtExpression<Boolean> condition;
     CtBlock<?> targetMethodBody;
@@ -48,7 +48,7 @@ public class ComposeNullCheckMutator implements ClassInvariantMutator {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_1_LABEL);
         CtStatement insertBeforeLabel = SpoonQueries.getSeparatorLabelComment(targetMethodBody);
         MutatorHelper.selectMutationOption(ifStatement, targetMethodBody, insertBeforeLabel, LocalVarHelper.STAGE_1_LABEL);
-        
+
         //System.err.println("\nComposeNullCheckMutator:\n" + ifStatement);
         //System.err.println("\nFinal Block:\n\n" + blockGene);
     }

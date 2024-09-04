@@ -70,7 +70,7 @@ public class WorklistTraversalTemplate {
 
         CtIf pathNullCheck = SpoonFactory.createIfReturnTrue(nullCheckCondition);
 
-        CtTypeReference<?> rootElementType = firstElementRead.getType();
+        CtTypeReference<?> rootElementType = TypeUtils.convertGenericsToWildcard(firstElementRead.getType());
         CtLocalVariable<?> rootElement = SpoonFactory.createLocalVariable(LocalVarHelper.TRAVERSAL_ROOT_VAR_NAME, rootElementType, firstElementRead);
         CtVariableRead<?> rootElementRead = SpoonFactory.createVariableRead(rootElement);
 

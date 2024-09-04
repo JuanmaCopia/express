@@ -31,8 +31,8 @@ public class SingleNullComparisonMutator implements ClassInvariantMutator {
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(chosenPath);
         clauses.remove(0);
         clauses.add(SpoonFactory.createNullComparisonClause(chosenPath.getVariableRead()));
-
         condition = SpoonFactory.conjunction(clauses);
+
         targetMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
         return !SpoonQueries.checkAlreadyExist(condition, targetMethodBody);
     }
@@ -42,7 +42,7 @@ public class SingleNullComparisonMutator implements ClassInvariantMutator {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_1_LABEL);
         CtStatement insertBeforeLabel = SpoonQueries.getSeparatorLabelComment(targetMethodBody);
         MutatorHelper.selectMutationOption(ifStatement, targetMethodBody, insertBeforeLabel, LocalVarHelper.STAGE_1_LABEL);
-        
+
         //System.err.println("\nFinal Block:\n\n" + targetMethodBody);
     }
 

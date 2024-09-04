@@ -32,13 +32,16 @@ public class CheckVisitedCurrentOnArrayTraversalMutator implements ClassInvarian
         );
         CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(arrayTraversal);
         CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(visitedSetVar, currentDeclaration);
-        condition = SpoonFactory.negateExpresion(addToSetInvocation);
+        if (Utils.nextBoolean())
+            addToSetInvocation = SpoonFactory.negateExpresion(addToSetInvocation);
+
+        condition = addToSetInvocation;
         return !SpoonQueries.checkAlreadyExist(condition, arrayTraversal.getBody());
     }
 
     @Override
     public void mutate(ClassInvariantState state) {
-        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_3_LABEL);
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(arrayTraversal.getBody());
         endOfHandleCurrentComment.insertBefore(ifStatement);
 

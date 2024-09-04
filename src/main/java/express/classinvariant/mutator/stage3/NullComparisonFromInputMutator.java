@@ -4,6 +4,7 @@ import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
+import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
@@ -19,7 +20,7 @@ import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
 
-public class ComposedNullCheckInTraversalMutator implements ClassInvariantMutator {
+public class NullComparisonFromInputMutator implements ClassInvariantMutator {
 
     CtExpression<Boolean> condition;
     CtBlock<?> traversalBody;
@@ -30,39 +31,34 @@ public class ComposedNullCheckInTraversalMutator implements ClassInvariantMutato
             return false;
         }
 
-        CtMethod<?> traversal = Utils.getRandomElement(traversals);
+        CtMethod<?> traversal = traversals.get(RandomUtils.nextInt(traversals.size()));
         traversalBody = traversal.getBody();
 
         CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
-        List<Path> paths = SpoonManager.getSubjectTypeData().getThisTypeGraph()
-                .computeSimplePathsForAlternativeVar(traversedElement).stream()
-                .filter(p -> TypeUtils.isReferenceType(p.getTypeReference()) && p.size() == 2)
-                .toList();
-        if (paths.size() < 2)
+        List<Path> paths = SpoonManager.getSubjectTypeData().getThisTypeGraph().computeSimplePathsForAlternativeVar(traversedElement).stream().filter(
+                p -> p.size() > 1 && TypeUtils.hasOnlyOneCyclicField(p)).toList();
+        paths = TypeUtils.filterPaths(paths, TypeUtils::isReferenceType).stream().toList();
+        if (paths.isEmpty())
             return false;
 
-        List<Path> chosenPaths = SpoonQueries.chooseNPaths(paths, 2);
-        Path path1 = chosenPaths.get(0);
-        Path path2 = chosenPaths.get(1);
+        Path chosenPath = Utils.getRandomElement(paths);
 
-        List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(path1);
-        clauses.add(SpoonFactory.createNullComparisonClause(path1.getVariableRead()));
-        clauses.addAll(SpoonFactory.generateParentPathNullComparisonClauses(path2));
-        clauses.add(SpoonFactory.createNullComparisonClause(path2.getVariableRead()));
-
+        List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(chosenPath);
+        clauses.remove(0);
+        clauses.add(SpoonFactory.createNullComparisonClause(chosenPath.getVariableRead()));
         condition = SpoonFactory.conjunction(clauses);
+
         return !SpoonQueries.checkAlreadyExist(condition, traversalBody);
     }
 
     @Override
     public void mutate(ClassInvariantState state) {
-        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_3_LABEL);
         CtStatement comment = SpoonQueries.getBeginOfTraversalComment(traversalBody);
         comment.insertBefore(ifStatement);
 
-        //System.err.println("\nComposedNullCheckInTraversalMutator:\n" + ifStatement);
+        //System.err.println("\nIfNullReturnInTraversalMutator:\n" + ifStatement);
         //System.err.println("\nFinal Block:\n\n" + traversalBody);
     }
-
 
 }

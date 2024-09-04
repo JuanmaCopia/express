@@ -10,7 +10,9 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.VariableAccessFilter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -194,6 +196,18 @@ public class MutatorHelper {
             }
         }
         return null;
+    }
+
+
+    public static boolean isUnusedLocalVar(CtBlock<?> block, CtLocalVariable<?> var) {
+        CtLocalVariableReference<?> varReference = var.getReference();
+        List<CtVariableAccess<?>> accesses = block.getElements(new VariableAccessFilter<>(varReference));
+        return accesses.isEmpty();
+        /*if (accesses.isEmpty()) {
+            System.out.println("The variable " + var.getSimpleName() + " is unused in the block.");
+        } else {
+            System.out.println("The variable " + var.getSimpleName() + " is used in the block.");
+        }*/
     }
 
 /*    public static boolean isIfReturnFalse(CtIf ifStatement) {

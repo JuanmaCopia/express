@@ -13,7 +13,6 @@ import express.util.Utils;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
@@ -48,13 +47,12 @@ public class CheckVisitedFieldEndOfTraversalMutator implements ClassInvariantMut
         Path chosenPath = Utils.getRandomPath(candidates);
 
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateNullComparisonClauses(chosenPath);
+        clauses.remove(0);
 
-        CtVariableRead<?> chosenVarRead = chosenPath.getVariableRead();
-        CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(visitedSetVar, chosenVarRead);
+        CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(visitedSetVar, chosenPath.getVariableRead());
         if (Utils.nextBoolean())
             addToSetInvocation = SpoonFactory.negateExpresion(addToSetInvocation);
         clauses.add(addToSetInvocation);
-
         condition = SpoonFactory.conjunction(clauses);
 
         return !SpoonQueries.checkAlreadyExist(condition, traversal.getBody());
@@ -62,7 +60,7 @@ public class CheckVisitedFieldEndOfTraversalMutator implements ClassInvariantMut
 
     @Override
     public void mutate(ClassInvariantState state) {
-        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition);
+        CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_3_LABEL);
         CtStatement endOfTraversalComment = SpoonQueries.getEndOfTraversalComment(traversal.getBody());
         endOfTraversalComment.insertBefore(ifStatement);
 
