@@ -63,9 +63,9 @@ public class ObjectMutator {
     }
 
     static Object selectObjectForMutation(Collection<Object> allObjects) {
-        if (RandomUtils.nextBoolean())
+        if (RandomUtils.nextInt(0, 100) < 30)
             return Utils.getRandomElement(allObjects);
-        
+
         Set<Class<?>> candidateTypes = ObjectHelper.filterTypes(allObjects);
 
         Class<?> chosenType = Utils.getRandomElement(candidateTypes);
