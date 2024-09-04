@@ -1,7 +1,6 @@
 package express.classinvariant.mutator.template;
 
 import express.classinvariant.mutator.LocalVarHelper;
-import express.classinvariant.mutator.MutatorHelper;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.type.TypeUtils;
@@ -56,51 +55,50 @@ public class WorklistTraversalTemplate {
     private static CtBlock<?> createTraversalBody(Path firstElem, List<CtParameter<?>> params, List<CtVariable<?>> loopFields) {
         CtBlock<?> body = SpoonFactory.createBlock();
 
-        CtIf pathNullCheck = null;
+        CtExpression<Boolean> nullCheckCondition;
         CtVariableRead<?> firstElementRead;
         if (!firstElem.isEmpty()) {
             CtVariable<?> initFieldParent = params.get(params.size() - 2);
             Path pathToFirstElement = new Path(initFieldParent, firstElem);
-            CtExpression<Boolean> nullPathCheckCond = SpoonFactory.generateOrConcatenationOfNullComparisons(pathToFirstElement);
-            pathNullCheck = SpoonFactory.createIfReturnTrue(nullPathCheckCond);
+            nullCheckCondition = SpoonFactory.generateOrConcatenationOfNullComparisons(pathToFirstElement);
             firstElementRead = pathToFirstElement.getVariableRead();
         } else {
             CtVariable<?> firstElement = params.get(params.size() - 2);
             firstElementRead = SpoonFactory.createVariableRead(firstElement);
-            CtExpression<Boolean> nullPathCheckCond = SpoonFactory.createNullComparisonClause(firstElement, BinaryOperatorKind.EQ);
-            pathNullCheck = SpoonFactory.createIfReturnTrue(nullPathCheckCond);
+            nullCheckCondition = SpoonFactory.createNullComparisonClause(firstElement, BinaryOperatorKind.EQ);
         }
+
+        CtIf pathNullCheck = SpoonFactory.createIfReturnTrue(nullCheckCondition);
+
+        CtTypeReference<?> rootElementType = firstElementRead.getType();
+        CtLocalVariable<?> rootElement = SpoonFactory.createLocalVariable(LocalVarHelper.TRAVERSAL_ROOT_VAR_NAME, rootElementType, firstElementRead);
+        CtVariableRead<?> rootElementRead = SpoonFactory.createVariableRead(rootElement);
+
 
         CtVariable<?> visitedSet = params.get(params.size() - 1);
 
-        CtIf firstElemVisitedCheck = SpoonFactory.createVisitedCheck(visitedSet, firstElementRead, true);
+        CtIf firstElemVisitedCheck = SpoonFactory.createVisitedCheck(visitedSet, rootElementRead, true);
 
 
-        CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(firstElementRead.getType(), body);
+        CtLocalVariable<?> worklist = SpoonFactory.createWorkListDeclaration(rootElementType, body);
 
-        CtTypeReference<?> subtypeOfWorklist = worklist.getType().getActualTypeArguments().get(0);
+        //CtTypeReference<?> subtypeOfWorklist = worklist.getType().getActualTypeArguments().get(0);
 
-        CtInvocation<?> addToWorklistCall = SpoonFactory.createInvocation(worklist, "add", subtypeOfWorklist, firstElementRead);
+        CtInvocation<?> addToWorklistCall = SpoonFactory.createInvocation(worklist, "add", rootElementType, rootElementRead);
         //CtInvocation<?> addToSetCall = (CtInvocation<?>) SpoonFactory.createAddToSetInvocation(visitedSet, firstElementRead);
 
         // create condition: !workList.isEmpty()
         CtInvocation<?> isEmptyMethodCall = SpoonFactory.createInvocation(worklist, "isEmpty");
         CtExpression<Boolean> whileCondition = (CtExpression<Boolean>) SpoonFactory.createUnaryExpression(isEmptyMethodCall, UnaryOperatorKind.NOT);
 
-        // Create while body
-        CtBlock<?> whileBody = SpoonFactory.createBlock();
 
+        CtBlock<?> whileBody = SpoonFactory.createBlock();
         // Create current = worklist.removeFirst();
         CtInvocation<?> removeFirstMethodCall = SpoonFactory.createInvocation(worklist, "removeFirst");
+        CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(body), rootElementType, removeFirstMethodCall);
 
-        CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(body), subtypeOfWorklist, removeFirstMethodCall);
-        //CtAssignment<?, ?> assignRemoveFirst = SpoonFactory.createAssignment(currentDeclaration, removeFirstMethodCall);
         whileBody.insertEnd(currentDeclaration);
-
-        // Create comment: // Handle current:
         whileBody.insertEnd(SpoonFactory.createComment("Handle current:"));
-
-        // Create comment: // Add children to worklist:
         whileBody.insertEnd(SpoonFactory.createComment("End of Handle current:"));
 
         // Create worklist.add(current.<loopField>); for each loopField
@@ -110,23 +108,15 @@ public class WorklistTraversalTemplate {
 
         whileBody.insertEnd(SpoonFactory.createComment("End of Traversed Fields"));
 
-        // Create while statement
-        CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, whileBody);
-
         body.insertEnd(SpoonFactory.createComment("Begin of traversal"));
         body.insertEnd(pathNullCheck);
+        body.insertEnd(rootElement);
         body.insertEnd(firstElemVisitedCheck);
-
-        MutatorHelper.addImmutableComment(pathNullCheck);
-        MutatorHelper.addImmutableComment(firstElemVisitedCheck);
-
         body.insertEnd(worklist);
-
-
         body.insertEnd(addToWorklistCall);
-        //body.insertEnd(addToSetCall);
 
         body.insertEnd(SpoonFactory.createComment("Cycle over cyclic references:"));
+        CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, whileBody);
         body.insertEnd(whileStatement);
         body.insertEnd(SpoonFactory.createComment("End of traversal"));
         body.insertEnd(SpoonFactory.createComment("Return True"));

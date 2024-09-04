@@ -33,7 +33,7 @@ public class LocalVarHelper {
     public static final String TRAVERSAL_PREFIX = "traverse_";
     public static final String ARRAY_TRAVERSAL_PREFIX = "traverseArray_";
     public static final String SIZE_VAR_NAME = "initialSize_";
-    public static final String FIRST_ELEMENT_VAR_NAME = "firstElement_";
+    public static final String TRAVERSAL_ROOT_VAR_NAME = "rootElement";
     public static final String TRAVERSED_ELEMENT_VAR_NAME = "subject";
     public static final String ARRAY_PARAM_NAME = "array_";
     public static final String THIS_PARAM_NAME = "_this";

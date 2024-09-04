@@ -1,7 +1,6 @@
 package express.classinvariant.mutator.template;
 
 import express.classinvariant.mutator.LocalVarHelper;
-import express.classinvariant.mutator.MutatorHelper;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.type.TypeUtils;
@@ -56,28 +55,30 @@ public class SimpleTraversalTemplate {
     private static CtBlock<?> createTraversalBody(Path firstElem, List<CtParameter<?>> params, CtVariable<?> loopField, boolean checkCircular) {
         CtBlock<?> body = SpoonFactory.createBlock();
 
-        CtIf pathNullCheck = null;
+        CtExpression<Boolean> nullCheckCondition;
         CtVariableRead<?> firstElementRead;
         if (!firstElem.isEmpty()) {
             CtVariable<?> initFieldParent = params.get(params.size() - 2);
             Path pathToFirstElement = new Path(initFieldParent, firstElem);
-            CtExpression<Boolean> nullPathCheckCond = SpoonFactory.generateOrConcatenationOfNullComparisons(pathToFirstElement);
-            pathNullCheck = SpoonFactory.createIfReturnTrue(nullPathCheckCond);
+            nullCheckCondition = SpoonFactory.generateOrConcatenationOfNullComparisons(pathToFirstElement);
             firstElementRead = pathToFirstElement.getVariableRead();
         } else {
             CtVariable<?> firstElement = params.get(params.size() - 2);
             firstElementRead = SpoonFactory.createVariableRead(firstElement);
-            CtExpression<Boolean> nullPathCheckCond = SpoonFactory.createNullComparisonClause(firstElement, BinaryOperatorKind.EQ);
-            pathNullCheck = SpoonFactory.createIfReturnTrue(nullPathCheckCond);
+            nullCheckCondition = SpoonFactory.createNullComparisonClause(firstElement, BinaryOperatorKind.EQ);
         }
 
-        CtTypeReference<?> firstElemType = TypeUtils.convertGenericsToWildcard(firstElementRead.getType());
+        CtIf pathNullCheck = SpoonFactory.createIfReturnTrue(nullCheckCondition);
+
+        CtTypeReference<?> rootElementType = firstElementRead.getType();
+        CtLocalVariable<?> rootElement = SpoonFactory.createLocalVariable(LocalVarHelper.TRAVERSAL_ROOT_VAR_NAME, rootElementType, firstElementRead);
+        CtVariableRead<?> rootElementRead = SpoonFactory.createVariableRead(rootElement);
 
         CtVariable<?> visitedSet = params.get(params.size() - 1);
 
-        CtIf firstElemVisitedCheck = SpoonFactory.createVisitedCheck(visitedSet, firstElementRead, true);
+        CtIf firstElemVisitedCheck = SpoonFactory.createVisitedCheck(visitedSet, rootElementRead, true);
 
-        CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(body), firstElemType, firstElementRead);
+        CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(body), rootElementType, rootElementRead);
         CtVariableRead<?> currentRead = SpoonFactory.createVariableRead(currentDeclaration);
 
         // create condition: current != null
@@ -103,31 +104,29 @@ public class SimpleTraversalTemplate {
         whileBody.insertEnd(SpoonFactory.createComment("End of Traversed Fields"));
         whileBody.insertEnd(assignmentToCurrent);
 
-        // Create while statement
-        CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, whileBody);
 
         body.insertEnd(SpoonFactory.createComment("Begin of traversal"));
         body.insertEnd(pathNullCheck);
+        body.insertEnd(rootElement);
         body.insertEnd(firstElemVisitedCheck);
         body.insertEnd(currentDeclaration);
 
-        MutatorHelper.addImmutableComment(pathNullCheck);
-        MutatorHelper.addImmutableComment(firstElemVisitedCheck);
-
         body.insertEnd(SpoonFactory.createComment("Cycle over cyclic references:"));
+
+        CtWhile whileStatement = SpoonFactory.createWhileStatement(whileCondition, whileBody);
         body.insertEnd(whileStatement);
+
         body.insertEnd(SpoonFactory.createComment("End of traversal"));
 
         if (checkCircular) {
             CtExpression<Boolean> whileExpression = whileStatement.getLoopingExpression();
-            CtExpression<Boolean> comparisonToFirstElem = SpoonFactory.createBinaryExpression(loopFieldRead, firstElementRead, BinaryOperatorKind.NE);
+            CtExpression<Boolean> comparisonToFirstElem = SpoonFactory.createBinaryExpression(loopFieldRead, rootElementRead, BinaryOperatorKind.NE);
             whileExpression = SpoonFactory.createBinaryExpression(whileExpression, comparisonToFirstElem, BinaryOperatorKind.AND);
             whileStatement.setLoopingExpression(whileExpression);
 
             CtExpression<Boolean> currentNullCheck = SpoonFactory.createNullComparisonClause(currentDeclaration, BinaryOperatorKind.EQ);
             CtIf ifCircularCheck = SpoonFactory.createIfReturnFalse(currentNullCheck);
-
-            MutatorHelper.addImmutableComment(ifCircularCheck);
+            
             body.insertEnd(ifCircularCheck);
         }
 
