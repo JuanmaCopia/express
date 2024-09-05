@@ -10,8 +10,10 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.filter.VariableAccessFilter;
 import spoon.reflect.declaration.CtParameter;
 
@@ -207,37 +209,37 @@ public class MutatorHelper {
     }
 
     public static List<CtMethod<?>> findTraversalsWithSameParameters(CtClass<?> ctClass, CtMethod<?> traversal) {
-        // Get the parameter types of the input method
         List<CtTypeReference<?>> traversalParamTypes = traversal.getParameters().stream()
                 .map(CtParameter::getType)
                 .collect(Collectors.toList());
 
-        // Compare with other methods in the class
-
-        List<CtMethod<?>> traversals = getMethodsByName(ctClass, LocalVarHelper.TRAVERSAL_PREFIX);
-
-        return traversals.stream()
-                .filter(method -> {
-                    List<CtTypeReference<?>> methodParamTypes = method.getParameters().stream()
+        Set<CtMethod<?>> traversals = new HashSet<>(MutatorHelper.getMethodsByName(ctClass, LocalVarHelper.TRAVERSAL_PREFIX));
+        traversals.remove(traversal);
+        for (CtMethod<?> t : new HashSet<>(traversals)) {
+            List<CtTypeReference<?>> methodParamTypes = t.getParameters().stream()
                             .map(CtParameter::getType)
                             .collect(Collectors.toList());
-                    return traversalParamTypes.equals(methodParamTypes); // Compare parameter types
-                })
-                .collect(Collectors.toList());
+
+            if (!traversalParamTypes.equals(methodParamTypes)) {
+                traversals.remove(t);
+            }
+        }
+        return new LinkedList<>(traversals);
     }
 
+    public static CtInvocation<?> extractInvocation(CtIf check) {
+        List<CtInvocation<?>> invocations = check.getCondition().getElements(new TypeFilter<>(CtInvocation.class));
+        if (invocations.isEmpty()) {
+            return null;
+        }
+        return invocations.get(0);
+    }
 
-
-//    public static Path trimPath(Path path) {
-//        CtTypeReference<?> type = path.getTypeReference();
-//        int i = 0;
-//        for (CtVariable<?> field : path.getFieldChain()) {
-//            i++;
-//            if (field.getType().isSubtypeOf(type) && i < path.size()) {
-//                return path.subPath(i);
-//            }
-//        }
-//        return path;
-//    }
-
+    public static void removeTraversalFromClass(CtClass<?> ctClass, CtMethod<?> traversal) {
+        List<CtIf> checks = MutatorHelper.getIfsCallingMethod(ctClass, LocalVarHelper.STAGE_2_LABEL, traversal.getSimpleName());
+        for (CtIf check : checks) {
+            check.delete();
+        }
+        ctClass.removeMethod(traversal);
+    }
 }

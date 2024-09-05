@@ -31,7 +31,11 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
             return false;
         }
 
-        traversal = Utils.getRandomElement(traversals);
+        return isApplicable(state, Utils.getRandomElement(traversals));
+    }
+
+    boolean isApplicable(ClassInvariantState state, CtMethod<?> trav) {
+        traversal = trav;
         CtVariable<?> initialElement = SpoonQueries.getTraversedElementParameter(traversal);
 
         List<Path> pathCandidates = TypeUtils.filterPathsByType(

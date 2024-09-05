@@ -29,10 +29,7 @@ public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
 
         paths = SpoonManager.getSubjectTypeData().getCyclicPaths().stream().filter(
                 path -> path.getTypeReference().isSubtypeOf(chosenType) && TypeUtils.hasOnlyOneCyclicField(path)).toList();
-        if (paths.isEmpty())
-            return false;
-
-        return true;
+        return !paths.isEmpty();
     }
 
     @Override
@@ -49,6 +46,10 @@ public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
         switch (option) {
             case 1:
                 state.getCtClass().addMethod(newTraversal);
+                InvokeFieldTraversalMutator invokeFieldTraversalMutator = new InvokeFieldTraversalMutator();
+                if (invokeFieldTraversalMutator.isApplicable(state, newTraversal)) {
+                    invokeFieldTraversalMutator.mutate(state);
+                }
                 break;
             case 2:
                 CtMethod<?> traversalToReplace = Utils.getRandomElement(existingTraversalsWithSameParameters);

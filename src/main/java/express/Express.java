@@ -98,7 +98,6 @@ public class Express {
         mutators.add(new DeclareWorklistTraversalMutator());
         mutators.add(new DeclareSimpleTraversalMutator());
         mutators.add(new DeclareArrayTraversalMutator());
-        mutators.add(new RemoveTraversalMutator());
         // Traversal Modification Mutators
         mutators.add(new ChangeLoopFieldsMutator());
         mutators.add(new ChangeTraversalRootElement());
@@ -107,7 +106,9 @@ public class Express {
         mutators.add(new InvokeFieldTraversalMutator());
         mutators.add(new InvokeFieldTraversalOnArrayTraversalMutator());
         // Removals
+        //mutators.add(new RemoveTraversalMutator());
         mutators.add(new RemoveIfStage2Mutator());
+        mutators.add(new UnifyTraversalInvocationsMutator());
 
         ClassInvariantProblem problem = new ClassInvariantProblem(
                 mutators,
