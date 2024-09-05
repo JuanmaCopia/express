@@ -9,6 +9,7 @@ import express.spoon.SpoonManager;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import express.util.Utils;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
@@ -19,37 +20,46 @@ import java.util.Set;
 
 public class DeclareSimpleTraversalMutator implements ClassInvariantMutator {
 
-    CtMethod<?> traversal;
+    List<Path> paths;
 
     @Override
     public boolean isApplicable(ClassInvariantState state) {
-        Set<CtTypeReference<?>> traversedTypes = MutatorHelper.getTraversedTypes(state.getCtClass());
-        Set<CtTypeReference<?>> nonTraversedTypes = new HashSet<>(SpoonManager.getSubjectTypeData().getCyclicTypes());
-        nonTraversedTypes.removeAll(traversedTypes);
-        if (nonTraversedTypes.isEmpty()) {
+        Set<CtTypeReference<?>> candidateTypes = new HashSet<>(SpoonManager.getSubjectTypeData().getCyclicTypes());
+        CtTypeReference<?> chosenType = Utils.getRandomElement(candidateTypes);
+
+        paths = SpoonManager.getSubjectTypeData().getCyclicPaths().stream().filter(
+                path -> path.getTypeReference().isSubtypeOf(chosenType) && TypeUtils.hasOnlyOneCyclicField(path)).toList();
+        if (paths.isEmpty())
             return false;
-        }
 
-        CtTypeReference<?> chosenTypeToTraverse = Utils.getRandomElement(nonTraversedTypes);
-        List<Path> paths = SpoonManager.getSubjectTypeData().getCyclicPaths().stream().filter(
-                path -> path.getTypeReference().isSubtypeOf(chosenTypeToTraverse) && TypeUtils.hasOnlyOneCyclicField(path)).toList();
-
-        if (paths.isEmpty()) {
-            return false;
-        }
-
-        Path chosenPath = Utils.getRandomElement(paths);
-        traversal = instantiateTraversalMethod(chosenPath);
         return true;
     }
 
     @Override
     public void mutate(ClassInvariantState state) {
-        state.getCtClass().addMethod(traversal);
+        Path chosenPath = Utils.getRandomElement(paths);
+        CtMethod<?> newTraversal = instantiateTraversalMethod(state.getCtClass(), chosenPath);
+
+        List<CtMethod<?>> existingTraversalsWithSameParameters = MutatorHelper.findTraversalsWithSameParameters(state.getCtClass(), newTraversal);
+        int option = 1;
+        if (!existingTraversalsWithSameParameters.isEmpty()) {
+            option = RandomUtils.nextInt(1, 3);
+        }
+
+        switch (option) {
+            case 1:
+                state.getCtClass().addMethod(newTraversal);
+                break;
+            case 2:
+                CtMethod<?> traversalToReplace = Utils.getRandomElement(existingTraversalsWithSameParameters);
+                traversalToReplace.setBody(newTraversal.getBody());
+                break;
+        }
+
         //System.err.println("DeclareSimpleTraversalMutator:\n" + traversal.toString());
     }
 
-    private CtMethod<?> instantiateTraversalMethod(Path chosenPath) {
+    private CtMethod<?> instantiateTraversalMethod(CtClass<?> ctClass, Path chosenPath) {
         List<CtVariable<?>> loopFields = TypeUtils.getCyclicFieldsOfType(chosenPath.getTypeReference());
 
         CtVariable<?> chosenLoopField = Utils.getRandomElement(loopFields);
@@ -61,7 +71,7 @@ public class DeclareSimpleTraversalMutator implements ClassInvariantMutator {
             splitIndex = RandomUtils.nextInt(2, chosenPath.size());
         }
         boolean checkCircular = RandomUtils.nextBoolean();
-        return SimpleTraversalTemplate.instantiate(chosenPath, chosenLoopField, splitIndex, checkCircular);
+        return SimpleTraversalTemplate.instantiate(ctClass, chosenPath, chosenLoopField, splitIndex, checkCircular);
     }
 
 }

@@ -136,4 +136,18 @@ public class TypeGraph {
         }
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (CtVariable<?> node : adjacencyList.keySet()) {
+            sb.append(node.getSimpleName()).append(" -> ");
+            List<CtVariable<?>> adjacent = adjacencyList.get(node);
+            for (CtVariable<?> adj : adjacent) {
+                sb.append(adj.getSimpleName()).append(", ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
 }

@@ -7,10 +7,7 @@ import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import org.apache.commons.lang3.tuple.Pair;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.ArrayList;
@@ -20,7 +17,7 @@ import java.util.Set;
 
 public class SimpleTraversalTemplate {
 
-    public static CtMethod<?> instantiate(Path initialField, CtVariable<?> loopField, int splitIndex, boolean checkCircular) {
+    public static CtMethod<?> instantiate(CtClass<?> ctClass, Path initialField, CtVariable<?> loopField, int splitIndex, boolean checkCircular) {
         Set<ModifierKind> modifiers = new HashSet<>();
         modifiers.add(ModifierKind.PRIVATE);
         modifiers.add(ModifierKind.STATIC);
@@ -31,7 +28,8 @@ public class SimpleTraversalTemplate {
 
         CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().booleanPrimitiveType();
         List<CtParameter<?>> parameters = createParameters(leftPath, initialField.getTypeReference());
-        CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(leftPath.getTypeReference()), parameters);
+        String traversalName = LocalVarHelper.getNextTraversalName(ctClass, LocalVarHelper.TRAVERSAL_PREFIX);
+        CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, traversalName, parameters);
 
         CtBlock<?> traversalBody = createTraversalBody(rightPath, parameters, loopField, checkCircular);
         traversalMethod.setBody(traversalBody);
@@ -46,11 +44,6 @@ public class SimpleTraversalTemplate {
         parameters.add(SpoonFactory.createParameter(setVar.getType(), LocalVarHelper.SET_VAR_NAME));
         return parameters;
     }
-
-    public static String createMethodName(CtTypeReference<?> type) {
-        return LocalVarHelper.TRAVERSAL_PREFIX + type.getSimpleName() + LocalVarHelper.MUTABLE_METHOD_SUFFIX;
-    }
-
 
     private static CtBlock<?> createTraversalBody(Path firstElem, List<CtParameter<?>> params, CtVariable<?> loopField, boolean checkCircular) {
         CtBlock<?> body = SpoonFactory.createBlock();

@@ -38,7 +38,6 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
                 SpoonManager.getSubjectTypeData().getSimplePaths(),
                 initialElement.getType()
         ).stream().filter(TypeUtils::hasOnlyOneCyclicField).toList();
-
         if (pathCandidates.isEmpty()) {
             return false;
         }
@@ -81,6 +80,7 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
         CtStatement insertBeforeLabel = SpoonQueries.getReturnTrueLabel(targetMethodBody);
         MutatorHelper.selectMutationOption(ifStatement, targetMethodBody, insertBeforeLabel, LocalVarHelper.STAGE_2_LABEL);
 
+        //System.err.println("\nInvokeFieldTraversalMutator Invocation: \n" + ifStatement.toString());
         //System.err.println("\n\InvokeFieldTraversalMutator: traversal:\n" + traversal.toString());
         //System.err.println("\InvokeFieldTraversalMutator: AFTER\n" + state.toString());
     }

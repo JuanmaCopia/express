@@ -36,7 +36,7 @@ public class NullComparisonFromInputMutator implements ClassInvariantMutator {
 
         CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
         List<Path> paths = SpoonManager.getSubjectTypeData().getThisTypeGraph().computeSimplePathsForAlternativeVar(traversedElement).stream().filter(
-                p -> p.size() > 1 && TypeUtils.hasOnlyOneCyclicField(p)).toList();
+                p -> p.size() > 1).toList();
         paths = TypeUtils.filterPaths(paths, TypeUtils::isReferenceType).stream().toList();
         if (paths.isEmpty())
             return false;

@@ -46,6 +46,7 @@ public class Express {
     private void printObjectsInformation() {
         System.out.println("\n------------------ Objects Information ------------------\n");
         System.out.println("Positive Objects Collected: " + ObjectGenerator.positiveObjects.size());
+        System.out.println("Negative Initialization Objects Generated: " + ObjectGenerator.negativeInitializationObjects.size());
         System.out.println("Negative Heap Objects Generated: " + ObjectGenerator.negativeHeapObjects.size());
         System.out.println("Negative Primitive Objects Generated: " + ObjectGenerator.negativePrimitiveObjects.size());
     }

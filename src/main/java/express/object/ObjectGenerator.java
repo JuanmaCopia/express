@@ -82,7 +82,7 @@ public class ObjectGenerator {
     }
 
     private static void setAllNegativeObjects() {
-        //allNegativeObjects.addAll(negativeInitializationObjects);
+        allNegativeObjects.addAll(negativeInitializationObjects);
         allNegativeObjects.addAll(negativeHeapObjects);
         allNegativeObjects.addAll(negativePrimitiveObjects);
     }

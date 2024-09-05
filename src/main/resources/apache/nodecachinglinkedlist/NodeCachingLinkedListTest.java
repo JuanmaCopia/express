@@ -48,7 +48,7 @@ public class NodeCachingLinkedListTest {
         NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
         t.add(new Object());
         t.add(new Object());
-        t.add(new Object());
+        t.add(null);
         t.add(new Object());
         t.add(new Object());
         t.removeLast();
@@ -123,7 +123,7 @@ public class NodeCachingLinkedListTest {
         t.add(new Object());
         t.add(new Object());
         t.add(new Object());
-        t.add(new Object());
+        t.add(null);
         t.add(new Object());
         t.add(new Object());
         t.add(new Object());
@@ -136,9 +136,115 @@ public class NodeCachingLinkedListTest {
         t.add(new Object());
         t.add(new Object());
         t.add(new Object());
+        t.add(null);
+        t.add(new Object());
+        t.add(new Object());
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+    }
+
+    @Test
+    public void test11() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
         t.add(new Object());
         t.add(new Object());
         t.add(new Object());
+        t.add(null);
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+    }
+
+    @Test
+    public void test12() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(null);
+        t.add(null);
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(null);
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+    }
+
+    @Test
+    public void test13() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
         t.removeLast();
         t.removeLast();
         t.removeLast();

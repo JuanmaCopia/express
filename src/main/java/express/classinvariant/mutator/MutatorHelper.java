@@ -13,6 +13,7 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.VariableAccessFilter;
+import spoon.reflect.declaration.CtParameter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -203,34 +204,28 @@ public class MutatorHelper {
         CtLocalVariableReference<?> varReference = var.getReference();
         List<CtVariableAccess<?>> accesses = block.getElements(new VariableAccessFilter<>(varReference));
         return accesses.isEmpty();
-        /*if (accesses.isEmpty()) {
-            System.out.println("The variable " + var.getSimpleName() + " is unused in the block.");
-        } else {
-            System.out.println("The variable " + var.getSimpleName() + " is used in the block.");
-        }*/
     }
 
-/*    public static boolean isIfReturnFalse(CtIf ifStatement) {
-        if (ifStatement == null || ifStatement.getThenStatement() == null)
-            return false;
-        if (ifStatement.getThenStatement() instanceof CtBlock<?> ifBlock) {
-            return isReturnFalseBlock(ifBlock);
-        }
-        return isReturnFalseStatement(ifStatement.getThenStatement());
+    public static List<CtMethod<?>> findTraversalsWithSameParameters(CtClass<?> ctClass, CtMethod<?> traversal) {
+        // Get the parameter types of the input method
+        List<CtTypeReference<?>> traversalParamTypes = traversal.getParameters().stream()
+                .map(CtParameter::getType)
+                .collect(Collectors.toList());
+
+        // Compare with other methods in the class
+
+        List<CtMethod<?>> traversals = getMethodsByName(ctClass, LocalVarHelper.TRAVERSAL_PREFIX);
+
+        return traversals.stream()
+                .filter(method -> {
+                    List<CtTypeReference<?>> methodParamTypes = method.getParameters().stream()
+                            .map(CtParameter::getType)
+                            .collect(Collectors.toList());
+                    return traversalParamTypes.equals(methodParamTypes); // Compare parameter types
+                })
+                .collect(Collectors.toList());
     }
 
-    public static boolean isReturnFalseBlock(CtBlock<?> block) {
-        List<CtStatement> statements = block.getStatements();
-        if (statements.isEmpty())
-            return false;
-        CtStatement lastStatement = statements.get(statements.size() - 1);
-        return isReturnFalseStatement(lastStatement);
-    }
-
-    public static boolean isReturnFalseStatement(CtStatement statement) {
-        return statement instanceof CtReturn<?> returnStatement
-                && returnStatement.getReturnedExpression().toString().equals("false");
-    }*/
 
 
 //    public static Path trimPath(Path path) {

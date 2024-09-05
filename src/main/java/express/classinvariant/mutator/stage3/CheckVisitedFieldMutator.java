@@ -23,7 +23,7 @@ public class CheckVisitedFieldMutator implements ClassInvariantMutator {
 
     public boolean isApplicable(ClassInvariantState state) {
         List<Path> paths = SpoonManager.getSubjectTypeData().getReferencePaths().stream().filter(
-                p -> p.size() > 1 && TypeUtils.hasOnlyOneCyclicField(p)
+                p -> p.size() > 1
         ).toList();
         if (paths.isEmpty())
             return false;

@@ -34,14 +34,14 @@ public class NullComparisonFromCurrentMutator implements ClassInvariantMutator {
 
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream()
-                .filter(p -> TypeUtils.isReferenceType(p.getTypeReference()) && !p.isEmpty() && TypeUtils.hasOnlyOneCyclicField(p))
+                .filter(p -> TypeUtils.isReferenceType(p.getTypeReference()) && !p.isEmpty())
                 .toList();
 
         if (candidates.isEmpty()) {
             return false;
         }
 
-        Path chosenPath = candidates.get(RandomUtils.nextInt(candidates.size()));
+        Path chosenPath = Utils.getRandomElement(candidates);
 
         condition = SpoonFactory.generateAndConcatenationOfNullComparisons(chosenPath);
         if (SpoonQueries.checkAlreadyExist(condition, traversalBody))
@@ -55,8 +55,8 @@ public class NullComparisonFromCurrentMutator implements ClassInvariantMutator {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_3_LABEL);
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(traversal.getBody());
         endOfHandleCurrentComment.insertBefore(ifStatement);
-        //System.err.println("\nAddNullCompToTraversalMutator:\n" + ifStatement);
-        //System.err.println("\nAddNullCompToTraversalMutator:\n\n" + traversalBody);
+        //System.err.println("\nNullComparisonFromCurrentMutator:\n" + ifStatement);
+        //System.err.println("\nAddNullCompToTraversalMutator:\n\n" + traversal.getBody());
     }
 
 
