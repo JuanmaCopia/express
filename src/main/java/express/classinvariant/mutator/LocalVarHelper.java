@@ -7,6 +7,8 @@ import spoon.reflect.declaration.CtMethod;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LocalVarHelper {
 
@@ -41,15 +43,21 @@ public class LocalVarHelper {
     public static final Map<String, Integer> idMap = new HashMap<>();
 
     public static String getNextTraversalName(CtClass<?> ctClass, String traversalPrefix) {
-        return traversalPrefix + getNextTraversalId(ctClass, traversalPrefix) + MUTABLE_METHOD_SUFFIX;
+        Set<String> traversalMethodNames = ctClass.getMethods().stream()
+                .map(CtMethod::getSimpleName)
+                .filter(name -> name.startsWith(traversalPrefix))
+                .collect(Collectors.toSet());
+        for (int i = 0; i < traversalMethodNames.size() + 1; i++) {
+            String methodName = createTraversalName(traversalPrefix, i);
+            if (!traversalMethodNames.contains(methodName)) {
+                return methodName;
+            }
+        }
+        throw new RuntimeException("No traversal name available");
     }
 
-    public static int getNextTraversalId(CtClass<?> ctClass, String prefix) {
-        List<String> traversalMethodNames = ctClass.getMethods().stream()
-                .map(CtMethod::getSimpleName)
-                .filter(name -> name.startsWith(prefix))
-                .toList();
-        return traversalMethodNames.size();
+    public static String createTraversalName(String traversalPrefix, int id) {
+        return traversalPrefix + id + MUTABLE_METHOD_SUFFIX;
     }
 
     public static int getNextId(CtBlock<?> code, String varPrefix) {
