@@ -91,7 +91,7 @@ public class Express {
 
         List<Object> survivors = Executor.obtainSurvivors(currentState.getCtClass(), ObjectGenerator.negativeHeapObjects);
         //System.err.println("Survivors: " + survivors.size() + " from " + ObjectGenerator.negativeHeapObjects.size());
-        currentState.setFitness(-survivors.size());
+        currentState.setFitnessAsOutdated();
 
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         // Traversal Declaration Mutators
@@ -126,7 +126,7 @@ public class Express {
 
         List<Object> survivors = Executor.obtainSurvivors(currentState.getCtClass(), ObjectGenerator.negativeHeapObjects);
         //System.err.println("Survivors: " + survivors.size() + " from " + ObjectGenerator.negativeHeapObjects.size());
-        currentState.setFitness(-survivors.size());
+        currentState.setFitnessAsOutdated();
 
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         // Structure Check Mutators
@@ -141,7 +141,7 @@ public class Express {
         // Removals
         mutators.add(new RemoveUnusedLocalVarMutator());
         mutators.add(new RemoveIfStage3Mutator());
-        
+
         ClassInvariantProblem problem = new ClassInvariantProblem(
                 mutators,
                 new LengthFitness(ObjectGenerator.positiveObjects, survivors),

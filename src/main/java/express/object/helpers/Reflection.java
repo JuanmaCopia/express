@@ -136,6 +136,18 @@ public class Reflection {
         return null;
     }
 
+    public static List<Field> getPrimitiveFields(Object object) {
+        return Reflection.getAccessibleFields(object.getClass()).stream()
+                .filter(f -> Types.isPrimitiveOrBoxedPrimitive(f.getType()))
+                .toList();
+    }
+
+    public static List<Field> getReferenceFields(Class<?> type) {
+        return Reflection.getAccessibleFields(type).stream()
+                .filter(f -> !f.getType().isPrimitive())
+                .toList();
+    }
+
     public static List<Field> getAccessibleFields(Object object) {
         return getAccessibleFields(object.getClass());
     }

@@ -5,6 +5,7 @@ import express.execution.Executor;
 import express.object.helpers.Copy;
 import express.object.helpers.Hash;
 import express.object.mutate.ObjectInitializationMutator;
+import express.object.mutate.PrimitiveTypeMutator;
 import express.object.mutate.ReferenceTypeMutator;
 import express.spoon.SpoonManager;
 
@@ -42,6 +43,7 @@ public class ObjectGenerator {
         generatePositiveObjects();
         generateNegativeInitializationObjects();
         generateNegativeHeapObjects();
+        generateNegativePrimitiveObjects();
         setAllNegativeObjects();
     }
 
@@ -73,6 +75,17 @@ public class ObjectGenerator {
                 boolean wasMutated = ReferenceTypeMutator.mutateHeap(copy);
                 if (wasMutated)
                     addObjectIfNotPresent(copy, negativeHeapObjects);
+            }
+        }
+    }
+
+    private static void generateNegativePrimitiveObjects() {
+        for (Object positiveObject : positiveObjects) {
+            for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
+                Object copy = Copy.deepCopy(positiveObject);
+                boolean wasMutated = PrimitiveTypeMutator.mutatePrimitiveValues(copy);
+                if (wasMutated)
+                    negativePrimitiveObjects.add(copy);
             }
         }
     }

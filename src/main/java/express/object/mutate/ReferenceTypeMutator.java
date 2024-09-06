@@ -1,6 +1,7 @@
 package express.object.mutate;
 
 import express.object.helpers.*;
+import express.object.mutate.values.ValueProvider;
 import express.spoon.RandomUtils;
 import express.util.Utils;
 
@@ -61,20 +62,33 @@ public class ReferenceTypeMutator {
         if (!Types.isUserDefinedClass(type))
             throw new IllegalArgumentException("Object to be mutated must be a user-defined class");
 
-        List<Field> fields = Reflection.getAccessibleFields(type);
+        List<Field> fields = Reflection.getReferenceFields(type);
         if (fields.isEmpty())
             return false;
 
-        Field fieldToMutate = selectRandomReferenceField(fields);
+        Field fieldToMutate = Utils.getRandomElement(fields);
+
+        int attempts = 0;
+        boolean mutated = false;
+        do {
+            if (Types.isBoxedPrimitive(fieldToMutate)) {
+                mutated = mutateBoxedPrimitiveField(objectToBeMutated, fieldToMutate);
+            } else {
+                mutated = mutateReferenceField(objectToBeMutated, fieldToMutate, allObjects);
+            }
+        } while (!mutated && attempts++ < 10);
 
         return mutateReferenceField(objectToBeMutated, fieldToMutate, allObjects);
     }
 
-    private static Field selectRandomReferenceField(List<Field> fields) {
-        List<Field> candidates = fields.stream().filter(f -> !Types.isPrimitiveOrBoxedPrimitive(f.getType())).toList();
-        return Utils.getRandomElement(candidates);
+    private static boolean mutateBoxedPrimitiveField(Object targetObject, Field field) {
+        Object currentValue = Reflection.getFieldValue(targetObject, field);
+        if (currentValue == null)
+            Reflection.setFieldValue(targetObject, field, ValueProvider.createNewRandomPrimitiveWrapperValue(field.getType()));
+        else
+            Reflection.setFieldValue(targetObject, field, null);
+        return true;
     }
-
 
     public static boolean mutateReferenceField(Object targetObject, Field field, Collection<Object> allObjects) {
         Class<?> type = field.getType();
