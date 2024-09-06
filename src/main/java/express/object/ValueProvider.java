@@ -1,13 +1,9 @@
 package express.object;
 
+import express.object.helpers.Types;
 import express.util.Utils;
-import sun.misc.Unsafe;
-import sun.reflect.ReflectionFactory;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 public class ValueProvider {
 
@@ -30,7 +26,7 @@ public class ValueProvider {
     }
 
     public static <K> K createNewPrimitiveTypeInstance(Class<K> clazz) throws NewInstanceCreationException {
-        if (TypeChecker.isPrimitiveOrBoxedPrimitive(clazz))
+        if (Types.isPrimitiveOrBoxedPrimitive(clazz))
             return (K) createNewRandomPrimitiveValue(clazz);
         if (clazz.isArray())
             return (K) createNewArrayInstance(clazz);

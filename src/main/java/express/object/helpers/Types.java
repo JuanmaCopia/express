@@ -1,13 +1,15 @@
-package express.object;
+package express.object.helpers;
 
 import express.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-public class TypeChecker {
+public class Types {
 
     // Set of all boxed primitive types
     private static final Set<Class<?>> BOXED_PRIMITIVES = new HashSet<>();
@@ -62,7 +64,7 @@ public class TypeChecker {
             return false;
 
         Class<?> componentType = clazz.getComponentType();
-        return !TypeChecker.isPrimitiveOrBoxedPrimitive(componentType);
+        return !Types.isPrimitiveOrBoxedPrimitive(componentType);
     }
 
     public static boolean isArrayOfPrimitiveType(Class<?> clazz) {
@@ -70,19 +72,19 @@ public class TypeChecker {
             return false;
 
         Class<?> componentType = clazz.getComponentType();
-        return TypeChecker.isPrimitiveOrBoxedPrimitive(componentType);
+        return Types.isPrimitiveOrBoxedPrimitive(componentType);
     }
 
     public static boolean isMapOfReferenceType(Class<?> clazz) {
         if (!Map.class.isAssignableFrom(clazz))
             return false;
 
-        Class<?> typeOfKeys = ReflectionUtils.getGenericClass(clazz, 0);
-        if (typeOfKeys != null && !TypeChecker.isPrimitiveOrBoxedPrimitive(typeOfKeys))
+        Class<?> typeOfKeys = Reflection.getGenericClass(clazz, 0);
+        if (typeOfKeys != null && !Types.isPrimitiveOrBoxedPrimitive(typeOfKeys))
             return true;
 
-        Class<?> typeOfValues = ReflectionUtils.getGenericClass(clazz, 1);
-        if (typeOfValues != null && !TypeChecker.isPrimitiveOrBoxedPrimitive(typeOfValues))
+        Class<?> typeOfValues = Reflection.getGenericClass(clazz, 1);
+        if (typeOfValues != null && !Types.isPrimitiveOrBoxedPrimitive(typeOfValues))
             return true;
 
         return false;
@@ -92,11 +94,11 @@ public class TypeChecker {
         if (!Collection.class.isAssignableFrom(clazz))
             return false;
 
-        Class<?> typeOfObjects = ReflectionUtils.getGenericClass(clazz, 0);
+        Class<?> typeOfObjects = Reflection.getGenericClass(clazz, 0);
         if (typeOfObjects == null)
             return false;
 
-        return !TypeChecker.isPrimitiveOrBoxedPrimitive(typeOfObjects);
+        return !Types.isPrimitiveOrBoxedPrimitive(typeOfObjects);
     }
 
 }

@@ -1,5 +1,7 @@
-package express.object;
+package express.object.helpers;
 
+import express.object.NewInstanceCreationException;
+import express.object.ValueProvider;
 import express.type.typegraph.Path;
 import org.apache.commons.lang3.tuple.Pair;
 import spoon.reflect.declaration.CtVariable;
@@ -8,11 +10,11 @@ import sun.misc.Unsafe;
 import java.lang.reflect.*;
 import java.util.*;
 
-public class ReflectionUtils {
+public class Reflection {
 
     @SuppressWarnings("unchecked")
-    public static <K> K createNewReferenceTypeInstance(Class<K> clazz) throws NewInstanceCreationException {
-        if (TypeChecker.isPrimitiveOrBoxedPrimitive(clazz) || TypeChecker.isArrayOfPrimitiveType(clazz))
+    public static <K> K createNewReferenceTypeInstance(Class<K> clazz) throws express.object.NewInstanceCreationException {
+        if (Types.isPrimitiveOrBoxedPrimitive(clazz) || Types.isArrayOfPrimitiveType(clazz))
             throw new IllegalArgumentException("Class is not of reference type: " + clazz.getName());
         if (clazz.isArray())
             return (K) ValueProvider.createNewArrayInstance(clazz);
@@ -101,20 +103,20 @@ public class ReflectionUtils {
     }
 
     public static Class<?> getGenericClass(Class<?> clazz, int index) {
-        Type[] types = clazz.getGenericSuperclass() instanceof ParameterizedType
+        java.lang.reflect.Type[] types = clazz.getGenericSuperclass() instanceof ParameterizedType
                 ? ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments()
                 : clazz.getGenericInterfaces().length > 0 && clazz.getGenericInterfaces()[0] instanceof ParameterizedType
                 ? ((ParameterizedType) clazz.getGenericInterfaces()[0]).getActualTypeArguments()
                 : null;
 
         if (types != null && types.length > index) {
-            Type type = types[index];
+            java.lang.reflect.Type type = types[index];
             if (type instanceof Class<?>) {
                 return (Class<?>) type;
             } else if (type instanceof ParameterizedType) {
                 return (Class<?>) ((ParameterizedType) type).getRawType();
             } else if (type instanceof GenericArrayType) {
-                Type componentType = ((GenericArrayType) type).getGenericComponentType();
+                java.lang.reflect.Type componentType = ((GenericArrayType) type).getGenericComponentType();
                 if (componentType instanceof Class<?>) {
                     return Array.newInstance((Class<?>) componentType, 0).getClass();
                 }
@@ -143,7 +145,7 @@ public class ReflectionUtils {
         List<Field> accessibleFields = new LinkedList<>(Arrays.stream(clazz.getDeclaredFields()).filter(f -> !Modifier.isStatic(f.getModifiers())).toList());
         Class<?> subClass = clazz;
         Class<?> current = clazz.getSuperclass();
-        while (current != null && TypeChecker.isUserDefinedClass(current)) {
+        while (current != null && Types.isUserDefinedClass(current)) {
             Field[] fields = current.getDeclaredFields();
             for (Field field : fields) {
                 if (!Modifier.isStatic(field.getModifiers()) && !Modifier.isPrivate(field.getModifiers())) {

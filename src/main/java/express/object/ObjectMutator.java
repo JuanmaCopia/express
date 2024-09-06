@@ -1,5 +1,9 @@
 package express.object;
 
+import express.object.helpers.Collect;
+import express.object.helpers.Objects;
+import express.object.helpers.Reflection;
+import express.object.helpers.Types;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonManager;
 import express.type.TypeUtils;
@@ -16,14 +20,14 @@ public class ObjectMutator {
     public static boolean mutateForInitialization(Object rootObject) {
         List<Path> referencePaths = SpoonManager.getSubjectTypeData().getReferencePaths();
         List<Path> candidatePaths = referencePaths.stream().filter(
-                path -> path.size() > 1 && path.size() < 4 && ReflectionUtils.canBeEvaluated(rootObject, path)
+                path -> path.size() > 1 && path.size() < 4 && Reflection.canBeEvaluated(rootObject, path)
         ).toList();
         if (candidatePaths.isEmpty()) {
             return false;
         }
 
         Path chosenPath = Utils.getRandomPath(candidatePaths);
-        Pair<Field, Object> fieldTuple = ReflectionUtils.evaluatePath(rootObject, chosenPath);
+        Pair<Field, Object> fieldTuple = Reflection.evaluatePath(rootObject, chosenPath);
         Field field = fieldTuple.getLeft();
         Object fieldValue = fieldTuple.getRight();
 
@@ -33,8 +37,8 @@ public class ObjectMutator {
         Object newValue;
         if (fieldValue == null) {
             try {
-                newValue = ReflectionUtils.createNewReferenceTypeInstance(field.getType());
-                ReflectionUtils.setPathValue(rootObject, chosenPath, newValue);
+                newValue = Reflection.createNewReferenceTypeInstance(field.getType());
+                Reflection.setPathValue(rootObject, chosenPath, newValue);
             } catch (NewInstanceCreationException e) {
                 throw new RuntimeException(e);
             }
@@ -42,7 +46,7 @@ public class ObjectMutator {
             newValue = null;
         }
 
-        ReflectionUtils.setPathValue(rootObject, chosenPath, newValue);
+        Reflection.setPathValue(rootObject, chosenPath, newValue);
         return true;
     }
 
@@ -52,7 +56,7 @@ public class ObjectMutator {
      * @param rootObject is the object to mutate
      */
     public static boolean mutateHeap(Object rootObject) {
-        Set<Object> reachableObjects = ObjectHelper.collectReachableObjects(rootObject);
+        Set<Object> reachableObjects = Collect.collectReachableObjects(rootObject);
         List<Object> candidates = reachableObjects.stream().filter(ObjectMutator::isMutableHeapObject).toList();
 
         if (candidates.isEmpty())
@@ -66,10 +70,10 @@ public class ObjectMutator {
         if (RandomUtils.nextInt(0, 100) < 30)
             return Utils.getRandomElement(allObjects);
 
-        Set<Class<?>> candidateTypes = ObjectHelper.filterTypes(allObjects);
+        Set<Class<?>> candidateTypes = Objects.filterTypes(allObjects);
 
         Class<?> chosenType = Utils.getRandomElement(candidateTypes);
-        Set<Object> candidatesOfChosenType = ObjectHelper.filterObjectsByType(allObjects, chosenType);
+        Set<Object> candidatesOfChosenType = Objects.filterObjectsByType(allObjects, chosenType);
 
         return Utils.getRandomElement(candidatesOfChosenType);
     }
@@ -78,7 +82,7 @@ public class ObjectMutator {
         if (objectToBeMutated == null)
             throw new IllegalArgumentException("Object to be mutated cannot be null");
 
-        if (TypeChecker.isUserDefinedClass(objectToBeMutated.getClass()))
+        if (Types.isUserDefinedClass(objectToBeMutated.getClass()))
             return mutateHeapUserDefinedObject(objectToBeMutated, reachableObjects);
         if (objectToBeMutated instanceof Collection<?> collection)
             return mutateCollection(collection);
@@ -125,8 +129,8 @@ public class ObjectMutator {
 
     private static <T> boolean addNewInstance(Collection<T> collection) {
         try {
-            Class<T> elementType = ReflectionUtils.getClassOfObjectsInCollection(collection);
-            T newInstance = ReflectionUtils.createNewReferenceTypeInstance(elementType);
+            Class<T> elementType = Reflection.getClassOfObjectsInCollection(collection);
+            T newInstance = Reflection.createNewReferenceTypeInstance(elementType);
             collection.add(newInstance);
             return true;
         } catch (NewInstanceCreationException e) {
@@ -140,8 +144,8 @@ public class ObjectMutator {
             return false;
 
         try {
-            Class<T> elementType = ReflectionUtils.getClassOfObjectsInCollection(collection);
-            T newInstance = ReflectionUtils.createNewReferenceTypeInstance(elementType);
+            Class<T> elementType = Reflection.getClassOfObjectsInCollection(collection);
+            T newInstance = Reflection.createNewReferenceTypeInstance(elementType);
 
             List<T> list = new ArrayList<>(collection);
             int index = Utils.nextInt(list.size());
@@ -220,11 +224,11 @@ public class ObjectMutator {
     }
 
     private static <K, V> boolean addNewEntry(Map<K, V> map) {
-        Class<K> keyClass = ReflectionUtils.getKeyClass(map);
-        Class<V> valueClass = ReflectionUtils.getValueClass(map);
+        Class<K> keyClass = Reflection.getKeyClass(map);
+        Class<V> valueClass = Reflection.getValueClass(map);
         try {
-            K key = ReflectionUtils.createNewReferenceTypeInstance(keyClass);
-            V value = ReflectionUtils.createNewReferenceTypeInstance(valueClass);
+            K key = Reflection.createNewReferenceTypeInstance(keyClass);
+            V value = Reflection.createNewReferenceTypeInstance(valueClass);
             map.put(key, value);
             return true;
         } catch (NewInstanceCreationException e) {
@@ -292,7 +296,7 @@ public class ObjectMutator {
 
         Object newValue = null;
         try {
-            newValue = ReflectionUtils.createNewReferenceTypeInstance(componentType);
+            newValue = Reflection.createNewReferenceTypeInstance(componentType);
         } catch (NewInstanceCreationException e) {
             ObjectGenerator.logger.warning(e.getMessage());
             return false;
@@ -319,10 +323,10 @@ public class ObjectMutator {
 
     private static boolean mutateHeapUserDefinedObject(Object objectToBeMutated, Collection<Object> allObjects) {
         Class<?> type = objectToBeMutated.getClass();
-        if (!TypeChecker.isUserDefinedClass(type))
+        if (!Types.isUserDefinedClass(type))
             throw new IllegalArgumentException("Object to be mutated must be a user-defined class");
 
-        List<Field> fields = ReflectionUtils.getAccessibleFields(type);
+        List<Field> fields = Reflection.getAccessibleFields(type);
         if (fields.isEmpty())
             return false;
 
@@ -332,7 +336,7 @@ public class ObjectMutator {
     }
 
     private static Field selectRandomReferenceField(List<Field> fields) {
-        List<Field> candidates = fields.stream().filter(f -> !TypeChecker.isPrimitiveOrBoxedPrimitive(f.getType())).toList();
+        List<Field> candidates = fields.stream().filter(f -> !Types.isPrimitiveOrBoxedPrimitive(f.getType())).toList();
         return Utils.getRandomElement(candidates);
     }
 
@@ -346,7 +350,7 @@ public class ObjectMutator {
         if (candidates.isEmpty())
             return false;
         Object newValue = Utils.getRandomElement(candidates);
-        ReflectionUtils.setFieldValue(targetObject, field, newValue);
+        Reflection.setFieldValue(targetObject, field, newValue);
         return true;
     }
 
@@ -356,9 +360,9 @@ public class ObjectMutator {
         if (type.isPrimitive())
             throw new IllegalArgumentException("This method is only for reference types");
 
-        Set<Object> candidates = ObjectHelper.filterObjectsByType(allObjects, type);
+        Set<Object> candidates = Objects.filterObjectsByType(allObjects, type);
 
-        Object currentValue = ReflectionUtils.getFieldValue(targetObject, field);
+        Object currentValue = Reflection.getFieldValue(targetObject, field);
         if (currentValue != null) {
             // Add null as a candidate
             candidates.add(null);
@@ -369,7 +373,7 @@ public class ObjectMutator {
 
         Object newInstance = null;
         try {
-            newInstance = ReflectionUtils.createNewReferenceTypeInstance(type);
+            newInstance = Reflection.createNewReferenceTypeInstance(type);
         } catch (NewInstanceCreationException e) {
             if (isMutableHeapClass(type))
                 throw new RuntimeException(e);
@@ -391,13 +395,13 @@ public class ObjectMutator {
     public static boolean isMutableHeapClass(Class<?> clazz) {
         if (clazz == null)
             throw new IllegalArgumentException("Class cannot be null");
-        if (TypeChecker.isUserDefinedClass(clazz))
+        if (Types.isUserDefinedClass(clazz))
             return true;
-        if (TypeChecker.isCollectionOfReferenceType(clazz))
+        if (Types.isCollectionOfReferenceType(clazz))
             return true;
-        if (TypeChecker.isMapOfReferenceType(clazz))
+        if (Types.isMapOfReferenceType(clazz))
             return true;
-        if (TypeChecker.isArrayOfReferenceType(clazz))
+        if (Types.isArrayOfReferenceType(clazz))
             return true;
         return false;
     }

@@ -26,6 +26,30 @@ public class Utils {
         return r.nextBoolean();
     }
 
+    public static byte nextByte(byte min, byte max) {
+        return (byte) (min + r.nextInt(max - min));
+    }
+
+    public static short nextShort(short min, short max) {
+        return (short) (min + r.nextInt(max - min));
+    }
+
+    public static int nextInt(int min, int max) {
+        return min + r.nextInt(max - min);
+    }
+
+    public static long nextLong(long min, long max) {
+        return min + ((long) (r.nextDouble() * (max - min)));
+    }
+
+    public static float nextFloat(float min, float max) {
+        return min + r.nextFloat() * (max - min);
+    }
+
+    public static double nextDouble(double min, double max) {
+        return min + r.nextDouble() * (max - min);
+    }
+
     public static URLClassLoader createClassLoader(URL outputBinURL) {
         return new URLClassLoader(new URL[]{outputBinURL});
     }

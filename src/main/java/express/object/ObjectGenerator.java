@@ -2,6 +2,8 @@ package express.object;
 
 import collector.ObjectCollector;
 import express.execution.Executor;
+import express.object.helpers.Copy;
+import express.object.helpers.Hash;
 import express.spoon.SpoonManager;
 
 import java.util.*;
@@ -51,7 +53,7 @@ public class ObjectGenerator {
     private static void generateNegativeInitializationObjects() {
         for (Object positiveObject : positiveObjects) {
             for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
-                Object copy = ObjectHelper.deepCopy(positiveObject);
+                Object copy = Copy.deepCopy(positiveObject);
                 boolean wasMutated = ObjectMutator.mutateForInitialization(copy);
                 if (wasMutated)
                     addObjectIfNotPresent(copy, negativeInitializationObjects);
@@ -65,7 +67,7 @@ public class ObjectGenerator {
     private static void generateNegativeHeapObjects() {
         for (Object positiveObject : positiveObjects) {
             for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
-                Object copy = ObjectHelper.deepCopy(positiveObject);
+                Object copy = Copy.deepCopy(positiveObject);
                 boolean wasMutated = ObjectMutator.mutateHeap(copy);
                 if (wasMutated)
                     addObjectIfNotPresent(copy, negativeHeapObjects);
@@ -74,7 +76,7 @@ public class ObjectGenerator {
     }
 
     private static void addObjectIfNotPresent(Object object, Collection<Object> collection) {
-        String hash = ObjectHelper.calculateHash(object);
+        String hash = Hash.calculateHash(object);
         if (!hashcodeToObjects.containsKey(hash)) {
             hashcodeToObjects.put(hash, object);
             collection.add(object);
