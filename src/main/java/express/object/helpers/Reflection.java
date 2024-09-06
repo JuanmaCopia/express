@@ -1,7 +1,6 @@
 package express.object.helpers;
 
-import express.object.NewInstanceCreationException;
-import express.object.ValueProvider;
+import express.object.mutate.values.ValueProvider;
 import express.type.typegraph.Path;
 import org.apache.commons.lang3.tuple.Pair;
 import spoon.reflect.declaration.CtVariable;
@@ -13,7 +12,7 @@ import java.util.*;
 public class Reflection {
 
     @SuppressWarnings("unchecked")
-    public static <K> K createNewReferenceTypeInstance(Class<K> clazz) throws express.object.NewInstanceCreationException {
+    public static <K> K createNewReferenceTypeInstance(Class<K> clazz) throws NewInstanceCreationException {
         if (Types.isPrimitiveOrBoxedPrimitive(clazz) || Types.isArrayOfPrimitiveType(clazz))
             throw new IllegalArgumentException("Class is not of reference type: " + clazz.getName());
         if (clazz.isArray())

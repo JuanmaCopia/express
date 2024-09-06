@@ -1,6 +1,6 @@
 package express.object.helpers;
 
-import express.object.ObjectMutator;
+import express.object.mutate.ReferenceTypeMutator;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -21,7 +21,7 @@ public class Collect {
         if (Types.isString(clazz) ||
                 Types.isBoxedPrimitive(clazz) ||
                 !collected.add(object) ||
-                !ObjectMutator.isMutableHeapClass(clazz))
+                !ReferenceTypeMutator.isMutableHeapClass(clazz))
             return;
 
         if (Types.isUserDefinedClass(object.getClass())) {
