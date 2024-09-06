@@ -4,7 +4,7 @@ import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
-import express.util.Utils;
+import express.spoon.RandomUtils;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtMethod;
 
@@ -19,7 +19,7 @@ public class RemoveTraversalMutator implements ClassInvariantMutator {
         if (traversals.isEmpty()) {
             return false;
         }
-        traversal = Utils.getRandomElement(traversals);
+        traversal = RandomUtils.getRandomElement(traversals);
         return true;
     }
 

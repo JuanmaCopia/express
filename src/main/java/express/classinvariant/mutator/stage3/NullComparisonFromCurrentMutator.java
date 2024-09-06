@@ -27,7 +27,7 @@ public class NullComparisonFromCurrentMutator implements ClassInvariantMutator {
             return false;
         }
 
-        traversal = Utils.getRandomElement(traversals);
+        traversal = RandomUtils.getRandomElement(traversals);
         CtBlock<?> traversalBody = traversal.getBody();
 
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(traversalBody, LocalVarHelper.CURRENT_VAR_NAME);
@@ -41,7 +41,7 @@ public class NullComparisonFromCurrentMutator implements ClassInvariantMutator {
             return false;
         }
 
-        Path chosenPath = Utils.getRandomElement(candidates);
+        Path chosenPath = RandomUtils.getRandomElement(candidates);
 
         condition = SpoonFactory.generateAndConcatenationOfNullComparisons(chosenPath);
         if (SpoonQueries.checkAlreadyExist(condition, traversalBody))

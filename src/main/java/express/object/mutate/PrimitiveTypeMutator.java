@@ -4,7 +4,7 @@ import express.object.helpers.Collect;
 import express.object.helpers.Reflection;
 import express.object.helpers.Types;
 import express.object.mutate.values.ValueProvider;
-import express.util.Utils;
+import express.spoon.RandomUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -27,7 +27,7 @@ public class PrimitiveTypeMutator {
         if (Types.isUserDefinedClass(objectToBeMutated.getClass()))
             return mutatePrimitiveField(objectToBeMutated);
         if (Types.isArrayOfPrimitiveType(objectToBeMutated.getClass()))
-            return ArrayMutatorUtils.mutateArray(objectToBeMutated);
+            return ArrayMutatorUtils.mutateArray(objectToBeMutated, null);
 
         throw new IllegalArgumentException("Object to be mutated must be a user-defined class or an array of primitive types");
     }
@@ -37,12 +37,12 @@ public class PrimitiveTypeMutator {
         if (fields.isEmpty())
             return false;
 
-        Field fieldToMutate = Utils.getRandomElement(fields);
+        Field fieldToMutate = RandomUtils.getRandomElement(fields);
 
         Reflection.setFieldValue(objectToBeMutated, fieldToMutate, ValueProvider.createNewInstance(fieldToMutate.getType()));
         return true;
     }
-    
+
     private static boolean isMutableHeapObjectForPrimitiveValues(Object o) {
         if (Types.isArrayOfPrimitiveType(o.getClass()))
             return true;

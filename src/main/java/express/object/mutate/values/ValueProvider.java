@@ -3,7 +3,7 @@ package express.object.mutate.values;
 import express.object.helpers.NewInstanceCreationException;
 import express.object.helpers.Reflection;
 import express.object.helpers.Types;
-import express.util.Utils;
+import express.spoon.RandomUtils;
 
 import java.lang.reflect.Array;
 
@@ -23,6 +23,8 @@ public class ValueProvider {
     public static final double MAX_DOUBLE = 100.0;
     public static final float MAX_FLOAT = 100.0f;
 
+    public static final int MAX_STRING_LENGTH = 10;
+
     @SuppressWarnings("unchecked")
     public static <K> K createNewArrayInstance(Class<K> clazz) {
         if (!clazz.isArray()) {
@@ -30,7 +32,7 @@ public class ValueProvider {
         }
 
         Class<?> componentType = clazz.getComponentType();
-        int length = Utils.nextInt(MAX_INT + 1);
+        int length = RandomUtils.nextInt(MAX_INT + 1);
 
         return (K) Array.newInstance(componentType, length);
     }
@@ -56,44 +58,46 @@ public class ValueProvider {
 
     public static <K> K createNewRandomPrimitiveWrapperValue(Class<K> clazz) {
         if (clazz.equals(Boolean.class))
-            return clazz.cast(Utils.nextBoolean());
+            return clazz.cast(RandomUtils.nextBoolean());
         if (clazz.equals(Byte.class))
-            return clazz.cast(Utils.nextByte(MIN_BYTE, MAX_BYTE));
+            return clazz.cast(RandomUtils.nextByte(MIN_BYTE, MAX_BYTE));
         if (clazz.equals(Character.class))
-            return clazz.cast((char) Utils.nextInt(Character.MAX_VALUE));
+            return clazz.cast((char) RandomUtils.nextInt(Character.MAX_VALUE));
         if (clazz.equals(Short.class))
-            return clazz.cast(Utils.nextShort(MIN_SHORT, MAX_SHORT));
+            return clazz.cast(RandomUtils.nextShort(MIN_SHORT, MAX_SHORT));
         if (clazz.equals(Integer.class))
-            return clazz.cast(Utils.nextInt(MIN_INT, MAX_INT));
+            return clazz.cast(RandomUtils.nextInt(MIN_INT, MAX_INT));
         if (clazz.equals(Long.class))
-            return clazz.cast(Utils.nextLong(MIN_LONG, MAX_LONG));
+            return clazz.cast(RandomUtils.nextLong(MIN_LONG, MAX_LONG));
         if (clazz.equals(Float.class))
-            return clazz.cast(Utils.nextFloat(MIN_FLOAT, MAX_FLOAT));
+            return clazz.cast(RandomUtils.nextFloat(MIN_FLOAT, MAX_FLOAT));
         if (clazz.equals(Double.class))
-            return clazz.cast(Utils.nextDouble(MIN_DOUBLE, MAX_DOUBLE));
+            return clazz.cast(RandomUtils.nextDouble(MIN_DOUBLE, MAX_DOUBLE));
+        if (clazz.equals(String.class))
+            return clazz.cast(RandomUtils.generateRandomString(MAX_STRING_LENGTH));
 
         throw new IllegalArgumentException("Class must be a primitive type or its wrapper.");
     }
 
     public static Object createNewRandomPrimitiveValue(Class<?> clazz) {
         if (clazz.equals(boolean.class))
-            return Utils.nextBoolean();
+            return RandomUtils.nextBoolean();
         if (clazz.equals(byte.class))
-            return Utils.nextByte(MIN_BYTE, MAX_BYTE);
+            return RandomUtils.nextByte(MIN_BYTE, MAX_BYTE);
         if (clazz.equals(char.class))
-            return Utils.nextInt(Character.MAX_VALUE);
+            return RandomUtils.nextInt(Character.MAX_VALUE);
         if (clazz.equals(short.class))
-            return Utils.nextShort(MIN_SHORT, MAX_SHORT);
+            return RandomUtils.nextShort(MIN_SHORT, MAX_SHORT);
         if (clazz.equals(int.class))
-            return Utils.nextInt(MIN_INT, MAX_INT);
+            return RandomUtils.nextInt(MIN_INT, MAX_INT);
         if (clazz.equals(long.class))
-            return Utils.nextLong(MIN_LONG, MAX_LONG);
+            return RandomUtils.nextLong(MIN_LONG, MAX_LONG);
         if (clazz.equals(float.class))
-            return Utils.nextFloat(MIN_FLOAT, MAX_FLOAT);
+            return RandomUtils.nextFloat(MIN_FLOAT, MAX_FLOAT);
         if (clazz.equals(double.class))
-            return Utils.nextDouble(MIN_DOUBLE, MAX_DOUBLE);
+            return RandomUtils.nextDouble(MIN_DOUBLE, MAX_DOUBLE);
 
         throw new IllegalArgumentException("Class must be a primitive type.");
     }
-    
+
 }

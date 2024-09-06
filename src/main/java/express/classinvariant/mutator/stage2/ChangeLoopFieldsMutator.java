@@ -5,9 +5,9 @@ import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.mutator.template.WorklistTraversalTemplate;
 import express.classinvariant.state.ClassInvariantState;
+import express.spoon.RandomUtils;
 import express.spoon.SpoonQueries;
 import express.type.TypeUtils;
-import express.util.Utils;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
@@ -28,7 +28,7 @@ public class ChangeLoopFieldsMutator implements ClassInvariantMutator {
             return false;
         }
 
-        traversal = Utils.getRandomElement(traversals);
+        traversal = RandomUtils.getRandomElement(traversals);
         worklist = SpoonQueries.getTraversalWorklistVariable(traversal);
         if (worklist == null) {
             return false;

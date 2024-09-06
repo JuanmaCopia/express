@@ -10,11 +10,8 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.reference.CtExecutableReference;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class UnifyTraversalInvocationsMutator implements ClassInvariantMutator {
 
@@ -26,7 +23,7 @@ public class UnifyTraversalInvocationsMutator implements ClassInvariantMutator {
         if (traversals.isEmpty()) {
             return false;
         }
-        traversal = (CtMethod<Boolean>) Utils.getRandomElement(traversals);
+        traversal = (CtMethod<Boolean>) RandomUtils.getRandomElement(traversals);
         return true;
     }
 
@@ -55,8 +52,6 @@ public class UnifyTraversalInvocationsMutator implements ClassInvariantMutator {
                 CtInvocation<Boolean> invocation = (CtInvocation<Boolean>) MutatorHelper.extractInvocation(check);
                 invocation.setExecutable(traversal.getReference());
             }
-        }
-        for (CtMethod<?> t : traversals) {
             ctClass.removeMethod(t);
         }
     }

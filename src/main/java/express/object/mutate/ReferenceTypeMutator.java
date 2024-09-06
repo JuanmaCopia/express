@@ -3,7 +3,6 @@ package express.object.mutate;
 import express.object.helpers.*;
 import express.object.mutate.values.ValueProvider;
 import express.spoon.RandomUtils;
-import express.util.Utils;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -30,15 +29,15 @@ public class ReferenceTypeMutator {
     }
 
     static Object selectObjectForMutation(Collection<Object> allObjects) {
-        if (RandomUtils.nextInt(0, 100) < 30)
-            return Utils.getRandomElement(allObjects);
+        if (RandomUtils.nextInt(0, 100) < 10)
+            return RandomUtils.getRandomElement(allObjects);
 
         Set<Class<?>> candidateTypes = Objects.filterTypes(allObjects);
 
-        Class<?> chosenType = Utils.getRandomElement(candidateTypes);
+        Class<?> chosenType = RandomUtils.getRandomElement(candidateTypes);
         Set<Object> candidatesOfChosenType = Objects.filterObjectsByType(allObjects, chosenType);
 
-        return Utils.getRandomElement(candidatesOfChosenType);
+        return RandomUtils.getRandomElement(candidatesOfChosenType);
     }
 
     private static boolean mutateHeapOfObject(Object objectToBeMutated, Collection<Object> reachableObjects) {
@@ -52,7 +51,7 @@ public class ReferenceTypeMutator {
         if (objectToBeMutated instanceof Map<?, ?> map)
             return MapMutatorUtils.mutateMap(map);
         if (objectToBeMutated.getClass().isArray())
-            return ArrayMutatorUtils.mutateArray(objectToBeMutated);
+            return ArrayMutatorUtils.mutateArray(objectToBeMutated, reachableObjects);
 
         return false;
     }
@@ -66,7 +65,7 @@ public class ReferenceTypeMutator {
         if (fields.isEmpty())
             return false;
 
-        Field fieldToMutate = Utils.getRandomElement(fields);
+        Field fieldToMutate = RandomUtils.getRandomElement(fields);
 
         int attempts = 0;
         boolean mutated = false;
@@ -98,7 +97,7 @@ public class ReferenceTypeMutator {
         Set<Object> candidates = calculateCandidateReferenceValues(targetObject, field, allObjects);
         if (candidates.isEmpty())
             return false;
-        Object newValue = Utils.getRandomElement(candidates);
+        Object newValue = RandomUtils.getRandomElement(candidates);
         Reflection.setFieldValue(targetObject, field, newValue);
         return true;
     }

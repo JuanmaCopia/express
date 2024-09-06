@@ -4,12 +4,12 @@ import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
+import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
-import express.util.Utils;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
@@ -34,8 +34,8 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
         if (cyclicFieldsTraversals.isEmpty())
             return false;
 
-        arrayTraversal = Utils.getRandomElement(arrayTraversals);
-        CtMethod<?> cyclicFieldTraversal = Utils.getRandomElement(cyclicFieldsTraversals);
+        arrayTraversal = RandomUtils.getRandomElement(arrayTraversals);
+        CtMethod<?> cyclicFieldTraversal = RandomUtils.getRandomElement(cyclicFieldsTraversals);
         CtTypeReference<?> traversedElementType = SpoonQueries.getTraversedElement(cyclicFieldTraversal).getType();
 
 
@@ -51,7 +51,7 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
         if (candidates.isEmpty())
             return false;
 
-        Path chosenPath = Utils.getRandomPath(candidates);
+        Path chosenPath = RandomUtils.getRandomPath(candidates);
 
         CtVariable<?> formalParameter = SpoonQueries.getTraversalSetParameter(cyclicFieldTraversal);
         CtTypeReference<?> setSubType = TypeUtils.getActualTypeArgument(formalParameter.getType(), 0);

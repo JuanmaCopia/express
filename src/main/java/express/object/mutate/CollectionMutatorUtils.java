@@ -3,7 +3,7 @@ package express.object.mutate;
 import express.object.ObjectGenerator;
 import express.object.helpers.NewInstanceCreationException;
 import express.object.helpers.Reflection;
-import express.util.Utils;
+import express.spoon.RandomUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +17,7 @@ public class CollectionMutatorUtils {
         int attempts = 0;
         do {
             attempts++;
-            int option = Utils.nextInt(5);
+            int option = RandomUtils.nextInt(5);
             success = switch (option) {
                 case 0 -> removeElement(objectToBeMutated);
                 case 1 -> addNewInstance(objectToBeMutated);
@@ -66,7 +66,7 @@ public class CollectionMutatorUtils {
             T newInstance = Reflection.createNewReferenceTypeInstance(elementType);
 
             List<T> list = new ArrayList<>(collection);
-            int index = Utils.nextInt(list.size());
+            int index = RandomUtils.nextInt(list.size());
             list.set(index, newInstance);
 
             collection.clear();
@@ -90,10 +90,10 @@ public class CollectionMutatorUtils {
             return false;
 
         List<T> list = new ArrayList<>(collection);
-        int index1 = Utils.nextInt(list.size());
+        int index1 = RandomUtils.nextInt(list.size());
         int index2;
         do {
-            index2 = Utils.nextInt(list.size());
+            index2 = RandomUtils.nextInt(list.size());
         } while (index1 == index2);
 
         T temp = list.get(index1);

@@ -4,6 +4,7 @@ import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
+import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
@@ -28,7 +29,7 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
             return false;
         }
 
-        CtMethod<?> traversal = Utils.getRandomElement(traversals);
+        CtMethod<?> traversal = RandomUtils.getRandomElement(traversals);
         traversalBody = traversal.getBody();
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(traversalBody,
                 LocalVarHelper.CURRENT_VAR_NAME);
@@ -44,7 +45,7 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
         if (candidates.isEmpty())
             return false;
 
-        Path chosenPath = Utils.getRandomPath(candidates);
+        Path chosenPath = RandomUtils.getRandomPath(candidates);
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(chosenPath);
         clauses.remove(0);
 

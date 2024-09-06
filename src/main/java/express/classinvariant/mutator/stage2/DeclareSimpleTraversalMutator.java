@@ -25,7 +25,7 @@ public class DeclareSimpleTraversalMutator implements ClassInvariantMutator {
     @Override
     public boolean isApplicable(ClassInvariantState state) {
         Set<CtTypeReference<?>> candidateTypes = new HashSet<>(SpoonManager.getSubjectTypeData().getCyclicTypes());
-        CtTypeReference<?> chosenType = Utils.getRandomElement(candidateTypes);
+        CtTypeReference<?> chosenType = RandomUtils.getRandomElement(candidateTypes);
 
         paths = SpoonManager.getSubjectTypeData().getCyclicPaths().stream().filter(
                 path -> path.getTypeReference().isSubtypeOf(chosenType) && TypeUtils.hasOnlyOneCyclicField(path)).toList();
@@ -34,7 +34,7 @@ public class DeclareSimpleTraversalMutator implements ClassInvariantMutator {
 
     @Override
     public void mutate(ClassInvariantState state) {
-        Path chosenPath = Utils.getRandomElement(paths);
+        Path chosenPath = RandomUtils.getRandomElement(paths);
         CtMethod<?> newTraversal = instantiateTraversalMethod(state.getCtClass(), chosenPath);
 
         List<CtMethod<?>> existingTraversalsWithSameParameters = MutatorHelper.findTraversalsWithSameParameters(state.getCtClass(), newTraversal);
@@ -52,7 +52,7 @@ public class DeclareSimpleTraversalMutator implements ClassInvariantMutator {
                 }
                 break;
             case 2:
-                CtMethod<?> traversalToReplace = Utils.getRandomElement(existingTraversalsWithSameParameters);
+                CtMethod<?> traversalToReplace = RandomUtils.getRandomElement(existingTraversalsWithSameParameters);
                 traversalToReplace.setBody(newTraversal.getBody());
                 break;
         }
@@ -63,7 +63,7 @@ public class DeclareSimpleTraversalMutator implements ClassInvariantMutator {
     private CtMethod<?> instantiateTraversalMethod(CtClass<?> ctClass, Path chosenPath) {
         List<CtVariable<?>> loopFields = TypeUtils.getCyclicFieldsOfType(chosenPath.getTypeReference());
 
-        CtVariable<?> chosenLoopField = Utils.getRandomElement(loopFields);
+        CtVariable<?> chosenLoopField = RandomUtils.getRandomElement(loopFields);
 
         int splitIndex;
         if (chosenPath.size() <= 2) {

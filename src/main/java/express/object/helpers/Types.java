@@ -23,6 +23,7 @@ public class Types {
         BOXED_PRIMITIVES.add(Long.class);
         BOXED_PRIMITIVES.add(Float.class);
         BOXED_PRIMITIVES.add(Double.class);
+        BOXED_PRIMITIVES.add(String.class);
     }
 
     public static boolean isBoxedPrimitive(Field field) {

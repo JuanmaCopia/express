@@ -23,8 +23,8 @@ public class Hash {
             hashList.add("null");
         } else if (Types.isUserDefinedClass(object.getClass())) {
             hashObject(object, objToHash, hashList);
-        } else if (Types.isWrapperType(object) || object instanceof String) {
-            // hashList.add(object.getClass().getSimpleName());
+        } else if (Types.isWrapperType(object)) {
+            hashList.add(object.getClass().getSimpleName());
         } else if (object instanceof Collection<?>) {
             hashCollection((Collection<?>) object, objToHash, hashList);
         } else if (object instanceof Map<?, ?>) {

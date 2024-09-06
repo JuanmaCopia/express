@@ -6,16 +6,11 @@ import express.spoon.SpoonFactory;
 import express.spoon.SpoonQueries;
 import express.util.Utils;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.filter.VariableAccessFilter;
-import spoon.reflect.declaration.CtParameter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,12 +31,12 @@ public class MutatorHelper {
         if (!mutableIfs.isEmpty()) {
             option = 2;
         }
-        switch (Utils.nextInt(option)) {
+        switch (RandomUtils.nextInt(option)) {
             case 0:
                 insertBeforeStatement.insertBefore(ifStatement);
                 break;
             case 1:
-                Utils.getRandomElement(mutableIfs).replace(ifStatement);
+                RandomUtils.getRandomElement(mutableIfs).replace(ifStatement);
                 break;
         }
     }
@@ -217,8 +212,8 @@ public class MutatorHelper {
         traversals.remove(traversal);
         for (CtMethod<?> t : new HashSet<>(traversals)) {
             List<CtTypeReference<?>> methodParamTypes = t.getParameters().stream()
-                            .map(CtParameter::getType)
-                            .collect(Collectors.toList());
+                    .map(CtParameter::getType)
+                    .collect(Collectors.toList());
 
             if (!traversalParamTypes.equals(methodParamTypes)) {
                 traversals.remove(t);

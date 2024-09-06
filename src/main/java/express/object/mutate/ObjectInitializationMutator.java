@@ -2,10 +2,10 @@ package express.object.mutate;
 
 import express.object.helpers.NewInstanceCreationException;
 import express.object.helpers.Reflection;
+import express.spoon.RandomUtils;
 import express.spoon.SpoonManager;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
-import express.util.Utils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.reflect.Field;
@@ -22,7 +22,7 @@ public class ObjectInitializationMutator {
             return false;
         }
 
-        Path chosenPath = Utils.getRandomPath(candidatePaths);
+        Path chosenPath = RandomUtils.getRandomPath(candidatePaths);
         Pair<Field, Object> fieldTuple = Reflection.evaluatePath(rootObject, chosenPath);
         Field field = fieldTuple.getLeft();
         Object fieldValue = fieldTuple.getRight();

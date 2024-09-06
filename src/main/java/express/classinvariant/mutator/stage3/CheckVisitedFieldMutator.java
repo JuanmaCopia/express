@@ -28,7 +28,7 @@ public class CheckVisitedFieldMutator implements ClassInvariantMutator {
         if (paths.isEmpty())
             return false;
 
-        Path chosenPath = Utils.getRandomPath(paths);
+        Path chosenPath = RandomUtils.getRandomPath(paths);
         CtTypeReference<?> typeOfPath = chosenPath.getTypeReference();
 
         structureMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
@@ -38,7 +38,7 @@ public class CheckVisitedFieldMutator implements ClassInvariantMutator {
             return false;
         }
 
-        CtLocalVariable<?> setVar = Utils.getRandomElement(visitedSetVars);
+        CtLocalVariable<?> setVar = RandomUtils.getRandomElement(visitedSetVars);
 
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateNullComparisonClauses(chosenPath);
         clauses.remove(0);

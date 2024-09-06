@@ -4,12 +4,12 @@ import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
+import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
-import express.util.Utils;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
@@ -30,7 +30,7 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
             return false;
         }
 
-        CtMethod<?> traversal = Utils.getRandomElement(traversals);
+        CtMethod<?> traversal = RandomUtils.getRandomElement(traversals);
 
         CtVariable<?> array = SpoonQueries.getTraversedElementParameter(traversal);
 
@@ -42,7 +42,7 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         if (pathCandidates.isEmpty())
             return false;
 
-        Path chosenPath = Utils.getRandomPath(pathCandidates);
+        Path chosenPath = RandomUtils.getRandomPath(pathCandidates);
 
         targetMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
 

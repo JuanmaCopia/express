@@ -3,7 +3,7 @@ package express.classinvariant.mutator.stage3;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
-import express.util.Utils;
+import express.spoon.RandomUtils;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtMethod;
@@ -18,7 +18,7 @@ public class RemoveUnusedLocalVarMutator implements ClassInvariantMutator {
 
     public boolean isApplicable(ClassInvariantState state) {
         Set<CtMethod<?>> methods = MutatorHelper.getMutableMethods(state.getCtClass());
-        CtBlock<?> methodBody = Utils.getRandomElement(methods).getBody();
+        CtBlock<?> methodBody = RandomUtils.getRandomElement(methods).getBody();
 
         List<CtLocalVariable<?>> localVars = methodBody.getElements(Objects::nonNull);
         unusedLocalVars = localVars.stream().filter(
@@ -32,7 +32,7 @@ public class RemoveUnusedLocalVarMutator implements ClassInvariantMutator {
 
     @Override
     public void mutate(ClassInvariantState state) {
-        CtLocalVariable<?> chosenVar = Utils.getRandomElement(unusedLocalVars);
+        CtLocalVariable<?> chosenVar = RandomUtils.getRandomElement(unusedLocalVars);
         chosenVar.delete();
         //System.err.println("RemoveUnusedLocalVarMutator:" + chosenVar);
     }

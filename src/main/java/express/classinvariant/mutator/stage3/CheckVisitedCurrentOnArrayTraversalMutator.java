@@ -4,6 +4,7 @@ import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
+import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonQueries;
 import express.util.Utils;
@@ -26,13 +27,13 @@ public class CheckVisitedCurrentOnArrayTraversalMutator implements ClassInvarian
         if (arrayTraversals.isEmpty())
             return false;
 
-        arrayTraversal = Utils.getRandomElement(arrayTraversals);
+        arrayTraversal = RandomUtils.getRandomElement(arrayTraversals);
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(
                 arrayTraversal.getBody(), LocalVarHelper.CURRENT_VAR_NAME
         );
         CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(arrayTraversal);
         CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(visitedSetVar, currentDeclaration);
-        if (Utils.nextBoolean())
+        if (RandomUtils.nextBoolean())
             addToSetInvocation = SpoonFactory.negateExpresion(addToSetInvocation);
 
         condition = addToSetInvocation;

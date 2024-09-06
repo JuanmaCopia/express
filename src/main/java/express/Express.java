@@ -106,7 +106,6 @@ public class Express {
         mutators.add(new InvokeFieldTraversalMutator());
         mutators.add(new InvokeFieldTraversalOnArrayTraversalMutator());
         // Removals
-        //mutators.add(new RemoveTraversalMutator());
         mutators.add(new RemoveIfStage2Mutator());
         mutators.add(new UnifyTraversalInvocationsMutator());
 

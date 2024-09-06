@@ -4,12 +4,12 @@ import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
+import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
-import express.util.Utils;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLocalVariable;
@@ -31,7 +31,7 @@ public class ChangeTraversalRootElement implements ClassInvariantMutator {
             return false;
         }
 
-        traversal = Utils.getRandomElement(traversals);
+        traversal = RandomUtils.getRandomElement(traversals);
         rootElement = SpoonQueries.getLocalVarMatchingPrefix(traversal.getBody(), LocalVarHelper.TRAVERSAL_ROOT_VAR_NAME);
 
         CtExpression rootElementAssignment = rootElement.getDefaultExpression();
@@ -50,7 +50,7 @@ public class ChangeTraversalRootElement implements ClassInvariantMutator {
             return false;
         }
 
-        chosenPath = Utils.getRandomPath(candidates);
+        chosenPath = RandomUtils.getRandomPath(candidates);
 
         return true;
     }

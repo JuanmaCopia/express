@@ -21,7 +21,7 @@ public class RemoveVisitedSetMutator implements ClassInvariantMutator {
             return false;
         }
 
-        chosenSetVar = Utils.getRandomElement(visitedSetVars);
+        chosenSetVar = RandomUtils.getRandomElement(visitedSetVars);
 
         List<CtIf> checks = MutatorHelper.getMutableIfs(structureMethod);
         checksToDelete = new LinkedList<>();

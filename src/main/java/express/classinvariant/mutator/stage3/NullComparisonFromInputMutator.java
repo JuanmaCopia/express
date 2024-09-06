@@ -41,7 +41,7 @@ public class NullComparisonFromInputMutator implements ClassInvariantMutator {
         if (paths.isEmpty())
             return false;
 
-        Path chosenPath = Utils.getRandomElement(paths);
+        Path chosenPath = RandomUtils.getRandomElement(paths);
 
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(chosenPath);
         clauses.remove(0);

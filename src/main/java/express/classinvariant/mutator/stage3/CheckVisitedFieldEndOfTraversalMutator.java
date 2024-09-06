@@ -4,6 +4,7 @@ import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
+import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
@@ -29,7 +30,7 @@ public class CheckVisitedFieldEndOfTraversalMutator implements ClassInvariantMut
         if (traversals.isEmpty()) {
             return false;
         }
-        traversal = Utils.getRandomElement(traversals);
+        traversal = RandomUtils.getRandomElement(traversals);
 
         CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
         CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(traversal);
@@ -44,13 +45,13 @@ public class CheckVisitedFieldEndOfTraversalMutator implements ClassInvariantMut
             System.err.println("Traversal: " + traversal);
         }
 
-        Path chosenPath = Utils.getRandomPath(candidates);
+        Path chosenPath = RandomUtils.getRandomPath(candidates);
 
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateNullComparisonClauses(chosenPath);
         clauses.remove(0);
 
         CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(visitedSetVar, chosenPath.getVariableRead());
-        if (Utils.nextBoolean())
+        if (RandomUtils.nextBoolean())
             addToSetInvocation = SpoonFactory.negateExpresion(addToSetInvocation);
         clauses.add(addToSetInvocation);
         condition = SpoonFactory.conjunction(clauses);

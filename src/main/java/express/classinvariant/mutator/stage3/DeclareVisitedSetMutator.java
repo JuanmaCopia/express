@@ -4,11 +4,11 @@ import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
+import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
 import express.type.typegraph.TypeData;
-import express.util.Utils;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtVariable;
@@ -39,7 +39,7 @@ public class DeclareVisitedSetMutator implements ClassInvariantMutator {
 
     @Override
     public void mutate(ClassInvariantState state) {
-        CtTypeReference<?> chosenType = Utils.getRandomElement(candidateTypes);
+        CtTypeReference<?> chosenType = RandomUtils.getRandomElement(candidateTypes);
         CtVariable<?> setDeclaration = SpoonFactory.createVisitedIdentitySetDeclaration(chosenType);
 
         CtStatement separatorLabel = SpoonQueries.getSeparatorLabelComment(targetMethodBody);

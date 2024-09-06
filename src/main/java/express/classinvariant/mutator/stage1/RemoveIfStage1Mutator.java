@@ -4,7 +4,7 @@ import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
-import express.util.Utils;
+import express.spoon.RandomUtils;
 import spoon.reflect.code.CtIf;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class RemoveIfStage1Mutator implements ClassInvariantMutator {
 
     @Override
     public void mutate(ClassInvariantState state) {
-        Utils.getRandomElement(checks).delete();
+        RandomUtils.getRandomElement(checks).delete();
         //System.err.println("\nRemoveCheckMutator:\n" + chosenCheck);
         //System.err.println("\nFinal Block:\n\n" + blockGene);
     }

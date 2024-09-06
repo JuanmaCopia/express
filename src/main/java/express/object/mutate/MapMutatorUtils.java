@@ -3,7 +3,7 @@ package express.object.mutate;
 import express.object.ObjectGenerator;
 import express.object.helpers.NewInstanceCreationException;
 import express.object.helpers.Reflection;
-import express.util.Utils;
+import express.spoon.RandomUtils;
 
 import java.util.Map;
 
@@ -18,7 +18,7 @@ public class MapMutatorUtils {
         int attempts = 0;
         do {
             attempts++;
-            int option = Utils.nextInt(4);
+            int option = RandomUtils.nextInt(4);
             success = switch (option) {
                 case 0 -> removeRandomEntry(objectToBeMutated);
                 case 1 -> addNewEntry(objectToBeMutated);
@@ -39,7 +39,7 @@ public class MapMutatorUtils {
     private static boolean removeRandomEntry(Map<?, ?> map) {
         if (map.isEmpty())
             return false;
-        int index = Utils.nextInt(map.size());
+        int index = RandomUtils.nextInt(map.size());
         Object key = map.keySet().toArray()[index];
         map.remove(key);
         return true;
