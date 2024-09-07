@@ -88,7 +88,7 @@ public class WorklistTraversalTemplate {
         CtBlock<?> whileBody = SpoonFactory.createBlock();
         // Create current = worklist.removeFirst();
         CtInvocation<?> removeFirstMethodCall = SpoonFactory.createInvocation(worklist, "removeFirst");
-        CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(body), rootElementType, removeFirstMethodCall);
+        CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.CURRENT_VAR_NAME, rootElementType, removeFirstMethodCall);
 
         whileBody.insertEnd(currentDeclaration);
         whileBody.insertEnd(SpoonFactory.createComment("Handle current:"));

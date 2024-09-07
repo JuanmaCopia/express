@@ -443,17 +443,6 @@ public class SpoonFactory {
         return SpoonFactory.createInvocation(setVariable, "add", elemType, argument);
     }
 
-    public static CtIf createVisitedSizeCheck(CtVariable<?> setVariable, CtExpression<?> integerField, int minus) {
-        CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(setVariable, "size");
-        CtExpression<?> sizeMinus = sizeInvocation;
-        if (minus > 0)
-            sizeMinus = createBinaryExpression(sizeInvocation, minus, BinaryOperatorKind.MINUS);
-
-        CtExpression<Boolean> condition = SpoonFactory.createBinaryExpression(sizeMinus, integerField, BinaryOperatorKind.NE);
-        CtReturn<?> returnStatement = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
-        return SpoonFactory.createIfThenStatement(condition, returnStatement);
-    }
-
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName,
                                                 CtTypeReference<?> argsTypes,
                                                 Object arg) {
@@ -483,7 +472,7 @@ public class SpoonFactory {
         CtTypeReference<?> listType = createTypeWithSubtypeReference(LinkedList.class, subType);
         CtTypeReference<?> linkedListType = createTypeWithSubtypeReference(LinkedList.class, subType);
         CtConstructorCall<?> linkedListConstructorCall = createConstructorCall(linkedListType);
-        return createLocalVariable(LocalVarHelper.getWorklistVarName(code), listType, linkedListConstructorCall);
+        return createLocalVariable(LocalVarHelper.WORKLIST_VAR_NAME, listType, linkedListConstructorCall);
     }
 
     public static CtContinue createContinueStatement() {

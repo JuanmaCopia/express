@@ -1,4 +1,4 @@
-package express.classinvariant.mutator.stage3;
+package express.classinvariant.mutator.anystage;
 
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.MutatorHelper;

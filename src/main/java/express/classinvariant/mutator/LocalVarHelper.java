@@ -1,12 +1,8 @@
 package express.classinvariant.mutator;
 
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,14 +29,13 @@ public class LocalVarHelper {
     public static final String CURRENT_VAR_NAME = "current_";
     public static final String TRAVERSAL_PREFIX = "traverse_";
     public static final String ARRAY_TRAVERSAL_PREFIX = "traverseArray_";
-    public static final String SIZE_VAR_NAME = "initialSize_";
+    public static final String INITIAL_SIZE_VAR_NAME = "initialSize_";
     public static final String TRAVERSAL_ROOT_VAR_NAME = "rootElement";
     public static final String TRAVERSED_ELEMENT_VAR_NAME = "subject";
     public static final String ARRAY_PARAM_NAME = "array_";
     public static final String THIS_PARAM_NAME = "_this";
     public static final String ARRAY_VAR_PREFIX = "arrayOf";
 
-    public static final Map<String, Integer> idMap = new HashMap<>();
 
     public static String getNextTraversalName(CtClass<?> ctClass, String traversalPrefix) {
         Set<String> traversalMethodNames = ctClass.getMethods().stream()
@@ -60,43 +55,27 @@ public class LocalVarHelper {
         return traversalPrefix + id + MUTABLE_METHOD_SUFFIX;
     }
 
-    public static int getNextId(CtBlock<?> code, String varPrefix) {
-        if (idMap.containsKey(varPrefix)) {
-            idMap.put(varPrefix, idMap.get(varPrefix) + 1);
-        } else {
-            idMap.put(varPrefix, 0);
+    public static String getStageLabel(int stageNumber) {
+        switch (stageNumber) {
+            case 1:
+                return STAGE_1_LABEL;
+            case 2:
+                return STAGE_2_LABEL;
+            case 3:
+                return STAGE_3_LABEL;
+            case 4:
+                return STAGE_4_LABEL;
+            default:
+                throw new IllegalArgumentException("Invalid stage number");
         }
-        return idMap.get(varPrefix);
     }
 
-    public static String getCurrentVarName(CtBlock<?> code) {
+/*    public static String getCurrentVarName(CtBlock<?> code) {
         return CURRENT_VAR_NAME;
     }
 
-//    public static String getVisitedSetVarName(CtBlock<?> code) {
-//        return SET_VAR_NAME + getNextId(code, SET_VAR_NAME);
-//    }
-
     public static String getWorklistVarName(CtBlock<?> code) {
         return WORKLIST_VAR_NAME;
-    }
-
-    public static String getTraversalMethodName() {
-        return TRAVERSAL_PREFIX;
-    }
-
-//    public static String getTraversalMethodName(CtClass<?> ctClass) {
-//        return TRAVERSAL_ARRAY_PREFIX + getNextTraversalId(ctClass);
-//    }
-//
-//
-//    public static String getTraversalArrayMethodName(CtClass<?> ctClass) {
-//        return TRAVERSAL_ARRAY_PREFIX + getNextTraversalId(ctClass);
-//    }
-
-    public static String getInitialSizeVarName() {
-        return SIZE_VAR_NAME;
-    }
-
+    }*/
 
 }

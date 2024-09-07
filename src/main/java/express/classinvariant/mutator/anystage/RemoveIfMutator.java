@@ -1,4 +1,4 @@
-package express.classinvariant.mutator.stage2;
+package express.classinvariant.mutator.anystage;
 
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
@@ -9,20 +9,24 @@ import spoon.reflect.code.CtIf;
 
 import java.util.List;
 
-public class RemoveIfStage2Mutator implements ClassInvariantMutator {
+public class RemoveIfMutator implements ClassInvariantMutator {
 
     List<CtIf> checks;
+    String stageLabel;
 
+    public RemoveIfMutator(int stageNumber) {
+        stageLabel = LocalVarHelper.getStageLabel(stageNumber);
+    }
+
+    @Override
     public boolean isApplicable(ClassInvariantState state) {
-        checks = MutatorHelper.getMutableIfs(state.getCtClass(), LocalVarHelper.STAGE_2_LABEL);
+        checks = MutatorHelper.getMutableIfs(state.getCtClass(), stageLabel);
         return !checks.isEmpty();
     }
 
     @Override
     public void mutate(ClassInvariantState state) {
         RandomUtils.getRandomElement(checks).delete();
-        //System.err.println("\nRemoveCheckMutator:\n" + chosenCheck);
-        //System.err.println("\nFinal Block:\n\n" + blockGene);
     }
 
 }

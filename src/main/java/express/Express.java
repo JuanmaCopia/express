@@ -2,15 +2,14 @@ package express;
 
 import express.classinvariant.fitness.LengthFitness;
 import express.classinvariant.mutator.ClassInvariantMutator;
+import express.classinvariant.mutator.anystage.RemoveIfMutator;
+import express.classinvariant.mutator.anystage.RemoveUnusedLocalVarMutator;
 import express.classinvariant.mutator.stage1.MultipleNullComparisonMutator;
-import express.classinvariant.mutator.stage1.RemoveIfStage1Mutator;
 import express.classinvariant.mutator.stage1.SingleNullComparisonMutator;
 import express.classinvariant.mutator.stage2.*;
 import express.classinvariant.mutator.stage3.*;
 import express.classinvariant.mutator.stage4.AddSizeCheckMutator;
 import express.classinvariant.mutator.stage4.CheckSizeEndOfTraversalMutator;
-import express.classinvariant.mutator.stage4.RemoveSizeCheckMutator;
-import express.classinvariant.mutator.stage4.RemoveTraversalSizeCheckMutator;
 import express.classinvariant.problem.ClassInvariantProblem;
 import express.classinvariant.search.ClassInvariantSearch;
 import express.classinvariant.state.ClassInvariantState;
@@ -64,7 +63,7 @@ public class Express {
         ClassInvariantState currentState = initializationStageSearch();
         currentState = traversalStageSearch(currentState);
         currentState = startStructureCheckSearch(currentState);
-        // currentState = startPrimitiveCheck(currentState);
+        currentState = startPrimitiveCheck(currentState);
         return currentState;
     }
 
@@ -75,7 +74,7 @@ public class Express {
         mutators.add(new MultipleNullComparisonMutator());
         mutators.add(new SingleNullComparisonMutator());
         // Removals
-        mutators.add(new RemoveIfStage1Mutator());
+        mutators.add(new RemoveIfMutator(1));
         ClassInvariantProblem problem = new ClassInvariantProblem(
                 mutators,
                 new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativeInitializationObjects),
@@ -106,7 +105,7 @@ public class Express {
         mutators.add(new InvokeFieldTraversalMutator());
         mutators.add(new InvokeFieldTraversalOnArrayTraversalMutator());
         // Removals
-        mutators.add(new RemoveIfStage2Mutator());
+        mutators.add(new RemoveIfMutator(2));
         mutators.add(new UnifyTraversalInvocationsMutator());
 
         ClassInvariantProblem problem = new ClassInvariantProblem(
@@ -139,7 +138,7 @@ public class Express {
         mutators.add(new CheckVisitedCurrentOnArrayTraversalMutator());
         // Removals
         mutators.add(new RemoveUnusedLocalVarMutator());
-        mutators.add(new RemoveIfStage3Mutator());
+        mutators.add(new RemoveIfMutator(3));
 
         ClassInvariantProblem problem = new ClassInvariantProblem(
                 mutators,
@@ -152,18 +151,25 @@ public class Express {
         return (ClassInvariantState) simulatedAnnealing.startSearch();
     }
 
-    public ClassInvariantState startPrimitiveCheck(ClassInvariantState initialState) {
-        printStartOfPhase("Primitive Search");
+    public ClassInvariantState startPrimitiveCheck(ClassInvariantState currentState) {
+        printStartOfPhase("Primitive Properties Search", currentState);
+
+        List<Object> survivors = Executor.obtainSurvivors(currentState.getCtClass(), ObjectGenerator.negativePrimitiveObjects);
+        currentState.setFitnessAsOutdated();
+
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         mutators.add(new CheckSizeEndOfTraversalMutator());
         mutators.add(new AddSizeCheckMutator());
-        mutators.add(new RemoveSizeCheckMutator());
-        mutators.add(new RemoveTraversalSizeCheckMutator());
+        // Removals
+        mutators.add(new RemoveIfMutator(4));
+        mutators.add(new RemoveUnusedLocalVarMutator());
+
         ClassInvariantProblem problem = new ClassInvariantProblem(
                 mutators,
-                new LengthFitness(ObjectGenerator.positiveObjects, ObjectGenerator.negativePrimitiveObjects),
-                initialState,
+                new LengthFitness(ObjectGenerator.positiveObjects, survivors),
+                currentState,
                 config.restartRounds);
+
         SimulatedAnnealingSchedule schedule = new SimulatedAnnealingSchedule(config.initialTemperature,
                 config.coolingRate);
         ClassInvariantSearch simulatedAnnealing = new ClassInvariantSearch(problem, schedule);

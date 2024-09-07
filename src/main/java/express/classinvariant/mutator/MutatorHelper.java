@@ -4,7 +4,6 @@ import express.classinvariant.mutator.template.ArrayTraversalTemplate;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonQueries;
-import express.util.Utils;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -237,4 +236,5 @@ public class MutatorHelper {
         }
         ctClass.removeMethod(traversal);
     }
+    
 }

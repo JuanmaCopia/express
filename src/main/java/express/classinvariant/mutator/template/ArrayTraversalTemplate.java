@@ -120,7 +120,7 @@ public class ArrayTraversalTemplate {
         CtArrayRead<?> arrayAccess = SpoonFactory.getFactory().createArrayRead();
         arrayAccess.setTarget(arrayRead);
         arrayAccess.setIndexExpression(indexRead);
-        CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(forBody), arraySubtype, arrayAccess);
+        CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.CURRENT_VAR_NAME, arraySubtype, arrayAccess);
         forBody.insertBegin(currentDeclaration);
         forBody.insertEnd(SpoonFactory.createComment("Handle current:"));
         forBody.insertEnd(SpoonFactory.createComment("End of Handle current:"));

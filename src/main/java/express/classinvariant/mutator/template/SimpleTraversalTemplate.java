@@ -71,7 +71,7 @@ public class SimpleTraversalTemplate {
 
         CtIf firstElemVisitedCheck = SpoonFactory.createVisitedCheck(visitedSet, rootElementRead, true);
 
-        CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.getCurrentVarName(body), rootElementType, rootElementRead);
+        CtLocalVariable<?> currentDeclaration = SpoonFactory.createLocalVariable(LocalVarHelper.CURRENT_VAR_NAME, rootElementType, rootElementRead);
         CtVariableRead<?> currentRead = SpoonFactory.createVariableRead(currentDeclaration);
 
         // create condition: current != null
