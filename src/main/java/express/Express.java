@@ -106,6 +106,7 @@ public class Express {
         mutators.add(new InvokeFieldTraversalOnArrayTraversalMutator());
         // Removals
         mutators.add(new RemoveIfMutator(2));
+        mutators.add(new RemoveUnusedTraversalsMutator());
         mutators.add(new UnifyTraversalInvocationsMutator());
 
         ClassInvariantProblem problem = new ClassInvariantProblem(

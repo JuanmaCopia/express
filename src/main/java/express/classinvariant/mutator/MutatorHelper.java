@@ -26,6 +26,7 @@ public class MutatorHelper {
 
     public static void selectMutationOption(CtIf ifStatement, CtBlock<?> targetMethodBody, CtStatement insertBeforeStatement, String label) {
         List<CtIf> mutableIfs = MutatorHelper.getMutableIfs(targetMethodBody, label);
+
         int option = 1;
         if (!mutableIfs.isEmpty()) {
             option = 2;
@@ -36,6 +37,25 @@ public class MutatorHelper {
                 break;
             case 1:
                 RandomUtils.getRandomElement(mutableIfs).replace(ifStatement);
+                break;
+        }
+    }
+
+    public static void insertOrReplaceCheck(List<CtIf> existentChecks, CtIf newCheck, CtStatement insertBeforeStatement) {
+        int option = 1;
+        if (existentChecks != null && !existentChecks.isEmpty()) {
+            option = 2;
+        }
+        switch (RandomUtils.nextInt(option)) {
+            case 0:
+                insertBeforeStatement.insertBefore(newCheck);
+                break;
+            case 1:
+                CtIf toReplace = RandomUtils.getRandomElement(existentChecks);
+                //System.out.println("\nReplacing:\n" + toReplace);
+                //System.out.println("\nWith:\n" + newCheck);
+                toReplace.replace(newCheck);
+
                 break;
         }
     }
@@ -221,6 +241,26 @@ public class MutatorHelper {
         return new LinkedList<>(traversals);
     }
 
+    public static List<CtMethod<?>> findTraversalsWithDifferentParameters(CtClass<?> ctClass, CtMethod<?> traversal) {
+        List<CtTypeReference<?>> traversalParamTypes = traversal.getParameters().stream()
+                .map(CtParameter::getType)
+                .collect(Collectors.toList());
+
+        Set<CtMethod<?>> traversals = new HashSet<>(MutatorHelper.getMethodsByName(ctClass, LocalVarHelper.TRAVERSAL_PREFIX));
+        traversals.remove(traversal);
+        for (CtMethod<?> t : new HashSet<>(traversals)) {
+            List<CtTypeReference<?>> methodParamTypes = t.getParameters().stream()
+                    .map(CtParameter::getType)
+                    .collect(Collectors.toList());
+
+            if (traversalParamTypes.equals(methodParamTypes)) {
+                traversals.remove(t);
+            }
+        }
+        return new LinkedList<>(traversals);
+    }
+
+
     public static CtInvocation<?> extractInvocation(CtIf check) {
         List<CtInvocation<?>> invocations = check.getCondition().getElements(new TypeFilter<>(CtInvocation.class));
         if (invocations.isEmpty()) {
@@ -229,12 +269,20 @@ public class MutatorHelper {
         return invocations.get(0);
     }
 
-    public static void removeTraversalFromClass(CtClass<?> ctClass, CtMethod<?> traversal) {
-        List<CtIf> checks = MutatorHelper.getIfsCallingMethod(ctClass, LocalVarHelper.STAGE_2_LABEL, traversal.getSimpleName());
-        for (CtIf check : checks) {
-            check.delete();
+    public static void unifyTraversals(CtClass<?> ctClass, CtMethod<Boolean> traversal, List<CtMethod<?>> traversalsSameParams) {
+        for (CtMethod<?> t : traversalsSameParams) {
+            List<CtIf> checks = MutatorHelper.getIfsCallingMethod(ctClass, LocalVarHelper.STAGE_2_LABEL, t.getSimpleName());
+            for (CtIf check : checks) {
+                CtInvocation<Boolean> invocation = (CtInvocation<Boolean>) MutatorHelper.extractInvocation(check);
+                invocation.setExecutable(traversal.getReference());
+            }
+            ctClass.removeMethod(t);
         }
-        ctClass.removeMethod(traversal);
     }
-    
+
+    public static boolean isUnusedTraversal(CtClass<?> ctClass, CtMethod<?> traversal) {
+        List<CtIf> invocations = MutatorHelper.getIfsCallingMethod(ctClass, LocalVarHelper.STAGE_2_LABEL, traversal.getSimpleName());
+        return invocations.isEmpty();
+    }
+
 }

@@ -81,8 +81,16 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
         }
 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_2_LABEL);
+
+        List<CtIf> invocations = null;
+        List<CtMethod<?>> otherTraversals = MutatorHelper.findTraversalsWithDifferentParameters(state.getCtClass(), traversal);
+        if (!otherTraversals.isEmpty()) {
+            CtMethod<?> chosenTraversal = RandomUtils.getRandomElement(otherTraversals);
+            invocations = MutatorHelper.getIfsCallingMethod(state.getCtClass(), LocalVarHelper.STAGE_2_LABEL, chosenTraversal.getSimpleName());
+        }
+
         CtStatement insertBeforeLabel = SpoonQueries.getReturnTrueLabel(targetMethodBody);
-        MutatorHelper.selectMutationOption(ifStatement, targetMethodBody, insertBeforeLabel, LocalVarHelper.STAGE_2_LABEL);
+        MutatorHelper.insertOrReplaceCheck(invocations, ifStatement, insertBeforeLabel);
 
         //System.err.println("\nInvokeFieldTraversalMutator Invocation: \n" + ifStatement.toString());
         //System.err.println("\n\InvokeFieldTraversalMutator: traversal:\n" + traversal.toString());

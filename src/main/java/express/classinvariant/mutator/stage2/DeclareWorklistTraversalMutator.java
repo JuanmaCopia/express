@@ -8,15 +8,12 @@ import express.spoon.RandomUtils;
 import express.spoon.SpoonManager;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
-import express.util.Utils;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
 
@@ -34,13 +31,17 @@ public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
 
     @Override
     public void mutate(ClassInvariantState state) {
-        Path chosenPath = RandomUtils.getRandomElement(paths);
+        Path chosenPath = RandomUtils.getRandomPath(paths);
         CtMethod<?> newTraversal = instantiateTraversalMethod(state.getCtClass(), chosenPath);
 
         List<CtMethod<?>> existingTraversalsWithSameParameters = MutatorHelper.findTraversalsWithSameParameters(state.getCtClass(), newTraversal);
-        int option = 1;
-        if (!existingTraversalsWithSameParameters.isEmpty()) {
+        int option;
+        if (existingTraversalsWithSameParameters.size() > 1) {
+            option = RandomUtils.nextInt(1, 4);
+        } else if (existingTraversalsWithSameParameters.size() == 1) {
             option = RandomUtils.nextInt(1, 3);
+        } else {
+            option = 1;
         }
 
         switch (option) {
@@ -54,6 +55,10 @@ public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
             case 2:
                 CtMethod<?> traversalToReplace = RandomUtils.getRandomElement(existingTraversalsWithSameParameters);
                 traversalToReplace.setBody(newTraversal.getBody());
+            case 3:
+                CtMethod<Boolean> traversalToUnify = (CtMethod<Boolean>) RandomUtils.getRandomElement(existingTraversalsWithSameParameters);
+                existingTraversalsWithSameParameters.remove(traversalToUnify);
+                MutatorHelper.unifyTraversals(state.getCtClass(), traversalToUnify, existingTraversalsWithSameParameters);
                 break;
         }
 

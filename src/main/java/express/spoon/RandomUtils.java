@@ -128,7 +128,7 @@ public class RandomUtils {
         // Calculate the inverse size weights
         List<Double> weights = new ArrayList<>();
         for (Path path : paths) {
-            weights.add(1.0 / path.size());
+            weights.add(1.0 / (path.size() * path.size()));
         }
 
         // Calculate the total sum of weights
