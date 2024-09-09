@@ -174,4 +174,12 @@ public class RandomUtils {
         // Return the element at the random index
         return list.get(randomIndex);
     }
+
+    public static List<BinaryOperatorKind> getNumericComparisons() {
+        return List.of(BinaryOperatorKind.EQ, BinaryOperatorKind.NE, BinaryOperatorKind.GE, BinaryOperatorKind.GT, BinaryOperatorKind.LE, BinaryOperatorKind.LT);
+    }
+
+    public static BinaryOperatorKind getRandomBinaryOperator() {
+        return getRandomElement(getNumericComparisons());
+    }
 }

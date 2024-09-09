@@ -98,6 +98,10 @@ public class TypeUtils {
                 "java.lang.Boolean".equals(typeName);
     }
 
+    public static boolean isNumericType(CtTypeReference<?> typeRef) {
+        return isIntegerType(typeRef) || isFloatingPointType(typeRef) || isCharType(typeRef);
+    }
+
     public static boolean isIntegerType(CtTypeReference<?> typeRef) {
         String typeName = typeRef.getQualifiedName();
         return "java.lang.Integer".equals(typeName) || "int".equals(typeName) ||
