@@ -239,6 +239,7 @@ public class SpoonFactory {
     }
 
     public static CtLocalVariable<?> createVisitedSetDeclaration(CtTypeReference<?> subType) {
+        subType = TypeUtils.getBoxedPrimitive(subType);
         CtTypeReference<?> setType = createTypeWithSubtypeReference(Set.class, subType);
         CtTypeReference<?> hashSetType = typeFactory.createReference(HashSet.class);
         CtConstructorCall<?> hashSetConstructorCall = createConstructorCall(hashSetType);

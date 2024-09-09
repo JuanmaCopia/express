@@ -1,6 +1,7 @@
 package express.spoon;
 
 import express.classinvariant.mutator.LocalVarHelper;
+import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
@@ -83,8 +84,7 @@ public class SpoonQueries {
     }
 
     public static CtWhile getTraversalLoop(CtBlock<?> block) {
-        return (CtWhile) block.getElements(e -> e instanceof CtWhile).stream()
-                .filter(SpoonQueries::isTraversalLoop).findFirst().orElse(null);
+        return (CtWhile) block.getElements(e -> e instanceof CtWhile).stream().findFirst().orElse(null);
     }
 
     public static CtStatement getEndHandleCurrentComment(CtBlock<?> block) {
@@ -242,6 +242,7 @@ public class SpoonQueries {
     }
 
     public static CtVariable<?> searchVisitedSetInBlock(CtBlock<?> block, CtTypeReference<?> setSubtype) {
+        setSubtype = TypeUtils.getBoxedPrimitive(setSubtype);
         List<CtLocalVariable<?>> visitedSetVars = getLocalVariablesMatchingPrefix(block, LocalVarHelper.SET_VAR_NAME);
         if (visitedSetVars.isEmpty())
             return null;

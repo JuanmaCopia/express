@@ -10,6 +10,7 @@ import express.classinvariant.mutator.stage2.*;
 import express.classinvariant.mutator.stage3.*;
 import express.classinvariant.mutator.stage4.AddSizeCheckMutator;
 import express.classinvariant.mutator.stage4.CheckSizeEndOfTraversalMutator;
+import express.classinvariant.mutator.stage4.CheckVisitedPrimitiveFromCurrentMutator;
 import express.classinvariant.mutator.stage4.PrimitiveComparisonToCurrentMutator;
 import express.classinvariant.problem.ClassInvariantProblem;
 import express.classinvariant.search.ClassInvariantSearch;
@@ -163,6 +164,7 @@ public class Express {
         mutators.add(new CheckSizeEndOfTraversalMutator());
         mutators.add(new AddSizeCheckMutator());
         mutators.add(new PrimitiveComparisonToCurrentMutator());
+        mutators.add(new CheckVisitedPrimitiveFromCurrentMutator());
         // Removals
         mutators.add(new RemoveIfMutator(4));
         mutators.add(new RemoveUnusedLocalVarMutator());

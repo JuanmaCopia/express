@@ -1,13 +1,5 @@
 package express.type;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import express.type.typegraph.Path;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
@@ -19,6 +11,10 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
+
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class TypeUtils {
 
@@ -35,7 +31,7 @@ public class TypeUtils {
     }
 
     public static Set<CtTypeReference<?>> filterTypes(Collection<CtTypeReference<?>> typeRefs,
-            Predicate<CtTypeReference<?>> predicate) {
+                                                      Predicate<CtTypeReference<?>> predicate) {
         Set<CtTypeReference<?>> resultTypes = new HashSet<>();
         for (CtTypeReference<?> typeRef : typeRefs) {
             if (predicate.test(typeRef)) {
@@ -46,7 +42,7 @@ public class TypeUtils {
     }
 
     public static Set<CtVariable<?>> filterFields(Collection<CtVariable<?>> fields,
-            Predicate<CtTypeReference<?>> predicate) {
+                                                  Predicate<CtTypeReference<?>> predicate) {
         Set<CtVariable<?>> resultFields = new HashSet<>();
         for (CtVariable<?> field : fields) {
             if (predicate.test(field.getType())) {
@@ -98,6 +94,29 @@ public class TypeUtils {
                 "java.lang.Boolean".equals(typeName);
     }
 
+    public static CtTypeReference<?> getBoxedPrimitive(CtTypeReference<?> typeRef) {
+        if (typeRef.isPrimitive()) {
+            String qualifiedName = typeRef.getQualifiedName();
+            if (qualifiedName.equals("int"))
+                return typeRef.getFactory().Type().integerType();
+            if (qualifiedName.equals("long"))
+                return typeRef.getFactory().Type().longType();
+            if (qualifiedName.equals("short"))
+                return typeRef.getFactory().Type().shortType();
+            if (qualifiedName.equals("byte"))
+                return typeRef.getFactory().Type().byteType();
+            if (qualifiedName.equals("float"))
+                return typeRef.getFactory().Type().floatType();
+            if (qualifiedName.equals("double"))
+                return typeRef.getFactory().Type().doubleType();
+            if (qualifiedName.equals("char"))
+                return typeRef.getFactory().Type().characterType();
+            if (qualifiedName.equals("boolean"))
+                return typeRef.getFactory().Type().booleanType();
+        }
+        return typeRef;
+    }
+
     public static boolean isNumericType(CtTypeReference<?> typeRef) {
         return isIntegerType(typeRef) || isFloatingPointType(typeRef) || isCharType(typeRef);
     }
@@ -144,7 +163,7 @@ public class TypeUtils {
 
         CtType<?> typeDeclaration = typeRef.getTypeDeclaration();
         List<CtVariable<?>> cyclicFields = new ArrayList<>();
-        for (CtVariable<?> field :  getAccessibleFields(typeDeclaration)) {
+        for (CtVariable<?> field : getAccessibleFields(typeDeclaration)) {
             if (field.getType().isSubtypeOf(typeRef))
                 cyclicFields.add(field);
         }
@@ -296,4 +315,5 @@ public class TypeUtils {
         }
         return userDefClasses;
     }
+    
 }
