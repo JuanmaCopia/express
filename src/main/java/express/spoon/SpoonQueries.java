@@ -76,11 +76,15 @@ public class SpoonQueries {
         return comment.getContent().equals(LocalVarHelper.RETURN_TRUE_LABEL);
     }
 
-
     public static boolean isSeparatorLabel(CtElement element) {
         if (!(element instanceof CtComment comment))
             return false;
         return comment.getContent().equals(LocalVarHelper.SEPARATOR_LABEL);
+    }
+
+    public static CtWhile getTraversalLoop(CtBlock<?> block) {
+        return (CtWhile) block.getElements(e -> e instanceof CtWhile).stream()
+                .filter(SpoonQueries::isTraversalLoop).findFirst().orElse(null);
     }
 
     public static CtStatement getEndHandleCurrentComment(CtBlock<?> block) {

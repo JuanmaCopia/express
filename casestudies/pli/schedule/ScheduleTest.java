@@ -10,7 +10,7 @@ public class ScheduleTest {
     public void test001() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test001");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         java.lang.Class<?> wildcardClass2 = schedule0.getClass();
         org.junit.Assert.assertEquals("'" + str1 + "' != '"
@@ -24,7 +24,7 @@ public class ScheduleTest {
     public void test002() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test002");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         // The following exception was thrown during execution in test generation
@@ -44,7 +44,7 @@ public class ScheduleTest {
     public void test003() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test003");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         java.lang.String str3 = schedule0.toString();
@@ -69,7 +69,7 @@ public class ScheduleTest {
     public void test004() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test004");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.upgradeProcessPrio((int) (short) -1, (float) 0);
@@ -83,7 +83,7 @@ public class ScheduleTest {
     public void test005() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test005");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (short) 1,
                 (int) 'a');
         // The following exception was thrown during execution in test generation
         try {
@@ -98,7 +98,7 @@ public class ScheduleTest {
     public void test006() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test006");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.blockProcess();
@@ -119,7 +119,7 @@ public class ScheduleTest {
     public void test007() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test007");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -136,7 +136,7 @@ public class ScheduleTest {
     public void test008() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test008");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.addProcess((int) '#');
@@ -150,7 +150,7 @@ public class ScheduleTest {
     public void test009() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test009");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.blockProcess();
@@ -171,7 +171,7 @@ public class ScheduleTest {
     public void test010() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test010");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         // The following exception was thrown during execution in test generation
         try {
             schedule3.unblockProcess((float) (byte) -1);
@@ -185,7 +185,7 @@ public class ScheduleTest {
     public void test011() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test011");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
         schedule3.quantumExpire();
         // The following exception was thrown during execution in test generation
         try {
@@ -200,7 +200,7 @@ public class ScheduleTest {
     public void test012() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test012");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.upgradeProcessPrio((int) (short) -1, 100.0f);
@@ -214,7 +214,7 @@ public class ScheduleTest {
     public void test013() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test013");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (short) 1,
                 (int) 'a');
         // The following exception was thrown during execution in test generation
         try {
@@ -229,7 +229,7 @@ public class ScheduleTest {
     public void test014() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test014");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -246,7 +246,7 @@ public class ScheduleTest {
     public void test015() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test015");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.unblockProcess((float) 100);
@@ -260,7 +260,7 @@ public class ScheduleTest {
     public void test016() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test016");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         // The following exception was thrown during execution in test generation
         try {
@@ -279,7 +279,7 @@ public class ScheduleTest {
     public void test017() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test017");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         java.lang.Class<?> wildcardClass6 = schedule3.getClass();
@@ -290,7 +290,7 @@ public class ScheduleTest {
     public void test018() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test018");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         // The following exception was thrown during execution in test generation
         try {
             schedule0.upgradeProcessPrio((int) (short) 0, 0.0f);
@@ -304,7 +304,7 @@ public class ScheduleTest {
     public void test019() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test019");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -321,7 +321,7 @@ public class ScheduleTest {
     public void test020() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test020");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -342,7 +342,7 @@ public class ScheduleTest {
     public void test021() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test021");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         java.lang.Class<?> wildcardClass5 = schedule3.getClass();
         org.junit.Assert.assertEquals("'" + str4 + "' != '"
@@ -356,7 +356,7 @@ public class ScheduleTest {
     public void test022() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test022");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.finishAllProcesses();
         // The following exception was thrown during execution in test generation
@@ -372,7 +372,7 @@ public class ScheduleTest {
     public void test023() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test023");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         java.lang.String str3 = schedule0.toString();
@@ -391,7 +391,7 @@ public class ScheduleTest {
     public void test024() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test024");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (short) 1,
                 (int) 'a');
         // The following exception was thrown during execution in test generation
         try {
@@ -406,7 +406,7 @@ public class ScheduleTest {
     public void test025() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test025");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.quantumExpire();
         // The following exception was thrown during execution in test generation
         try {
@@ -421,7 +421,7 @@ public class ScheduleTest {
     public void test026() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test026");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         // The following exception was thrown during execution in test generation
@@ -441,7 +441,7 @@ public class ScheduleTest {
     public void test027() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test027");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -459,7 +459,7 @@ public class ScheduleTest {
     public void test028() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test028");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         // The following exception was thrown during execution in test generation
         try {
             schedule0.upgradeProcessPrio((int) (short) 10, (float) 10);
@@ -473,7 +473,7 @@ public class ScheduleTest {
     public void test029() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test029");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -491,7 +491,7 @@ public class ScheduleTest {
     public void test030() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test030");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -508,7 +508,7 @@ public class ScheduleTest {
     public void test031() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test031");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) (short) 0);
         schedule3.blockProcess();
@@ -525,7 +525,7 @@ public class ScheduleTest {
     public void test032() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test032");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -542,7 +542,7 @@ public class ScheduleTest {
     public void test033() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test033");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -559,7 +559,7 @@ public class ScheduleTest {
     public void test034() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test034");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
         schedule3.finishProcess();
         // The following exception was thrown during execution in test generation
         try {
@@ -574,7 +574,7 @@ public class ScheduleTest {
     public void test035() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test035");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (short) 1,
                 (int) 'a');
         java.lang.Class<?> wildcardClass4 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass4);
@@ -584,7 +584,7 @@ public class ScheduleTest {
     public void test036() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test036");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         // The following exception was thrown during execution in test generation
@@ -600,7 +600,7 @@ public class ScheduleTest {
     public void test037() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test037");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
         schedule3.quantumExpire();
         // The following exception was thrown during execution in test generation
         try {
@@ -615,7 +615,7 @@ public class ScheduleTest {
     public void test038() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test038");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -637,7 +637,7 @@ public class ScheduleTest {
     public void test039() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test039");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -649,7 +649,7 @@ public class ScheduleTest {
     public void test040() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test040");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         schedule0.blockProcess();
         java.lang.Class<?> wildcardClass2 = schedule0.getClass();
         org.junit.Assert.assertNotNull(wildcardClass2);
@@ -659,7 +659,7 @@ public class ScheduleTest {
     public void test041() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test041");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         // The following exception was thrown during execution in test generation
         try {
@@ -674,7 +674,7 @@ public class ScheduleTest {
     public void test042() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test042");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.unblockProcess((float) 100);
@@ -688,7 +688,7 @@ public class ScheduleTest {
     public void test043() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test043");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -708,7 +708,7 @@ public class ScheduleTest {
     public void test044() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test044");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -720,7 +720,7 @@ public class ScheduleTest {
     public void test045() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test045");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.blockProcess();
@@ -736,7 +736,7 @@ public class ScheduleTest {
     public void test046() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test046");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -759,7 +759,7 @@ public class ScheduleTest {
     public void test047() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test047");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -774,7 +774,7 @@ public class ScheduleTest {
     public void test048() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test048");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.finishProcess();
@@ -795,7 +795,7 @@ public class ScheduleTest {
     public void test049() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test049");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         java.lang.String str3 = schedule0.toString();
@@ -820,7 +820,7 @@ public class ScheduleTest {
     public void test050() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test050");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         // The following exception was thrown during execution in test generation
         try {
@@ -835,7 +835,7 @@ public class ScheduleTest {
     public void test051() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test051");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -855,7 +855,7 @@ public class ScheduleTest {
     public void test052() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test052");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.blockProcess();
@@ -872,7 +872,7 @@ public class ScheduleTest {
     public void test053() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test053");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -895,7 +895,7 @@ public class ScheduleTest {
     public void test054() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test054");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         // The following exception was thrown during execution in test generation
         try {
@@ -914,7 +914,7 @@ public class ScheduleTest {
     public void test055() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test055");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -933,7 +933,7 @@ public class ScheduleTest {
     public void test056() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test056");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -946,7 +946,7 @@ public class ScheduleTest {
     public void test057() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test057");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
@@ -962,7 +962,7 @@ public class ScheduleTest {
     public void test058() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test058");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -980,7 +980,7 @@ public class ScheduleTest {
     public void test059() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test059");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         // The following exception was thrown during execution in test generation
         try {
             schedule0.addProcess((int) (short) 0);
@@ -994,7 +994,7 @@ public class ScheduleTest {
     public void test060() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test060");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -1012,7 +1012,7 @@ public class ScheduleTest {
     public void test061() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test061");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.blockProcess();
@@ -1033,7 +1033,7 @@ public class ScheduleTest {
     public void test062() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test062");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -1046,7 +1046,7 @@ public class ScheduleTest {
     public void test063() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test063");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.blockProcess();
@@ -1067,7 +1067,7 @@ public class ScheduleTest {
     public void test064() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test064");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.unblockProcess((float) (short) 1);
         // The following exception was thrown during execution in test generation
         try {
@@ -1082,7 +1082,7 @@ public class ScheduleTest {
     public void test065() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test065");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.finishProcess();
     }
@@ -1091,7 +1091,7 @@ public class ScheduleTest {
     public void test066() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test066");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         java.lang.String str3 = schedule0.toString();
@@ -1121,7 +1121,7 @@ public class ScheduleTest {
     public void test067() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test067");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) (short) 0);
         // The following exception was thrown during execution in test generation
@@ -1137,7 +1137,7 @@ public class ScheduleTest {
     public void test068() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test068");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -1157,7 +1157,7 @@ public class ScheduleTest {
     public void test069() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test069");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         // The following exception was thrown during execution in test generation
         try {
@@ -1172,7 +1172,7 @@ public class ScheduleTest {
     public void test070() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test070");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, (int) (byte) 100,
                 (int) (byte) 10);
         java.lang.String str4 = schedule3.toString();
         // The following exception was thrown during execution in test generation
@@ -1192,7 +1192,7 @@ public class ScheduleTest {
     public void test071() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test071");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -1216,7 +1216,7 @@ public class ScheduleTest {
     public void test072() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test072");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.blockProcess();
@@ -1233,7 +1233,7 @@ public class ScheduleTest {
     public void test073() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test073");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -1248,7 +1248,7 @@ public class ScheduleTest {
     public void test074() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test074");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.quantumExpire();
         // The following exception was thrown during execution in test generation
         try {
@@ -1263,7 +1263,7 @@ public class ScheduleTest {
     public void test075() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test075");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.blockProcess();
@@ -1279,7 +1279,7 @@ public class ScheduleTest {
     public void test076() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test076");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -1295,7 +1295,7 @@ public class ScheduleTest {
     public void test077() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test077");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -1312,7 +1312,7 @@ public class ScheduleTest {
     public void test078() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test078");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.blockProcess();
@@ -1327,7 +1327,7 @@ public class ScheduleTest {
     public void test079() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test079");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) 0);
         java.lang.Class<?> wildcardClass6 = schedule3.getClass();
@@ -1338,7 +1338,7 @@ public class ScheduleTest {
     public void test080() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test080");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.finishAllProcesses();
         java.lang.String str5 = schedule3.toString();
@@ -1354,7 +1354,7 @@ public class ScheduleTest {
     public void test081() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test081");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -1378,7 +1378,7 @@ public class ScheduleTest {
     public void test082() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test082");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -1397,7 +1397,7 @@ public class ScheduleTest {
     public void test083() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test083");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -1411,7 +1411,7 @@ public class ScheduleTest {
     public void test084() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test084");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -1423,7 +1423,7 @@ public class ScheduleTest {
     public void test085() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test085");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         schedule0.quantumExpire();
         // The following exception was thrown during execution in test generation
         try {
@@ -1438,7 +1438,7 @@ public class ScheduleTest {
     public void test086() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test086");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -1457,7 +1457,7 @@ public class ScheduleTest {
     public void test087() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test087");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         schedule0.quantumExpire();
         java.lang.Class<?> wildcardClass2 = schedule0.getClass();
         org.junit.Assert.assertNotNull(wildcardClass2);
@@ -1467,7 +1467,7 @@ public class ScheduleTest {
     public void test088() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test088");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         // The following exception was thrown during execution in test generation
         try {
@@ -1482,7 +1482,7 @@ public class ScheduleTest {
     public void test089() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test089");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, (int) (byte) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, (int) (byte) -1,
                 1);
         java.lang.Class<?> wildcardClass4 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass4);
@@ -1492,7 +1492,7 @@ public class ScheduleTest {
     public void test090() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test090");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -1506,7 +1506,7 @@ public class ScheduleTest {
     public void test091() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test091");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         schedule0.quantumExpire();
         // The following exception was thrown during execution in test generation
         try {
@@ -1521,7 +1521,7 @@ public class ScheduleTest {
     public void test092() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test092");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -1543,7 +1543,7 @@ public class ScheduleTest {
     public void test093() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test093");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.unblockProcess((float) (short) 1);
         java.lang.String str6 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str6 + "' != '"
@@ -1556,7 +1556,7 @@ public class ScheduleTest {
     public void test094() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test094");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -1574,7 +1574,7 @@ public class ScheduleTest {
     public void test095() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test095");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -1596,7 +1596,7 @@ public class ScheduleTest {
     public void test096() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test096");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
         schedule3.quantumExpire();
         java.lang.Class<?> wildcardClass5 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass5);
@@ -1606,7 +1606,7 @@ public class ScheduleTest {
     public void test097() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test097");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -1624,7 +1624,7 @@ public class ScheduleTest {
     public void test098() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test098");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -1639,7 +1639,7 @@ public class ScheduleTest {
     public void test099() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test099");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.quantumExpire();
         // The following exception was thrown during execution in test generation
@@ -1655,7 +1655,7 @@ public class ScheduleTest {
     public void test100() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test100");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         // The following exception was thrown during execution in test generation
         try {
@@ -1670,7 +1670,7 @@ public class ScheduleTest {
     public void test101() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test101");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.finishAllProcesses();
         // The following exception was thrown during execution in test generation
@@ -1686,7 +1686,7 @@ public class ScheduleTest {
     public void test102() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test102");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         // The following exception was thrown during execution in test generation
         try {
@@ -1701,7 +1701,7 @@ public class ScheduleTest {
     public void test103() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test103");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -1720,7 +1720,7 @@ public class ScheduleTest {
     public void test104() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test104");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.finishAllProcesses();
         schedule3.quantumExpire();
         schedule3.quantumExpire();
@@ -1733,7 +1733,7 @@ public class ScheduleTest {
     public void test105() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test105");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) (short) 0);
         schedule3.blockProcess();
@@ -1745,7 +1745,7 @@ public class ScheduleTest {
     public void test106() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test106");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -1769,7 +1769,7 @@ public class ScheduleTest {
     public void test107() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test107");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -1781,7 +1781,7 @@ public class ScheduleTest {
     public void test108() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test108");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.blockProcess();
@@ -1798,7 +1798,7 @@ public class ScheduleTest {
     public void test109() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test109");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) ' ',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) ' ',
                 (int) (byte) -1);
         java.lang.String str4 = schedule3.toString();
         schedule3.finishAllProcesses();
@@ -1812,7 +1812,7 @@ public class ScheduleTest {
     public void test110() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test110");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, (int) (byte) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, (int) (byte) -1,
                 1);
         schedule3.blockProcess();
     }
@@ -1821,7 +1821,7 @@ public class ScheduleTest {
     public void test111() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test111");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.unblockProcess((float) (byte) 0);
@@ -1842,7 +1842,7 @@ public class ScheduleTest {
     public void test112() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test112");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.addProcess((int) 'a');
@@ -1856,7 +1856,7 @@ public class ScheduleTest {
     public void test113() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test113");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 0,
                 (int) (short) 10);
         schedule3.finishProcess();
         // The following exception was thrown during execution in test generation
@@ -1872,7 +1872,7 @@ public class ScheduleTest {
     public void test114() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test114");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -1892,7 +1892,7 @@ public class ScheduleTest {
     public void test115() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test115");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (-1),
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (-1),
                 (int) (short) 100);
     }
 
@@ -1900,7 +1900,7 @@ public class ScheduleTest {
     public void test116() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test116");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         java.lang.String str3 = schedule0.toString();
@@ -1924,7 +1924,7 @@ public class ScheduleTest {
     public void test117() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test117");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) '#', 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) '#', 10);
         java.lang.Class<?> wildcardClass4 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass4);
     }
@@ -1933,7 +1933,7 @@ public class ScheduleTest {
     public void test118() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test118");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 0,
                 (int) (short) 10);
         schedule3.finishProcess();
         java.lang.String str5 = schedule3.toString();
@@ -1947,7 +1947,7 @@ public class ScheduleTest {
     public void test119() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test119");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.finishProcess();
@@ -1973,7 +1973,7 @@ public class ScheduleTest {
     public void test120() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test120");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         java.lang.String str3 = schedule0.toString();
@@ -1992,7 +1992,7 @@ public class ScheduleTest {
     public void test121() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test121");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -2018,7 +2018,7 @@ public class ScheduleTest {
     public void test122() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test122");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
         schedule3.quantumExpire();
         // The following exception was thrown during execution in test generation
         try {
@@ -2033,7 +2033,7 @@ public class ScheduleTest {
     public void test123() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test123");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.finishAllProcesses();
         schedule3.quantumExpire();
         schedule3.quantumExpire();
@@ -2050,7 +2050,7 @@ public class ScheduleTest {
     public void test124() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test124");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
@@ -2071,7 +2071,7 @@ public class ScheduleTest {
     public void test125() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test125");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 100,
                 (int) (byte) 100);
         schedule3.unblockProcess(0.0f);
         java.lang.Class<?> wildcardClass6 = schedule3.getClass();
@@ -2082,7 +2082,7 @@ public class ScheduleTest {
     public void test126() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test126");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -2095,7 +2095,7 @@ public class ScheduleTest {
     public void test127() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test127");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -2115,7 +2115,7 @@ public class ScheduleTest {
     public void test128() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test128");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) '#', 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) '#', 10);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.upgradeProcessPrio((-1), (float) (byte) 100);
@@ -2129,7 +2129,7 @@ public class ScheduleTest {
     public void test129() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test129");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -2146,7 +2146,7 @@ public class ScheduleTest {
     public void test130() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test130");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -2165,7 +2165,7 @@ public class ScheduleTest {
     public void test131() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test131");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, (int) (short) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, (int) (short) -1,
                 (int) (short) 10);
         schedule3.finishAllProcesses();
     }
@@ -2174,7 +2174,7 @@ public class ScheduleTest {
     public void test132() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test132");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -2198,7 +2198,7 @@ public class ScheduleTest {
     public void test133() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test133");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -2219,7 +2219,7 @@ public class ScheduleTest {
     public void test134() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test134");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 1, (int) (short) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 1, (int) (short) -1,
                 (int) (short) 1);
         // The following exception was thrown during execution in test generation
         try {
@@ -2234,7 +2234,7 @@ public class ScheduleTest {
     public void test135() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test135");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.quantumExpire();
         java.lang.Class<?> wildcardClass5 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass5);
@@ -2244,7 +2244,7 @@ public class ScheduleTest {
     public void test136() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test136");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishProcess();
@@ -2256,7 +2256,7 @@ public class ScheduleTest {
     public void test137() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test137");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
         schedule3.finishProcess();
         // The following exception was thrown during execution in test generation
         try {
@@ -2271,7 +2271,7 @@ public class ScheduleTest {
     public void test138() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test138");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -2289,7 +2289,7 @@ public class ScheduleTest {
     public void test139() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test139");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.quantumExpire();
@@ -2307,7 +2307,7 @@ public class ScheduleTest {
     public void test140() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test140");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, (int) (byte) 10,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, (int) (byte) 10,
                 (int) (byte) 0);
     }
 
@@ -2315,7 +2315,7 @@ public class ScheduleTest {
     public void test141() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test141");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         schedule0.quantumExpire();
         // The following exception was thrown during execution in test generation
         try {
@@ -2330,7 +2330,7 @@ public class ScheduleTest {
     public void test142() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test142");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (byte) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (byte) -1,
                 (int) '#');
         // The following exception was thrown during execution in test generation
         try {
@@ -2345,7 +2345,7 @@ public class ScheduleTest {
     public void test143() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test143");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -2360,7 +2360,7 @@ public class ScheduleTest {
     public void test144() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test144");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
         schedule3.finishProcess();
         schedule3.finishProcess();
     }
@@ -2369,14 +2369,14 @@ public class ScheduleTest {
     public void test145() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test145");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, (int) (byte) 0, (int) (byte) 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, (int) (byte) 0, (int) (byte) 1);
     }
 
     @Test
     public void test146() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test146");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         // The following exception was thrown during execution in test generation
         try {
@@ -2391,7 +2391,7 @@ public class ScheduleTest {
     public void test147() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test147");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -2417,7 +2417,7 @@ public class ScheduleTest {
     public void test148() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test148");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -2431,7 +2431,7 @@ public class ScheduleTest {
     public void test149() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test149");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 1, (int) ' ',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 1, (int) ' ',
                 (int) (byte) 1);
     }
 
@@ -2439,7 +2439,7 @@ public class ScheduleTest {
     public void test150() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test150");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) ' ',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) ' ',
                 (int) (byte) -1);
         java.lang.String str4 = schedule3.toString();
         schedule3.finishProcess();
@@ -2456,7 +2456,7 @@ public class ScheduleTest {
     public void test151() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test151");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.quantumExpire();
         schedule3.blockProcess();
@@ -2473,7 +2473,7 @@ public class ScheduleTest {
     public void test152() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test152");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         schedule0.quantumExpire();
         java.lang.String str2 = schedule0.toString();
         schedule0.blockProcess();
@@ -2487,7 +2487,7 @@ public class ScheduleTest {
     public void test153() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test153");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -2499,7 +2499,7 @@ public class ScheduleTest {
     public void test154() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test154");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) 'a',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) 'a',
                 (int) (byte) -1);
         schedule3.finishProcess();
         // The following exception was thrown during execution in test generation
@@ -2515,14 +2515,14 @@ public class ScheduleTest {
     public void test155() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test155");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 100, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 100, 0);
     }
 
     @Test
     public void test156() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test156");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.finishAllProcesses();
@@ -2543,7 +2543,7 @@ public class ScheduleTest {
     public void test157() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test157");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.finishProcess();
@@ -2559,7 +2559,7 @@ public class ScheduleTest {
     public void test158() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test158");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.quantumExpire();
         schedule3.blockProcess();
@@ -2575,7 +2575,7 @@ public class ScheduleTest {
     public void test159() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test159");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
         schedule3.blockProcess();
         schedule3.finishProcess();
     }
@@ -2584,7 +2584,7 @@ public class ScheduleTest {
     public void test160() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test160");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -2602,7 +2602,7 @@ public class ScheduleTest {
     public void test161() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test161");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) (short) 0);
         schedule3.blockProcess();
@@ -2620,7 +2620,7 @@ public class ScheduleTest {
     public void test162() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test162");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
         java.lang.String str4 = schedule3.toString();
         // The following exception was thrown during execution in test generation
         try {
@@ -2639,7 +2639,7 @@ public class ScheduleTest {
     public void test163() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test163");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         java.lang.String str4 = schedule3.toString();
         schedule3.finishAllProcesses();
@@ -2653,7 +2653,7 @@ public class ScheduleTest {
     public void test164() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test164");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) (short) 0);
         schedule3.quantumExpire();
@@ -2665,7 +2665,7 @@ public class ScheduleTest {
     public void test165() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test165");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.quantumExpire();
@@ -2682,7 +2682,7 @@ public class ScheduleTest {
     public void test166() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test166");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.unblockProcess((float) (byte) 0);
@@ -2704,7 +2704,7 @@ public class ScheduleTest {
     public void test167() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test167");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.quantumExpire();
         schedule3.blockProcess();
@@ -2720,14 +2720,14 @@ public class ScheduleTest {
     public void test168() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test168");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((-1), 100, (int) (short) 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((-1), 100, (int) (short) 0);
     }
 
     @Test
     public void test169() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test169");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         schedule0.blockProcess();
         // The following exception was thrown during execution in test generation
         try {
@@ -2742,7 +2742,7 @@ public class ScheduleTest {
     public void test170() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test170");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 1, (int) 'a',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 1, (int) 'a',
                 (int) (byte) 10);
     }
 
@@ -2750,7 +2750,7 @@ public class ScheduleTest {
     public void test171() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test171");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -2774,7 +2774,7 @@ public class ScheduleTest {
     public void test172() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test172");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) 0);
         schedule3.quantumExpire();
@@ -2784,7 +2784,7 @@ public class ScheduleTest {
     public void test173() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test173");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -2806,7 +2806,7 @@ public class ScheduleTest {
     public void test174() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test174");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.blockProcess();
@@ -2823,7 +2823,7 @@ public class ScheduleTest {
     public void test175() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test175");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -2842,7 +2842,7 @@ public class ScheduleTest {
     public void test176() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test176");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -2863,7 +2863,7 @@ public class ScheduleTest {
     public void test177() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test177");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -2885,7 +2885,7 @@ public class ScheduleTest {
     public void test178() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test178");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.quantumExpire();
         java.lang.String str5 = schedule3.toString();
         schedule3.finishAllProcesses();
@@ -2899,7 +2899,7 @@ public class ScheduleTest {
     public void test179() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test179");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -2917,7 +2917,7 @@ public class ScheduleTest {
     public void test180() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test180");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.blockProcess();
@@ -2935,7 +2935,7 @@ public class ScheduleTest {
     public void test181() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test181");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, (int) (short) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, (int) (short) -1,
                 (int) (short) 10);
         java.lang.String str4 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str4 + "' != '"
@@ -2948,7 +2948,7 @@ public class ScheduleTest {
     public void test182() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test182");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 10,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 10,
                 0);
         schedule3.finishProcess();
     }
@@ -2957,7 +2957,7 @@ public class ScheduleTest {
     public void test183() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test183");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) (byte) 0,
                 (int) '#');
         // The following exception was thrown during execution in test generation
         try {
@@ -2972,7 +2972,7 @@ public class ScheduleTest {
     public void test184() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test184");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.finishAllProcesses();
         java.lang.Class<?> wildcardClass5 = schedule3.getClass();
@@ -2983,7 +2983,7 @@ public class ScheduleTest {
     public void test185() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test185");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishAllProcesses();
@@ -2994,7 +2994,7 @@ public class ScheduleTest {
     public void test186() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test186");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, (int) (byte) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, (int) (byte) -1,
                 (int) (byte) -1);
     }
 
@@ -3002,7 +3002,7 @@ public class ScheduleTest {
     public void test187() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test187");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.quantumExpire();
         schedule3.finishProcess();
     }
@@ -3011,7 +3011,7 @@ public class ScheduleTest {
     public void test188() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test188");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) ' ',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) ' ',
                 (int) (byte) -1);
         java.lang.String str4 = schedule3.toString();
         schedule3.finishProcess();
@@ -3034,7 +3034,7 @@ public class ScheduleTest {
     public void test189() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test189");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.finishProcess();
@@ -3049,7 +3049,7 @@ public class ScheduleTest {
     public void test190() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test190");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.unblockProcess((float) (byte) 0);
@@ -3075,7 +3075,7 @@ public class ScheduleTest {
     public void test191() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test191");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
@@ -3085,7 +3085,7 @@ public class ScheduleTest {
     public void test192() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test192");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -3107,7 +3107,7 @@ public class ScheduleTest {
     public void test193() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test193");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -3124,7 +3124,7 @@ public class ScheduleTest {
     public void test194() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test194");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.quantumExpire();
         schedule3.finishAllProcesses();
         schedule3.quantumExpire();
@@ -3134,7 +3134,7 @@ public class ScheduleTest {
     public void test195() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test195");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         schedule3.blockProcess();
         java.lang.Class<?> wildcardClass5 = schedule3.getClass();
@@ -3145,7 +3145,7 @@ public class ScheduleTest {
     public void test196() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test196");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, 100,
                 (int) (byte) 10);
     }
 
@@ -3153,7 +3153,7 @@ public class ScheduleTest {
     public void test197() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test197");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -3174,7 +3174,7 @@ public class ScheduleTest {
     public void test198() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test198");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.finishAllProcesses();
@@ -3200,7 +3200,7 @@ public class ScheduleTest {
     public void test199() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test199");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishProcess();
@@ -3218,7 +3218,7 @@ public class ScheduleTest {
     public void test200() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test200");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, (int) (byte) 100,
                 (int) (byte) 10);
         schedule3.unblockProcess((float) 0);
         schedule3.finishAllProcesses();
@@ -3236,7 +3236,7 @@ public class ScheduleTest {
     public void test201() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test201");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, (-1), (int) (short) 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, (-1), (int) (short) 1);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.upgradeProcessPrio((-1), (float) ' ');
@@ -3250,7 +3250,7 @@ public class ScheduleTest {
     public void test202() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test202");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -3273,7 +3273,7 @@ public class ScheduleTest {
     public void test203() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test203");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.finishAllProcesses();
         java.lang.Class<?> wildcardClass5 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass5);
@@ -3283,7 +3283,7 @@ public class ScheduleTest {
     public void test204() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test204");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishProcess();
@@ -3301,7 +3301,7 @@ public class ScheduleTest {
     public void test205() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test205");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         schedule3.blockProcess();
         schedule3.quantumExpire();
@@ -3311,7 +3311,7 @@ public class ScheduleTest {
     public void test206() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test206");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) (short) 0);
         // The following exception was thrown during execution in test generation
@@ -3327,7 +3327,7 @@ public class ScheduleTest {
     public void test207() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test207");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (short) 1,
                 (int) 'a');
         schedule3.finishProcess();
         schedule3.quantumExpire();
@@ -3337,7 +3337,7 @@ public class ScheduleTest {
     public void test208() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test208");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 0,
                 (int) (short) 10);
         schedule3.finishProcess();
         schedule3.blockProcess();
@@ -3348,7 +3348,7 @@ public class ScheduleTest {
     public void test209() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test209");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((-1), 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((-1), 0, 0);
         schedule3.finishProcess();
         schedule3.finishAllProcesses();
     }
@@ -3357,7 +3357,7 @@ public class ScheduleTest {
     public void test210() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test210");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (short) 1,
                 (int) 'a');
         schedule3.finishAllProcesses();
     }
@@ -3366,7 +3366,7 @@ public class ScheduleTest {
     public void test211() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test211");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) 'a', 1, 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) 'a', 1, 10);
         schedule3.finishAllProcesses();
         schedule3.quantumExpire();
     }
@@ -3375,7 +3375,7 @@ public class ScheduleTest {
     public void test212() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test212");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -3394,7 +3394,7 @@ public class ScheduleTest {
     public void test213() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test213");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -3408,7 +3408,7 @@ public class ScheduleTest {
     public void test214() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test214");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -3432,7 +3432,7 @@ public class ScheduleTest {
     public void test215() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test215");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         java.lang.Class<?> wildcardClass7 = schedule3.getClass();
@@ -3447,7 +3447,7 @@ public class ScheduleTest {
     public void test216() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test216");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) 'a',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) 'a',
                 (int) (byte) -1);
         // The following exception was thrown during execution in test generation
         try {
@@ -3462,7 +3462,7 @@ public class ScheduleTest {
     public void test217() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test217");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, 0, 0);
         schedule3.finishProcess();
         java.lang.Class<?> wildcardClass5 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass5);
@@ -3472,7 +3472,7 @@ public class ScheduleTest {
     public void test218() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test218");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(10, (int) (short) 10,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(10, (int) (short) 10,
                 (int) (byte) -1);
         schedule3.quantumExpire();
     }
@@ -3481,7 +3481,7 @@ public class ScheduleTest {
     public void test219() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test219");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.finishAllProcesses();
@@ -3503,7 +3503,7 @@ public class ScheduleTest {
     public void test220() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test220");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((-1), 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((-1), 0, 0);
         schedule3.finishAllProcesses();
         java.lang.String str5 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str5 + "' != '"
@@ -3516,7 +3516,7 @@ public class ScheduleTest {
     public void test221() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test221");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
         java.lang.Class<?> wildcardClass4 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass4);
     }
@@ -3525,7 +3525,7 @@ public class ScheduleTest {
     public void test222() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test222");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.unblockProcess(0.0f);
         // The following exception was thrown during execution in test generation
@@ -3541,7 +3541,7 @@ public class ScheduleTest {
     public void test223() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test223");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.finishAllProcesses();
         java.lang.String str5 = schedule3.toString();
@@ -3563,7 +3563,7 @@ public class ScheduleTest {
     public void test224() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test224");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -3586,7 +3586,7 @@ public class ScheduleTest {
     public void test225() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test225");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.quantumExpire();
         schedule3.blockProcess();
@@ -3603,7 +3603,7 @@ public class ScheduleTest {
     public void test226() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test226");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -3621,7 +3621,7 @@ public class ScheduleTest {
     public void test227() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test227");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         schedule0.blockProcess();
         schedule0.upgradeProcessPrio((int) (byte) 1, (float) 1L);
         schedule0.blockProcess();
@@ -3631,21 +3631,21 @@ public class ScheduleTest {
     public void test228() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test228");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, (int) '#', 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, (int) '#', 0);
     }
 
     @Test
     public void test229() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test229");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) (byte) 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) (byte) 10);
     }
 
     @Test
     public void test230() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test230");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         java.lang.Class<?> wildcardClass3 = schedule0.getClass();
@@ -3660,7 +3660,7 @@ public class ScheduleTest {
     public void test231() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test231");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -3679,7 +3679,7 @@ public class ScheduleTest {
     public void test232() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test232");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -3692,7 +3692,7 @@ public class ScheduleTest {
     public void test233() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test233");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -3715,7 +3715,7 @@ public class ScheduleTest {
     public void test234() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test234");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.unblockProcess((float) (short) 1);
         // The following exception was thrown during execution in test generation
         try {
@@ -3730,7 +3730,7 @@ public class ScheduleTest {
     public void test235() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test235");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         java.lang.Class<?> wildcardClass3 = schedule0.getClass();
@@ -3745,7 +3745,7 @@ public class ScheduleTest {
     public void test236() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test236");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         java.lang.String str4 = schedule3.toString();
         schedule3.finishProcess();
@@ -3760,7 +3760,7 @@ public class ScheduleTest {
     public void test237() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test237");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.unblockProcess((float) (short) 1);
         schedule3.finishAllProcesses();
         schedule3.blockProcess();
@@ -3772,14 +3772,14 @@ public class ScheduleTest {
     public void test238() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test238");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '4', 100, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '4', 100, 0);
     }
 
     @Test
     public void test239() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test239");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishProcess();
@@ -3790,7 +3790,7 @@ public class ScheduleTest {
     public void test240() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test240");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, (int) (byte) 100,
                 (int) (byte) 10);
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess(0.0f);
@@ -3811,7 +3811,7 @@ public class ScheduleTest {
     public void test241() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test241");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) ' ',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) ' ',
                 (int) (byte) -1);
         java.lang.String str4 = schedule3.toString();
         schedule3.finishProcess();
@@ -3830,7 +3830,7 @@ public class ScheduleTest {
     public void test242() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test242");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) ' ', (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) ' ', (int) '#',
                 (int) (byte) 10);
         // The following exception was thrown during execution in test generation
         try {
@@ -3845,7 +3845,7 @@ public class ScheduleTest {
     public void test243() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test243");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.unblockProcess((float) (byte) 0);
@@ -3862,14 +3862,14 @@ public class ScheduleTest {
     public void test244() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test244");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(1, 100, 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(1, 100, 10);
     }
 
     @Test
     public void test245() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test245");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -3883,7 +3883,7 @@ public class ScheduleTest {
     public void test246() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test246");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.unblockProcess((float) (short) 1);
         schedule3.finishAllProcesses();
         // The following exception was thrown during execution in test generation
@@ -3899,7 +3899,7 @@ public class ScheduleTest {
     public void test247() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test247");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.finishAllProcesses();
@@ -3920,7 +3920,7 @@ public class ScheduleTest {
     public void test248() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test248");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.quantumExpire();
         java.lang.Class<?> wildcardClass5 = schedule3.getClass();
@@ -3931,7 +3931,7 @@ public class ScheduleTest {
     public void test249() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test249");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -3948,7 +3948,7 @@ public class ScheduleTest {
     public void test250() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test250");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) 'a',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) 'a',
                 (int) (byte) -1);
         // The following exception was thrown during execution in test generation
         try {
@@ -3963,7 +3963,7 @@ public class ScheduleTest {
     public void test251() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test251");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -3984,7 +3984,7 @@ public class ScheduleTest {
     public void test252() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test252");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.finishAllProcesses();
         java.lang.String str5 = schedule3.toString();
@@ -4000,7 +4000,7 @@ public class ScheduleTest {
     public void test253() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test253");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) (short) 1,
                 (int) (short) 0);
     }
 
@@ -4008,14 +4008,14 @@ public class ScheduleTest {
     public void test254() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test254");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(10, (int) (short) 10, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(10, (int) (short) 10, 1);
     }
 
     @Test
     public void test255() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test255");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.finishAllProcesses();
         schedule3.quantumExpire();
@@ -4030,7 +4030,7 @@ public class ScheduleTest {
     public void test256() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test256");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -4051,7 +4051,7 @@ public class ScheduleTest {
     public void test257() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test257");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.quantumExpire();
         schedule3.blockProcess();
@@ -4067,7 +4067,7 @@ public class ScheduleTest {
     public void test258() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test258");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -4084,7 +4084,7 @@ public class ScheduleTest {
     public void test259() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test259");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, (int) (byte) 100,
                 (int) (byte) 10);
         schedule3.unblockProcess((float) 0);
         schedule3.finishAllProcesses();
@@ -4101,7 +4101,7 @@ public class ScheduleTest {
     public void test260() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test260");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.quantumExpire();
         schedule3.unblockProcess((float) 1);
@@ -4112,7 +4112,7 @@ public class ScheduleTest {
     public void test261() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test261");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.quantumExpire();
         schedule3.blockProcess();
@@ -4134,7 +4134,7 @@ public class ScheduleTest {
     public void test262() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test262");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -4147,7 +4147,7 @@ public class ScheduleTest {
     public void test263() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test263");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -4172,7 +4172,7 @@ public class ScheduleTest {
     public void test264() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test264");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.finishAllProcesses();
         java.lang.String str5 = schedule3.toString();
@@ -4194,7 +4194,7 @@ public class ScheduleTest {
     public void test265() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test265");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
@@ -4216,7 +4216,7 @@ public class ScheduleTest {
     public void test266() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test266");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.unblockProcess(0.0f);
         java.lang.String str7 = schedule3.toString();
@@ -4232,7 +4232,7 @@ public class ScheduleTest {
     public void test267() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test267");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, (int) (byte) 100,
                 (int) (byte) 10);
         schedule3.finishProcess();
         java.lang.Class<?> wildcardClass5 = schedule3.getClass();
@@ -4243,7 +4243,7 @@ public class ScheduleTest {
     public void test268() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test268");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         java.lang.String str4 = schedule3.toString();
         schedule3.quantumExpire();
@@ -4262,7 +4262,7 @@ public class ScheduleTest {
     public void test269() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test269");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 100,
                 (int) (byte) 100);
         schedule3.blockProcess();
         schedule3.finishProcess();
@@ -4279,7 +4279,7 @@ public class ScheduleTest {
     public void test270() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test270");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -4295,7 +4295,7 @@ public class ScheduleTest {
     public void test271() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test271");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) ' ', (int) (byte) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) ' ', (int) (byte) 1,
                 (int) (short) 10);
     }
 
@@ -4303,7 +4303,7 @@ public class ScheduleTest {
     public void test272() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test272");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -4313,7 +4313,7 @@ public class ScheduleTest {
     public void test273() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test273");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.blockProcess();
@@ -4332,7 +4332,7 @@ public class ScheduleTest {
     public void test274() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test274");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, (int) (byte) 100,
                 (int) (byte) 10);
         java.lang.String str4 = schedule3.toString();
         schedule3.finishProcess();
@@ -4353,7 +4353,7 @@ public class ScheduleTest {
     public void test275() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test275");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -4376,7 +4376,7 @@ public class ScheduleTest {
     public void test276() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test276");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -4389,7 +4389,7 @@ public class ScheduleTest {
     public void test277() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test277");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.finishAllProcesses();
         java.lang.String str5 = schedule3.toString();
@@ -4410,7 +4410,7 @@ public class ScheduleTest {
     public void test278() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test278");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         // The following exception was thrown during execution in test generation
@@ -4430,7 +4430,7 @@ public class ScheduleTest {
     public void test279() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test279");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         schedule0.blockProcess();
         schedule0.upgradeProcessPrio((int) (byte) 1, (float) 1L);
         // The following exception was thrown during execution in test generation
@@ -4446,7 +4446,7 @@ public class ScheduleTest {
     public void test280() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test280");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -4463,7 +4463,7 @@ public class ScheduleTest {
     public void test281() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test281");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -4484,7 +4484,7 @@ public class ScheduleTest {
     public void test282() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test282");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, (int) (byte) 100,
                 (int) (byte) 10);
         schedule3.unblockProcess((float) 0);
         schedule3.finishAllProcesses();
@@ -4502,7 +4502,7 @@ public class ScheduleTest {
     public void test283() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test283");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (short) 1,
                 (int) 'a');
         schedule3.quantumExpire();
         schedule3.finishProcess();
@@ -4513,7 +4513,7 @@ public class ScheduleTest {
     public void test284() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test284");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) 'a', 1, 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) 'a', 1, 10);
         schedule3.finishAllProcesses();
         java.lang.String str5 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str5 + "' != '"
@@ -4526,7 +4526,7 @@ public class ScheduleTest {
     public void test285() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test285");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, 0, 100);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, 0, 100);
         java.lang.String str4 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str4 + "' != '"
                         + "curProc: null\nprio_0: null\nprio_1: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99   |  Last: Visited  |  mem_count: 100\nprio_2: Empty  |  Last: null!  |  mem_count: 0\nprio_3: Empty  |  Last: null!  |  mem_count: 0\nblockQueue: Empty  |  Last: null!  |  mem_count: 0\nnum_processes: 100\n"
@@ -4538,7 +4538,7 @@ public class ScheduleTest {
     public void test286() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test286");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, 0, 0);
         schedule3.finishProcess();
         // The following exception was thrown during execution in test generation
         try {
@@ -4553,7 +4553,7 @@ public class ScheduleTest {
     public void test287() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test287");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         // The following exception was thrown during execution in test generation
         try {
@@ -4568,7 +4568,7 @@ public class ScheduleTest {
     public void test288() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test288");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.finishAllProcesses();
         schedule3.blockProcess();
@@ -4578,7 +4578,7 @@ public class ScheduleTest {
     public void test289() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test289");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         // The following exception was thrown during execution in test generation
@@ -4598,14 +4598,14 @@ public class ScheduleTest {
     public void test290() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test290");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, (int) '#', (int) (short) 100);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, (int) '#', (int) (short) 100);
     }
 
     @Test
     public void test291() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test291");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -4618,7 +4618,7 @@ public class ScheduleTest {
     public void test292() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test292");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         java.lang.String str4 = schedule3.toString();
         // The following exception was thrown during execution in test generation
@@ -4638,7 +4638,7 @@ public class ScheduleTest {
     public void test293() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test293");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         java.lang.String str7 = schedule3.toString();
@@ -4663,7 +4663,7 @@ public class ScheduleTest {
     public void test294() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test294");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         schedule0.quantumExpire();
         java.lang.String str2 = schedule0.toString();
         schedule0.quantumExpire();
@@ -4677,7 +4677,7 @@ public class ScheduleTest {
     public void test295() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test295");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) (byte) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) (byte) -1,
                 (int) (short) 10);
         schedule3.blockProcess();
     }
@@ -4686,7 +4686,7 @@ public class ScheduleTest {
     public void test296() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test296");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.unblockProcess((float) (byte) 0);
@@ -4702,7 +4702,7 @@ public class ScheduleTest {
     public void test297() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test297");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -4713,7 +4713,7 @@ public class ScheduleTest {
     public void test298() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test298");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -4730,7 +4730,7 @@ public class ScheduleTest {
     public void test299() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test299");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -4753,7 +4753,7 @@ public class ScheduleTest {
     public void test300() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test300");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         java.lang.String str4 = schedule3.toString();
         // The following exception was thrown during execution in test generation
@@ -4773,7 +4773,7 @@ public class ScheduleTest {
     public void test301() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test301");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, 0, 0);
         schedule3.finishProcess();
         schedule3.finishAllProcesses();
         // The following exception was thrown during execution in test generation
@@ -4789,7 +4789,7 @@ public class ScheduleTest {
     public void test302() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test302");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         java.lang.String str3 = schedule0.toString();
@@ -4813,7 +4813,7 @@ public class ScheduleTest {
     public void test303() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test303");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) ' ',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) ' ',
                 (int) (byte) -1);
         schedule3.finishAllProcesses();
         // The following exception was thrown during execution in test generation
@@ -4829,7 +4829,7 @@ public class ScheduleTest {
     public void test304() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test304");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) ' ', (int) (short) 10, 100);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) ' ', (int) (short) 10, 100);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.upgradeProcessPrio(0, (float) '4');
@@ -4843,7 +4843,7 @@ public class ScheduleTest {
     public void test305() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test305");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.unblockProcess((float) (short) 1);
         schedule3.finishAllProcesses();
         schedule3.blockProcess();
@@ -4855,7 +4855,7 @@ public class ScheduleTest {
     public void test306() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test306");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         // The following exception was thrown during execution in test generation
@@ -4871,7 +4871,7 @@ public class ScheduleTest {
     public void test307() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test307");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, (-1),
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, (-1),
                 (int) (byte) 10);
     }
 
@@ -4879,7 +4879,7 @@ public class ScheduleTest {
     public void test308() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test308");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -4896,7 +4896,7 @@ public class ScheduleTest {
     public void test309() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test309");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
@@ -4918,7 +4918,7 @@ public class ScheduleTest {
     public void test310() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test310");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishAllProcesses();
@@ -4929,7 +4929,7 @@ public class ScheduleTest {
     public void test311() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test311");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         java.lang.String str4 = schedule3.toString();
         schedule3.finishAllProcesses();
@@ -4943,7 +4943,7 @@ public class ScheduleTest {
     public void test312() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test312");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -4954,7 +4954,7 @@ public class ScheduleTest {
     public void test313() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test313");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, (int) (short) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, (int) (short) -1,
                 (int) (byte) 10);
         // The following exception was thrown during execution in test generation
         try {
@@ -4969,7 +4969,7 @@ public class ScheduleTest {
     public void test314() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test314");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         java.lang.String str4 = schedule3.toString();
         // The following exception was thrown during execution in test generation
@@ -4989,7 +4989,7 @@ public class ScheduleTest {
     public void test315() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test315");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.quantumExpire();
         schedule3.blockProcess();
@@ -5008,7 +5008,7 @@ public class ScheduleTest {
     public void test316() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test316");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.quantumExpire();
@@ -5022,7 +5022,7 @@ public class ScheduleTest {
     public void test317() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test317");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 1, (int) (short) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 1, (int) (short) -1,
                 (int) (byte) 0);
     }
 
@@ -5030,7 +5030,7 @@ public class ScheduleTest {
     public void test318() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test318");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -5056,7 +5056,7 @@ public class ScheduleTest {
     public void test319() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test319");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         schedule0.blockProcess();
         schedule0.finishAllProcesses();
     }
@@ -5065,7 +5065,7 @@ public class ScheduleTest {
     public void test320() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test320");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, (-1), 100);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, (-1), 100);
         schedule3.quantumExpire();
         // The following exception was thrown during execution in test generation
         try {
@@ -5080,7 +5080,7 @@ public class ScheduleTest {
     public void test321() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test321");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) ' ',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) ' ',
                 (int) 'a');
         java.lang.Class<?> wildcardClass4 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass4);
@@ -5090,14 +5090,14 @@ public class ScheduleTest {
     public void test322() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test322");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, (int) (byte) 10, (int) '#');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, (int) (byte) 10, (int) '#');
     }
 
     @Test
     public void test323() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test323");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.finishAllProcesses();
@@ -5121,7 +5121,7 @@ public class ScheduleTest {
     public void test324() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test324");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 1, (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 1, (int) (byte) 100,
                 1);
         // The following exception was thrown during execution in test generation
         try {
@@ -5136,7 +5136,7 @@ public class ScheduleTest {
     public void test325() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test325");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((-1), 10, (-1));
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((-1), 10, (-1));
         // The following exception was thrown during execution in test generation
         try {
             schedule3.upgradeProcessPrio((int) (byte) 100, (float) (short) 100);
@@ -5150,7 +5150,7 @@ public class ScheduleTest {
     public void test326() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test326");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, 100,
                 (int) (byte) 100);
     }
 
@@ -5158,7 +5158,7 @@ public class ScheduleTest {
     public void test327() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test327");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         java.lang.String str3 = schedule0.toString();
@@ -5183,7 +5183,7 @@ public class ScheduleTest {
     public void test328() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test328");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -5198,7 +5198,7 @@ public class ScheduleTest {
     public void test329() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test329");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.finishAllProcesses();
@@ -5214,7 +5214,7 @@ public class ScheduleTest {
     public void test330() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test330");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) 'a',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) 'a',
                 (int) (byte) -1);
         schedule3.finishProcess();
         java.lang.String str5 = schedule3.toString();
@@ -5228,7 +5228,7 @@ public class ScheduleTest {
     public void test331() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test331");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) ' ', (int) (short) 10, 100);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) ' ', (int) (short) 10, 100);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.addProcess((int) (short) -1);
@@ -5242,7 +5242,7 @@ public class ScheduleTest {
     public void test332() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test332");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.finishProcess();
@@ -5262,7 +5262,7 @@ public class ScheduleTest {
     public void test333() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test333");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -5286,7 +5286,7 @@ public class ScheduleTest {
     public void test334() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test334");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -5309,7 +5309,7 @@ public class ScheduleTest {
     public void test335() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test335");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) (byte) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) (byte) -1,
                 (int) (byte) 1);
         schedule3.blockProcess();
         // The following exception was thrown during execution in test generation
@@ -5325,7 +5325,7 @@ public class ScheduleTest {
     public void test336() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test336");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.blockProcess();
         schedule3.blockProcess();
     }
@@ -5334,7 +5334,7 @@ public class ScheduleTest {
     public void test337() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test337");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -5353,7 +5353,7 @@ public class ScheduleTest {
     public void test338() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test338");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.blockProcess();
@@ -5374,7 +5374,7 @@ public class ScheduleTest {
     public void test339() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test339");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishProcess();
@@ -5390,7 +5390,7 @@ public class ScheduleTest {
     public void test340() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test340");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         java.lang.String str4 = schedule3.toString();
         schedule3.finishProcess();
@@ -5411,7 +5411,7 @@ public class ScheduleTest {
     public void test341() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test341");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         java.lang.String str5 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str4 + "' != '"
@@ -5428,7 +5428,7 @@ public class ScheduleTest {
     public void test342() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test342");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -5445,7 +5445,7 @@ public class ScheduleTest {
     public void test343() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test343");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (byte) 0,
                 (int) (byte) 0);
         schedule3.unblockProcess((float) 0);
     }
@@ -5454,7 +5454,7 @@ public class ScheduleTest {
     public void test344() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test344");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.unblockProcess((float) (short) 1);
         schedule3.finishAllProcesses();
         schedule3.blockProcess();
@@ -5466,7 +5466,7 @@ public class ScheduleTest {
     public void test345() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test345");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.blockProcess();
@@ -5483,7 +5483,7 @@ public class ScheduleTest {
     public void test346() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test346");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -5507,7 +5507,7 @@ public class ScheduleTest {
     public void test347() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test347");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, (int) '4',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, (int) '4',
                 (int) (short) 10);
     }
 
@@ -5515,7 +5515,7 @@ public class ScheduleTest {
     public void test348() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test348");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (short) 1,
                 (int) 'a');
         // The following exception was thrown during execution in test generation
         try {
@@ -5530,7 +5530,7 @@ public class ScheduleTest {
     public void test349() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test349");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 0,
                 (int) (short) 10);
         java.lang.String str4 = schedule3.toString();
         java.lang.Class<?> wildcardClass5 = schedule3.getClass();
@@ -5545,7 +5545,7 @@ public class ScheduleTest {
     public void test350() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test350");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, 10);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.upgradeProcessPrio((int) (byte) 100, (float) 'a');
@@ -5559,7 +5559,7 @@ public class ScheduleTest {
     public void test351() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test351");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (short) 0, 0);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.unblockProcess((float) (short) 10);
@@ -5573,7 +5573,7 @@ public class ScheduleTest {
     public void test352() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test352");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) ' ', (int) '#', 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) ' ', (int) '#', 10);
         schedule3.finishAllProcesses();
     }
 
@@ -5581,7 +5581,7 @@ public class ScheduleTest {
     public void test353() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test353");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.unblockProcess(0.0f);
         schedule3.quantumExpire();
@@ -5598,7 +5598,7 @@ public class ScheduleTest {
     public void test354() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test354");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.finishAllProcesses();
         schedule3.quantumExpire();
         java.lang.String str6 = schedule3.toString();
@@ -5612,7 +5612,7 @@ public class ScheduleTest {
     public void test355() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test355");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         schedule3.unblockProcess(0.0f);
         schedule3.finishProcess();
@@ -5623,7 +5623,7 @@ public class ScheduleTest {
     public void test356() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test356");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, 0, 100);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, 0, 100);
         java.lang.Class<?> wildcardClass4 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass4);
     }
@@ -5632,7 +5632,7 @@ public class ScheduleTest {
     public void test357() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test357");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -5659,7 +5659,7 @@ public class ScheduleTest {
     public void test358() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test358");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 100,
                 (int) (byte) 100);
         // The following exception was thrown during execution in test generation
         try {
@@ -5674,7 +5674,7 @@ public class ScheduleTest {
     public void test359() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test359");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -5697,7 +5697,7 @@ public class ScheduleTest {
     public void test360() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test360");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.quantumExpire();
@@ -5713,7 +5713,7 @@ public class ScheduleTest {
     public void test361() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test361");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) ' ');
     }
 
@@ -5721,7 +5721,7 @@ public class ScheduleTest {
     public void test362() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test362");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.Class<?> wildcardClass1 = schedule0.getClass();
         org.junit.Assert.assertNotNull(wildcardClass1);
     }
@@ -5730,7 +5730,7 @@ public class ScheduleTest {
     public void test363() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test363");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         java.lang.String str7 = schedule3.toString();
@@ -5749,7 +5749,7 @@ public class ScheduleTest {
     public void test364() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test364");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) ' ',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) ' ',
                 (int) (byte) -1);
         java.lang.String str4 = schedule3.toString();
         schedule3.finishProcess();
@@ -5769,7 +5769,7 @@ public class ScheduleTest {
     public void test365() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test365");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.unblockProcess(1.0f);
@@ -5785,7 +5785,7 @@ public class ScheduleTest {
     public void test366() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test366");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) 0);
         schedule3.unblockProcess((float) 1L);
@@ -5795,7 +5795,7 @@ public class ScheduleTest {
     public void test367() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test367");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         java.lang.String str4 = schedule3.toString();
         // The following exception was thrown during execution in test generation
@@ -5815,7 +5815,7 @@ public class ScheduleTest {
     public void test368() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test368");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (byte) 0,
                 (int) (byte) 0);
         // The following exception was thrown during execution in test generation
         try {
@@ -5830,7 +5830,7 @@ public class ScheduleTest {
     public void test369() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test369");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) (byte) 10,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) (byte) 10,
                 (int) (short) 0);
         // The following exception was thrown during execution in test generation
         try {
@@ -5845,7 +5845,7 @@ public class ScheduleTest {
     public void test370() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test370");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (short) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (short) -1,
                 0);
         // The following exception was thrown during execution in test generation
         try {
@@ -5860,7 +5860,7 @@ public class ScheduleTest {
     public void test371() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test371");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -5879,7 +5879,7 @@ public class ScheduleTest {
     public void test372() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test372");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) (short) 0);
         schedule3.blockProcess();
@@ -5900,7 +5900,7 @@ public class ScheduleTest {
     public void test373() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test373");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, (-1), (int) (short) 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, (-1), (int) (short) 10);
         schedule3.finishProcess();
         schedule3.finishAllProcesses();
     }
@@ -5909,7 +5909,7 @@ public class ScheduleTest {
     public void test374() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test374");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.quantumExpire();
         schedule3.blockProcess();
@@ -5926,7 +5926,7 @@ public class ScheduleTest {
     public void test375() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test375");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, (-1), 100);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, (-1), 100);
         schedule3.finishProcess();
         schedule3.quantumExpire();
         java.lang.Class<?> wildcardClass6 = schedule3.getClass();
@@ -5937,7 +5937,7 @@ public class ScheduleTest {
     public void test376() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test376");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.quantumExpire();
@@ -5953,7 +5953,7 @@ public class ScheduleTest {
     public void test377() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test377");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -5969,7 +5969,7 @@ public class ScheduleTest {
     public void test378() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test378");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -5991,7 +5991,7 @@ public class ScheduleTest {
     public void test379() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test379");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -6007,7 +6007,7 @@ public class ScheduleTest {
     public void test380() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test380");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.finishAllProcesses();
         schedule3.quantumExpire();
         schedule3.quantumExpire();
@@ -6018,7 +6018,7 @@ public class ScheduleTest {
     public void test381() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test381");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.quantumExpire();
         schedule3.unblockProcess((float) 1);
@@ -6029,7 +6029,7 @@ public class ScheduleTest {
     public void test382() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test382");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.unblockProcess((float) (byte) 0);
@@ -6047,7 +6047,7 @@ public class ScheduleTest {
     public void test383() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test383");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         schedule3.blockProcess();
         java.lang.String str5 = schedule3.toString();
@@ -6062,7 +6062,7 @@ public class ScheduleTest {
     public void test384() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test384");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 10,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 10,
                 0);
         java.lang.String str4 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str4 + "' != '"
@@ -6075,7 +6075,7 @@ public class ScheduleTest {
     public void test385() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test385");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) ' ', (int) (short) 10, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) ' ', (int) (short) 10, 0);
         schedule3.blockProcess();
     }
 
@@ -6083,7 +6083,7 @@ public class ScheduleTest {
     public void test386() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test386");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(1, (int) (short) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(1, (int) (short) 100,
                 (int) (short) 1);
     }
 
@@ -6091,7 +6091,7 @@ public class ScheduleTest {
     public void test387() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test387");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(1, (-1), (int) ' ');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(1, (-1), (int) ' ');
         schedule3.blockProcess();
     }
 
@@ -6099,14 +6099,14 @@ public class ScheduleTest {
     public void test388() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test388");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, (int) (short) 100, (int) '4');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, (int) (short) 100, (int) '4');
     }
 
     @Test
     public void test389() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test389");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.finishAllProcesses();
@@ -6121,7 +6121,7 @@ public class ScheduleTest {
     public void test390() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test390");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, (-1), (int) (short) 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, (-1), (int) (short) 10);
         schedule3.finishProcess();
         // The following exception was thrown during execution in test generation
         try {
@@ -6136,7 +6136,7 @@ public class ScheduleTest {
     public void test391() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test391");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((-1), 10, (-1));
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((-1), 10, (-1));
         schedule3.upgradeProcessPrio((int) (short) 1, (float) 0L);
     }
 
@@ -6144,14 +6144,14 @@ public class ScheduleTest {
     public void test392() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test392");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, (int) (short) 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, (int) (short) 0, 0);
     }
 
     @Test
     public void test393() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test393");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.blockProcess();
@@ -6168,14 +6168,14 @@ public class ScheduleTest {
     public void test394() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test394");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(1, (int) ' ', (int) (short) 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(1, (int) ' ', (int) (short) 10);
     }
 
     @Test
     public void test395() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test395");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -6203,7 +6203,7 @@ public class ScheduleTest {
     public void test396() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test396");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (short) 1,
                 (int) 'a');
         schedule3.quantumExpire();
         // The following exception was thrown during execution in test generation
@@ -6219,7 +6219,7 @@ public class ScheduleTest {
     public void test397() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test397");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -6249,7 +6249,7 @@ public class ScheduleTest {
     public void test398() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test398");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -6273,7 +6273,7 @@ public class ScheduleTest {
     public void test399() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test399");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -6286,7 +6286,7 @@ public class ScheduleTest {
     public void test400() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test400");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) (short) 0);
         schedule3.blockProcess();
@@ -6306,7 +6306,7 @@ public class ScheduleTest {
     public void test401() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test401");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -6326,7 +6326,7 @@ public class ScheduleTest {
     public void test402() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test402");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -6344,7 +6344,7 @@ public class ScheduleTest {
     public void test403() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test403");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, 10, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, 10, (int) 'a');
         schedule3.quantumExpire();
     }
 
@@ -6352,7 +6352,7 @@ public class ScheduleTest {
     public void test404() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test404");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -6370,7 +6370,7 @@ public class ScheduleTest {
     public void test405() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test405");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.quantumExpire();
         schedule3.quantumExpire();
@@ -6382,7 +6382,7 @@ public class ScheduleTest {
     public void test406() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test406");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(10, (int) (byte) 10, (int) '#');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(10, (int) (byte) 10, (int) '#');
         java.lang.Class<?> wildcardClass4 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass4);
     }
@@ -6391,7 +6391,7 @@ public class ScheduleTest {
     public void test407() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test407");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -6411,7 +6411,7 @@ public class ScheduleTest {
     public void test408() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test408");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -6435,7 +6435,7 @@ public class ScheduleTest {
     public void test409() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test409");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, (int) (byte) 0,
                 0);
     }
 
@@ -6443,7 +6443,7 @@ public class ScheduleTest {
     public void test410() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test410");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, 10);
         schedule3.unblockProcess((float) 0);
     }
 
@@ -6451,7 +6451,7 @@ public class ScheduleTest {
     public void test411() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test411");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 100,
                 (int) (byte) 100);
         schedule3.unblockProcess(0.0f);
         schedule3.unblockProcess(0.0f);
@@ -6463,7 +6463,7 @@ public class ScheduleTest {
     public void test412() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test412");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -6477,7 +6477,7 @@ public class ScheduleTest {
     public void test413() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test413");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.unblockProcess((float) (byte) 0);
@@ -6504,7 +6504,7 @@ public class ScheduleTest {
     public void test414() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test414");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -6530,7 +6530,7 @@ public class ScheduleTest {
     public void test415() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test415");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         schedule0.blockProcess();
         schedule0.upgradeProcessPrio((int) (byte) 1, (float) 1L);
         // The following exception was thrown during execution in test generation
@@ -6546,7 +6546,7 @@ public class ScheduleTest {
     public void test416() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test416");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
@@ -6564,7 +6564,7 @@ public class ScheduleTest {
     public void test417() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test417");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (short) 10,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (short) 10,
                 (int) (short) 0);
         java.lang.String str4 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str4 + "' != '"
@@ -6577,14 +6577,14 @@ public class ScheduleTest {
     public void test418() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test418");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) ' ', (int) '#', (int) '4');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) ' ', (int) '#', (int) '4');
     }
 
     @Test
     public void test419() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test419");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, (int) (byte) 100,
                 (int) (byte) 10);
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess(0.0f);
@@ -6600,7 +6600,7 @@ public class ScheduleTest {
     public void test420() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test420");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.finishAllProcesses();
@@ -6617,7 +6617,7 @@ public class ScheduleTest {
     public void test421() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test421");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -6631,7 +6631,7 @@ public class ScheduleTest {
     public void test422() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test422");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         schedule0.blockProcess();
         // The following exception was thrown during execution in test generation
         try {
@@ -6646,7 +6646,7 @@ public class ScheduleTest {
     public void test423() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test423");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -6670,7 +6670,7 @@ public class ScheduleTest {
     public void test424() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test424");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) (short) 0);
         schedule3.blockProcess();
@@ -6690,7 +6690,7 @@ public class ScheduleTest {
     public void test425() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test425");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.finishAllProcesses();
         java.lang.String str5 = schedule3.toString();
@@ -6705,7 +6705,7 @@ public class ScheduleTest {
     public void test426() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test426");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -6736,7 +6736,7 @@ public class ScheduleTest {
     public void test427() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test427");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.finishAllProcesses();
@@ -6757,7 +6757,7 @@ public class ScheduleTest {
     public void test428() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test428");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
@@ -6773,7 +6773,7 @@ public class ScheduleTest {
     public void test429() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test429");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -6792,7 +6792,7 @@ public class ScheduleTest {
     public void test430() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test430");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
@@ -6809,7 +6809,7 @@ public class ScheduleTest {
     public void test431() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test431");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -6836,7 +6836,7 @@ public class ScheduleTest {
     public void test432() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test432");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) 'a', (int) ' ',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) 'a', (int) ' ',
                 (int) (short) 10);
     }
 
@@ -6844,7 +6844,7 @@ public class ScheduleTest {
     public void test433() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test433");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -6877,7 +6877,7 @@ public class ScheduleTest {
     public void test434() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test434");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (short) 1,
                 (int) 'a');
         schedule3.quantumExpire();
         schedule3.finishProcess();
@@ -6889,7 +6889,7 @@ public class ScheduleTest {
     public void test435() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test435");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         schedule0.blockProcess();
         schedule0.upgradeProcessPrio((int) (byte) 1, (float) 1L);
         java.lang.Class<?> wildcardClass5 = schedule0.getClass();
@@ -6900,7 +6900,7 @@ public class ScheduleTest {
     public void test436() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test436");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -6919,7 +6919,7 @@ public class ScheduleTest {
     public void test437() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test437");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (byte) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (byte) -1,
                 (int) (short) 10);
     }
 
@@ -6927,7 +6927,7 @@ public class ScheduleTest {
     public void test438() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test438");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         // The following exception was thrown during execution in test generation
         try {
@@ -6942,7 +6942,7 @@ public class ScheduleTest {
     public void test439() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test439");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 100, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 100, (int) (byte) 0,
                 (int) 'a');
         schedule3.unblockProcess((float) 1L);
     }
@@ -6951,7 +6951,7 @@ public class ScheduleTest {
     public void test440() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test440");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishProcess();
@@ -6964,7 +6964,7 @@ public class ScheduleTest {
     public void test441() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test441");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -6976,7 +6976,7 @@ public class ScheduleTest {
     public void test442() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test442");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.finishProcess();
         schedule3.quantumExpire();
         schedule3.blockProcess();
@@ -6986,7 +6986,7 @@ public class ScheduleTest {
     public void test443() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test443");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -7003,7 +7003,7 @@ public class ScheduleTest {
     public void test444() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test444");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -7032,7 +7032,7 @@ public class ScheduleTest {
     public void test445() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test445");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -7044,7 +7044,7 @@ public class ScheduleTest {
     public void test446() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test446");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.finishAllProcesses();
@@ -7071,7 +7071,7 @@ public class ScheduleTest {
     public void test447() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test447");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         schedule3.upgradeProcessPrio((int) (byte) 1, (float) (byte) 0);
     }
@@ -7080,7 +7080,7 @@ public class ScheduleTest {
     public void test448() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test448");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (short) 1,
                 (int) 'a');
         schedule3.quantumExpire();
         schedule3.finishProcess();
@@ -7091,7 +7091,7 @@ public class ScheduleTest {
     public void test449() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test449");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -7113,7 +7113,7 @@ public class ScheduleTest {
     public void test450() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test450");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -7127,7 +7127,7 @@ public class ScheduleTest {
     public void test451() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test451");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, (-1), (int) (short) 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, (-1), (int) (short) 10);
         schedule3.finishProcess();
         schedule3.blockProcess();
         // The following exception was thrown during execution in test generation
@@ -7143,7 +7143,7 @@ public class ScheduleTest {
     public void test452() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test452");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
         schedule3.quantumExpire();
         schedule3.upgradeProcessPrio((int) (short) 1, (float) 0L);
     }
@@ -7152,7 +7152,7 @@ public class ScheduleTest {
     public void test453() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test453");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((-1), 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((-1), 0, 0);
         schedule3.finishAllProcesses();
         schedule3.quantumExpire();
     }
@@ -7161,14 +7161,14 @@ public class ScheduleTest {
     public void test454() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test454");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 100, (int) '4', 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 100, (int) '4', 10);
     }
 
     @Test
     public void test455() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test455");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) '#', 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) '#', 10);
         schedule3.finishAllProcesses();
         schedule3.quantumExpire();
     }
@@ -7177,7 +7177,7 @@ public class ScheduleTest {
     public void test456() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test456");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.unblockProcess((float) (byte) 0);
@@ -7197,7 +7197,7 @@ public class ScheduleTest {
     public void test457() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test457");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (short) 1,
                 (int) 'a');
         // The following exception was thrown during execution in test generation
         try {
@@ -7212,7 +7212,7 @@ public class ScheduleTest {
     public void test458() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test458");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishProcess();
@@ -7224,7 +7224,7 @@ public class ScheduleTest {
     public void test459() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test459");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, (int) (short) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, (int) (short) 100,
                 (int) (byte) 10);
     }
 
@@ -7232,7 +7232,7 @@ public class ScheduleTest {
     public void test460() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test460");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.finishAllProcesses();
         schedule3.quantumExpire();
         schedule3.finishAllProcesses();
@@ -7245,7 +7245,7 @@ public class ScheduleTest {
     public void test461() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test461");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -7266,7 +7266,7 @@ public class ScheduleTest {
     public void test462() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test462");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, 10,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, 10,
                 (int) (byte) -1);
         schedule3.blockProcess();
     }
@@ -7275,7 +7275,7 @@ public class ScheduleTest {
     public void test463() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test463");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(10, 0, (int) (byte) 100);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(10, 0, (int) (byte) 100);
         schedule3.finishProcess();
     }
 
@@ -7283,7 +7283,7 @@ public class ScheduleTest {
     public void test464() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test464");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, 0, (int) '4');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, 0, (int) '4');
         schedule3.addProcess(1);
     }
 
@@ -7291,7 +7291,7 @@ public class ScheduleTest {
     public void test465() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test465");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -7312,7 +7312,7 @@ public class ScheduleTest {
     public void test466() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test466");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishProcess();
@@ -7323,7 +7323,7 @@ public class ScheduleTest {
     public void test467() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test467");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -7336,7 +7336,7 @@ public class ScheduleTest {
     public void test468() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test468");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.blockProcess();
@@ -7358,7 +7358,7 @@ public class ScheduleTest {
     public void test469() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test469");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.unblockProcess(1.0f);
@@ -7373,7 +7373,7 @@ public class ScheduleTest {
     public void test470() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test470");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (byte) 100);
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
@@ -7383,7 +7383,7 @@ public class ScheduleTest {
     public void test471() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test471");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -7395,7 +7395,7 @@ public class ScheduleTest {
     public void test472() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test472");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.unblockProcess((float) (short) 1);
         schedule3.finishAllProcesses();
         schedule3.blockProcess();
@@ -7414,7 +7414,7 @@ public class ScheduleTest {
     public void test473() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test473");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 100,
                 (int) (byte) 100);
         java.lang.String str4 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str4 + "' != '"
@@ -7427,7 +7427,7 @@ public class ScheduleTest {
     public void test474() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test474");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) 'a', 1);
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) 1L);
         org.junit.Assert.assertEquals("'" + str4 + "' != '"
@@ -7440,7 +7440,7 @@ public class ScheduleTest {
     public void test475() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test475");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, (int) (short) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, (int) (short) -1,
                 (int) (short) 10);
         java.lang.Class<?> wildcardClass4 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass4);
@@ -7450,7 +7450,7 @@ public class ScheduleTest {
     public void test476() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test476");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         java.lang.String str4 = schedule3.toString();
         java.lang.String str5 = schedule3.toString();
@@ -7475,7 +7475,7 @@ public class ScheduleTest {
     public void test477() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test477");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         schedule3.unblockProcess(0.0f);
         schedule3.finishProcess();
@@ -7488,7 +7488,7 @@ public class ScheduleTest {
     public void test478() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test478");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -7507,7 +7507,7 @@ public class ScheduleTest {
     public void test479() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test479");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, (-1), (int) (short) 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, (-1), (int) (short) 10);
         schedule3.finishProcess();
         schedule3.blockProcess();
         schedule3.quantumExpire();
@@ -7525,7 +7525,7 @@ public class ScheduleTest {
     public void test480() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test480");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(1, (-1), (int) ' ');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(1, (-1), (int) ' ');
         schedule3.finishAllProcesses();
     }
 
@@ -7533,7 +7533,7 @@ public class ScheduleTest {
     public void test481() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test481");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, 10);
         java.lang.String str4 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str4 + "' != '"
                         + "curProc: null\nprio_0: null\nprio_1: 0 1 2 3 4 5 6 7 8 9   |  Last: Visited  |  mem_count: 10\nprio_2: Empty  |  Last: null!  |  mem_count: 0\nprio_3: Empty  |  Last: null!  |  mem_count: 0\nblockQueue: Empty  |  Last: null!  |  mem_count: 0\nnum_processes: 10\n"
@@ -7545,7 +7545,7 @@ public class ScheduleTest {
     public void test482() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test482");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.unblockProcess((float) (byte) 0);
@@ -7572,7 +7572,7 @@ public class ScheduleTest {
     public void test483() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test483");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -7586,7 +7586,7 @@ public class ScheduleTest {
     public void test484() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test484");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -7600,7 +7600,7 @@ public class ScheduleTest {
     public void test485() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test485");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.finishProcess();
@@ -7621,7 +7621,7 @@ public class ScheduleTest {
     public void test486() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test486");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -7634,7 +7634,7 @@ public class ScheduleTest {
     public void test487() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test487");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         java.lang.String str5 = schedule3.toString();
@@ -7648,7 +7648,7 @@ public class ScheduleTest {
     public void test488() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test488");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.blockProcess();
     }
@@ -7657,7 +7657,7 @@ public class ScheduleTest {
     public void test489() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test489");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -7685,7 +7685,7 @@ public class ScheduleTest {
     public void test490() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test490");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -7702,7 +7702,7 @@ public class ScheduleTest {
     public void test491() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test491");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, (int) (byte) 100,
                 (int) (byte) 10);
         schedule3.unblockProcess((float) 0);
         schedule3.finishAllProcesses();
@@ -7713,7 +7713,7 @@ public class ScheduleTest {
     public void test492() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test492");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -7738,7 +7738,7 @@ public class ScheduleTest {
     public void test493() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test493");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) 'a', (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) 'a', (int) (short) 1,
                 (int) (short) 1);
         // The following exception was thrown during execution in test generation
         try {
@@ -7753,7 +7753,7 @@ public class ScheduleTest {
     public void test494() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test494");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, (-1), (int) '4');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, (-1), (int) '4');
         java.lang.Class<?> wildcardClass4 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass4);
     }
@@ -7762,7 +7762,7 @@ public class ScheduleTest {
     public void test495() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test495");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.blockProcess();
@@ -7781,7 +7781,7 @@ public class ScheduleTest {
     public void test496() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test496");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -7800,7 +7800,7 @@ public class ScheduleTest {
     public void test497() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test497");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) ' ', (int) (short) 10, 100);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) ' ', (int) (short) 10, 100);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.upgradeProcessPrio((int) (short) 10, (float) 100L);
@@ -7814,7 +7814,7 @@ public class ScheduleTest {
     public void test498() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test498");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -7828,7 +7828,7 @@ public class ScheduleTest {
     public void test499() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test499");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, (int) (byte) 100,
                 (int) (byte) 10);
         java.lang.String str4 = schedule3.toString();
         schedule3.finishProcess();
@@ -7843,7 +7843,7 @@ public class ScheduleTest {
     public void test500() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test500");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) 'a', 1, 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) 'a', 1, 10);
         schedule3.finishAllProcesses();
         schedule3.blockProcess();
     }
@@ -7852,7 +7852,7 @@ public class ScheduleTest {
     public void test501() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test501");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.finishAllProcesses();
@@ -7868,7 +7868,7 @@ public class ScheduleTest {
     public void test502() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test502");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, (-1), 100);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, (-1), 100);
         java.lang.String str4 = schedule3.toString();
         java.lang.Class<?> wildcardClass5 = schedule3.getClass();
         org.junit.Assert.assertEquals("'" + str4 + "' != '"
@@ -7882,7 +7882,7 @@ public class ScheduleTest {
     public void test503() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test503");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 1, 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 1, 100,
                 (int) (short) 1);
     }
 
@@ -7890,7 +7890,7 @@ public class ScheduleTest {
     public void test504() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test504");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, 0, 100);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, 0, 100);
         schedule3.blockProcess();
         schedule3.quantumExpire();
     }
@@ -7899,7 +7899,7 @@ public class ScheduleTest {
     public void test505() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test505");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -7919,7 +7919,7 @@ public class ScheduleTest {
     public void test506() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test506");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) 'a',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) 'a',
                 (int) (short) 10);
         // The following exception was thrown during execution in test generation
         try {
@@ -7934,7 +7934,7 @@ public class ScheduleTest {
     public void test507() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test507");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 1, 1, (int) '4');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 1, 1, (int) '4');
         schedule3.quantumExpire();
         java.lang.String str5 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str5 + "' != '"
@@ -7947,7 +7947,7 @@ public class ScheduleTest {
     public void test508() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test508");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 1, (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 1, (int) (byte) 100,
                 1);
         schedule3.finishAllProcesses();
         java.lang.Class<?> wildcardClass5 = schedule3.getClass();
@@ -7958,7 +7958,7 @@ public class ScheduleTest {
     public void test509() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test509");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         java.lang.String str3 = schedule0.toString();
@@ -7990,7 +7990,7 @@ public class ScheduleTest {
     public void test510() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test510");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -8008,7 +8008,7 @@ public class ScheduleTest {
     public void test511() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test511");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.quantumExpire();
         java.lang.String str5 = schedule3.toString();
         schedule3.quantumExpire();
@@ -8022,7 +8022,7 @@ public class ScheduleTest {
     public void test512() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test512");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -8046,7 +8046,7 @@ public class ScheduleTest {
     public void test513() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test513");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(1, (int) (short) -1, (int) '4');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(1, (int) (short) -1, (int) '4');
         java.lang.Class<?> wildcardClass4 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass4);
     }
@@ -8055,7 +8055,7 @@ public class ScheduleTest {
     public void test514() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test514");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishProcess();
@@ -8074,7 +8074,7 @@ public class ScheduleTest {
     public void test515() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test515");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.finishAllProcesses();
         java.lang.String str5 = schedule3.toString();
@@ -8095,7 +8095,7 @@ public class ScheduleTest {
     public void test516() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test516");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.finishProcess();
         schedule3.quantumExpire();
         java.lang.Class<?> wildcardClass6 = schedule3.getClass();
@@ -8106,7 +8106,7 @@ public class ScheduleTest {
     public void test517() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test517");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         schedule3.finishProcess();
         schedule3.finishAllProcesses();
@@ -8117,7 +8117,7 @@ public class ScheduleTest {
     public void test518() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test518");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.quantumExpire();
@@ -8139,7 +8139,7 @@ public class ScheduleTest {
     public void test519() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test519");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, 0, 0);
         schedule3.finishAllProcesses();
         // The following exception was thrown during execution in test generation
         try {
@@ -8154,7 +8154,7 @@ public class ScheduleTest {
     public void test520() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test520");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.finishAllProcesses();
         // The following exception was thrown during execution in test generation
         try {
@@ -8169,7 +8169,7 @@ public class ScheduleTest {
     public void test521() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test521");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.finishAllProcesses();
@@ -8189,14 +8189,14 @@ public class ScheduleTest {
     public void test522() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test522");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 1, 1, (int) (byte) 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 1, 1, (int) (byte) 10);
     }
 
     @Test
     public void test523() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test523");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         // The following exception was thrown during execution in test generation
         try {
@@ -8211,7 +8211,7 @@ public class ScheduleTest {
     public void test524() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test524");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, 10,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, 10,
                 (int) (short) 100);
         // The following exception was thrown during execution in test generation
         try {
@@ -8226,7 +8226,7 @@ public class ScheduleTest {
     public void test525() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test525");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, (int) (byte) 10,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, (int) (byte) 10,
                 (int) (byte) -1);
     }
 
@@ -8234,7 +8234,7 @@ public class ScheduleTest {
     public void test526() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test526");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -8252,7 +8252,7 @@ public class ScheduleTest {
     public void test527() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test527");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.finishProcess();
         schedule3.quantumExpire();
         schedule3.quantumExpire();
@@ -8262,7 +8262,7 @@ public class ScheduleTest {
     public void test528() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test528");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -8278,7 +8278,7 @@ public class ScheduleTest {
     public void test529() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test529");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.unblockProcess((float) (byte) 0);
@@ -8302,14 +8302,14 @@ public class ScheduleTest {
     public void test530() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test530");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 100, (int) '#');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 100, (int) '#');
     }
 
     @Test
     public void test531() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test531");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) (short) 0);
         schedule3.blockProcess();
@@ -8326,7 +8326,7 @@ public class ScheduleTest {
     public void test532() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test532");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, 100,
                 (int) (byte) 1);
         // The following exception was thrown during execution in test generation
         try {
@@ -8341,7 +8341,7 @@ public class ScheduleTest {
     public void test533() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test533");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) (byte) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) (byte) -1,
                 (int) (byte) 1);
         schedule3.blockProcess();
         schedule3.quantumExpire();
@@ -8351,7 +8351,7 @@ public class ScheduleTest {
     public void test534() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test534");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         // The following exception was thrown during execution in test generation
@@ -8367,7 +8367,7 @@ public class ScheduleTest {
     public void test535() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test535");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -8391,7 +8391,7 @@ public class ScheduleTest {
     public void test536() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test536");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 0,
                 (int) (byte) 1);
         java.lang.String str4 = schedule3.toString();
         schedule3.quantumExpire();
@@ -8412,7 +8412,7 @@ public class ScheduleTest {
     public void test537() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test537");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 0,
                 (int) (short) 10);
         java.lang.String str4 = schedule3.toString();
         java.lang.String str5 = schedule3.toString();
@@ -8432,7 +8432,7 @@ public class ScheduleTest {
     public void test538() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test538");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '4', (int) '#', 100);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '4', (int) '#', 100);
         java.lang.String str4 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str4 + "' != '"
                         + "curProc: null\nprio_0: null\nprio_1: 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 179 180 181 182 183 184 185 186   |  Last: Visited  |  mem_count: 100\nprio_2: 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86   |  Last: Visited  |  mem_count: 35\nprio_3: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51   |  Last: Visited  |  mem_count: 52\nblockQueue: Empty  |  Last: null!  |  mem_count: 0\nnum_processes: 187\n"
@@ -8444,7 +8444,7 @@ public class ScheduleTest {
     public void test539() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test539");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.finishAllProcesses();
         java.lang.String str5 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str5 + "' != '"
@@ -8457,14 +8457,14 @@ public class ScheduleTest {
     public void test540() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test540");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 0, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 0, 1);
     }
 
     @Test
     public void test541() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test541");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) (short) 0);
         schedule3.quantumExpire();
@@ -8479,7 +8479,7 @@ public class ScheduleTest {
     public void test542() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test542");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) (byte) 10,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) (byte) 10,
                 (int) (short) 0);
         schedule3.finishAllProcesses();
     }
@@ -8488,7 +8488,7 @@ public class ScheduleTest {
     public void test543() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test543");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.finishProcess();
         schedule3.quantumExpire();
         // The following exception was thrown during execution in test generation
@@ -8504,7 +8504,7 @@ public class ScheduleTest {
     public void test544() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test544");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.finishAllProcesses();
         schedule3.quantumExpire();
         schedule3.quantumExpire();
@@ -8522,7 +8522,7 @@ public class ScheduleTest {
     public void test545() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test545");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) 'a', (-1), (int) (short) 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) 'a', (-1), (int) (short) 0);
         java.lang.String str4 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str4 + "' != '"
                         + "curProc: null\nprio_0: null\nprio_1: Empty  |  Last: null!  |  mem_count: 0\nprio_2: Empty  |  Last: null!  |  mem_count: 0\nprio_3: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96   |  Last: Visited  |  mem_count: 97\nblockQueue: Empty  |  Last: null!  |  mem_count: 0\nnum_processes: 97\n"
@@ -8534,7 +8534,7 @@ public class ScheduleTest {
     public void test546() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test546");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         java.lang.String str3 = schedule0.toString();
@@ -8567,7 +8567,7 @@ public class ScheduleTest {
     public void test547() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test547");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 10,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 10,
                 0);
         schedule3.finishAllProcesses();
     }
@@ -8576,7 +8576,7 @@ public class ScheduleTest {
     public void test548() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test548");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) '4',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) '4',
                 (int) (short) 100);
         // The following exception was thrown during execution in test generation
         try {
@@ -8591,7 +8591,7 @@ public class ScheduleTest {
     public void test549() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test549");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -8606,7 +8606,7 @@ public class ScheduleTest {
     public void test550() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test550");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.quantumExpire();
         java.lang.String str6 = schedule3.toString();
@@ -8625,7 +8625,7 @@ public class ScheduleTest {
     public void test551() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test551");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) -1, 0, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) -1, 0, 0);
         schedule3.finishAllProcesses();
         schedule3.quantumExpire();
     }
@@ -8634,7 +8634,7 @@ public class ScheduleTest {
     public void test552() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test552");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -8656,7 +8656,7 @@ public class ScheduleTest {
     public void test553() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test553");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         java.lang.String str4 = schedule3.toString();
         schedule3.finishProcess();
@@ -8673,7 +8673,7 @@ public class ScheduleTest {
     public void test554() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test554");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 100,
                 (int) (byte) 100);
         schedule3.blockProcess();
         schedule3.finishProcess();
@@ -8684,7 +8684,7 @@ public class ScheduleTest {
     public void test555() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test555");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, 1, 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, 1, 1);
         schedule3.finishAllProcesses();
         schedule3.quantumExpire();
         schedule3.finishAllProcesses();
@@ -8699,7 +8699,7 @@ public class ScheduleTest {
     public void test556() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test556");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -8725,7 +8725,7 @@ public class ScheduleTest {
     public void test557() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test557");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -8736,7 +8736,7 @@ public class ScheduleTest {
     public void test558() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test558");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 1, 10, (int) (byte) 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 1, 10, (int) (byte) 1);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.upgradeProcessPrio((int) (short) 1, 100.0f);
@@ -8750,14 +8750,14 @@ public class ScheduleTest {
     public void test559() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test559");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(100, (int) '4', (int) (short) 1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(100, (int) '4', (int) (short) 1);
     }
 
     @Test
     public void test560() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test560");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.unblockProcess(0.0f);
@@ -8778,7 +8778,7 @@ public class ScheduleTest {
     public void test561() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test561");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 1, (int) (byte) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 1, (int) (byte) 1,
                 (int) (short) 0);
     }
 
@@ -8786,7 +8786,7 @@ public class ScheduleTest {
     public void test562() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test562");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, (int) (short) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, (int) (short) 0,
                 (int) (byte) 100);
         // The following exception was thrown during execution in test generation
         try {
@@ -8801,7 +8801,7 @@ public class ScheduleTest {
     public void test563() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test563");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (byte) 100, 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (byte) 100, 10);
         schedule3.finishProcess();
     }
 
@@ -8809,7 +8809,7 @@ public class ScheduleTest {
     public void test564() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test564");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 0,
                 (int) (short) 10);
         // The following exception was thrown during execution in test generation
         try {
@@ -8824,7 +8824,7 @@ public class ScheduleTest {
     public void test565() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test565");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.quantumExpire();
         schedule3.blockProcess();
@@ -8841,7 +8841,7 @@ public class ScheduleTest {
     public void test566() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test566");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, (int) (short) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, (int) (short) 0,
                 (int) (short) 10);
         // The following exception was thrown during execution in test generation
         try {
@@ -8856,7 +8856,7 @@ public class ScheduleTest {
     public void test567() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test567");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -8873,7 +8873,7 @@ public class ScheduleTest {
     public void test568() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test568");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) 'a',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) 'a',
                 (int) 'a');
         schedule3.blockProcess();
     }
@@ -8882,7 +8882,7 @@ public class ScheduleTest {
     public void test569() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test569");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         java.lang.String str6 = schedule3.toString();
@@ -8897,7 +8897,7 @@ public class ScheduleTest {
     public void test570() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test570");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) (short) 0);
         schedule3.quantumExpire();
@@ -8910,7 +8910,7 @@ public class ScheduleTest {
     public void test571() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test571");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.finishProcess();
         schedule3.finishProcess();
@@ -8924,14 +8924,14 @@ public class ScheduleTest {
     public void test572() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test572");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 10, (int) ' ');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 10, (int) ' ');
     }
 
     @Test
     public void test573() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test573");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) 'a', (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) 'a', (int) (byte) 100,
                 (int) (byte) 10);
     }
 
@@ -8939,7 +8939,7 @@ public class ScheduleTest {
     public void test574() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test574");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.quantumExpire();
     }
@@ -8948,7 +8948,7 @@ public class ScheduleTest {
     public void test575() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test575");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, (int) (byte) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, (int) (byte) -1,
                 (int) (short) 1);
         schedule3.finishProcess();
     }
@@ -8957,7 +8957,7 @@ public class ScheduleTest {
     public void test576() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test576");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, 0,
                 (int) (short) -1);
         schedule3.quantumExpire();
     }
@@ -8966,7 +8966,7 @@ public class ScheduleTest {
     public void test577() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test577");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         schedule3.finishProcess();
@@ -8986,7 +8986,7 @@ public class ScheduleTest {
     public void test578() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test578");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) 'a', (-1), (int) (short) 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) 'a', (-1), (int) (short) 0);
         // The following exception was thrown during execution in test generation
         try {
             schedule3.unblockProcess((float) 'a');
@@ -9000,7 +9000,7 @@ public class ScheduleTest {
     public void test579() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test579");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -9020,7 +9020,7 @@ public class ScheduleTest {
     public void test580() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test580");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 100, (int) '4',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 100, (int) '4',
                 (int) 'a');
         // The following exception was thrown during execution in test generation
         try {
@@ -9035,7 +9035,7 @@ public class ScheduleTest {
     public void test581() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test581");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.blockProcess();
@@ -9054,7 +9054,7 @@ public class ScheduleTest {
     public void test582() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test582");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, (int) (short) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, (int) (short) 100,
                 (int) (short) -1);
     }
 
@@ -9062,7 +9062,7 @@ public class ScheduleTest {
     public void test583() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test583");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 10, 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 10, 1,
                 (int) (short) 10);
     }
 
@@ -9070,7 +9070,7 @@ public class ScheduleTest {
     public void test584() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test584");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -9084,7 +9084,7 @@ public class ScheduleTest {
     public void test585() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test585");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         java.lang.String str7 = schedule3.toString();
@@ -9104,7 +9104,7 @@ public class ScheduleTest {
     public void test586() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test586");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -9123,7 +9123,7 @@ public class ScheduleTest {
     public void test587() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test587");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.finishProcess();
@@ -9140,7 +9140,7 @@ public class ScheduleTest {
     public void test588() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test588");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) (byte) 10,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) (byte) 10,
                 (int) (short) 0);
         java.lang.Class<?> wildcardClass4 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass4);
@@ -9150,7 +9150,7 @@ public class ScheduleTest {
     public void test589() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test589");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) (byte) 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) (byte) 0,
                 (-1));
     }
 
@@ -9158,7 +9158,7 @@ public class ScheduleTest {
     public void test590() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test590");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.finishAllProcesses();
@@ -9178,14 +9178,14 @@ public class ScheduleTest {
     public void test591() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test591");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 1, 100, (int) '4');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 1, 100, (int) '4');
     }
 
     @Test
     public void test592() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test592");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((-1), 10, (-1));
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((-1), 10, (-1));
         schedule3.finishProcess();
     }
 
@@ -9193,7 +9193,7 @@ public class ScheduleTest {
     public void test593() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test593");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         java.lang.String str3 = schedule0.toString();
@@ -9223,7 +9223,7 @@ public class ScheduleTest {
     public void test594() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test594");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) (short) 1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) (short) 1,
                 (int) 'a');
         schedule3.finishProcess();
         schedule3.finishAllProcesses();
@@ -9234,7 +9234,7 @@ public class ScheduleTest {
     public void test595() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test595");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((-1), (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((-1), (int) (byte) 100,
                 (int) (byte) 10);
     }
 
@@ -9242,7 +9242,7 @@ public class ScheduleTest {
     public void test596() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test596");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) (short) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) (short) 100,
                 100);
         schedule3.finishAllProcesses();
     }
@@ -9251,7 +9251,7 @@ public class ScheduleTest {
     public void test597() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test597");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.blockProcess();
         schedule0.blockProcess();
@@ -9274,7 +9274,7 @@ public class ScheduleTest {
     public void test598() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test598");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, 10,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, 10,
                 (int) (byte) -1);
         // The following exception was thrown during execution in test generation
         try {
@@ -9289,7 +9289,7 @@ public class ScheduleTest {
     public void test599() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test599");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -9308,7 +9308,7 @@ public class ScheduleTest {
     public void test600() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test600");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 1, (int) (byte) 100,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 1, (int) (byte) 100,
                 1);
         java.lang.String str4 = schedule3.toString();
         org.junit.Assert.assertEquals("'" + str4 + "' != '"
@@ -9321,7 +9321,7 @@ public class ScheduleTest {
     public void test601() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test601");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.unblockProcess((float) 0);
@@ -9332,7 +9332,7 @@ public class ScheduleTest {
     public void test602() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test602");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -9353,7 +9353,7 @@ public class ScheduleTest {
     public void test603() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test603");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -9368,7 +9368,7 @@ public class ScheduleTest {
     public void test604() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test604");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(1, 0, (int) (byte) 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(1, 0, (int) (byte) 0);
         schedule3.quantumExpire();
         java.lang.Class<?> wildcardClass5 = schedule3.getClass();
         org.junit.Assert.assertNotNull(wildcardClass5);
@@ -9378,7 +9378,7 @@ public class ScheduleTest {
     public void test605() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test605");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.unblockProcess((float) (byte) 1);
         java.lang.String str7 = schedule3.toString();
@@ -9409,7 +9409,7 @@ public class ScheduleTest {
     public void test606() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test606");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -9433,7 +9433,7 @@ public class ScheduleTest {
     public void test607() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test607");
-        casestudies.schedule.Schedule schedule0 = new casestudies.schedule.Schedule();
+        casestudies.pli.schedule.Schedule schedule0 = new casestudies.pli.schedule.Schedule();
         java.lang.String str1 = schedule0.toString();
         schedule0.quantumExpire();
         schedule0.finishProcess();
@@ -9448,7 +9448,7 @@ public class ScheduleTest {
     public void test608() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test608");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) '#', (int) ' ',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) '#', (int) ' ',
                 (int) (byte) -1);
         java.lang.String str4 = schedule3.toString();
         schedule3.finishProcess();
@@ -9466,7 +9466,7 @@ public class ScheduleTest {
     public void test609() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test609");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (short) -1,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (short) -1,
                 0);
         // The following exception was thrown during execution in test generation
         try {
@@ -9481,7 +9481,7 @@ public class ScheduleTest {
     public void test610() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test610");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -9499,7 +9499,7 @@ public class ScheduleTest {
     public void test611() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test611");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -9519,7 +9519,7 @@ public class ScheduleTest {
     public void test612() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test612");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, (int) (byte) 10, (int) '4');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, (int) (byte) 10, (int) '4');
         schedule3.finishProcess();
         schedule3.finishProcess();
     }
@@ -9528,7 +9528,7 @@ public class ScheduleTest {
     public void test613() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test613");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(10, 0, 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(10, 0, 10);
         schedule3.blockProcess();
     }
 
@@ -9536,7 +9536,7 @@ public class ScheduleTest {
     public void test614() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test614");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, 0,
                 (int) (short) -1);
         schedule3.finishAllProcesses();
     }
@@ -9545,7 +9545,7 @@ public class ScheduleTest {
     public void test615() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test615");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         java.lang.String str4 = schedule3.toString();
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
@@ -9562,7 +9562,7 @@ public class ScheduleTest {
     public void test616() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test616");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -9576,7 +9576,7 @@ public class ScheduleTest {
     public void test617() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test617");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 10, 10, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 10, 10, (int) 'a');
         schedule3.finishProcess();
         schedule3.finishProcess();
     }
@@ -9585,7 +9585,7 @@ public class ScheduleTest {
     public void test618() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test618");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.finishAllProcesses();
         schedule3.finishProcess();
@@ -9598,7 +9598,7 @@ public class ScheduleTest {
     public void test619() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test619");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 100, 0,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 100, 0,
                 (int) (short) 10);
         schedule3.blockProcess();
         schedule3.finishAllProcesses();
@@ -9617,7 +9617,7 @@ public class ScheduleTest {
     public void test620() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test620");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 0, (int) '#', 10);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 0, (int) '#', 10);
         schedule3.finishProcess();
         schedule3.finishProcess();
         java.lang.Class<?> wildcardClass6 = schedule3.getClass();
@@ -9628,7 +9628,7 @@ public class ScheduleTest {
     public void test621() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test621");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 1, (int) 'a',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 1, (int) 'a',
                 (int) (short) -1);
     }
 
@@ -9636,7 +9636,7 @@ public class ScheduleTest {
     public void test622() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test622");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (short) 1, 100, 0);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (short) 1, 100, 0);
         schedule3.finishProcess();
         // The following exception was thrown during execution in test generation
         try {
@@ -9651,7 +9651,7 @@ public class ScheduleTest {
     public void test623() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test623");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(0, 0, (int) 'a');
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(0, 0, (int) 'a');
         schedule3.finishAllProcesses();
         schedule3.unblockProcess((float) 0L);
         schedule3.quantumExpire();
@@ -9671,7 +9671,7 @@ public class ScheduleTest {
     public void test624() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test624");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) -1, (int) '#',
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) -1, (int) '#',
                 (int) (short) 100);
         schedule3.unblockProcess((float) 0);
         java.lang.String str6 = schedule3.toString();
@@ -9687,7 +9687,7 @@ public class ScheduleTest {
     public void test625() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test625");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule((int) (byte) 0, (int) (byte) 10,
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule((int) (byte) 0, (int) (byte) 10,
                 (int) '4');
     }
 
@@ -9695,7 +9695,7 @@ public class ScheduleTest {
     public void test626() throws Throwable {
         if (debug)
             System.out.format("%n%s%n", "ScheduleTest0.test626");
-        casestudies.schedule.Schedule schedule3 = new casestudies.schedule.Schedule(1, (int) ' ', (int) (short) -1);
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(1, (int) ' ', (int) (short) -1);
         schedule3.finishAllProcesses();
     }
 }

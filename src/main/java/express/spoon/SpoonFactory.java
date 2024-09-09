@@ -238,18 +238,18 @@ public class SpoonFactory {
         return createLocalVariable(varName, setType, createIdentitySetInvocation());
     }
 
-//    public static CtLocalVariable<?> createVisitedSetDeclaration(CtTypeReference<?> subType) {
-//        CtTypeReference<?> setType = createTypeWithSubtypeReference(Set.class, subType);
-//        CtTypeReference<?> hashSetType = typeFactory.createReference(HashSet.class);
-//        CtConstructorCall<?> hashSetConstructorCall = createConstructorCall(hashSetType);
-//        String varName = LocalVarHelper.SET_VAR_NAME;
-//        if (subType.isArray()) {
-//            varName = varName + LocalVarHelper.ARRAY_VAR_PREFIX + ((CtArrayTypeReference<?>) subType).getComponentType().getSimpleName();
-//        } else {
-//            varName = varName + subType.getSimpleName();
-//        }
-//        return createLocalVariable(varName, setType, hashSetConstructorCall);
-//    }
+    public static CtLocalVariable<?> createVisitedSetDeclaration(CtTypeReference<?> subType) {
+        CtTypeReference<?> setType = createTypeWithSubtypeReference(Set.class, subType);
+        CtTypeReference<?> hashSetType = typeFactory.createReference(HashSet.class);
+        CtConstructorCall<?> hashSetConstructorCall = createConstructorCall(hashSetType);
+        String varName = LocalVarHelper.SET_VAR_NAME;
+        if (subType.isArray()) {
+            varName = varName + LocalVarHelper.ARRAY_VAR_PREFIX + ((CtArrayTypeReference<?>) subType).getComponentType().getSimpleName();
+        } else {
+            varName = varName + subType.getSimpleName();
+        }
+        return createLocalVariable(varName, setType, hashSetConstructorCall);
+    }
 
     public static CtConstructorCall<?> createConstructorCall(CtTypeReference<?> typeRef) {
         List<CtTypeReference<?>> actualTypeArguments = new ArrayList<>();
