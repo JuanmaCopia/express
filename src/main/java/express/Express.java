@@ -10,6 +10,7 @@ import express.classinvariant.mutator.stage2.*;
 import express.classinvariant.mutator.stage3.*;
 import express.classinvariant.mutator.stage4.AddSizeCheckMutator;
 import express.classinvariant.mutator.stage4.CheckSizeEndOfTraversalMutator;
+import express.classinvariant.mutator.stage4.PrimitiveComparisonToCurrentMutator;
 import express.classinvariant.problem.ClassInvariantProblem;
 import express.classinvariant.search.ClassInvariantSearch;
 import express.classinvariant.state.ClassInvariantState;
@@ -161,6 +162,7 @@ public class Express {
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         mutators.add(new CheckSizeEndOfTraversalMutator());
         mutators.add(new AddSizeCheckMutator());
+        mutators.add(new PrimitiveComparisonToCurrentMutator());
         // Removals
         mutators.add(new RemoveIfMutator(4));
         mutators.add(new RemoveUnusedLocalVarMutator());
@@ -224,7 +226,12 @@ public class Express {
     }
 
     public static void main(String[] args) {
-        Express express = new Express(new Config(CONFIG_FILE_PATH));
+        String configFilePath = CONFIG_FILE_PATH;
+        if (args.length == 1) {
+            configFilePath = args[0];
+        }
+
+        Express express = new Express(new Config(configFilePath));
         express.run();
     }
 

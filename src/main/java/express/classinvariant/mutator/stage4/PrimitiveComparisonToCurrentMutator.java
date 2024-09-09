@@ -13,9 +13,9 @@ import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PrimitiveComparisonToCurrentMutator implements ClassInvariantMutator {
 
@@ -25,7 +25,7 @@ public class PrimitiveComparisonToCurrentMutator implements ClassInvariantMutato
 
     @Override
     public boolean isApplicable(ClassInvariantState state) {
-        List<CtMethod<?>> traversals = MutatorHelper.getAllTraversals(state.getCtClass());
+        List<CtMethod<?>> traversals = MutatorHelper.getAllTraversalsOfReferenceObjects(state.getCtClass());
         if (traversals.isEmpty())
             return false;
 
@@ -37,7 +37,7 @@ public class PrimitiveComparisonToCurrentMutator implements ClassInvariantMutato
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream()
                 .filter(p -> TypeUtils.isNumericType(p.getTypeReference()) && !p.isEmpty())
-                .toList();
+                .collect(Collectors.toList());
         if (candidates.size() < 2)
             return false;
 
@@ -62,9 +62,8 @@ public class PrimitiveComparisonToCurrentMutator implements ClassInvariantMutato
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(traversalBody);
         endOfHandleCurrentComment.insertBefore(ifStatement);
 
-        System.err.println("\nPrimitiveComparisonToCurrentMutator:\n" + ifStatement);
+        //System.err.println("\nPrimitiveComparisonToCurrentMutator:\n" + ifStatement);
     }
-
 
 
 }

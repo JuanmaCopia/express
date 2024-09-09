@@ -11,7 +11,6 @@ import express.spoon.SpoonQueries;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import express.type.typegraph.TypeGraph;
-import express.util.Utils;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
 
@@ -47,7 +46,6 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
 
         Path chosenPath = RandomUtils.getRandomPath(candidates);
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(chosenPath);
-        clauses.remove(0);
 
         CtVariableRead<?> currentRead = SpoonFactory.createVariableRead(currentDeclaration);
         clauses.add(SpoonFactory.createBooleanBinaryExpression(

@@ -543,6 +543,22 @@ public class SpoonFactory {
         return clauses;
     }
 
+    public static List<CtExpression<Boolean>> generateParentPathNullComparisonClauses(Collection<Path> paths) {
+        Set<String> visitedClauses = new HashSet<>();
+        List<CtExpression<Boolean>> clauses = new LinkedList<>();
+        for (Path path : paths) {
+            List<CtExpression<Boolean>> pathClauses = SpoonFactory.generateParentPathNullComparisonClauses(path);
+            for (CtExpression<Boolean> clause : pathClauses) {
+                String clauseString = clause.toString();
+                if (!visitedClauses.contains(clauseString)) {
+                    visitedClauses.add(clauseString);
+                    clauses.add(clause);
+                }
+            }
+        }
+        return clauses;
+    }
+
     public static List<CtExpression<Boolean>> generateParentPathNullComparisonClauses(Path path) {
         List<CtExpression<Boolean>> clauses = new LinkedList<>();
         for (int end = 1; end < path.size(); end++) {
@@ -551,6 +567,7 @@ public class SpoonFactory {
         }
         return clauses;
     }
+
 
     public static CtExpression<Boolean> generateOrConcatenationOfNullComparisons(Path path) {
         List<CtExpression<Boolean>> clauses = new LinkedList<>();

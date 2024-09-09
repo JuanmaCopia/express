@@ -5,8 +5,8 @@ import express.spoon.SpoonFactory;
 import express.type.typegraph.Path;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.UnaryOperatorKind;
+
+import java.util.List;
 
 public class NumericComparisonTemplate {
 
@@ -15,10 +15,16 @@ public class NumericComparisonTemplate {
     }
 
     public static CtExpression<Boolean> instantiateTemplate(Path path1, Path path2, BinaryOperatorKind operator, boolean negate) {
+        List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(List.of(path1, path2));
+
         CtExpression<Boolean> expr = SpoonFactory.createBinaryExpression(path1.getVariableRead(), path2.getVariableRead(), operator);
         if (negate) {
             expr = SpoonFactory.negateExpresion(expr);
         }
-        return expr;
+
+        clauses.add(expr);
+        return SpoonFactory.conjunction(clauses);
     }
+
+
 }
