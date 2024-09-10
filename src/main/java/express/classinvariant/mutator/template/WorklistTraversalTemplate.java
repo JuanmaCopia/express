@@ -21,7 +21,7 @@ public class WorklistTraversalTemplate {
         Path leftPath = splitPaths.getLeft();
         Path rightPath = splitPaths.getRight();
 
-        CtMethod<?> traversal = TemplateHelper.createTraversalMethod(ctClass, leftPath);
+        CtMethod<?> traversal = TemplateHelper.createTraversalMethod(ctClass, leftPath, LocalVarHelper.TRAVERSAL_PREFIX);
 
         createTraversalBody(rightPath, traversal, loopFields);
         return traversal;

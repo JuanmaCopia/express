@@ -18,7 +18,7 @@ public class SimpleTraversalTemplate {
         Path leftPath = splitPaths.getLeft();
         Path rightPath = splitPaths.getRight();
 
-        CtMethod<?> traversal = TemplateHelper.createTraversalMethod(ctClass, leftPath);
+        CtMethod<?> traversal = TemplateHelper.createTraversalMethod(ctClass, leftPath, LocalVarHelper.TRAVERSAL_PREFIX);
 
         createTraversalBody(rightPath, traversal, loopField, checkCircular);
         return traversal;

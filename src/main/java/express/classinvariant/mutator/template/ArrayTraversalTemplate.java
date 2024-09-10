@@ -1,78 +1,41 @@
 package express.classinvariant.mutator.template;
 
 import express.classinvariant.mutator.LocalVarHelper;
-import express.classinvariant.mutator.MutatorHelper;
 import express.spoon.SpoonFactory;
-import express.spoon.SpoonManager;
-import express.spoon.SpoonQueries;
-import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.*;
-import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 
-import java.util.*;
+import java.util.Collections;
 
 public class ArrayTraversalTemplate {
 
     public static CtMethod<?> instantiate(CtClass<?> ctClass, Path pathToArray) {
-        CtMethod<?> structureMethod = MutatorHelper.getMethodByName(ctClass, LocalVarHelper.STRUCTURE_METHOD_NAME);
-        CtBlock<?> structureMethodBody = structureMethod.getBody();
-        CtStatement lastStatement = SpoonQueries.getSeparatorLabelComment(structureMethodBody);
-
-        CtTypeReference<?> arraySubtype = ((CtArrayTypeReference<?>) pathToArray.getTypeReference()).getComponentType();
-
-        CtVariable<?> setVar = MutatorHelper.handleVisitedSetVariable(structureMethodBody, lastStatement, arraySubtype);
-
-        return createTraversalMethod(ctClass, pathToArray, setVar);
+        CtMethod<?> arrayTraversal = TemplateHelper.createTraversalMethod(ctClass, pathToArray, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX);
+        createArrayTraversalBody(arrayTraversal);
+        return arrayTraversal;
     }
 
-    private static CtMethod<?> createTraversalMethod(CtClass<?> ctClass, Path pathToArray, CtVariable<?> setVar) {
-        Set<ModifierKind> modifiers = new HashSet<>();
-        modifiers.add(ModifierKind.PRIVATE);
-        modifiers.add(ModifierKind.STATIC);
-
-        CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().booleanPrimitiveType();
-        List<CtParameter<?>> parameters = createParameters(pathToArray, setVar);
-        CtTypeReference<?> arraySubtype = ((CtArrayTypeReference<?>) pathToArray.getTypeReference()).getComponentType();
-        CtMethod<?> traversalMethod = SpoonFactory.createMethod(modifiers, returnType, createMethodName(arraySubtype), parameters);
-        //traversalMethod.setSimpleName(traversalMethod.getSimpleName() + LocalVarHelper.getNextTraversalId(ctClass, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX));
-
-        CtBlock<?> traversalBody = createArrayTraversalBody(pathToArray, parameters);
-        traversalMethod.setBody(traversalBody);
-        return traversalMethod;
-    }
-
-    public static String createMethodName(CtTypeReference<?> arraySubtype) {
-        return LocalVarHelper.ARRAY_TRAVERSAL_PREFIX + arraySubtype.getSimpleName() + LocalVarHelper.MUTABLE_METHOD_SUFFIX;
-    }
-
-
-    private static List<CtParameter<?>> createParameters(Path pathToArray, CtVariable<?> visitedSet) {
-        List<CtParameter<?>> parameters = new ArrayList<>();
-        parameters.add((CtParameter<?>) SpoonManager.getSubjectTypeData().getThisVariable());
-        parameters.add(SpoonFactory.createParameter(pathToArray.getTypeReference(), LocalVarHelper.ARRAY_PARAM_NAME));
-        parameters.add(SpoonFactory.createParameter(visitedSet.getType(), LocalVarHelper.SET_VAR_NAME));
-        return parameters;
-    }
-
-    private static CtBlock<?> createArrayTraversalBody(Path pathToArray, List<CtParameter<?>> params) {
+    private static CtBlock<?> createArrayTraversalBody(CtMethod<?> arrayTraversal) {
         CtBlock<?> body = SpoonFactory.createBlock();
-        CtVariable<?> arrayVar = params.get(params.size() - 2);
-        CtFor forStatement = createForStatement(arrayVar);
+        CtVariable<?> arrayVar = TemplateHelper.getTraversedElementParameter(arrayTraversal);
+        CtVariableRead<?> arrayRead = SpoonFactory.createVariableRead(arrayVar);
 
-//        CtExpression<Boolean> arrayNotNullCheck = SpoonFactory.createNullComparisonClause(arrayVar, BinaryOperatorKind.NE);
-//        CtIf ifArrayNotNull = SpoonFactory.createIfThenStatement(arrayNotNullCheck, forStatement);
+        CtVariable<?> mapOfVisited = TemplateHelper.getMapOfVisitedParameter(arrayTraversal);
+        //CtLocalVariable<?> visitedSetDeclaration = TemplateHelper.createVisitedElementsSet(mapOfVisited, arrayRead);
+
+        CtFor forStatement = createForStatement(arrayVar);
 
         body.insertEnd(SpoonFactory.createComment("Begin of traversal"));
         body.insertEnd(forStatement);
         body.insertEnd(SpoonFactory.createComment("End of traversal"));
         body.insertEnd(SpoonFactory.createComment("Return True"));
         body.insertEnd(SpoonFactory.createReturnTrueStatement());
-
         return body;
     }
 
@@ -87,7 +50,6 @@ public class ArrayTraversalTemplate {
 
         // Create a CtFieldRead for 'array.length'
         CtVariableRead<?> arrayRead = SpoonFactory.createVariableRead(arrayVar);
-
 
         // Create a CtFieldReference for the "length" field of the array
         CtFieldReference<Integer> lengthFieldReference = SpoonFactory.getFactory().createFieldReference();
@@ -129,14 +91,5 @@ public class ArrayTraversalTemplate {
 
         return forStatement;
     }
-
-    public static boolean isReferenceArrayTraversal(CtMethod<?> traversal) {
-        CtTypeReference<?> traversedElement = traversal.getParameters().get(1).getType();
-        if (!traversedElement.isArray())
-            return false;
-        CtArrayTypeReference<?> arrayType = (CtArrayTypeReference<?>) traversedElement;
-        return TypeUtils.isReferenceType(arrayType.getComponentType());
-    }
-
 
 }

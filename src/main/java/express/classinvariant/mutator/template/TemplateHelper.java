@@ -11,20 +11,21 @@ import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.TypeFactory;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.*;
 
 public class TemplateHelper {
 
-    public static CtMethod<?> createTraversalMethod(CtClass<?> ctClass, Path leftPath) {
+    public static CtMethod<?> createTraversalMethod(CtClass<?> ctClass, Path leftPath, String traversalPrefix) {
         Set<ModifierKind> modifiers = new HashSet<>();
         modifiers.add(ModifierKind.PRIVATE);
         modifiers.add(ModifierKind.STATIC);
 
         CtTypeReference<?> returnType = SpoonFactory.getTypeFactory().booleanPrimitiveType();
         List<CtParameter<?>> formalParameters = TemplateHelper.createTraversalFormalParameters(leftPath);
-        String traversalName = LocalVarHelper.getNextTraversalName(ctClass, LocalVarHelper.TRAVERSAL_PREFIX);
+        String traversalName = LocalVarHelper.getNextTraversalName(ctClass, traversalPrefix);
         return SpoonFactory.createMethod(modifiers, returnType, traversalName, formalParameters);
     }
 
@@ -74,6 +75,14 @@ public class TemplateHelper {
         return traversal.getParameters().get(1);
     }
 
+    public static boolean isReferenceArrayTraversal(CtMethod<?> traversal) {
+        CtTypeReference<?> traversedElementType = getTraversedElementParameter(traversal).getType();
+        if (!traversedElementType.isArray())
+            return false;
+        CtArrayTypeReference<?> arrayType = (CtArrayTypeReference<?>) traversedElementType;
+        return TypeUtils.isReferenceType(arrayType.getComponentType());
+    }
+
     // creates the following local variable: Set<Object> visitedElements = visitedMap.computeIfAbsent(rootElement.getClass(), k -> Collections.newSetFromMap(new IdentityHashMap<>()));
     public static CtLocalVariable<?> createVisitedElementsSet(CtVariable<?> visitedMap, CtVariableRead<?> rootElementRead) {
         CoreFactory coreFactory = SpoonFactory.getCoreFactory();
@@ -110,6 +119,10 @@ public class TemplateHelper {
     }
 
     private static CtInvocation<?> createRootElementGetClassInvocation(CtVariableRead<?> rootElementRead) {
+        if (rootElementRead.getType().isArray()) {
+            CtInvocation getClassInvocation = SpoonFactory.createInvocation(rootElementRead, "getClass", Collections.emptyList(), Collections.emptyList());
+            return SpoonFactory.createInvocation(getClassInvocation, "getComponentType", Collections.emptyList(), Collections.emptyList());
+        }
         return SpoonFactory.createInvocation(rootElementRead, "getClass", Collections.emptyList(), Collections.emptyList());
     }
 

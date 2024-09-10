@@ -287,7 +287,7 @@ public class SpoonFactory {
         return createInvocation(createFieldRead(target), methodName, argsTypes, args);
     }
 
-    public static CtInvocation createInvocation(CtVariableRead<?> target, String methodName,
+    public static CtInvocation createInvocation(CtExpression<?> target, String methodName,
                                                 List<CtTypeReference<?>> argsTypes,
                                                 List<Object> args) {
 
@@ -327,7 +327,7 @@ public class SpoonFactory {
         return createMethodCall(createVariableRead(target), method, args);
     }
 
-    public static CtInvocation createMethodCall(CtVariableRead<?> targetRead, CtExecutableReference<?> method,
+    public static CtInvocation createMethodCall(CtExpression<?> targetRead, CtExecutableReference<?> method,
                                                 List<CtExpression<?>> args) {
         CtInvocation invocation = coreFactory.createInvocation();
         invocation.setTarget(targetRead);
