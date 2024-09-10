@@ -69,7 +69,7 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
         CtComment insertBeforeLabel = SpoonQueries.getEndOfHandleCurrentComment(arrayTraversalBody);
         MutatorHelper.selectMutationOption(ifStatement, arrayTraversalBody, insertBeforeLabel, LocalVarHelper.STAGE_2_LABEL);
 
-        //System.err.println("InvokeFieldTraversalOnArrayTraversalMutator: added check\n" + ifStatement);
+        //System.out.println("InvokeFieldTraversalOnArrayTraversalMutator: added check\n" + ifStatement);
         //System.err.println("InvokeFieldTraversalOnArrayTraversalMutator: result:\n" + state);
     }
 

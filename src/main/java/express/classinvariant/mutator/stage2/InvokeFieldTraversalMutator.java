@@ -50,7 +50,7 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
         }
 
         Path chosenPath = RandomUtils.getRandomPath(pathCandidates);
-        
+
         CtInvocation<Boolean> traversalCall = TemplateHelper.createTraversalInvocation(chosenPath, traversal, mapOfVisitedDeclaration);
 
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateNullComparisonClauses(chosenPath);
@@ -70,13 +70,14 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
         List<CtMethod<?>> otherTraversals = MutatorHelper.findTraversalsWithDifferentParameters(state.getCtClass(), traversal);
         if (!otherTraversals.isEmpty()) {
             CtMethod<?> chosenTraversal = RandomUtils.getRandomElement(otherTraversals);
-            invocations = MutatorHelper.getIfsCallingMethod(state.getCtClass(), LocalVarHelper.STAGE_2_LABEL, chosenTraversal.getSimpleName());
+            invocations = MutatorHelper.getIfsCallingMethod(targetMethodBody, LocalVarHelper.STAGE_2_LABEL, chosenTraversal.getSimpleName());
         }
 
         CtStatement insertBeforeLabel = SpoonQueries.getReturnTrueLabel(targetMethodBody);
         MutatorHelper.insertOrReplaceCheck(invocations, ifStatement, insertBeforeLabel);
 
-        //System.err.println("\nInvokeFieldTraversalMutator Invocation: \n" + ifStatement.toString());
+        //System.out.println("\nInvokeFieldTraversalMutator Invocation: \n" + ifStatement.toString());
+        //System.out.println("\nInvokeFieldTraversalMutator AFTER: \n" + targetMethodBody.toString());
         //System.err.println("\n\InvokeFieldTraversalMutator: traversal:\n" + traversal.toString());
         //System.err.println("\InvokeFieldTraversalMutator: AFTER\n" + state.toString());
     }

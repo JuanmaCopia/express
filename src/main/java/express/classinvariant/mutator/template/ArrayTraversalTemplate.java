@@ -21,12 +21,12 @@ public class ArrayTraversalTemplate {
         return arrayTraversal;
     }
 
-    private static CtBlock<?> createArrayTraversalBody(CtMethod<?> arrayTraversal) {
+    private static void createArrayTraversalBody(CtMethod<?> arrayTraversal) {
         CtBlock<?> body = SpoonFactory.createBlock();
         CtVariable<?> arrayVar = TemplateHelper.getTraversedElementParameter(arrayTraversal);
-        CtVariableRead<?> arrayRead = SpoonFactory.createVariableRead(arrayVar);
 
-        CtVariable<?> mapOfVisited = TemplateHelper.getMapOfVisitedParameter(arrayTraversal);
+        //CtVariableRead<?> arrayRead = SpoonFactory.createVariableRead(arrayVar);
+        //CtVariable<?> mapOfVisited = TemplateHelper.getMapOfVisitedParameter(arrayTraversal);
         //CtLocalVariable<?> visitedSetDeclaration = TemplateHelper.createVisitedElementsSet(mapOfVisited, arrayRead);
 
         CtFor forStatement = createForStatement(arrayVar);
@@ -36,7 +36,8 @@ public class ArrayTraversalTemplate {
         body.insertEnd(SpoonFactory.createComment("End of traversal"));
         body.insertEnd(SpoonFactory.createComment("Return True"));
         body.insertEnd(SpoonFactory.createReturnTrueStatement());
-        return body;
+
+        arrayTraversal.setBody(body);
     }
 
     private static CtFor createForStatement(CtVariable<?> arrayVar) {
