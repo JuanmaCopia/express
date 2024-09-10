@@ -268,11 +268,26 @@ public class SpoonFactory {
         return resultType;
     }
 
+    public static CtTypeReference<?> createTypeWithSubtypeReference(Class<?> type, List<CtTypeReference<?>> subtypes) {
+        CtTypeReference<?> resultType = typeFactory.createReference(type);
+        for (CtTypeReference<?> subtype : subtypes) {
+            resultType.addActualTypeArgument(TypeUtils.convertGenericsToWildcard(subtype));
+        }
+        return resultType;
+    }
+
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName) {
-        return createInvocation(target, methodName, new LinkedList<>(), new LinkedList<>());
+        return createInvocation(createFieldRead(target), methodName, new LinkedList<>(), new LinkedList<>());
     }
 
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName,
+                                                List<CtTypeReference<?>> argsTypes,
+                                                List<Object> args) {
+
+        return createInvocation(createFieldRead(target), methodName, argsTypes, args);
+    }
+
+    public static CtInvocation createInvocation(CtVariableRead<?> target, String methodName,
                                                 List<CtTypeReference<?>> argsTypes,
                                                 List<Object> args) {
 
@@ -309,8 +324,13 @@ public class SpoonFactory {
 
     public static CtInvocation createMethodCall(CtVariable<?> target, CtExecutableReference<?> method,
                                                 List<CtExpression<?>> args) {
+        return createMethodCall(createVariableRead(target), method, args);
+    }
+
+    public static CtInvocation createMethodCall(CtVariableRead<?> targetRead, CtExecutableReference<?> method,
+                                                List<CtExpression<?>> args) {
         CtInvocation invocation = coreFactory.createInvocation();
-        invocation.setTarget(createVariableRead(target));
+        invocation.setTarget(targetRead);
         invocation.setExecutable(method);
         if (!args.isEmpty())
             invocation.setArguments(args);
@@ -633,4 +653,8 @@ public class SpoonFactory {
     }
 
 
+    public static CtExecutableReference<?> createMethodReference(CtTypeReference<?> type, String methodName) {
+        CtMethod<?> method = type.getTypeDeclaration().getMethodsByName(methodName).get(0);
+        return factory.Executable().createReference(method);
+    }
 }

@@ -3,6 +3,7 @@ package express.classinvariant.mutator.stage2;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
+import express.classinvariant.mutator.template.TemplateHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
@@ -25,14 +26,14 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
     boolean mustDeclareSet = false;
 
     public boolean isApplicable(ClassInvariantState state) {
-        List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.ARRAY_TRAVERSAL_PREFIX);
-        if (traversals.isEmpty()) {
+        List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.ARRAY_TRAVERSAL_PREFIX);
+        if (arrayTraversals.isEmpty()) {
             return false;
         }
 
-        CtMethod<?> traversal = RandomUtils.getRandomElement(traversals);
+        CtMethod<?> arrayTraversal = RandomUtils.getRandomElement(arrayTraversals);
 
-        CtVariable<?> array = SpoonQueries.getTraversedElementParameter(traversal);
+        CtVariable<?> array = TemplateHelper.getTraversedElementParameter(arrayTraversal);
 
         List<Path> pathCandidates = TypeUtils.filterPathsByType(
                 SpoonManager.getSubjectTypeData().getArrayPaths(),
@@ -46,8 +47,8 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
 
         targetMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
 
-        CtVariable<?> formalParameter = SpoonQueries.getTraversalSetParameter(traversal);
-        CtTypeReference<?> setSubType = TypeUtils.getActualTypeArgument(formalParameter.getType(), 0);
+        CtVariable<?> currentElementVar = TemplateHelper.getTraversalCurrentVariable(arrayTraversal);
+        CtTypeReference<?> setSubType = TypeUtils.getActualTypeArgument(currentElementVar.getType(), 0);
         setVar = SpoonQueries.searchVisitedSetInBlock(targetMethodBody, setSubType);
         if (setVar == null) {
             mustDeclareSet = true;
@@ -55,12 +56,12 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         } else {
             mustDeclareSet = false;
         }
-        CtExpression<?>[] args = MutatorHelper.createTraversalArguments(traversal.getParameters().get(0), setVar, chosenPath.getVariableRead());
-        CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(traversal, args);
+        CtExpression<?>[] args = MutatorHelper.createTraversalArguments(arrayTraversal.getParameters().get(0), setVar, chosenPath.getVariableRead());
+        CtInvocation<Boolean> arrayTraversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(arrayTraversal, args);
 
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateNullComparisonClauses(chosenPath);
         clauses.remove(0);
-        clauses.add(SpoonFactory.negateExpresion(traversalCall));
+        clauses.add(SpoonFactory.negateExpresion(arrayTraversalCall));
         condition = SpoonFactory.conjunction(clauses);
 
         return !SpoonQueries.checkAlreadyExistSimple(condition, targetMethodBody);

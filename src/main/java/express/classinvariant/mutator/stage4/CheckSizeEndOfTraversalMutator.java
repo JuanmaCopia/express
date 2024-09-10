@@ -3,6 +3,7 @@ package express.classinvariant.mutator.stage4;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
+import express.classinvariant.mutator.template.TemplateHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
@@ -36,7 +37,7 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
             return false;
         }
 
-        CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
+        CtVariable<?> traversedElement = TemplateHelper.getTraversedElementParameter(traversal);
         List<Path> candidatePaths = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(traversedElement).stream()
                 .filter(p -> TypeUtils.isIntegerType(p.getTypeReference()) && p.size() < 3)
@@ -46,7 +47,7 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
 
         Path chosenPath = RandomUtils.getRandomPath(candidatePaths);
 
-        CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(traversal);
+        CtVariable<?> visitedSetVar = TemplateHelper.getTraversalVisitedElemensVariable(traversal);
         CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(visitedSetVar, "size");
         initialSizeVar = SpoonFactory.createLocalVariable(LocalVarHelper.INITIAL_SIZE_VAR_NAME, SpoonFactory.getTypeFactory().integerPrimitiveType(), sizeInvocation);
 

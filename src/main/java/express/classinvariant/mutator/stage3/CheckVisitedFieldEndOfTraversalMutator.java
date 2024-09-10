@@ -3,6 +3,7 @@ package express.classinvariant.mutator.stage3;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
+import express.classinvariant.mutator.template.TemplateHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
@@ -10,7 +11,6 @@ import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
-import express.util.Utils;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
@@ -32,16 +32,17 @@ public class CheckVisitedFieldEndOfTraversalMutator implements ClassInvariantMut
         }
         traversal = RandomUtils.getRandomElement(traversals);
 
-        CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
-        CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(traversal);
-        CtTypeReference<?> setSubType = TypeUtils.getActualTypeArgument(visitedSetVar.getType(), 0);
+        CtVariable<?> traversedElement = TemplateHelper.getTraversedElementParameter(traversal);
+        CtVariable<?> visitedSetVar = TemplateHelper.getTraversalVisitedElemensVariable(traversal);
+        CtVariable<?> currentVar = TemplateHelper.getTraversalCurrentVariable(traversal);
+        CtTypeReference<?> traversedElementsType = TypeUtils.getActualTypeArgument(currentVar.getType(), 0);
 
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph().computeSimplePathsForAlternativeVar(traversedElement).stream().filter(p -> p.size() == 2).toList();
-        candidates = TypeUtils.filterPathsByType(candidates, setSubType).stream().toList();
+        candidates = TypeUtils.filterPathsByType(candidates, traversedElementsType).stream().toList();
         if (candidates.isEmpty()) {
             System.err.println("No candidates found for traversed element: " + traversedElement);
             System.err.println("Traversed element type: " + traversedElement.getType());
-            System.err.println("Set subtype: " + setSubType);
+            System.err.println("Set subtype: " + traversedElementsType);
             System.err.println("Traversal: " + traversal);
         }
 

@@ -8,7 +8,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
 
@@ -242,22 +241,20 @@ public class TypeUtils {
     // }
 
     public static CtTypeReference<?> convertGenericsToWildcard(CtTypeReference<?> typeRef) {
+        if (typeRef.isGenerics())
+            return typeRef.getFactory().Core().createWildcardReference();
         List<CtTypeReference<?>> originalTypeArguments = typeRef.getActualTypeArguments();
-        if (originalTypeArguments.isEmpty()) {
-            if (typeRef.isGenerics())
-                return typeRef.getFactory().Core().createWildcardReference();
+        if (originalTypeArguments.isEmpty())
             return typeRef;
-        }
 
-        // Create wildcard references for each type argument
-        List<CtWildcardReference> wildcardArguments = originalTypeArguments.stream()
-                .map(arg -> typeRef.getFactory().Core().createWildcardReference())
-                .collect(Collectors.toList());
+        List<CtTypeReference<?>> newTypeArguments = new ArrayList<>();
+        for (CtTypeReference<?> typeArgument : originalTypeArguments) {
+            newTypeArguments.add(convertGenericsToWildcard(typeArgument));
+        }
 
         // Create a copy of the original type reference
         CtTypeReference<?> wildcardTypeRef = typeRef.clone();
-
-        wildcardTypeRef.setActualTypeArguments(wildcardArguments);
+        wildcardTypeRef.setActualTypeArguments(newTypeArguments);
         return wildcardTypeRef;
     }
 
@@ -315,5 +312,5 @@ public class TypeUtils {
         }
         return userDefClasses;
     }
-    
+
 }

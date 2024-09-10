@@ -3,6 +3,7 @@ package express.classinvariant.mutator.stage2;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
+import express.classinvariant.mutator.template.TemplateHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
@@ -12,7 +13,6 @@ import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
@@ -22,27 +22,27 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
     CtMethod<?> arrayTraversal;
     CtBlock<?> arrayTraversalBody;
     CtExpression<Boolean> condition;
-    CtVariable<?> setVar;
-    boolean mustDeclareSet = false;
 
     public boolean isApplicable(ClassInvariantState state) {
+        CtLocalVariable<?> mapOfVisitedDeclaration = TemplateHelper.getMapOfVisitedDeclaration(state.getCtClass());
+        if (mapOfVisitedDeclaration == null)
+            return false;
+
         List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.ARRAY_TRAVERSAL_PREFIX);
         if (arrayTraversals.isEmpty())
             return false;
 
-        List<CtMethod<?>> cyclicFieldsTraversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
-        if (cyclicFieldsTraversals.isEmpty())
+        List<CtMethod<?>> fieldTraversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
+        if (fieldTraversals.isEmpty())
             return false;
 
         arrayTraversal = RandomUtils.getRandomElement(arrayTraversals);
-        CtMethod<?> cyclicFieldTraversal = RandomUtils.getRandomElement(cyclicFieldsTraversals);
-        CtTypeReference<?> traversedElementType = SpoonQueries.getTraversedElement(cyclicFieldTraversal).getType();
-
 
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(
                 arrayTraversal.getBody(), LocalVarHelper.CURRENT_VAR_NAME
         );
-
+        CtMethod<?> fieldTraversal = RandomUtils.getRandomElement(fieldTraversals);
+        CtTypeReference<?> traversedElementType = TemplateHelper.getTraversedElementParameter(fieldTraversal).getType();
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream().filter(
                         p -> p.getTypeReference().isSubtypeOf(traversedElementType) &&
@@ -53,20 +53,7 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
 
         Path chosenPath = RandomUtils.getRandomPath(candidates);
 
-        CtVariable<?> formalParameter = SpoonQueries.getTraversalSetParameter(cyclicFieldTraversal);
-        CtTypeReference<?> setSubType = TypeUtils.getActualTypeArgument(formalParameter.getType(), 0);
-        setVar = SpoonQueries.searchVisitedSetInBlock(arrayTraversal.getBody(), setSubType);
-        if (setVar == null) {
-            mustDeclareSet = true;
-            setVar = SpoonFactory.createVisitedIdentitySetDeclaration(setSubType);
-        } else {
-            mustDeclareSet = false;
-        }
-
-        CtVariable<?> thisVar = arrayTraversal.getParameters().get(0);
-        CtExpression<?>[] args = MutatorHelper.createTraversalArguments(thisVar, setVar, chosenPath.getVariableRead());
-
-        CtInvocation<Boolean> traversalCall = (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(cyclicFieldTraversal, args);
+        CtInvocation<Boolean> traversalCall = TemplateHelper.createTraversalInvocation(chosenPath, fieldTraversal, mapOfVisitedDeclaration);
 
         CtExpression<Boolean> clause1 = SpoonFactory.generateAndConcatenationOfNullComparisons(chosenPath, BinaryOperatorKind.NE);
         CtExpression<Boolean> clause2 = SpoonFactory.negateExpresion(traversalCall);
@@ -78,10 +65,6 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
 
     @Override
     public void mutate(ClassInvariantState state) {
-        if (mustDeclareSet) {
-            arrayTraversalBody.insertBegin((CtStatement) setVar);
-        }
-
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_2_LABEL);
         CtComment insertBeforeLabel = SpoonQueries.getEndOfHandleCurrentComment(arrayTraversalBody);
         MutatorHelper.selectMutationOption(ifStatement, arrayTraversalBody, insertBeforeLabel, LocalVarHelper.STAGE_2_LABEL);

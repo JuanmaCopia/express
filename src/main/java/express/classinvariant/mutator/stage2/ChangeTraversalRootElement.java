@@ -3,6 +3,7 @@ package express.classinvariant.mutator.stage2;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
+import express.classinvariant.mutator.template.TemplateHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
@@ -37,7 +38,7 @@ public class ChangeTraversalRootElement implements ClassInvariantMutator {
         CtExpression rootElementAssignment = rootElement.getDefaultExpression();
         CtTypeReference<?> rootElementType = rootElementAssignment.getType();
 
-        CtVariable<?> subjectVar = SpoonQueries.getTraversedElementParameter(traversal);
+        CtVariable<?> subjectVar = TemplateHelper.getTraversedElementParameter(traversal);
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(subjectVar).stream()
                 .filter(p ->
