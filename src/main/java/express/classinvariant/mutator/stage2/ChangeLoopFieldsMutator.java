@@ -40,7 +40,7 @@ public class ChangeLoopFieldsMutator implements ClassInvariantMutator {
 
     @Override
     public void mutate(ClassInvariantState state) {
-        CtVariable<?> visitedSet = TemplateHelper.getTraversalVisitedElemensVariable(traversal);
+        CtVariable<?> visitedSet = TemplateHelper.getTraversalVisitedElementsVariable(traversal);
         CtVariable<?> currentVar = TemplateHelper.getTraversalCurrentVariable(traversal);
         CtTypeReference<?> traversedNode = currentVar.getType();
 

@@ -33,7 +33,7 @@ public class CheckVisitedFieldEndOfTraversalMutator implements ClassInvariantMut
         traversal = RandomUtils.getRandomElement(traversals);
 
         CtVariable<?> traversedElement = TemplateHelper.getTraversedElementParameter(traversal);
-        CtVariable<?> visitedSetVar = TemplateHelper.getTraversalVisitedElemensVariable(traversal);
+        CtVariable<?> visitedSetVar = TemplateHelper.getTraversalVisitedElementsVariable(traversal);
         CtVariable<?> currentVar = TemplateHelper.getTraversalCurrentVariable(traversal);
         CtTypeReference<?> traversedElementsType = currentVar.getType();
 

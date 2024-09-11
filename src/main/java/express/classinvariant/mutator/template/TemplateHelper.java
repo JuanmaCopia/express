@@ -194,7 +194,7 @@ public class TemplateHelper {
                 && var.getSimpleName().startsWith(LocalVarHelper.CURRENT_VAR_NAME)).stream().findFirst().orElse(null);
     }
 
-    public static CtLocalVariable<?> getTraversalVisitedElemensVariable(CtMethod<?> traversal) {
+    public static CtLocalVariable<?> getTraversalVisitedElementsVariable(CtMethod<?> traversal) {
         return (CtLocalVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var
                 && var.getSimpleName().startsWith(LocalVarHelper.SET_VAR_NAME)).stream().findFirst().orElse(null);
     }

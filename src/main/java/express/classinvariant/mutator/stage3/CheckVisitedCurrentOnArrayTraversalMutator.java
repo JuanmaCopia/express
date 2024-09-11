@@ -37,7 +37,7 @@ public class CheckVisitedCurrentOnArrayTraversalMutator implements ClassInvarian
         );
 
         mustDeclareVisitedSet = false;
-        visitedSetVar = TemplateHelper.getTraversalVisitedElemensVariable(arrayTraversal);
+        visitedSetVar = TemplateHelper.getTraversalVisitedElementsVariable(arrayTraversal);
         if (visitedSetVar == null) {
             mustDeclareVisitedSet = true;
 

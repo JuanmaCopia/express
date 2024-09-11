@@ -47,7 +47,7 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
 
         Path chosenPath = RandomUtils.getRandomPath(candidatePaths);
 
-        CtVariable<?> visitedSetVar = TemplateHelper.getTraversalVisitedElemensVariable(traversal);
+        CtVariable<?> visitedSetVar = TemplateHelper.getTraversalVisitedElementsVariable(traversal);
         CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(visitedSetVar, "size");
         initialSizeVar = SpoonFactory.createLocalVariable(LocalVarHelper.INITIAL_SIZE_VAR_NAME, SpoonFactory.getTypeFactory().integerPrimitiveType(), sizeInvocation);
 
