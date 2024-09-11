@@ -34,11 +34,11 @@ public class AddRandomComparisonToCurrent implements ClassInvariantMutator {
                 LocalVarHelper.CURRENT_VAR_NAME);
 
         TypeGraph typeGraph = SpoonManager.getSubjectTypeData().getThisTypeGraph();
-        int size = 2;
+
         List<Path> candidates = typeGraph
                 .computeSimplePathsForAlternativeVar(currentDeclaration)
                 .stream()
-                .filter(p -> p.size() > size
+                .filter(p -> p.size() > 1
                         && TypeUtils.areRelated(currentDeclaration.getType(), p.getTypeReference()))
                 .toList();
         if (candidates.isEmpty())

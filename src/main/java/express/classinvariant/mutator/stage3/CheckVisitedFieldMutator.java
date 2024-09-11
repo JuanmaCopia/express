@@ -8,9 +8,7 @@ import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
-import express.type.TypeUtils;
 import express.type.typegraph.Path;
-import express.util.Utils;
 import spoon.reflect.code.*;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -32,8 +30,8 @@ public class CheckVisitedFieldMutator implements ClassInvariantMutator {
         CtTypeReference<?> typeOfPath = chosenPath.getTypeReference();
 
         structureMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
-        List<CtLocalVariable<?>> visitedSetVars = SpoonQueries.getVisitedSetLocalVars(structureMethodBody).stream().filter(
-                v -> typeOfPath.isSubtypeOf(v.getType().getActualTypeArguments().get(0))).toList();
+        String visitedSetVarName = LocalVarHelper.getVisitedSetVarName(typeOfPath);
+        List<CtLocalVariable<?>> visitedSetVars = SpoonQueries.getLocalVariablesMatchingPrefix(structureMethodBody, visitedSetVarName);
         if (visitedSetVars.isEmpty()) {
             return false;
         }

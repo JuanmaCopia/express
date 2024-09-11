@@ -14,6 +14,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 
@@ -21,6 +22,9 @@ public class CheckVisitedCurrentOnArrayTraversalMutator implements ClassInvarian
 
     CtMethod<?> arrayTraversal;
     CtExpression<Boolean> condition;
+
+    CtLocalVariable<?> visitedSetVar;
+    boolean mustDeclareVisitedSet = false;
 
     public boolean isApplicable(ClassInvariantState state) {
         List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.ARRAY_TRAVERSAL_PREFIX);
@@ -31,7 +35,16 @@ public class CheckVisitedCurrentOnArrayTraversalMutator implements ClassInvarian
         CtLocalVariable<?> currentDeclaration = SpoonQueries.getLocalVarMatchingPrefix(
                 arrayTraversal.getBody(), LocalVarHelper.CURRENT_VAR_NAME
         );
-        CtVariable<?> visitedSetVar = TemplateHelper.getTraversalVisitedElemensVariable(arrayTraversal);
+
+        mustDeclareVisitedSet = false;
+        visitedSetVar = TemplateHelper.getTraversalVisitedElemensVariable(arrayTraversal);
+        if (visitedSetVar == null) {
+            mustDeclareVisitedSet = true;
+
+            CtVariable<?> mapOfVisitedParameter = TemplateHelper.getMapOfVisitedParameter(arrayTraversal);
+            CtTypeReference<?> arraySubtype = TemplateHelper.getArrayTraversalElementType(arrayTraversal);
+            visitedSetVar = TemplateHelper.createVisitedElementsSet(mapOfVisitedParameter, arraySubtype);
+        }
         CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(visitedSetVar, currentDeclaration);
         if (RandomUtils.nextBoolean())
             addToSetInvocation = SpoonFactory.negateExpresion(addToSetInvocation);
@@ -42,6 +55,10 @@ public class CheckVisitedCurrentOnArrayTraversalMutator implements ClassInvarian
 
     @Override
     public void mutate(ClassInvariantState state) {
+        if (mustDeclareVisitedSet) {
+            arrayTraversal.getBody().insertBegin(visitedSetVar);
+        }
+
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_3_LABEL);
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(arrayTraversal.getBody());
         endOfHandleCurrentComment.insertBefore(ifStatement);

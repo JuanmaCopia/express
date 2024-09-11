@@ -2,6 +2,7 @@ package express.classinvariant.mutator;
 
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.reference.CtTypeReference;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ public class LocalVarHelper {
     public static final String STAGE_3_LABEL = "STAGE_3_LABEL";
     public static final String STAGE_4_LABEL = "STAGE_4_LABEL";
 
-    public static final String SET_VAR_NAME = "visitedElements";
+    public static final String SET_VAR_NAME = "visited";
     public static final String WORKLIST_VAR_NAME = "worklist_";
     public static final String CURRENT_VAR_NAME = "current_";
     public static final String TRAVERSAL_PREFIX = "traverse_";
@@ -69,6 +70,18 @@ public class LocalVarHelper {
             default:
                 throw new IllegalArgumentException("Invalid stage number");
         }
+    }
+
+    public static String getVisitedSetVarName(CtTypeReference<?> typeOfPath) {
+        return SET_VAR_NAME + typeOfPath.getSimpleName();
+    }
+
+    public static boolean isTraversalMethod(CtMethod<?> method) {
+        return method.getSimpleName().startsWith(TRAVERSAL_PREFIX) || method.getSimpleName().startsWith(ARRAY_TRAVERSAL_PREFIX);
+    }
+
+    public static boolean isStructureMethod(CtMethod<?> method) {
+        return method.getSimpleName().startsWith(STRUCTURE_METHOD_NAME);
     }
 
 /*    public static String getCurrentVarName(CtBlock<?> code) {

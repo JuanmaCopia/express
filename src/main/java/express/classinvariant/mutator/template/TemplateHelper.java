@@ -87,21 +87,40 @@ public class TemplateHelper {
     public static CtLocalVariable<?> createVisitedElementsSet(CtVariable<?> visitedMap, CtVariableRead<?> rootElementRead) {
         CoreFactory coreFactory = SpoonFactory.getCoreFactory();
         TypeFactory typeFactory = SpoonFactory.getTypeFactory();
+
+        String visitedElementsName = LocalVarHelper.getVisitedSetVarName(rootElementRead.getType());
         CtLocalVariable<?> visitedElements = coreFactory.createLocalVariable();
-        visitedElements.setSimpleName(LocalVarHelper.SET_VAR_NAME);
+        visitedElements.setSimpleName(visitedElementsName);
         visitedElements.setType(SpoonFactory.createTypeWithSubtypeReference(Set.class, typeFactory.objectType()));
-        CtInvocation computeIfAbsentInvocation = createComputeIfAbsentInvocation(visitedMap, rootElementRead);
-        visitedElements.setAssignment(computeIfAbsentInvocation);
-        return visitedElements;
-
-    }
-
-    // creates the following invocation: visitedMap.computeIfAbsent(rootElement.getClass(), k -> Collections.newSetFromMap(new IdentityHashMap<>()));
-    private static CtInvocation<?> createComputeIfAbsentInvocation(CtVariable<?> visitedMap, CtVariableRead<?> rootElementRead) {
-        TypeFactory typeFactory = SpoonFactory.getTypeFactory();
 
         CtExpression<?> param1 = createRootElementGetClassInvocation(rootElementRead);
         CtExpression<?> param2 = createSetCreationLambdaExpression();
+        CtInvocation computeIfAbsentInvocation = createComputeIfAbsentInvocation(param1, param2, visitedMap);
+
+        visitedElements.setAssignment(computeIfAbsentInvocation);
+        return visitedElements;
+    }
+
+    // creates the following local variable: Set<Object> visitedElements = visitedMap.computeIfAbsent(rootElement.getClass(), k -> Collections.newSetFromMap(new IdentityHashMap<>()));
+    public static CtLocalVariable<?> createVisitedElementsSet(CtVariable<?> visitedMap, CtTypeReference<?> subtypeOfSet) {
+        CoreFactory coreFactory = SpoonFactory.getCoreFactory();
+        TypeFactory typeFactory = SpoonFactory.getTypeFactory();
+
+        String visitedElementsName = LocalVarHelper.getVisitedSetVarName(subtypeOfSet);
+        CtLocalVariable<?> visitedElements = coreFactory.createLocalVariable();
+        visitedElements.setSimpleName(visitedElementsName);
+        visitedElements.setType(SpoonFactory.createTypeWithSubtypeReference(Set.class, typeFactory.objectType()));
+
+        CtExpression<?> param1 = subtypeOfSet.getFactory().createClassAccess(subtypeOfSet);
+        CtExpression<?> param2 = createSetCreationLambdaExpression();
+        CtInvocation computeIfAbsentInvocation = createComputeIfAbsentInvocation(param1, param2, visitedMap);
+
+        visitedElements.setAssignment(computeIfAbsentInvocation);
+        return visitedElements;
+    }
+
+    private static CtInvocation<?> createComputeIfAbsentInvocation(CtExpression<?> param1, CtExpression<?> param2, CtVariable<?> visitedMap) {
+        TypeFactory typeFactory = SpoonFactory.getTypeFactory();
 
         CtTypeReference<?> classType = typeFactory.createReference(Class.class);
         CtTypeReference<?> setOfObjectsType = SpoonFactory.createTypeWithSubtypeReference(Set.class, typeFactory.objectType());
@@ -118,7 +137,7 @@ public class TemplateHelper {
         return computeIfAbsentInvocation;
     }
 
-    private static CtInvocation<?> createRootElementGetClassInvocation(CtVariableRead<?> rootElementRead) {
+    private static CtExpression<?> createRootElementGetClassInvocation(CtVariableRead<?> rootElementRead) {
         if (rootElementRead.getType().isArray()) {
             CtInvocation getClassInvocation = SpoonFactory.createInvocation(rootElementRead, "getClass", Collections.emptyList(), Collections.emptyList());
             return SpoonFactory.createInvocation(getClassInvocation, "getComponentType", Collections.emptyList(), Collections.emptyList());
@@ -182,17 +201,21 @@ public class TemplateHelper {
 
     public static CtVariable<?> getTraversalCurrentVariable(CtMethod<?> traversal) {
         return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var
-                && var.getSimpleName().startsWith(LocalVarHelper.CURRENT_VAR_NAME)).get(0);
+                && var.getSimpleName().startsWith(LocalVarHelper.CURRENT_VAR_NAME)).stream().findFirst().orElse(null);
     }
 
-    public static CtVariable<?> getTraversalVisitedElemensVariable(CtMethod<?> traversal) {
-        return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var
-                && var.getSimpleName().startsWith(LocalVarHelper.SET_VAR_NAME)).get(0);
+    public static CtLocalVariable<?> getTraversalVisitedElemensVariable(CtMethod<?> traversal) {
+        return (CtLocalVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var
+                && var.getSimpleName().startsWith(LocalVarHelper.SET_VAR_NAME)).stream().findFirst().orElse(null);
     }
 
     public static CtInvocation<Boolean> createTraversalInvocation(Path chosenPath, CtMethod<?> traversal, CtVariable<?> mapOfVisited) {
         CtExpression<?>[] args = TemplateHelper.createActualArgumentsForTraversal(chosenPath.getVariableRead(), SpoonFactory.createVariableRead(mapOfVisited));
         return (CtInvocation<Boolean>) SpoonFactory.createStaticInvocation(traversal, args);
+    }
+
+    public static CtTypeReference<?> getArrayTraversalElementType(CtMethod<?> arrayTraversal) {
+        return ((CtArrayTypeReference<?>) TemplateHelper.getTraversedElementParameter(arrayTraversal).getType()).getComponentType();
     }
 
 

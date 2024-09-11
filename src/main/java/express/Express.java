@@ -64,7 +64,7 @@ public class Express {
     private ClassInvariantState startSearch() {
         ClassInvariantState currentState = initializationStageSearch();
         currentState = traversalStageSearch(currentState);
-        //currentState = startStructureCheckSearch(currentState);
+        currentState = startStructureCheckSearch(currentState);
         //currentState = startPrimitiveCheck(currentState);
         return currentState;
     }
