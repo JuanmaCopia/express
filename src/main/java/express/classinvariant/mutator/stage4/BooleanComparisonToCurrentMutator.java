@@ -3,7 +3,7 @@ package express.classinvariant.mutator.stage4;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
-import express.classinvariant.mutator.template.NumericComparisonTemplate;
+import express.classinvariant.mutator.template.ComparisonTemplate;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
@@ -17,7 +17,7 @@ import spoon.reflect.declaration.CtMethod;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PrimitiveComparisonToCurrentMutator implements ClassInvariantMutator {
+public class BooleanComparisonToCurrentMutator implements ClassInvariantMutator {
 
     CtMethod<?> traversal;
     CtBlock<?> traversalBody;
@@ -36,7 +36,7 @@ public class PrimitiveComparisonToCurrentMutator implements ClassInvariantMutato
 
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream()
-                .filter(p -> TypeUtils.isNumericType(p.getTypeReference()) && !p.isEmpty())
+                .filter(p -> TypeUtils.isBooleanType(p.getTypeReference()) && !p.isEmpty())
                 .collect(Collectors.toList());
         if (candidates.size() < 2)
             return false;
@@ -49,7 +49,7 @@ public class PrimitiveComparisonToCurrentMutator implements ClassInvariantMutato
         candidates.remove(path1);
         Path path2 = RandomUtils.getRandomElement(candidates);
 
-        condition = NumericComparisonTemplate.instantiateTemplate(path1, path2, RandomUtils.nextBoolean());
+        condition = ComparisonTemplate.instantiateBooleanTemplate(path1, path2, RandomUtils.nextBoolean());
         if (SpoonQueries.checkAlreadyExist(condition, traversalBody))
             return false;
 

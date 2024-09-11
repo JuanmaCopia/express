@@ -8,10 +8,14 @@ import spoon.reflect.code.CtExpression;
 
 import java.util.List;
 
-public class NumericComparisonTemplate {
+public class ComparisonTemplate {
 
-    public static CtExpression<Boolean> instantiateTemplate(Path path1, Path path2, boolean negate) {
-        return instantiateTemplate(path1, path2, RandomUtils.getRandomBinaryOperator(), negate);
+    public static CtExpression<Boolean> instantiateComparableTemplate(Path path1, Path path2, boolean negate) {
+        return instantiateTemplate(path1, path2, RandomUtils.getRandomComparableBinaryOperator(), negate);
+    }
+
+    public static CtExpression<Boolean> instantiateBooleanTemplate(Path path1, Path path2, boolean negate) {
+        return instantiateTemplate(path1, path2, RandomUtils.getRandomBooleanBinaryOperator(), negate);
     }
 
     public static CtExpression<Boolean> instantiateTemplate(Path path1, Path path2, BinaryOperatorKind operator, boolean negate) {

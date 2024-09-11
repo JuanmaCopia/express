@@ -8,10 +8,7 @@ import express.classinvariant.mutator.stage1.MultipleNullComparisonMutator;
 import express.classinvariant.mutator.stage1.SingleNullComparisonMutator;
 import express.classinvariant.mutator.stage2.*;
 import express.classinvariant.mutator.stage3.*;
-import express.classinvariant.mutator.stage4.AddSizeCheckMutator;
-import express.classinvariant.mutator.stage4.CheckSizeEndOfTraversalMutator;
-import express.classinvariant.mutator.stage4.CheckVisitedPrimitiveFromCurrentMutator;
-import express.classinvariant.mutator.stage4.PrimitiveComparisonToCurrentMutator;
+import express.classinvariant.mutator.stage4.*;
 import express.classinvariant.problem.ClassInvariantProblem;
 import express.classinvariant.search.ClassInvariantSearch;
 import express.classinvariant.state.ClassInvariantState;
@@ -163,7 +160,8 @@ public class Express {
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         mutators.add(new CheckSizeEndOfTraversalMutator());
         mutators.add(new AddSizeCheckMutator());
-        mutators.add(new PrimitiveComparisonToCurrentMutator());
+        mutators.add(new NumericComparisonToCurrentMutator());
+        mutators.add(new BooleanComparisonToCurrentMutator());
         mutators.add(new CheckVisitedPrimitiveFromCurrentMutator());
         // Removals
         mutators.add(new RemoveIfMutator(4));

@@ -179,7 +179,15 @@ public class RandomUtils {
         return List.of(BinaryOperatorKind.EQ, BinaryOperatorKind.NE, BinaryOperatorKind.GE, BinaryOperatorKind.GT, BinaryOperatorKind.LE, BinaryOperatorKind.LT);
     }
 
-    public static BinaryOperatorKind getRandomBinaryOperator() {
+    public static List<BinaryOperatorKind> getBooleanComparisons() {
+        return List.of(BinaryOperatorKind.EQ, BinaryOperatorKind.NE);
+    }
+
+    public static BinaryOperatorKind getRandomComparableBinaryOperator() {
         return getRandomElement(getNumericComparisons());
+    }
+
+    public static BinaryOperatorKind getRandomBooleanBinaryOperator() {
+        return getRandomElement(getBooleanComparisons());
     }
 }
