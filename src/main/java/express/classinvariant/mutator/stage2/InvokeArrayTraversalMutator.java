@@ -23,11 +23,6 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
     CtExpression<Boolean> condition;
 
     public boolean isApplicable(ClassInvariantState state) {
-        CtLocalVariable<?> mapOfVisitedDeclaration = TemplateHelper.getMapOfVisitedDeclaration(state.getCtClass());
-        if (mapOfVisitedDeclaration == null) {
-            return false;
-        }
-
         List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.ARRAY_TRAVERSAL_PREFIX);
         if (arrayTraversals.isEmpty()) {
             return false;
@@ -47,6 +42,8 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
 
         Path chosenPath = RandomUtils.getRandomPath(pathCandidates);
 
+        CtMethod<?> structureMethod = TemplateHelper.getStructureMethod(state);
+        CtVariable<?> mapOfVisitedDeclaration = TemplateHelper.getMapOfVisitedParameter(structureMethod);
         CtInvocation<Boolean> arrayTraversalCall = TemplateHelper.createTraversalInvocation(chosenPath, arrayTraversal, mapOfVisitedDeclaration);
 
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateNullComparisonClauses(chosenPath);
@@ -54,7 +51,7 @@ public class InvokeArrayTraversalMutator implements ClassInvariantMutator {
         clauses.add(SpoonFactory.negateExpresion(arrayTraversalCall));
         condition = SpoonFactory.conjunction(clauses);
 
-        targetMethodBody = TemplateHelper.getStructureMethodBody(state);
+        targetMethodBody = structureMethod.getBody();
         return !SpoonQueries.checkAlreadyExistSimple(condition, targetMethodBody);
     }
 

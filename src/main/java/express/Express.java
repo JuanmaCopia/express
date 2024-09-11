@@ -96,7 +96,7 @@ public class Express {
 
         Set<ClassInvariantMutator> mutators = new HashSet<>();
         // Declare map of visited
-        mutators.add(new DeclareMapOfVisitedMutator());
+        //mutators.add(new DeclareMapOfVisitedMutator());
         // Traversal Declaration Mutators
         mutators.add(new DeclareWorklistTraversalMutator());
         mutators.add(new DeclareSimpleTraversalMutator());

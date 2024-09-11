@@ -33,11 +33,6 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
     }
 
     boolean isApplicable(ClassInvariantState state, CtMethod<?> trav) {
-        CtLocalVariable<?> mapOfVisitedDeclaration = TemplateHelper.getMapOfVisitedDeclaration(state.getCtClass());
-        if (mapOfVisitedDeclaration == null) {
-            return false;
-        }
-
         traversal = trav;
         CtVariable<?> initialElement = TemplateHelper.getTraversedElementParameter(traversal);
 
@@ -51,6 +46,8 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
 
         Path chosenPath = RandomUtils.getRandomPath(pathCandidates);
 
+        CtMethod<?> structureMethod = TemplateHelper.getStructureMethod(state);
+        CtVariable<?> mapOfVisitedDeclaration = TemplateHelper.getMapOfVisitedParameter(structureMethod);
         CtInvocation<Boolean> traversalCall = TemplateHelper.createTraversalInvocation(chosenPath, traversal, mapOfVisitedDeclaration);
 
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateNullComparisonClauses(chosenPath);
@@ -58,7 +55,7 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
         clauses.add(SpoonFactory.negateExpresion(traversalCall));
         condition = SpoonFactory.conjunction(clauses);
 
-        targetMethodBody = TemplateHelper.getStructureMethodBody(state);
+        targetMethodBody = structureMethod.getBody();
         return !SpoonQueries.checkAlreadyExistSimple(condition, targetMethodBody);
     }
 

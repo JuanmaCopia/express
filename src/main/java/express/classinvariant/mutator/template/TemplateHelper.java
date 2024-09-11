@@ -4,7 +4,6 @@ import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.SpoonFactory;
-import express.spoon.SpoonQueries;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import spoon.reflect.code.*;
@@ -175,21 +174,12 @@ public class TemplateHelper {
         return new CtExpression<?>[]{traversedElementRead, mapOfVisitedRead};
     }
 
-    public static CtLocalVariable<?> getMapOfVisitedDeclaration(CtClass<?> stateClass) {
-        CtBlock<?> targetMethodBody = MutatorHelper.getMethodByName(stateClass, LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
-        List<CtLocalVariable<?>> mapOfVisited = SpoonQueries.getLocalVariablesMatchingPrefix(targetMethodBody, LocalVarHelper.MAP_OF_VISITED);
-        if (mapOfVisited.isEmpty()) {
-            return null;
-        }
-        return mapOfVisited.get(0);
+    public static CtMethod<?> getStructureMethod(ClassInvariantState state) {
+        return MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME);
     }
 
-    public static CtBlock<?> getStructureMethodBody(ClassInvariantState state) {
-        return MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
-    }
-
-    public static CtBlock<?> getPrimitiveMethodBody(ClassInvariantState state) {
-        return MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.PRIMITIVE_METHOD_NAME).getBody();
+    public static CtMethod<?> getPrimitiveMethod(ClassInvariantState state) {
+        return MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.PRIMITIVE_METHOD_NAME);
     }
 
     public static CtVariable<?> getTraversalWorklistVariable(CtMethod<?> traversal) {

@@ -55,16 +55,6 @@ public class SpoonFactory {
         return typeFactory;
     }
 
-
-    public static CtExpression<?>[] createArgumentsFromParameters(CtMethod<?> method) {
-        List<CtParameter<?>> parameters = method.getParameters();
-        CtExpression<?>[] args = new CtExpression<?>[parameters.size()];
-        for (int i = 0; i < args.length; i++) {
-            args[i] = createVariableRead(parameters.get(i));
-        }
-        return args;
-    }
-
     public static CtExpression<?>[] createArgumentsFromParameters(List<CtParameter<?>> parameters) {
         CtExpression<?>[] args = new CtExpression<?>[parameters.size()];
         for (int i = 0; i < args.length; i++) {

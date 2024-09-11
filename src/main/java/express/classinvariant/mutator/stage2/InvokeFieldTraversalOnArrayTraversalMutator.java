@@ -13,6 +13,7 @@ import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
@@ -24,10 +25,6 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
     CtExpression<Boolean> condition;
 
     public boolean isApplicable(ClassInvariantState state) {
-        CtLocalVariable<?> mapOfVisitedDeclaration = TemplateHelper.getMapOfVisitedDeclaration(state.getCtClass());
-        if (mapOfVisitedDeclaration == null)
-            return false;
-
         List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.ARRAY_TRAVERSAL_PREFIX);
         if (arrayTraversals.isEmpty())
             return false;
@@ -53,6 +50,7 @@ public class InvokeFieldTraversalOnArrayTraversalMutator implements ClassInvaria
 
         Path chosenPath = RandomUtils.getRandomPath(candidates);
 
+        CtVariable<?> mapOfVisitedDeclaration = TemplateHelper.getMapOfVisitedParameter(arrayTraversal);
         CtInvocation<Boolean> traversalCall = TemplateHelper.createTraversalInvocation(chosenPath, fieldTraversal, mapOfVisitedDeclaration);
 
         CtExpression<Boolean> clause1 = SpoonFactory.generateAndConcatenationOfNullComparisons(chosenPath, BinaryOperatorKind.NE);
