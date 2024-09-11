@@ -49,7 +49,7 @@ public class BooleanComparisonToCurrentMutator implements ClassInvariantMutator 
         candidates.remove(path1);
         Path path2 = RandomUtils.getRandomElement(candidates);
 
-        condition = ComparisonTemplate.instantiateBooleanTemplate(path1, path2, RandomUtils.nextBoolean());
+        condition = ComparisonTemplate.instantiateBooleanTemplate(path1, path2);
         if (SpoonQueries.checkAlreadyExist(condition, traversalBody))
             return false;
 

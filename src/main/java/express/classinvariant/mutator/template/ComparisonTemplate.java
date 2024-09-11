@@ -14,8 +14,8 @@ public class ComparisonTemplate {
         return instantiateTemplate(path1, path2, RandomUtils.getRandomComparableBinaryOperator(), negate);
     }
 
-    public static CtExpression<Boolean> instantiateBooleanTemplate(Path path1, Path path2, boolean negate) {
-        return instantiateTemplate(path1, path2, RandomUtils.getRandomBooleanBinaryOperator(), negate);
+    public static CtExpression<Boolean> instantiateBooleanTemplate(Path path1, Path path2) {
+        return instantiateTemplate(path1, path2, RandomUtils.getRandomBooleanBinaryOperator(), false);
     }
 
     public static CtExpression<Boolean> instantiateTemplate(Path path1, Path path2, BinaryOperatorKind operator, boolean negate) {

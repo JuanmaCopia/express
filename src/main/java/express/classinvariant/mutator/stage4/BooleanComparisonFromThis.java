@@ -37,7 +37,7 @@ public class BooleanComparisonFromThis implements ClassInvariantMutator {
         paths.remove(path1);
         Path path2 = RandomUtils.getRandomElement(paths);
 
-        condition = ComparisonTemplate.instantiateBooleanTemplate(path1, path2, RandomUtils.nextBoolean());
+        condition = ComparisonTemplate.instantiateBooleanTemplate(path1, path2);
 
         targetMethodBody = TemplateHelper.getPrimitiveMethod(state).getBody();
         return !SpoonQueries.checkAlreadyExistSimple(condition, targetMethodBody);
