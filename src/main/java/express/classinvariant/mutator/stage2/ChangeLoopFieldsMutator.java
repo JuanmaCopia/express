@@ -3,6 +3,7 @@ package express.classinvariant.mutator.stage2;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
+import express.classinvariant.mutator.template.TemplateHelper;
 import express.classinvariant.mutator.template.WorklistTraversalTemplate;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
@@ -29,7 +30,7 @@ public class ChangeLoopFieldsMutator implements ClassInvariantMutator {
         }
 
         traversal = RandomUtils.getRandomElement(traversals);
-        worklist = SpoonQueries.getTraversalWorklistVariable(traversal);
+        worklist = TemplateHelper.getTraversalWorklistVariable(traversal);
         if (worklist == null) {
             return false;
         }
@@ -39,8 +40,8 @@ public class ChangeLoopFieldsMutator implements ClassInvariantMutator {
 
     @Override
     public void mutate(ClassInvariantState state) {
-        CtVariable<?> visitedSet = SpoonQueries.getTraversalSetParameter(traversal);
-        CtVariable<?> currentVar = SpoonQueries.getTraversalCurrentVariable(traversal);
+        CtVariable<?> visitedSet = TemplateHelper.getTraversalVisitedElementsVariable(traversal);
+        CtVariable<?> currentVar = TemplateHelper.getTraversalCurrentVariable(traversal);
         CtTypeReference<?> traversedNode = currentVar.getType();
 
         List<CtVariable<?>> loopFields = TypeUtils.getCyclicFieldsOfType(traversedNode);

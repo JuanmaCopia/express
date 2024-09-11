@@ -2,49 +2,48 @@ package express.classinvariant.mutator.stage3;
 
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
-import express.classinvariant.mutator.MutatorHelper;
+import express.classinvariant.mutator.template.TemplateHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
-import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
-import express.type.typegraph.TypeData;
-import spoon.reflect.code.CtBlock;
+import express.type.typegraph.Path;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class DeclareVisitedSetMutator implements ClassInvariantMutator {
 
-    List<CtTypeReference<?>> candidateTypes;
-    CtBlock<?> targetMethodBody;
+    CtTypeReference<?> typeOfSet;
 
     public boolean isApplicable(ClassInvariantState state) {
-        targetMethodBody = MutatorHelper.getMethodByName(state.getCtClass(), LocalVarHelper.STRUCTURE_METHOD_NAME).getBody();
-        Set<CtVariable<?>> visitedSets = new HashSet<>(SpoonQueries.getVisitedSetLocalVars(targetMethodBody));
+        List<Path> paths = SpoonManager.getSubjectTypeData().getReferencePaths().stream().filter(
+                p -> p.size() > 1 && !p.getTypeReference().isArray()
+        ).toList();
+        if (paths.isEmpty())
+            return false;
 
-        Set<String> visitedSetTypes = visitedSets.stream().map(
-                v -> v.getType().getActualTypeArguments().get(0).getQualifiedName()).collect(Collectors.toSet());
-        TypeData typeData = SpoonManager.getSubjectTypeData();
-        candidateTypes = typeData.getReferenceTypes().stream()
-                .filter(t -> !visitedSetTypes.contains(t.getQualifiedName())).toList();
+        Path chosenPath = RandomUtils.getRandomPath(paths);
+        typeOfSet = chosenPath.getTypeReference();
 
-        return !candidateTypes.isEmpty();
+
+        String visitedSetVarName = LocalVarHelper.getVisitedSetVarName(typeOfSet);
+        List<CtLocalVariable<?>> visitedSetVars = SpoonQueries.getLocalVariablesMatchingPrefix(TemplateHelper.getStructureMethod(state).getBody(), visitedSetVarName);
+        return visitedSetVars.isEmpty();
     }
 
     @Override
     public void mutate(ClassInvariantState state) {
-        CtTypeReference<?> chosenType = RandomUtils.getRandomElement(candidateTypes);
-        CtVariable<?> setDeclaration = SpoonFactory.createVisitedIdentitySetDeclaration(chosenType);
+        CtMethod<?> structureMethod = TemplateHelper.getStructureMethod(state);
+        CtVariable<?> mapOfVisited = TemplateHelper.getMapOfVisitedParameter(structureMethod);
 
-        CtStatement separatorLabel = SpoonQueries.getSeparatorLabelComment(targetMethodBody);
+        CtVariable<?> setDeclaration = TemplateHelper.createVisitedElementsSet(mapOfVisited, typeOfSet);
+        CtStatement separatorLabel = SpoonQueries.getSeparatorLabelComment(structureMethod.getBody());
         separatorLabel.insertAfter((CtStatement) setDeclaration);
-
         //System.err.println("DeclareVisitedSetMutator:\n" + setDeclaration);
     }
 

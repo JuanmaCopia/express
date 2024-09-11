@@ -3,6 +3,7 @@ package express.classinvariant.mutator.stage3;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
+import express.classinvariant.mutator.template.TemplateHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
@@ -10,7 +11,6 @@ import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
-import express.util.Utils;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
@@ -34,7 +34,7 @@ public class NullComparisonFromInputMutator implements ClassInvariantMutator {
         CtMethod<?> traversal = traversals.get(RandomUtils.nextInt(traversals.size()));
         traversalBody = traversal.getBody();
 
-        CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
+        CtVariable<?> traversedElement = TemplateHelper.getTraversedElementParameter(traversal);
         List<Path> paths = SpoonManager.getSubjectTypeData().getThisTypeGraph().computeSimplePathsForAlternativeVar(traversedElement).stream().filter(
                 p -> p.size() > 1).toList();
         paths = TypeUtils.filterPaths(paths, TypeUtils::isReferenceType).stream().toList();

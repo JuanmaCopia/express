@@ -72,11 +72,9 @@ public class DeclareSimpleTraversalMutator implements ClassInvariantMutator {
 
         CtVariable<?> chosenLoopField = RandomUtils.getRandomElement(loopFields);
 
-        int splitIndex;
-        if (chosenPath.size() <= 2) {
-            splitIndex = RandomUtils.nextInt(chosenPath.size(), chosenPath.size() + 1);
-        } else {
-            splitIndex = RandomUtils.nextInt(2, chosenPath.size());
+        int splitIndex = chosenPath.size();
+        if (chosenPath.size() > 2) {
+            splitIndex--;
         }
         boolean checkCircular = RandomUtils.nextBoolean();
         return SimpleTraversalTemplate.instantiate(ctClass, chosenPath, chosenLoopField, splitIndex, checkCircular);

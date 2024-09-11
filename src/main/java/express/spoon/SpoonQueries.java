@@ -4,7 +4,9 @@ import express.classinvariant.mutator.LocalVarHelper;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 
@@ -149,26 +151,6 @@ public class SpoonQueries {
         return comment.getContent().equals("End of Traversed Fields");
     }
 
-    public static CtVariable<?> getTraversalSetParameter(CtMethod<?> traversal) {
-        return traversal.getParameters().get(traversal.getParameters().size() - 1);
-    }
-
-    public static CtVariable<?> getTraversedElementParameter(CtMethod<?> traversal) {
-        return traversal.getParameters().get(traversal.getParameters().size() - 2);
-    }
-
-    public static CtVariable<?> getTraversalWorklistVariable(CtMethod<?> traversal) {
-        List<CtLocalVariable<?>> localVars = traversal.getBody().getElements(var -> var.getSimpleName().startsWith(LocalVarHelper.WORKLIST_VAR_NAME));
-        if (localVars.isEmpty())
-            return null;
-        return localVars.get(0);
-    }
-
-    public static CtVariable<?> getTraversalCurrentVariable(CtMethod<?> traversal) {
-        return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var
-                && var.getSimpleName().startsWith(LocalVarHelper.CURRENT_VAR_NAME)).get(0);
-    }
-
     public static List<CtIf> getTraversalIfsForTraversedFields(CtBlock<?> traversalBody) {
         List<CtIf> traversalIfs = new LinkedList<>();
         CtStatement currStatement = getNextStatement(getEndOfHandleCurrentComment(traversalBody));
@@ -260,30 +242,6 @@ public class SpoonQueries {
             CtIf ifStatement1 = (CtIf) ifStatement;
             return ifStatement1.getCondition().toString().contains(methodName);
         }).toList();
-    }
-
-    public static CtVariable<?> getVisitedSetParameter(CtMethod<?> method) {
-        return getVisitedSetParameter(method.getParameters());
-    }
-
-    public static CtVariable<?> getVisitedSetParameter(List<CtParameter<?>> params) {
-        for (CtParameter<?> parameter : params) {
-            if (parameter.getSimpleName().startsWith(LocalVarHelper.SET_VAR_NAME))
-                return parameter;
-        }
-        return null;
-    }
-
-    public static CtVariable<?> getTraversedElement(CtMethod<?> method) {
-        List<CtParameter<?>> parameters = method.getParameters();
-        return parameters.get(parameters.size() - 2);
-    }
-
-    public static CtVariable<?> getInitialSizeVariable(CtBlock<?> block) {
-        List<CtLocalVariable<?>> vars = getLocalVariablesMatchingPrefix(block, LocalVarHelper.INITIAL_SIZE_VAR_NAME);
-        if (vars.isEmpty())
-            return null;
-        return vars.get(0);
     }
 
     public static List<CtLocalVariable<?>> getVisitedSetLocalVarsOfType(CtBlock<?> block, CtTypeReference<?> type) {

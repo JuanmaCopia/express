@@ -1,6 +1,6 @@
 package express.classinvariant.mutator;
 
-import express.classinvariant.mutator.template.ArrayTraversalTemplate;
+import express.classinvariant.mutator.template.TemplateHelper;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonQueries;
@@ -15,14 +15,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class MutatorHelper {
-
-    public static CtExpression<?>[] createTraversalArguments(CtVariable<?> thisVar, CtVariable<?> visitedSetVar, CtVariableRead<?> pathRead) {
-        CtExpression<?>[] args = new CtExpression[3];
-        args[0] = SpoonFactory.createVariableRead(thisVar);
-        args[1] = pathRead;
-        args[2] = SpoonFactory.createVariableRead(visitedSetVar);
-        return args;
-    }
 
     public static void selectMutationOption(CtIf ifStatement, CtBlock<?> targetMethodBody, CtStatement insertBeforeStatement, String label) {
         List<CtIf> mutableIfs = MutatorHelper.getMutableIfs(targetMethodBody, label);
@@ -142,6 +134,10 @@ public class MutatorHelper {
         ).toList();
     }
 
+    public static List<CtIf> getIfsCallingMethod(CtBlock<?> body, String label, String methodName) {
+        return body.getElements(ifStatement -> isMutableIf(ifStatement, label) && callsMethod(ifStatement, methodName));
+    }
+
     public static boolean callsMethod(CtIf e, String methodName) {
         return e.toString().contains(methodName);
     }
@@ -150,30 +146,11 @@ public class MutatorHelper {
         return e.toString().contains(method.getSimpleName());
     }
 
-
-    public static CtTypeReference<?> getTraversedType(CtMethod<?> traversal) {
-        return traversal.getParameters().get(2).getType().getActualTypeArguments().get(0);
-    }
-
-    public static CtTypeReference<?> getTraversedArrayType(CtMethod<?> arrayTraversal) {
-        return arrayTraversal.getParameters().get(1).getType();
-    }
-
-    public static Set<CtTypeReference<?>> getTraversedTypes(CtClass<?> cls) {
-        Set<CtTypeReference<?>> traversedTypes = new HashSet<>();
-        for (CtMethod<?> method : cls.getMethods()) {
-            if (method.getSimpleName().startsWith(LocalVarHelper.TRAVERSAL_PREFIX)) {
-                traversedTypes.add(getTraversedType(method));
-            }
-        }
-        return traversedTypes;
-    }
-
     public static Set<CtTypeReference<?>> getTraversedArrayTypes(CtClass<?> cls) {
         Set<CtTypeReference<?>> traversedTypes = new HashSet<>();
         for (CtMethod<?> method : cls.getMethods()) {
             if (method.getSimpleName().startsWith(LocalVarHelper.ARRAY_TRAVERSAL_PREFIX)) {
-                traversedTypes.add(getTraversedArrayType(method));
+                traversedTypes.add(TemplateHelper.getTraversedElementParameter(method).getType());
             }
         }
         return traversedTypes;
@@ -184,7 +161,7 @@ public class MutatorHelper {
                 MutatorHelper.getMethodsByName(cls, LocalVarHelper.TRAVERSAL_PREFIX));
         List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(cls, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX)
                 .stream().filter(
-                        ArrayTraversalTemplate::isReferenceArrayTraversal)
+                        TemplateHelper::isReferenceArrayTraversal)
                 .toList();
 
         traversals.addAll(arrayTraversals);

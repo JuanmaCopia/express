@@ -3,6 +3,7 @@ package express.classinvariant.mutator.stage4;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
+import express.classinvariant.mutator.template.TemplateHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
@@ -21,6 +22,7 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
     CtLocalVariable<?> initialSizeVar;
     CtExpression<Boolean> condition;
     CtBlock<?> traversalBody;
+    CtLocalVariable<?> visitedSetVar;
 
     public boolean isApplicable(ClassInvariantState state) {
         List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
@@ -36,7 +38,7 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
             return false;
         }
 
-        CtVariable<?> traversedElement = SpoonQueries.getTraversedElement(traversal);
+        CtVariable<?> traversedElement = TemplateHelper.getTraversedElementParameter(traversal);
         List<Path> candidatePaths = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(traversedElement).stream()
                 .filter(p -> TypeUtils.isIntegerType(p.getTypeReference()) && p.size() < 3)
@@ -46,7 +48,7 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
 
         Path chosenPath = RandomUtils.getRandomPath(candidatePaths);
 
-        CtVariable<?> visitedSetVar = SpoonQueries.getVisitedSetParameter(traversal);
+        visitedSetVar = TemplateHelper.getTraversalVisitedElementsVariable(traversal);
         CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(visitedSetVar, "size");
         initialSizeVar = SpoonFactory.createLocalVariable(LocalVarHelper.INITIAL_SIZE_VAR_NAME, SpoonFactory.getTypeFactory().integerPrimitiveType(), sizeInvocation);
 
@@ -59,9 +61,8 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
     @Override
     public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_4_LABEL);
-
-        CtStatement beginOfTraversalComment = SpoonQueries.getBeginOfTraversalComment(traversalBody);
-        beginOfTraversalComment.insertAfter(initialSizeVar);
+        
+        visitedSetVar.insertAfter(initialSizeVar);
         CtStatement endOfTraversalComment = SpoonQueries.getEndOfTraversalComment(traversalBody);
         endOfTraversalComment.insertAfter(ifStatement);
 
