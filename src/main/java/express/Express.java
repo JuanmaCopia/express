@@ -158,6 +158,10 @@ public class Express {
         currentState.setFitnessAsOutdated();
 
         Set<ClassInvariantMutator> mutators = new HashSet<>();
+        // For Primitive main method
+        mutators.add(new BooleanComparisonFromThis());
+        mutators.add(new NumericComparisonFromThis());
+        //
         mutators.add(new CheckSizeEndOfTraversalMutator());
         mutators.add(new AddSizeCheckMutator());
         mutators.add(new NumericComparisonToCurrentMutator());
