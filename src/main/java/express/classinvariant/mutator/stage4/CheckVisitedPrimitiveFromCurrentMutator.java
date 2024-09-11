@@ -82,7 +82,7 @@ public class CheckVisitedPrimitiveFromCurrentMutator implements ClassInvariantMu
         CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(traversalBody);
         endOfHandleCurrentComment.insertBefore(ifStatement);
 
-        System.err.println("\nCheckVisitedPrimitiveFromCurrentMutator:\n" + ifStatement);
+        //System.err.println("\nCheckVisitedPrimitiveFromCurrentMutator:\n" + ifStatement);
     }
 
 

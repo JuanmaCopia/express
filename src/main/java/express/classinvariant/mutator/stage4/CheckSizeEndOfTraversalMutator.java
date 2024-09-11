@@ -22,6 +22,7 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
     CtLocalVariable<?> initialSizeVar;
     CtExpression<Boolean> condition;
     CtBlock<?> traversalBody;
+    CtLocalVariable<?> visitedSetVar;
 
     public boolean isApplicable(ClassInvariantState state) {
         List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
@@ -47,7 +48,7 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
 
         Path chosenPath = RandomUtils.getRandomPath(candidatePaths);
 
-        CtVariable<?> visitedSetVar = TemplateHelper.getTraversalVisitedElementsVariable(traversal);
+        visitedSetVar = TemplateHelper.getTraversalVisitedElementsVariable(traversal);
         CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(visitedSetVar, "size");
         initialSizeVar = SpoonFactory.createLocalVariable(LocalVarHelper.INITIAL_SIZE_VAR_NAME, SpoonFactory.getTypeFactory().integerPrimitiveType(), sizeInvocation);
 
@@ -60,9 +61,8 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
     @Override
     public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_4_LABEL);
-
-        CtStatement beginOfTraversalComment = SpoonQueries.getBeginOfTraversalComment(traversalBody);
-        beginOfTraversalComment.insertAfter(initialSizeVar);
+        
+        visitedSetVar.insertAfter(initialSizeVar);
         CtStatement endOfTraversalComment = SpoonQueries.getEndOfTraversalComment(traversalBody);
         endOfTraversalComment.insertAfter(ifStatement);
 

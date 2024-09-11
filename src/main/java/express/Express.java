@@ -65,7 +65,7 @@ public class Express {
         ClassInvariantState currentState = initializationStageSearch();
         currentState = traversalStageSearch(currentState);
         currentState = startStructureCheckSearch(currentState);
-        //currentState = startPrimitiveCheck(currentState);
+        currentState = startPrimitiveCheck(currentState);
         return currentState;
     }
 
@@ -95,8 +95,6 @@ public class Express {
         currentState.setFitnessAsOutdated();
 
         Set<ClassInvariantMutator> mutators = new HashSet<>();
-        // Declare map of visited
-        //mutators.add(new DeclareMapOfVisitedMutator());
         // Traversal Declaration Mutators
         mutators.add(new DeclareWorklistTraversalMutator());
         mutators.add(new DeclareSimpleTraversalMutator());
