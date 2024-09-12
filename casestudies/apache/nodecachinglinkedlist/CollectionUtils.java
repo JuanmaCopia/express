@@ -1,5 +1,5 @@
 
-package apache.nodecachinglinkedlist;
+package casestudies.apache.nodecachinglinkedlist;
 
 public class CollectionUtils {
 

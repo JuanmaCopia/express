@@ -23,7 +23,7 @@
  * questions.
  */
 
-package casestudies.javautil;
+package casestudies.javautil.linkedlist;
 
 import java.util.*;
 import java.util.function.Consumer;

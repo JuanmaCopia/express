@@ -1,4 +1,4 @@
-package examples.linkedlist;
+package casestudies.javautil.linkedlist;
 
 import org.junit.Test;
 

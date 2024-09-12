@@ -1,4 +1,4 @@
-package apache.nodecachinglinkedlist;
+package casestudies.apache.nodecachinglinkedlist;
 
 import org.junit.Test;
 
