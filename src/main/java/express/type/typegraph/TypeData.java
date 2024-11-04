@@ -130,6 +130,10 @@ public class TypeData {
         return new LinkedList<>(referencePaths);
     }
 
+    public List<Path> getNonGenericReferencePaths() {
+        return simplePaths.stream().filter(p -> !p.getTypeReference().isGenerics()).toList();
+    }
+
     public List<Path> getArrayPaths() {
         return new LinkedList<>(arrayPaths);
     }

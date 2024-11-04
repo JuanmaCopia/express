@@ -234,18 +234,14 @@ public class TypeUtils {
         return a.isSubtypeOf(b) || b.isSubtypeOf(a);
     }
 
-    // public static boolean areEquals(CtTypeReference<?> a, CtTypeReference<?> b) {
-    // CtTypeReference<?> aWildcard = convertGenericsToWildcard(a);
-    // CtTypeReference<?> bWildcard = convertGenericsToWildcard(b);
-    // return aWildcard.getQualifiedName().equals(bWildcard.getQualifiedName());
-    // }
-
     public static CtTypeReference<?> convertGenericsToWildcard(CtTypeReference<?> typeRef) {
-        if (typeRef.isGenerics())
-            return typeRef.getFactory().Core().createWildcardReference();
         List<CtTypeReference<?>> originalTypeArguments = typeRef.getActualTypeArguments();
-        if (originalTypeArguments.isEmpty())
+        if (originalTypeArguments.isEmpty()) {
+            if (typeRef.isGenerics()) {
+                return typeRef.getFactory().Core().createWildcardReference();
+            }
             return typeRef;
+        }
 
         List<CtTypeReference<?>> newTypeArguments = new ArrayList<>();
         for (CtTypeReference<?> typeArgument : originalTypeArguments) {

@@ -21,7 +21,7 @@ public class DeclareVisitedSetMutator implements ClassInvariantMutator {
     CtTypeReference<?> typeOfSet;
 
     public boolean isApplicable(ClassInvariantState state) {
-        List<Path> paths = SpoonManager.getSubjectTypeData().getReferencePaths().stream().filter(
+        List<Path> paths = SpoonManager.getSubjectTypeData().getNonGenericReferencePaths().stream().filter(
                 p -> p.size() > 1 && !p.getTypeReference().isArray()
         ).toList();
         if (paths.isEmpty())
