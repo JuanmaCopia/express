@@ -5,14 +5,13 @@
 
 CASE_STUDY=$1
 
-TREEMAP_PLI="src/main/resources/examples/treemap/treemap.properties"
-SCHEDULE_PLI="src/main/resources/examples/schedule/schedule.properties"
-HASHMAP_PLI="src/main/resources/examples/hashmap/hashmap.properties"
-LINKEDLIST_PLI="src/main/resources/examples/linkedlist/linkedlist.properties"
-TREESET_PLI="src/main/resources/examples/treeset/treeset.properties"
-AVLTREE_PLI="src/main/resources/examples/avltree/avltree.properties"
-BINOMIALHEAP_PLI="src/main/resources/examples/binomialheap/binomialheap.properties"
-TRANSPORTSTATS_PLI="src/main/resources/examples/transportstats/transportstats.properties"
+TREEMAP_PLI="casestudies/pli/treemap/treemap.properties"
+SCHEDULE_PLI="casestudies/pli/schedule/schedule.properties"
+HASHMAP_PLI="casestudies/pli/hashmap/hashmap.properties"
+LINKEDLIST_PLI="casestudies/pli/linkedlist/linkedlist.properties"
+TREESET_PLI="casestudies/pli/treeset/treeset.properties"
+AVLTREE_PLI="casestudies/pli/avltree/avltree.properties"
+BINOMIALHEAP_PLI="casestudies/pli/binomialheap/binomialheap.properties"
 
 case $CASE_STUDY in
     "TREEMAP_PLI")

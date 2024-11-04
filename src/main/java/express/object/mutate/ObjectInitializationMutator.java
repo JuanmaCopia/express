@@ -13,10 +13,13 @@ import java.util.List;
 
 public class ObjectInitializationMutator {
 
+    // TODO: Make it a parameter in the configuration file
+    private static final int MAX_PATH_LENGTH = 4;
+
     public static boolean mutateForInitialization(Object rootObject) {
         List<Path> referencePaths = SpoonManager.getSubjectTypeData().getReferencePaths();
         List<Path> candidatePaths = referencePaths.stream().filter(
-                path -> path.size() > 1 && path.size() < 4 && Reflection.canBeEvaluated(rootObject, path)
+                path -> path.size() > 1 && path.size() < MAX_PATH_LENGTH && Reflection.canBeEvaluated(rootObject, path)
         ).toList();
         if (candidatePaths.isEmpty()) {
             return false;
