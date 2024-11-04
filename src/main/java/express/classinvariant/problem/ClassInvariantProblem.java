@@ -1,9 +1,9 @@
 package express.classinvariant.problem;
 
-import express.classinvariant.mutator.ClassInvariantMutatorManager;
-import express.classinvariant.state.ClassInvariantState;
 import express.classinvariant.fitness.ClassInvariantFitness;
 import express.classinvariant.mutator.ClassInvariantMutator;
+import express.classinvariant.mutator.ClassInvariantMutatorManager;
+import express.classinvariant.state.ClassInvariantState;
 import express.search.simulatedannealing.problem.SimulatedAnnealingProblem;
 import express.search.simulatedannealing.state.SimulatedAnnealingState;
 
@@ -26,7 +26,7 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
         this.restartRounds = restartRounds;
     }
 
-    public ClassInvariantProblem(Set<ClassInvariantMutator> mutators, ClassInvariantFitness fitnessFunction,  int restartRounds) {
+    public ClassInvariantProblem(Set<ClassInvariantMutator> mutators, ClassInvariantFitness fitnessFunction, int restartRounds) {
         mutatorManager = new ClassInvariantMutatorManager(mutators);
         this.fitnessFunction = fitnessFunction;
         this.restartRounds = restartRounds;
@@ -41,12 +41,12 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
     @Override
     public SimulatedAnnealingState nextState(SimulatedAnnealingState state) {
-        ClassInvariantState stateClone = ((ClassInvariantState) state).clone();
-        ClassInvariantState nextState = (ClassInvariantState) state;
+        ClassInvariantState currentState = (ClassInvariantState) state;
+        ClassInvariantState stateClone = currentState.clone();
         if (mutatorManager.performRandomMutation(stateClone)) {
-            nextState = stateClone;
+            return stateClone;
         }
-        return nextState;
+        return currentState;
     }
 
     @Override
@@ -63,6 +63,8 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
     @Override
     public void printCurrentState(int round, Double temperature, SimulatedAnnealingState currentState) {
+        if (round % 50 != 0)
+            return;
         ClassInvariantState s = (ClassInvariantState) currentState;
         DecimalFormat df = new DecimalFormat("0.00");
         System.out.println(round + " | Temperature: " + df.format(temperature) + " | Fitness: " + df.format(s.getFitness()));

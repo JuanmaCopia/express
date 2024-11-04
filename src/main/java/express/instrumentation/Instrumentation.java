@@ -2,16 +2,14 @@ package express.instrumentation;
 
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
-import express.spoon.SpoonQueries;
+import express.type.TypeUtils;
 import spoon.reflect.CtModel;
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.CodeFactory;
-import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.List;
-import java.util.Set;
 
 public class Instrumentation {
 
@@ -32,11 +30,11 @@ public class Instrumentation {
      */
     public static void instrumentMethod(CtMethod<?> method) {
         CodeFactory codeFactory = SpoonFactory.getCodeFactory();
-        List<CtVariable<?>> localVariableList = SpoonQueries.getLocalVariablesFromElement(method);
+        List<CtVariable<?>> localVariableList = method.getElements(e -> e instanceof CtLocalVariable<?>);
         for (CtVariable<?> variable : localVariableList) {
-            if (variable.getType().getQualifiedName().equals(SpoonManager.getConfig().subjectClassName)) {
+            if (variable.getType().isSubtypeOf(SpoonManager.getSubjectTypeData().getThisTypeReference())) {
                 CtCodeSnippetStatement statement = codeFactory.createCodeSnippetStatement(
-                        "express.object.ObjectCollector.saveObject(" + variable.getSimpleName() + ")");
+                        "collector.ObjectCollector.saveObject(" + variable.getSimpleName() + ")");
                 method.getBody().addStatement(statement);
             }
         }
@@ -52,35 +50,18 @@ public class Instrumentation {
     }
 
     public static void instrumentClasses(CtModel model) {
-        List<CtClass<?>> classes = model.getRootPackage().getElements(new TypeFilter<>(CtClass.class));
-        for (CtClass<?> clazz : classes) {
-            addEmptyConstructor(clazz);
-            //setPrivateFieldsAccessible(clazz);
+        for (CtClass<?> clazz : TypeUtils.getAllUserDefinedClassesInModel(model)) {
+            setPrivateFieldsAccessible(clazz);
         }
     }
 
-    private static void addEmptyConstructor(CtClass clazz) {
-        CtConstructor constructor = getEmptyConstructor(clazz);
-        CtBlock<?> body = null;
-        if (constructor != null) {
-            body = constructor.getBody();
-            clazz.removeConstructor(constructor);
-        }
-        if (body == null) {
-            body = SpoonFactory.getCoreFactory().createBlock();
-        }
-        constructor = SpoonFactory.getCoreFactory().createConstructor();
-        constructor.setBody(body);
-        constructor.setModifiers(Set.of(ModifierKind.PUBLIC));
-        clazz.addConstructor(constructor);
-    }
-
-//    private static void setPrivateFieldsAccessible(CtClass<?> clazz) {
-//        clazz.getFields().forEach(f -> f.setVisibility(ModifierKind.PUBLIC));
-//    }
-
-    private static CtConstructor<?> getEmptyConstructor(CtClass<?> clazz) {
-        return clazz.getConstructors().stream().filter(c -> c.getParameters().isEmpty()).findFirst().orElse(null);
+    private static void setPrivateFieldsAccessible(CtClass<?> clazz) {
+        clazz.getFields().forEach(f -> {
+            ModifierKind visibility = f.getVisibility();
+            if (visibility != null && visibility.equals(ModifierKind.PRIVATE)) {
+                f.setVisibility(ModifierKind.PROTECTED);
+            }
+        });
     }
 
 }

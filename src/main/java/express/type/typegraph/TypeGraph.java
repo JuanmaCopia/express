@@ -1,6 +1,7 @@
 package express.type.typegraph;
 
 
+import express.type.TypeUtils;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
@@ -28,7 +29,7 @@ public class TypeGraph {
             if (declaration == null)
                 continue; // Type is not declared in the current project
 
-            List<CtField<?>> fields = declaration.getFields();
+            Set<CtField<?>> fields = TypeUtils.getAccessibleFields(declaration);
             for (CtVariable<?> field : fields) {
                 currentAdjacency.add(field);
                 if (!adjacencyList.containsKey(field))
@@ -52,8 +53,7 @@ public class TypeGraph {
             if (initialVar == null)
                 return new HashSet<>();
             shouldReplace = true;
-        }
-        else {
+        } else {
             initialVar = source;
         }
         Set<Path> allPaths = new HashSet<>();
@@ -74,7 +74,7 @@ public class TypeGraph {
 
     private CtVariable<?> searchVariableOfType(CtTypeReference<?> type) {
         for (CtVariable<?> node : adjacencyList.keySet()) {
-            if (node.getType().equals(type))
+            if (node.getType().isSubtypeOf(type))
                 return node;
         }
         return null;
@@ -92,10 +92,20 @@ public class TypeGraph {
         }
     }
 
+//    public Set<CtTypeReference<?>> computeTypes() {
+//        Set<CtTypeReference<?>> types = new HashSet<>();
+//        for (CtVariable<?> node : adjacencyList.keySet())
+//            types.add(node.getType());
+//        return new HashSet<>(types);
+//    }
+
     public Set<CtTypeReference<?>> computeTypes() {
         Set<CtTypeReference<?>> types = new HashSet<>();
-        for (CtVariable<?> node : adjacencyList.keySet())
-            types.add(node.getType());
+        for (CtVariable<?> node : adjacencyList.keySet()) {
+            CtTypeReference<?> type = node.getType();
+            if (!type.getActualTypeArguments().isEmpty() || !type.isGenerics())
+                types.add(type);
+        }
         return new HashSet<>(types);
     }
 
@@ -103,8 +113,8 @@ public class TypeGraph {
      * Get all the possible paths of length minor or equal to k from the source node to any other
      * node in the graph.
      *
-     * @param source   the source node
-     * @param k        the maximum length of the paths
+     * @param source the source node
+     * @param k      the maximum length of the paths
      * @return the list of all the possible paths of length minor or equal to k
      */
     public Set<Path> computeAllPathsOfLengthK(CtVariable<?> source, int k) {
@@ -124,6 +134,20 @@ public class TypeGraph {
             computeAllPathsOfLengthK(node, currentPath, allPaths, k);
             currentPath.removeLast();
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (CtVariable<?> node : adjacencyList.keySet()) {
+            sb.append(node.getSimpleName()).append(" -> ");
+            List<CtVariable<?>> adjacent = adjacencyList.get(node);
+            for (CtVariable<?> adj : adjacent) {
+                sb.append(adj.getSimpleName()).append(", ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
 }

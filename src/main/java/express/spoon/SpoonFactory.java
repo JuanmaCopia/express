@@ -1,9 +1,8 @@
 package express.spoon;
 
-import express.config.Config;
 import express.classinvariant.mutator.LocalVarHelper;
+import express.type.TypeUtils;
 import express.type.typegraph.Path;
-import express.type.typegraph.TypeData;
 import org.apache.commons.lang3.ClassUtils;
 import spoon.Launcher;
 import spoon.reflect.code.*;
@@ -17,23 +16,17 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class SpoonFactory {
 
-    private static Config config;
     private static Launcher launcher;
-    private static TypeData typeData;
     private static Factory factory;
     private static CodeFactory codeFactory;
     private static CoreFactory coreFactory;
     private static TypeFactory typeFactory;
 
-    public static void initialize(Config conf, Launcher spoonLauncher, TypeData data) {
-        config = conf;
+    public static void initialize(Launcher spoonLauncher) {
         launcher = spoonLauncher;
-        typeData = data;
         factory = launcher.getFactory();
         codeFactory = launcher.getFactory().Code();
         coreFactory = launcher.getFactory().Core();
@@ -62,124 +55,12 @@ public class SpoonFactory {
         return typeFactory;
     }
 
-    // ==================== Methods for creating new elements ====================
-
-    public static CtClass<?> createPredicateClass(long id) {
-        CtClass<?> predicateClass = coreFactory.createClass();
-        String className = createPredicateClassName(id);
-        predicateClass.setSimpleName(className);
-        Set<ModifierKind> modifiers = new HashSet<>();
-        modifiers.add(ModifierKind.PUBLIC);
-        predicateClass.setModifiers(modifiers);
-
-        CtClass<?> thisClass = typeData.getThisCtClass();
-//        List<CtTypeParameter> formalTypeParameters = thisClass.getFormalCtTypeParameters();
-//        predicateClass.setFormalCtTypeParameters(formalTypeParameters);
-
-        CtPackage ctPackage = thisClass.getPackage();
-        ctPackage.addType(predicateClass);
-
-        List<CtParameter<?>> parameters = new ArrayList<>();
-        parameters.add((CtParameter<?>) typeData.getThisVariable());
-        createSubPredicates(predicateClass, parameters);
-
-        return predicateClass;
-    }
-
-    public static String createPredicateClassName(long id) {
-        return config.predicateClassName + id;
-    }
-
-    private static void createSubPredicates(CtClass<?> predicateClass, List<CtParameter<?>> parameters) {
-        List<CtMethod<Boolean>> subPredicates = createSubPredicates(parameters);
-        for (CtMethod<?> subPredicate : subPredicates)
-            predicateClass.addMethod(subPredicate);
-
-        Set<ModifierKind> modifiers = new HashSet<>();
-        modifiers.add(ModifierKind.PUBLIC);
-        modifiers.add(ModifierKind.STATIC);
-
-        CtMethod<Boolean> predicateMethod = createMethod(modifiers, typeFactory.booleanPrimitiveType(),  config.predicateMethodName, parameters);
-        CtExpression<?>[] args = createArgumentsFromParameters(predicateMethod);
-
-        CtBlock<?> body = createBlock();
-        for (CtMethod<?> subPredicate : subPredicates) {
-            CtInvocation<?> subPredicateInvocation = createStaticInvocation(typeFactory.createReference(predicateClass), subPredicate.getSimpleName(), args);
-            CtExpression<Boolean> predicateNegation = (CtExpression<Boolean>) createUnaryExpression(subPredicateInvocation, UnaryOperatorKind.NOT);
-            CtIf ifStatement = createIfThenStatement(predicateNegation, createReturnStatement(codeFactory.createLiteral(false)));
-            body.addStatement(ifStatement);
-        }
-        body.addStatement(createReturnStatement(codeFactory.createLiteral(true)));
-        predicateMethod.setBody(body);
-
-        predicateClass.addMethod(predicateMethod);
-    }
-
-//    public static CtVariableRead<?> createFieldReadOfRootObject(List<CtVariable<?>> path) {
-//        List<CtVariable<?>> pathCopy = new ArrayList<>(path);
-//        CtVariable<?> rootVar = getRootObjectVar();
-//        pathCopy.add(0, rootVar);
-//        return createFieldRead(pathCopy);
-//    }
-//
-//    public static CtVariableRead<?> createFieldReadOfRootObject(CtVariable<?> var) {
-//        CtVariable<?> rootVar = getRootObjectVar();
-//        return createFieldRead(rootVar, var);
-//    }
-//
-//
-//    public static CtVariable<?> getRootObjectVar() {
-//        return SpoonManager.predicateParameters.get(0);
-//    }
-
-    public static CtExpression<?>[] createArgumentsFromParameters(CtMethod<?> method) {
-        List<CtParameter<?>> parameters = method.getParameters();
-        CtExpression<?>[] args = new CtExpression<?>[parameters.size()];
-        for (int i = 0; i < args.length; i++) {
-            args[i] = createVariableRead(parameters.get(i));
-        }
-        return args;
-    }
-
     public static CtExpression<?>[] createArgumentsFromParameters(List<CtParameter<?>> parameters) {
         CtExpression<?>[] args = new CtExpression<?>[parameters.size()];
         for (int i = 0; i < args.length; i++) {
             args[i] = createVariableRead(parameters.get(i));
         }
         return args;
-    }
-
-    private static List<CtMethod<Boolean>> createSubPredicates(List<CtParameter<?>> parameters) {
-        List<CtMethod<Boolean>> subPredicates = new ArrayList<>();
-        subPredicates.add(createSubPredicateMethod(LocalVarHelper.INITIAL_METHOD_NAME, parameters));
-        subPredicates.add(createSubPredicateMethod(LocalVarHelper.STRUCTURE_METHOD_NAME, parameters));
-        subPredicates.add(createSubPredicateMethod(LocalVarHelper.PRIMITIVE_METHOD_NAME, parameters));
-        return subPredicates;
-    }
-
-    private static String createSubPredicateMethodName(String name) {
-        return name + LocalVarHelper.MUTABLE_METHOD_SUFFIX;
-    }
-
-    public static CtMethod<Boolean> createSubPredicateMethod(String name, List<CtParameter<?>> parameters) {
-        Set<ModifierKind> modifiers = new HashSet<>();
-        modifiers.add(ModifierKind.PUBLIC);
-        modifiers.add(ModifierKind.STATIC);
-
-        String methodName = createSubPredicateMethodName(name);
-
-        CtMethod<Boolean> predicateMethod = createMethod(modifiers, typeFactory.booleanPrimitiveType(), methodName, parameters);
-
-        predicateMethod.setBody(createReturnTrueBlock());
-        return predicateMethod;
-    }
-
-    public static CtBlock<?> createReturnTrueBlock() {
-        CtBlock<Boolean> block = coreFactory.createBlock();
-        block.addStatement(createComment("Mark1"));
-        block.addStatement(createComment("Return true"));
-        block.addStatement(createReturnStatement(codeFactory.createLiteral(true)));
-        return block;
     }
 
     public static CtReturn<Boolean> createReturnTrueStatement() {
@@ -199,12 +80,6 @@ public class SpoonFactory {
         return newMethod;
     }
 
-    public static CtClass<?> createClass(String name) {
-        CtClass<?> clazz = coreFactory.createClass();
-        clazz.setSimpleName(name);
-        return clazz;
-    }
-
     public static CtReturn createReturnStatement(CtExpression returnExpression) {
         return coreFactory.createReturn().setReturnedExpression(returnExpression);
     }
@@ -212,13 +87,6 @@ public class SpoonFactory {
     public static CtBlock<?> createBlock() {
         return coreFactory.createBlock();
     }
-
-    // public static CtReturn createReturnStatement(Object exp) {
-    // CtExpression returnExpression = parseToExpression(exp);
-    // CtReturn returnStatement = coreFactory.createReturn();
-    // returnStatement.setReturnedExpression(returnExpression);
-    // return returnStatement;
-    // }
 
     public static CtTypeReference<?> createReference(Class<?> type) {
         return typeFactory.createReference(type);
@@ -320,11 +188,96 @@ public class SpoonFactory {
         return factory.Code().createInvocation(null, staticMethodRef, args);
     }
 
+    public static CtInvocation<?> createIdentitySetInvocation() {
+        // Create a reference to the Collections class
+        CtTypeReference<?> collectionsRef = typeFactory.createReference(Collections.class);
+
+        // Create a reference to the newSetFromMap method in the Collections class
+        CtExecutableReference<?> newSetFromMapRef = factory.Executable().createReference(
+                collectionsRef,
+                typeFactory.createReference(Set.class),
+                "newSetFromMap",
+                typeFactory.createReference(Map.class)
+        );
+
+        // Create the constructor call for new IdentityHashMap<>()
+        CtConstructorCall<?> identityHashMapConstructor = createConstructorCall(
+                typeFactory.createReference(IdentityHashMap.class)
+        );
+
+        CtTypeAccess<?> collectionsAccess = factory.Code().createTypeAccess(collectionsRef);
+
+        // Create the invocation for Collections.newSetFromMap(new IdentityHashMap<>())
+        CtInvocation<?> invocation = factory.Code().createInvocation(
+                collectionsAccess,
+                newSetFromMapRef,
+                identityHashMapConstructor
+        );
+
+        return invocation;
+    }
+
+    public static CtLocalVariable<?> createVisitedIdentitySetDeclaration(CtTypeReference<?> subType) {
+        CtTypeReference<?> setType = createTypeWithSubtypeReference(Set.class, subType);
+        String varName = LocalVarHelper.SET_VAR_NAME;
+        if (subType.isArray()) {
+            varName = varName + LocalVarHelper.ARRAY_VAR_PREFIX + ((CtArrayTypeReference<?>) subType).getComponentType().getSimpleName();
+        } else {
+            varName = varName + subType.getSimpleName();
+        }
+        return createLocalVariable(varName, setType, createIdentitySetInvocation());
+    }
+
+    public static CtLocalVariable<?> createVisitedSetDeclaration(CtTypeReference<?> subType) {
+        subType = TypeUtils.getBoxedPrimitive(subType);
+        CtTypeReference<?> setType = createTypeWithSubtypeReference(Set.class, subType);
+        CtTypeReference<?> hashSetType = typeFactory.createReference(HashSet.class);
+        CtConstructorCall<?> hashSetConstructorCall = createConstructorCall(hashSetType);
+        String varName = LocalVarHelper.SET_VAR_NAME;
+        if (subType.isArray()) {
+            varName = varName + LocalVarHelper.ARRAY_VAR_PREFIX + ((CtArrayTypeReference<?>) subType).getComponentType().getSimpleName();
+        } else {
+            varName = varName + subType.getSimpleName();
+        }
+        return createLocalVariable(varName, setType, hashSetConstructorCall);
+    }
+
+    public static CtConstructorCall<?> createConstructorCall(CtTypeReference<?> typeRef) {
+        List<CtTypeReference<?>> actualTypeArguments = new ArrayList<>();
+        actualTypeArguments.add(factory.createTypeParameterReference(""));
+        typeRef.setActualTypeArguments(actualTypeArguments);
+
+        CtConstructorCall<?> constructorCall = factory.Core().createConstructorCall();
+        constructorCall.setType(typeRef);
+        return constructorCall;
+    }
+
+    public static CtTypeReference<?> createTypeWithSubtypeReference(Class<?> type, CtTypeReference<?> subtype) {
+        CtTypeReference<?> resultType = typeFactory.createReference(type);
+        resultType.addActualTypeArgument(TypeUtils.convertGenericsToWildcard(subtype));
+        return resultType;
+    }
+
+    public static CtTypeReference<?> createTypeWithSubtypeReference(Class<?> type, List<CtTypeReference<?>> subtypes) {
+        CtTypeReference<?> resultType = typeFactory.createReference(type);
+        for (CtTypeReference<?> subtype : subtypes) {
+            resultType.addActualTypeArgument(TypeUtils.convertGenericsToWildcard(subtype));
+        }
+        return resultType;
+    }
+
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName) {
-        return createInvocation(target, methodName, new LinkedList<>(), new LinkedList<>());
+        return createInvocation(createFieldRead(target), methodName, new LinkedList<>(), new LinkedList<>());
     }
 
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName,
+                                                List<CtTypeReference<?>> argsTypes,
+                                                List<Object> args) {
+
+        return createInvocation(createFieldRead(target), methodName, argsTypes, args);
+    }
+
+    public static CtInvocation createInvocation(CtExpression<?> target, String methodName,
                                                 List<CtTypeReference<?>> argsTypes,
                                                 List<Object> args) {
 
@@ -361,8 +314,13 @@ public class SpoonFactory {
 
     public static CtInvocation createMethodCall(CtVariable<?> target, CtExecutableReference<?> method,
                                                 List<CtExpression<?>> args) {
+        return createMethodCall(createVariableRead(target), method, args);
+    }
+
+    public static CtInvocation createMethodCall(CtExpression<?> targetRead, CtExecutableReference<?> method,
+                                                List<CtExpression<?>> args) {
         CtInvocation invocation = coreFactory.createInvocation();
-        invocation.setTarget(createVariableRead(target));
+        invocation.setTarget(targetRead);
         invocation.setExecutable(method);
         if (!args.isEmpty())
             invocation.setArguments(args);
@@ -380,7 +338,7 @@ public class SpoonFactory {
         return expression;
     }
 
-    public static CtExpression<?> createBinaryExpression(
+    public static <T> CtExpression<T> createBinaryExpression(
             Object varLeft,
             Object varRight,
             BinaryOperatorKind op) {
@@ -390,9 +348,9 @@ public class SpoonFactory {
         return createBinaryExpression(left, right, op);
     }
 
-    private static CtExpression<?> createBinaryExpression(CtExpression<?> left, CtExpression<?> right,
-                                                          BinaryOperatorKind op) {
-        CtBinaryOperator<?> expression = coreFactory.createBinaryOperator();
+    private static <T> CtExpression<T> createBinaryExpression(CtExpression<?> left, CtExpression<?> right,
+                                                              BinaryOperatorKind op) {
+        CtBinaryOperator<T> expression = coreFactory.createBinaryOperator();
         expression.setLeftHandOperand(left);
         expression.setRightHandOperand(right);
         expression.setKind(op);
@@ -412,34 +370,15 @@ public class SpoonFactory {
         return variableWrite;
     }
 
-    public static CtLocalVariable<?> createVisitedSetDeclaration(CtTypeReference<?> subType) {
-        CtTypeReference<?> setType = createTypeWithSubtypeReference(Set.class, subType);
-        CtTypeReference<?> hashSetType =  typeFactory.createReference(HashSet.class);
-        CtConstructorCall<?> hashSetConstructorCall = createConstructorCall(hashSetType);
-        String varName = LocalVarHelper.SET_VAR_NAME ;
-        if (subType.isArray()) {
-            varName = varName + LocalVarHelper.ARRAY_VAR_PREFIX + ((CtArrayTypeReference<?>)subType).getComponentType().getSimpleName();
-        } else {
-            varName = varName + subType.getSimpleName();
-        }
-        return createLocalVariable(varName, setType, hashSetConstructorCall);
-    }
-
-    public static CtConstructorCall<?> createConstructorCall(CtTypeReference<?> typeRef) {
-        List<CtTypeReference<?>> actualTypeArguments = new ArrayList<>();
-        actualTypeArguments.add(factory.createTypeParameterReference(""));
-        typeRef.setActualTypeArguments(actualTypeArguments);
-
-        CtConstructorCall<?> constructorCall = factory.Core().createConstructorCall();
-        constructorCall.setType(typeRef);
-        return constructorCall;
-    }
-
-    public static CtTypeReference<?> createTypeWithSubtypeReference(Class<?> type, CtTypeReference<?> subtype) {
-        CtTypeReference<?> resultType = typeFactory.createReference(type);
-        resultType.addActualTypeArgument(subtype);
-        return resultType;
-    }
+//    public static CtTypeReference<?> convertToRawType(CtTypeReference<?> typeRef) {
+//        // Create a copy of the original type reference
+//        CtTypeReference<?> rawTypeRef = typeRef.clone();
+//
+//        // Clear the actual type arguments to convert to raw type
+//        rawTypeRef.getActualTypeArguments().clear();
+//
+//        return rawTypeRef;
+//    }
 
 //    public static CtTypeReference<?> createTypeWithSubtypeReference(Class<?> type, CtTypeReference<?> subtype) {
 //        CtTypeReference<?> resultType = typeFactory.createReference(type);
@@ -481,6 +420,17 @@ public class SpoonFactory {
         return parameter;
     }
 
+    public static CtIf createVisitedCheck(CtVariable<?> setVariable, Object argument, boolean negate) {
+        CtExpression<?> condition = SpoonFactory.createAddToSetInvocation(setVariable, argument);
+        if (negate)
+            condition = SpoonFactory.createUnaryExpression(condition, UnaryOperatorKind.NOT);
+
+        CtStatement thenBlock;
+        thenBlock = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
+
+        return SpoonFactory.createIfThenStatement((CtExpression<Boolean>) condition, thenBlock);
+    }
+
     public static CtIf createVisitedCheck(CtVariable<?> setVariable, Object argument, boolean negate, boolean useBreak) {
         CtExpression<?> condition = SpoonFactory.createAddToSetInvocation(setVariable, argument);
         if (negate)
@@ -502,18 +452,6 @@ public class SpoonFactory {
     public static CtExpression<Boolean> createAddToSetInvocation(CtVariable<?> setVariable, Object argument) {
         CtTypeReference<?> elemType = setVariable.getReference().getType().getActualTypeArguments().get(0);
         return SpoonFactory.createInvocation(setVariable, "add", elemType, argument);
-    }
-
-    public static CtIf createVisitedSizeCheck(CtVariable<?> setVariable, CtExpression<?> integerField, int minus) {
-        CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(setVariable, "size");
-        CtExpression<?> sizeMinus = sizeInvocation;
-        if (minus > 0)
-            sizeMinus = createBinaryExpression(sizeInvocation, minus, BinaryOperatorKind.MINUS);
-
-        CtBinaryOperator<Boolean> condition = (CtBinaryOperator<Boolean>) SpoonFactory
-                .createBinaryExpression(sizeMinus, integerField, BinaryOperatorKind.NE);
-        CtReturn<?> returnStatement = SpoonFactory.createReturnStatement(SpoonFactory.createLiteral(false));
-        return SpoonFactory.createIfThenStatement(condition, returnStatement);
     }
 
     public static CtInvocation createInvocation(CtVariable<?> target, String methodName,
@@ -545,7 +483,7 @@ public class SpoonFactory {
         CtTypeReference<?> listType = createTypeWithSubtypeReference(LinkedList.class, subType);
         CtTypeReference<?> linkedListType = createTypeWithSubtypeReference(LinkedList.class, subType);
         CtConstructorCall<?> linkedListConstructorCall = createConstructorCall(linkedListType);
-        return createLocalVariable(LocalVarHelper.getWorklistVarName(code), listType, linkedListConstructorCall);
+        return createLocalVariable(LocalVarHelper.WORKLIST_VAR_NAME, listType, linkedListConstructorCall);
     }
 
     public static CtContinue createContinueStatement() {
@@ -556,64 +494,12 @@ public class SpoonFactory {
         return coreFactory.createBreak();
     }
 
-    public static List<CtVariableAccess> createVariableWrites(
-            CtVariable<?> var,
-            CtTypeReference<?> typeRef,
-            boolean includeVar) {
-        return createVariableAccesses(
-                var,
-                typeRef,
-                includeVar,
-                SpoonFactory::createVariableWrite,
-                SpoonFactory::createFieldWrite);
-    }
 
-    /**
-     * Creates a list of variable accesses of the given type from the given
-     * variable.
-     *
-     * @param var               the variable from which to consider possible reads.
-     * @param typeRef           the type of the required variable read
-     * @param createFieldAccess the function to create the variable access
-     * @return a list of variable accesses of the given type
-     */
-    public static List<CtVariableAccess> createVariableAccesses(
-            CtVariable<?> var,
-            CtTypeReference<?> typeRef,
-            boolean includeVar,
-            Function<CtVariable<?>, CtVariableAccess> createVariableAccess,
-            BiFunction<CtVariable<?>, CtVariable<?>, CtVariableAccess> createFieldAccess) {
-        List<CtVariableAccess> varAccesses = new ArrayList<>();
-        if (includeVar && var.getType().isSubtypeOf(typeRef))
-            varAccesses.add(createVariableAccess.apply(var));
-
-        varAccesses.addAll(SpoonQueries.getFieldsOfType(var, typeRef).stream().map(
-                field -> createFieldAccess.apply(var, field)).toList());
-        return varAccesses;
-    }
-
-    public static CtFieldWrite<?> createFieldWrite(CtVariable<?> variable, CtVariable<?> field) {
-        return createFieldWrite(createVariableRead(variable), field);
-    }
-
-    public static CtFieldWrite<?> createFieldWrite(CtExpression<?> variable, CtVariable<?> field) {
+    public static CtFieldWrite<?> createVariableWrite(CtExpression<?> variable, CtVariable<?> field) {
         CtFieldWrite fieldWrite = coreFactory.createFieldWrite();
         fieldWrite.setTarget(variable);
         fieldWrite.setVariable(field.getReference());
         return fieldWrite;
-    }
-
-    public static List<CtVariableAccess> createVariableReads(
-            CtVariable<?> var,
-            CtTypeReference<?> typeRef,
-            boolean includeVar) {
-        return createVariableAccesses(
-                var,
-                typeRef,
-                includeVar,
-                SpoonFactory::createVariableRead,
-
-                SpoonFactory::createFieldRead);
     }
 
     public static CtFieldRead<?> createFieldRead(CtVariable<?> variable, CtVariable<?> field) {
@@ -622,6 +508,14 @@ public class SpoonFactory {
 
     public static CtComment createComment(String content) {
         return coreFactory.createComment().setContent(content);
+    }
+
+    public static CtIf createIfReturnFalse(CtExpression<Boolean> condition, String labelString) {
+        CtComment commentLabel = createComment(labelString);
+        CtIf ifStatement = createIfThenStatement(condition, createReturnStatement(createLiteral(false)));
+        CtBlock<?> thenBlock = ifStatement.getThenStatement();
+        thenBlock.insertBegin(commentLabel);
+        return ifStatement;
     }
 
     public static CtIf createIfReturnFalse(CtExpression<Boolean> condition) {
@@ -637,13 +531,17 @@ public class SpoonFactory {
         return generateAndConcatenationOfNullComparisons(path, operator);
     }
 
-
     public static CtExpression<Boolean> generateAndConcatenationOfNullComparisons(Path path, BinaryOperatorKind operator) {
         return conjunction(generateNullComparisonClauses(path, operator));
     }
 
     public static List<CtExpression<Boolean>> generateNullComparisonClauses(Path path) {
         return generateNullComparisonClauses(path, BinaryOperatorKind.NE);
+    }
+
+    public static List<CtExpression<Boolean>> generateNullComparisonClauses(Path path, boolean notEqual) {
+        BinaryOperatorKind operator = notEqual ? BinaryOperatorKind.NE : BinaryOperatorKind.EQ;
+        return generateNullComparisonClauses(path, operator);
     }
 
     public static List<CtExpression<Boolean>> generateNullComparisonClauses(Path path, BinaryOperatorKind operator) {
@@ -656,6 +554,22 @@ public class SpoonFactory {
         return clauses;
     }
 
+    public static List<CtExpression<Boolean>> generateParentPathNullComparisonClauses(Collection<Path> paths) {
+        Set<String> visitedClauses = new HashSet<>();
+        List<CtExpression<Boolean>> clauses = new LinkedList<>();
+        for (Path path : paths) {
+            List<CtExpression<Boolean>> pathClauses = SpoonFactory.generateParentPathNullComparisonClauses(path);
+            for (CtExpression<Boolean> clause : pathClauses) {
+                String clauseString = clause.toString();
+                if (!visitedClauses.contains(clauseString)) {
+                    visitedClauses.add(clauseString);
+                    clauses.add(clause);
+                }
+            }
+        }
+        return clauses;
+    }
+
     public static List<CtExpression<Boolean>> generateParentPathNullComparisonClauses(Path path) {
         List<CtExpression<Boolean>> clauses = new LinkedList<>();
         for (int end = 1; end < path.size(); end++) {
@@ -664,6 +578,7 @@ public class SpoonFactory {
         }
         return clauses;
     }
+
 
     public static CtExpression<Boolean> generateOrConcatenationOfNullComparisons(Path path) {
         List<CtExpression<Boolean>> clauses = new LinkedList<>();
@@ -683,7 +598,7 @@ public class SpoonFactory {
 
         CtExpression<Boolean> result = clauses.get(0);
         for (int i = 1; i < clauses.size(); i++) {
-            result = (CtExpression<Boolean>) createBinaryExpression(result, clauses.get(i), BinaryOperatorKind.OR);
+            result = createBinaryExpression(result, clauses.get(i), BinaryOperatorKind.OR);
         }
         return result;
     }
@@ -697,7 +612,7 @@ public class SpoonFactory {
 
         CtExpression<Boolean> result = clauses.get(0);
         for (int i = 1; i < clauses.size(); i++) {
-            result = (CtExpression<Boolean>) createBinaryExpression(result, clauses.get(i), BinaryOperatorKind.AND);
+            result = createBinaryExpression(result, clauses.get(i), BinaryOperatorKind.AND);
         }
         return result;
     }
@@ -708,24 +623,28 @@ public class SpoonFactory {
 
     public static CtExpression<Boolean> createNullComparisonClause(CtVariableRead<?> varRead) {
         BinaryOperatorKind operator = RandomUtils.nextBoolean() ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE;
-        return (CtExpression<Boolean>) createBinaryExpression(varRead, parseToExpression(null), operator);
+        return createBinaryExpression(varRead, parseToExpression(null), operator);
     }
 
     public static CtExpression<Boolean> createNullComparisonClause(CtVariableRead<?> varRead, BinaryOperatorKind operator) {
-        return (CtExpression<Boolean>) createBinaryExpression(varRead, parseToExpression(null), operator);
+        return createBinaryExpression(varRead, parseToExpression(null), operator);
     }
 
     public static CtExpression<Boolean> createNullComparisonClause(CtVariable<?> varRead, BinaryOperatorKind operator) {
-        return (CtExpression<Boolean>) createBinaryExpression(createVariableRead(varRead), parseToExpression(null), operator);
+        return createBinaryExpression(createVariableRead(varRead), parseToExpression(null), operator);
     }
 
     public static CtExpression<Boolean> createNotEqualComparisonClause(CtVariableRead<?> varRead, CtVariableRead<?> varRead2) {
-        return (CtExpression<Boolean>) createBinaryExpression(varRead, varRead2, BinaryOperatorKind.NE);
+        return createBinaryExpression(varRead, varRead2, BinaryOperatorKind.NE);
     }
 
     public static CtExpression<Boolean> createBooleanBinaryExpression(Object left, Object right, BinaryOperatorKind operator) {
-        return (CtExpression<Boolean>) createBinaryExpression(left, right, operator);
+        return createBinaryExpression(left, right, operator);
     }
 
 
+    public static CtExecutableReference<?> createMethodReference(CtTypeReference<?> type, String methodName) {
+        CtMethod<?> method = type.getTypeDeclaration().getMethodsByName(methodName).get(0);
+        return factory.Executable().createReference(method);
+    }
 }
