@@ -1,6 +1,7 @@
 package express.classinvariant.predicate;
 
 import express.classinvariant.mutator.LocalVarHelper;
+import express.classinvariant.mutator.template.TemplateHelper;
 import express.config.Config;
 import express.spoon.SpoonFactory;
 import express.type.typegraph.TypeData;
@@ -47,6 +48,14 @@ public class PredicateManager {
     }
 
     private static void createSubPredicates(CtClass<?> predicateClass, List<CtParameter<?>> parameters) {
+        CtLocalVariable<?> mapOfVisitedDeclaration = TemplateHelper.createMapOfVisitedDeclaration();
+
+        CtParameter<?> mapOfVisitedParam = predicateClass.getFactory().createParameter();
+        mapOfVisitedParam.setType(mapOfVisitedDeclaration.getType());
+        mapOfVisitedParam.setSimpleName(mapOfVisitedDeclaration.getSimpleName());
+
+        parameters.add(mapOfVisitedParam);
+
         List<CtMethod<Boolean>> subPredicates = createSubPredicates(parameters);
         for (CtMethod<?> subPredicate : subPredicates)
             predicateClass.addMethod(subPredicate);
@@ -59,11 +68,13 @@ public class PredicateManager {
                 modifiers,
                 SpoonFactory.getTypeFactory().booleanPrimitiveType(),
                 config.predicateMethodName,
-                parameters
+                parameters.subList(0, parameters.size() - 1)
         );
-        CtExpression<?>[] args = SpoonFactory.createArgumentsFromParameters(predicateMethod);
+        CtExpression<?>[] args = SpoonFactory.createArgumentsFromParameters(parameters);
 
         CtBlock<?> body = SpoonFactory.createBlock();
+        body.addStatement(mapOfVisitedDeclaration);
+
         for (CtMethod<?> subPredicate : subPredicates) {
             CtInvocation<?> subPredicateInvocation = SpoonFactory.createStaticInvocation(SpoonFactory.getTypeFactory().createReference(predicateClass), subPredicate.getSimpleName(), args);
             CtExpression<Boolean> predicateNegation = (CtExpression<Boolean>) SpoonFactory.createUnaryExpression(subPredicateInvocation, UnaryOperatorKind.NOT);
@@ -79,7 +90,6 @@ public class PredicateManager {
 
     private static List<CtMethod<Boolean>> createSubPredicates(List<CtParameter<?>> parameters) {
         List<CtMethod<Boolean>> subPredicates = new ArrayList<>();
-        subPredicates.add(createSubPredicateMethod(LocalVarHelper.INITIAL_METHOD_NAME, parameters));
         subPredicates.add(createSubPredicateMethod(LocalVarHelper.STRUCTURE_METHOD_NAME, parameters));
         subPredicates.add(createSubPredicateMethod(LocalVarHelper.PRIMITIVE_METHOD_NAME, parameters));
         return subPredicates;
@@ -98,7 +108,15 @@ public class PredicateManager {
 
         CtMethod<Boolean> predicateMethod = SpoonFactory.createMethod(modifiers, SpoonFactory.getTypeFactory().booleanPrimitiveType(), methodName, parameters);
 
-        predicateMethod.setBody(SpoonFactory.createReturnTrueBlock());
+        predicateMethod.setBody(createReturnTrueBlock());
         return predicateMethod;
+    }
+
+    public static CtBlock<?> createReturnTrueBlock() {
+        CtBlock<Boolean> block = SpoonFactory.getCoreFactory().createBlock();
+        block.addStatement(SpoonFactory.createComment(LocalVarHelper.SEPARATOR_LABEL));
+        block.addStatement(SpoonFactory.createComment(LocalVarHelper.RETURN_TRUE_LABEL));
+        block.addStatement(SpoonFactory.createReturnStatement(SpoonFactory.getCodeFactory().createLiteral(true)));
+        return block;
     }
 }

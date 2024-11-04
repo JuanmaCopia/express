@@ -2,21 +2,26 @@ package express.type.typegraph;
 
 import express.classinvariant.mutator.LocalVarHelper;
 import express.type.TypeUtils;
+import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 public class TypeData {
 
+
+
     private CtClass<?> thisClass;
     private CtVariable<?> thisVariable;
     private CtTypeReference<?> thisTypeRef;
     private TypeGraph typeGraph;
 
+    private Set<CtClass<?>> userDefinedClasses;
     private Set<CtTypeReference<?>> types;
 
     private Set<CtTypeReference<?>> userDefinedTypes;
@@ -40,9 +45,9 @@ public class TypeData {
     private Set<Path> arrayPaths;
     private Set<Path> iterablePaths;
 
-    public TypeData(CtClass<?> subjectClass) {
+    public TypeData(CtModel model, CtClass<?> subjectClass) {
         initializeSubjectData(subjectClass);
-        initializeTypes();
+        initializeTypes(model);
         initializePaths();
     }
 
@@ -67,7 +72,8 @@ public class TypeData {
         iterablePaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isIterableType);
     }
 
-    private void initializeTypes() {
+    private void initializeTypes(CtModel model) {
+        userDefinedClasses = TypeUtils.getAllUserDefinedClassesInModel(model);
         types = typeGraph.computeTypes();
         userDefinedTypes = TypeUtils.filterTypes(types, TypeUtils::isUserDefinedType);
         cyclicTypes = TypeUtils.filterTypes(types, TypeUtils::isCyclicType);
@@ -124,6 +130,10 @@ public class TypeData {
         return new LinkedList<>(referencePaths);
     }
 
+    public List<Path> getNonGenericReferencePaths() {
+        return simplePaths.stream().filter(p -> !p.getTypeReference().isGenerics()).toList();
+    }
+
     public List<Path> getArrayPaths() {
         return new LinkedList<>(arrayPaths);
     }
@@ -172,8 +182,12 @@ public class TypeData {
         return new LinkedList<>(userDefinedTypes);
     }
 
-    public List<Path> getSimplePathsOfType(CtTypeReference<?> type) {
-        return simplePaths.stream().filter(p -> p.getTypeReference().equals(type)).toList();
+    public Set<CtClass<?>> getUserDefinedClasses() {
+        return new HashSet<>(userDefinedClasses);
+    }
+
+    public List<Path> getAssignableSimplePaths(CtTypeReference<?> type) {
+        return simplePaths.stream().filter(p -> p.getTypeReference().isSubtypeOf(type)).toList();
     }
 
 }

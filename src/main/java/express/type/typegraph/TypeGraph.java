@@ -1,6 +1,7 @@
 package express.type.typegraph;
 
 
+import express.type.TypeUtils;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
@@ -28,7 +29,7 @@ public class TypeGraph {
             if (declaration == null)
                 continue; // Type is not declared in the current project
 
-            List<CtField<?>> fields = declaration.getFields();
+            Set<CtField<?>> fields = TypeUtils.getAccessibleFields(declaration);
             for (CtVariable<?> field : fields) {
                 currentAdjacency.add(field);
                 if (!adjacencyList.containsKey(field))
@@ -73,7 +74,7 @@ public class TypeGraph {
 
     private CtVariable<?> searchVariableOfType(CtTypeReference<?> type) {
         for (CtVariable<?> node : adjacencyList.keySet()) {
-            if (node.getType().getQualifiedName().equals(type.getQualifiedName()))
+            if (node.getType().isSubtypeOf(type))
                 return node;
         }
         return null;
@@ -133,6 +134,20 @@ public class TypeGraph {
             computeAllPathsOfLengthK(node, currentPath, allPaths, k);
             currentPath.removeLast();
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (CtVariable<?> node : adjacencyList.keySet()) {
+            sb.append(node.getSimpleName()).append(" -> ");
+            List<CtVariable<?>> adjacent = adjacencyList.get(node);
+            for (CtVariable<?> adj : adjacent) {
+                sb.append(adj.getSimpleName()).append(", ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
 }

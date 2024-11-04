@@ -47,15 +47,13 @@ public class InMemoryCompiler {
 
     // Compile the source files
     public boolean compile() {
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         List<String> options = new ArrayList<>();
         if (!classpath.isEmpty()) {
             options.add("-classpath");
             options.add(String.join(":", classpath));
         }
 
-        // Print classpath for debugging
-        //logger.info("Classpath: " + String.join(":", classpath));
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 
         JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager,
                 diagnostics, options, null, sourceFiles.values());
@@ -71,12 +69,16 @@ public class InMemoryCompiler {
     // Compile a single new class
     public boolean compileSingleClass(String className, String sourceCode) {
         JavaFileObject sourceFile = new InMemoryJavaFileObject(className, sourceCode);
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+
         JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager,
-                diagnostics, null, null, java.util.Collections.singletonList(sourceFile));
+                null, null, null, java.util.Collections.singletonList(sourceFile));
 
         boolean success = task.call();
         if (!success) {
+            DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+            JavaCompiler.CompilationTask recompileTask = compiler.getTask(null, fileManager,
+                    null, null, null, java.util.Collections.singletonList(sourceFile));
+            recompileTask.call();
             diagnostics.getDiagnostics().forEach(d -> System.out.println(d.toString()));
         } else {
             sourceFiles.put(className, sourceFile); // Add to sourceFiles if compilation is successful

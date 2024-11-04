@@ -1,20 +1,56 @@
 package express.classinvariant.mutator;
 
-import express.classinvariant.mutator.template.ArrayTraversalTemplate;
+import express.classinvariant.mutator.template.TemplateHelper;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonQueries;
-import express.type.typegraph.Path;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.*;
+import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.reflect.visitor.filter.VariableAccessFilter;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MutatorHelper {
+
+    public static void selectMutationOption(CtIf ifStatement, CtBlock<?> targetMethodBody, CtStatement insertBeforeStatement, String label) {
+        List<CtIf> mutableIfs = MutatorHelper.getMutableIfs(targetMethodBody, label);
+
+        int option = 1;
+        if (!mutableIfs.isEmpty()) {
+            option = 2;
+        }
+        switch (RandomUtils.nextInt(option)) {
+            case 0:
+                insertBeforeStatement.insertBefore(ifStatement);
+                break;
+            case 1:
+                RandomUtils.getRandomElement(mutableIfs).replace(ifStatement);
+                break;
+        }
+    }
+
+    public static void insertOrReplaceCheck(List<CtIf> existentChecks, CtIf newCheck, CtStatement insertBeforeStatement) {
+        int option = 1;
+        if (existentChecks != null && !existentChecks.isEmpty()) {
+            option = 2;
+        }
+        switch (RandomUtils.nextInt(option)) {
+            case 0:
+                insertBeforeStatement.insertBefore(newCheck);
+                break;
+            case 1:
+                CtIf toReplace = RandomUtils.getRandomElement(existentChecks);
+                //System.out.println("\nReplacing:\n" + toReplace);
+                //System.out.println("\nWith:\n" + newCheck);
+                toReplace.replace(newCheck);
+
+                break;
+        }
+    }
 
     public static List<CtVariable<?>> selectRandomVariablesFromList(List<CtVariable<?>> list) {
         List<CtVariable<?>> candidates = new ArrayList<>(list);
@@ -25,14 +61,16 @@ public class MutatorHelper {
     }
 
     public static CtMethod<?> getMethodByName(CtClass<?> clazz, String methodNamePrefix) {
-        return clazz.getMethods().stream().filter(m -> m.getSimpleName().startsWith(methodNamePrefix)).findFirst().orElse(null);
+        return clazz.getMethods().stream().filter(m -> m.getSimpleName().startsWith(methodNamePrefix)).findFirst()
+                .orElse(null);
     }
 
     public static List<CtMethod<?>> getMethodsByName(CtClass<?> clazz, String methodNamePrefix) {
         return clazz.getMethods().stream().filter(m -> m.getSimpleName().startsWith(methodNamePrefix)).toList();
     }
 
-    public static CtVariable<?> handleVisitedSetVariable(CtBlock<?> methodBody, CtStatement statement, CtTypeReference<?> setSubtype) {
+    public static CtVariable<?> handleVisitedSetVariable(CtBlock<?> methodBody, CtStatement statement,
+                                                         CtTypeReference<?> setSubtype) {
         CtVariable<?> setVar = pickVisitedSetVariable(methodBody, setSubtype);
         if (setVar != null)
             return setVar;
@@ -48,53 +86,56 @@ public class MutatorHelper {
     }
 
     public static CtVariable<?> declareVisitedSetVariable(CtStatement statement, CtTypeReference<?> setSubtype) {
-        CtVariable<?> setVar = SpoonFactory.createVisitedSetDeclaration(setSubtype);
+        CtVariable<?> setVar = SpoonFactory.createVisitedIdentitySetDeclaration(setSubtype);
         statement.insertBefore((CtStatement) setVar);
         return setVar;
     }
 
-
-    public static List<CtMethod<?>> getMutableMethods(CtClass<?> clazz) {
-        return clazz.getMethods().stream().filter(MutatorHelper::isMutableMethod).toList();
+    public static Set<CtMethod<?>> getMutableMethods(CtClass<?> clazz) {
+        return clazz.getMethods().stream().filter(MutatorHelper::isMutableMethod).collect(Collectors.toSet());
     }
 
     public static boolean isMutableMethod(CtMethod<?> method) {
         return method.getSimpleName().contains(LocalVarHelper.MUTABLE_METHOD_SUFFIX);
     }
 
-    public static List<CtIf> getMutableIfs(CtMethod<?> method) {
-        return method.getBody().getElements(MutatorHelper::isMutableIf);
+/*    public static List<CtIf> getMutableIfs(CtMethod<?> method, String labelComment) {
+        return method.getBody().getElements(ifStatement -> isMutableIf(ifStatement, labelComment));
+    }*/
+
+    public static List<CtIf> getMutableIfs(CtClass<?> ctClass, String labelComment) {
+        List<CtIf> mutableIfs = new LinkedList<>();
+        getMutableMethods(ctClass).forEach(
+                method -> mutableIfs.addAll(getMutableIfs(method.getBody(), labelComment))
+        );
+        return mutableIfs;
     }
 
-
-    public static List<CtIf> getMutableIfs(CtClass<?> ctClass) {
-        return getMutableIfs(getMutableMethods(ctClass));
+    public static List<CtIf> getMutableIfs(CtBlock<?> methodBody, String labelComment) {
+        return methodBody.getElements(ifStatement -> isMutableIf(ifStatement, labelComment));
     }
 
-    public static List<CtIf> getMutableIfs(Collection<CtMethod<?>> methods) {
-        List<CtIf> ifs = new LinkedList<>();
-        for (CtMethod<?> method : methods) {
-            ifs.addAll(method.getBody().getElements(MutatorHelper::isMutableIf));
-        }
-        return ifs;
-    }
-
-    public static boolean isMutableIf(CtIf ifStatement) {
-        if (ifStatement.getParent(CtIf.class) != null)
+    public static boolean isMutableIf(CtIf ifStatement, String labelComment) {
+        CtBlock<?> thenBlock = ifStatement.getThenStatement();
+        if (thenBlock == null)
             return false;
-        if (ifStatement.getThenStatement() instanceof CtBlock<?> block &&
-                block.getStatement(0) instanceof CtComment comment &&
-                comment.getContent().contains(LocalVarHelper.IMMUTABLE_COMMENT))
-            return false;
-        if (!isIfReturnFalse(ifStatement))
-            return false;
-
-        CtMethod<?> method = ifStatement.getParent(CtMethod.class);
-        return isMutableMethod(method);
+        return isLabel(thenBlock.getStatement(0), labelComment);
     }
 
-    public static List<CtIf> getIfsCallingMethod(CtClass<?> clazz, String methodName) {
-        return getMutableIfs(clazz).stream().filter(e -> callsMethod(e, methodName)).toList();
+    public static boolean isLabel(CtElement element, String label) {
+        if (!(element instanceof CtComment comment))
+            return false;
+        return comment.getContent().equals(label);
+    }
+
+    public static List<CtIf> getIfsCallingMethod(CtClass<?> clazz, String label, String methodName) {
+        return getMutableMethods(clazz).stream().map(m -> getMutableIfs(m.getBody(), label)).flatMap(List::stream).filter(
+                ifStatement -> callsMethod(ifStatement, methodName)
+        ).toList();
+    }
+
+    public static List<CtIf> getIfsCallingMethod(CtBlock<?> body, String label, String methodName) {
+        return body.getElements(ifStatement -> isMutableIf(ifStatement, label) && callsMethod(ifStatement, methodName));
     }
 
     public static boolean callsMethod(CtIf e, String methodName) {
@@ -105,84 +146,34 @@ public class MutatorHelper {
         return e.toString().contains(method.getSimpleName());
     }
 
-    public static boolean isIfReturnFalse(CtIf ifStatement) {
-        if (ifStatement == null || ifStatement.getThenStatement() == null)
-            return false;
-        if (ifStatement.getThenStatement() instanceof CtBlock<?> ifBlock) {
-            return isReturnFalseBlock(ifBlock);
-        }
-        return isReturnFalseStatement(ifStatement.getThenStatement());
-    }
-
-    public static boolean isReturnFalseBlock(CtBlock<?> block) {
-        List<CtStatement> statements = block.getStatements();
-        if (statements.isEmpty())
-            return false;
-        CtStatement lastStatement = statements.get(statements.size() - 1);
-        return isReturnFalseStatement(lastStatement);
-    }
-
-    public static boolean isReturnFalseStatement(CtStatement statement) {
-        return statement instanceof CtReturn<?> returnStatement && returnStatement.getReturnedExpression().toString().equals("false");
-    }
-
-    public static List<CtIf> getIfsWithVariableInCondition(CtBlock<?> block, CtVariable<?> var) {
-        List<CtIf> ifs = block.getElements(Objects::nonNull);
-        List<CtIf> ifsWithVar = new LinkedList<>();
-        for (CtIf ifStatement : ifs) {
-            if (ifStatement.getCondition().toString().contains(var.getSimpleName()))
-                ifsWithVar.add(ifStatement);
-        }
-        return ifsWithVar;
-    }
-
-    public static CtTypeReference<?> getTraversedType(CtMethod<?> traversal) {
-        return traversal.getParameters().get(2).getType().getActualTypeArguments().get(0);
-    }
-
-    public static CtTypeReference<?> getTraversedArrayType(CtMethod<?> arrayTraversal) {
-        return arrayTraversal.getParameters().get(1).getType();
-    }
-
-    public static Set<CtTypeReference<?>> getTraversedTypes(CtClass<?> cls) {
-        Set<CtTypeReference<?>> traversedTypes = new HashSet<>();
-        for (CtMethod<?> method : cls.getMethods()) {
-            if (method.getSimpleName().startsWith(LocalVarHelper.TRAVERSAL_PREFIX)) {
-                traversedTypes.add(getTraversedType(method));
-            }
-        }
-        return traversedTypes;
-    }
-
     public static Set<CtTypeReference<?>> getTraversedArrayTypes(CtClass<?> cls) {
         Set<CtTypeReference<?>> traversedTypes = new HashSet<>();
         for (CtMethod<?> method : cls.getMethods()) {
             if (method.getSimpleName().startsWith(LocalVarHelper.ARRAY_TRAVERSAL_PREFIX)) {
-                traversedTypes.add(getTraversedArrayType(method));
+                traversedTypes.add(TemplateHelper.getTraversedElementParameter(method).getType());
             }
         }
         return traversedTypes;
     }
 
     public static List<CtMethod<?>> getAllTraversalsOfReferenceObjects(CtClass<?> cls) {
-        List<CtMethod<?>> traversals = new LinkedList<>(MutatorHelper.getMethodsByName(cls, LocalVarHelper.TRAVERSAL_PREFIX));
-        List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(cls, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX).stream().filter(
-                ArrayTraversalTemplate::isReferenceArrayTraversal
-        ).toList();
+        List<CtMethod<?>> traversals = new LinkedList<>(
+                MutatorHelper.getMethodsByName(cls, LocalVarHelper.TRAVERSAL_PREFIX));
+        List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(cls, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX)
+                .stream().filter(
+                        TemplateHelper::isReferenceArrayTraversal)
+                .toList();
 
         traversals.addAll(arrayTraversals);
         return traversals;
     }
 
     public static List<CtMethod<?>> getAllTraversals(CtClass<?> cls) {
-        List<CtMethod<?>> traversals = new LinkedList<>(MutatorHelper.getMethodsByName(cls, LocalVarHelper.TRAVERSAL_PREFIX));
+        List<CtMethod<?>> traversals = new LinkedList<>(
+                MutatorHelper.getMethodsByName(cls, LocalVarHelper.TRAVERSAL_PREFIX));
         List<CtMethod<?>> arrayTraversals = MutatorHelper.getMethodsByName(cls, LocalVarHelper.ARRAY_TRAVERSAL_PREFIX);
         traversals.addAll(arrayTraversals);
         return traversals;
-    }
-
-    public static CtParameter<?> createThisParameter(CtThisAccess<?> thisAccess) {
-        return SpoonFactory.createParameter(thisAccess.getType(), LocalVarHelper.THIS_PARAM_NAME);
     }
 
     public static void addImmutableComment(CtIf check) {
@@ -192,17 +183,83 @@ public class MutatorHelper {
         block.insertBegin(comment);
     }
 
-    public static Path trimPath(Path path) {
-        CtTypeReference<?> type = path.getTypeReference();
-        int i = 0;
-        for (CtVariable<?> field : path.getFieldChain()) {
-            i++;
-            if (field.getType().getQualifiedName().equals(type.getQualifiedName()) && i < path.size()) {
-                return path.subPath(i);
+    public static CtIf getFirstIf(CtBlock<?> block) {
+        for (CtStatement statement : block.getStatements()) {
+            if (statement instanceof CtIf ifStatement) {
+                return ifStatement;
             }
         }
-        return path;
+        return null;
     }
 
+
+    public static boolean isUnusedLocalVar(CtBlock<?> block, CtLocalVariable<?> var) {
+        CtLocalVariableReference<?> varReference = var.getReference();
+        List<CtVariableAccess<?>> accesses = block.getElements(new VariableAccessFilter<>(varReference));
+        return accesses.isEmpty();
+    }
+
+    public static List<CtMethod<?>> findTraversalsWithSameParameters(CtClass<?> ctClass, CtMethod<?> traversal) {
+        List<CtTypeReference<?>> traversalParamTypes = traversal.getParameters().stream()
+                .map(CtParameter::getType)
+                .collect(Collectors.toList());
+
+        Set<CtMethod<?>> traversals = new HashSet<>(MutatorHelper.getMethodsByName(ctClass, LocalVarHelper.TRAVERSAL_PREFIX));
+        traversals.remove(traversal);
+        for (CtMethod<?> t : new HashSet<>(traversals)) {
+            List<CtTypeReference<?>> methodParamTypes = t.getParameters().stream()
+                    .map(CtParameter::getType)
+                    .collect(Collectors.toList());
+
+            if (!traversalParamTypes.equals(methodParamTypes)) {
+                traversals.remove(t);
+            }
+        }
+        return new LinkedList<>(traversals);
+    }
+
+    public static List<CtMethod<?>> findTraversalsWithDifferentParameters(CtClass<?> ctClass, CtMethod<?> traversal) {
+        List<CtTypeReference<?>> traversalParamTypes = traversal.getParameters().stream()
+                .map(CtParameter::getType)
+                .collect(Collectors.toList());
+
+        Set<CtMethod<?>> traversals = new HashSet<>(MutatorHelper.getMethodsByName(ctClass, LocalVarHelper.TRAVERSAL_PREFIX));
+        traversals.remove(traversal);
+        for (CtMethod<?> t : new HashSet<>(traversals)) {
+            List<CtTypeReference<?>> methodParamTypes = t.getParameters().stream()
+                    .map(CtParameter::getType)
+                    .collect(Collectors.toList());
+
+            if (traversalParamTypes.equals(methodParamTypes)) {
+                traversals.remove(t);
+            }
+        }
+        return new LinkedList<>(traversals);
+    }
+
+
+    public static CtInvocation<?> extractInvocation(CtIf check) {
+        List<CtInvocation<?>> invocations = check.getCondition().getElements(new TypeFilter<>(CtInvocation.class));
+        if (invocations.isEmpty()) {
+            return null;
+        }
+        return invocations.get(0);
+    }
+
+    public static void unifyTraversals(CtClass<?> ctClass, CtMethod<Boolean> traversal, List<CtMethod<?>> traversalsSameParams) {
+        for (CtMethod<?> t : traversalsSameParams) {
+            List<CtIf> checks = MutatorHelper.getIfsCallingMethod(ctClass, LocalVarHelper.STAGE_2_LABEL, t.getSimpleName());
+            for (CtIf check : checks) {
+                CtInvocation<Boolean> invocation = (CtInvocation<Boolean>) MutatorHelper.extractInvocation(check);
+                invocation.setExecutable(traversal.getReference());
+            }
+            ctClass.removeMethod(t);
+        }
+    }
+
+    public static boolean isUnusedTraversal(CtClass<?> ctClass, CtMethod<?> traversal) {
+        List<CtIf> invocations = MutatorHelper.getIfsCallingMethod(ctClass, LocalVarHelper.STAGE_2_LABEL, traversal.getSimpleName());
+        return invocations.isEmpty();
+    }
 
 }

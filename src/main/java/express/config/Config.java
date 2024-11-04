@@ -76,7 +76,7 @@ public class Config {
             // Fitness Settings
             timeout_ms = Integer.parseInt(properties.getProperty("express.fitness.timeout_ms"));
 
-            logger.info("Successfully Parsed Configuration File");
+            System.out.println("\nSuccessfully Parsed Configuration File!");
         } catch (Exception e) {
             e.printStackTrace();
         }

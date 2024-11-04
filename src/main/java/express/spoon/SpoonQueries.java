@@ -4,7 +4,9 @@ import express.classinvariant.mutator.LocalVarHelper;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import spoon.reflect.code.*;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 
@@ -16,104 +18,18 @@ public class SpoonQueries {
         return SpoonFactory.getFactory().Class().get(qualifiedClassName);
     }
 
-    public static List<CtVariable<?>> getFieldsOfType(CtVariable<?> var, CtTypeReference<?> type) {
-        CtType<?> varType = var.getType().getDeclaration();
-        if (varType == null)
-            return new LinkedList<>();
-        return getVariablesOfType(getFields(varType), type);
-    }
-
     public static List<CtVariable<?>> getVariablesOfType(List<CtVariable<?>> list, CtTypeReference<?> type) {
         if (list == null)
             throw new IllegalArgumentException("List cannot be null");
         return list.stream().filter(var -> var.getType().isSubtypeOf(type)).toList();
     }
 
-    public static List<CtVariable<?>> getFields(CtType<?> clazz) {
-        if (clazz == null)
-            throw new IllegalArgumentException("Class cannot be null");
-        List<CtVariable<?>> result = new LinkedList<>();
-        result.addAll(clazz.getFields());
-        return result;
-    }
-
-    public static List<CtVariable<?>> getReferenceFields(CtTypeReference<?> type) {
-        if (type.getDeclaration() == null)
-            throw new IllegalArgumentException("the type is not in source files");
-        return getVariablesOfType(getFields(type.getDeclaration()), SpoonFactory.getTypeFactory().objectType());
-    }
-
-    public static List<CtVariable<?>> getFieldsOfType(CtType<?> varType, CtTypeReference<?> type) {
-        if (varType == null)
-            return new LinkedList<>();
-        return getVariablesOfType(getFields(varType), type);
-    }
-
-    public static List<CtVariable<?>> getAccessibleFields(CtVariable<?> var) {
-        return getAccessibleFields(var.getType());
-    }
-
-    public static List<CtVariable<?>> getAccessibleFields(CtTypeReference<?> typeRef) {
-        if (typeRef.getDeclaration() == null)
-            throw new IllegalArgumentException("the type is not in source files");
-        return getFields(typeRef.getDeclaration());
-    }
-
-    public static List<CtVariable<?>> getVariablesOfReferenceType(List<CtVariable<?>> list) {
-        if (list == null)
-            throw new IllegalArgumentException("List cannot be null");
-        return list.stream().filter(var -> TypeUtils.isReferenceType(var.getType())).toList();
-    }
-
     public static List<CtVariable<?>> getVariablesOfType(List<CtVariable<?>> list, Class<?> type) {
         return getVariablesOfType(list, SpoonFactory.getTypeFactory().createReference(type));
     }
 
-    public static List<CtVariable<?>> getAllReachableVariablesFromMethod(CtMethod method) {
-        return getAllReachableVariables(method.getBody().getLastStatement());
-    }
-
     public static List<CtVariable<?>> getAllReachableVariables(CtElement statement) {
         return statement.map(new PotentialVariableDeclarationFunction()).list();
-    }
-
-    public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
-                                                                          Class<?> type) {
-        return getAllReachableLocalVariablesOfType(statement, SpoonFactory.getTypeFactory().createReference(type));
-    }
-
-    public static List<CtVariable<?>> getAllReachableLocalVariablesOfType(CtStatement statement,
-                                                                          CtTypeReference<?> type) {
-        return statement.map(new PotentialVariableDeclarationFunction())
-                .map(e -> e instanceof CtLocalVariable && ((CtVariable<?>) e).getType().isSubtypeOf(type))
-                .list();
-    }
-
-    public static boolean containsVariableOfType(Collection<CtVariable<?>> vars, Class<?> type) {
-        for (CtVariable<?> var : vars) {
-            if (var.getType().isSubtypeOf(SpoonFactory.createReference(type)))
-                return true;
-        }
-        return false;
-    }
-
-    public static CtVariable<?> getVariableByName(List<CtVariable<?>> localVars, String varName) {
-        return localVars.stream().filter(var -> var.getSimpleName().equals(varName)).findFirst().orElse(null);
-    }
-
-    public static CtVariable<?> getRandomUserDefLocalVar(List<CtVariable<?>> localVars) {
-        List<CtVariable<?>> userDefLocalVars = SpoonQueries.getUserDefinedVariables(localVars).stream().filter(
-                var -> var instanceof CtLocalVariable<?>).toList();
-        if (userDefLocalVars.isEmpty())
-            return null;
-        return userDefLocalVars.get(RandomUtils.nextInt(userDefLocalVars.size()));
-    }
-
-    public static List<CtVariable<?>> getUserDefinedVariables(List<CtVariable<?>> list) {
-        if (list == null)
-            throw new IllegalArgumentException("List cannot be null");
-
-        return list.stream().filter(var -> TypeUtils.isUserDefinedType(var)).toList();
     }
 
     public static boolean containsReturnStatement(CtBlock<?> block) {
@@ -157,16 +73,20 @@ public class SpoonQueries {
         return comment.getContent().equals("End of traversal");
     }
 
-    public static boolean isReturnTrueComment(CtElement element) {
+    public static boolean isReturnTrueLabel(CtElement element) {
         if (!(element instanceof CtComment comment))
             return false;
-        return comment.getContent().equals("Return true");
+        return comment.getContent().equals(LocalVarHelper.RETURN_TRUE_LABEL);
     }
 
-    public static boolean isReturnMark1Comment(CtElement element) {
+    public static boolean isSeparatorLabel(CtElement element) {
         if (!(element instanceof CtComment comment))
             return false;
-        return comment.getContent().equals("Mark1");
+        return comment.getContent().equals(LocalVarHelper.SEPARATOR_LABEL);
+    }
+
+    public static CtWhile getTraversalLoop(CtBlock<?> block) {
+        return (CtWhile) block.getElements(e -> e instanceof CtWhile).stream().findFirst().orElse(null);
     }
 
     public static CtStatement getEndHandleCurrentComment(CtBlock<?> block) {
@@ -177,17 +97,17 @@ public class SpoonQueries {
         return (CtStatement) handleCurrentEndComments.get(RandomUtils.nextInt(handleCurrentEndComments.size()));
     }
 
-    public static CtStatement getReturnTrueComment(CtBlock<?> block) {
+    public static CtStatement getReturnTrueLabel(CtBlock<?> block) {
         List<CtElement> returnTrueComments = block.getElements(e -> e instanceof CtComment).stream()
-                .filter(SpoonQueries::isReturnTrueComment).toList();
+                .filter(SpoonQueries::isReturnTrueLabel).toList();
         if (returnTrueComments.isEmpty())
             return null;
         return (CtStatement) returnTrueComments.get(RandomUtils.nextInt(returnTrueComments.size()));
     }
 
-    public static CtStatement getMark1Comment(CtBlock<?> block) {
+    public static CtStatement getSeparatorLabelComment(CtBlock<?> block) {
         List<CtElement> returnMark1Comments = block.getElements(e -> e instanceof CtComment).stream()
-                .filter(SpoonQueries::isReturnMark1Comment).toList();
+                .filter(SpoonQueries::isSeparatorLabel).toList();
         if (returnMark1Comments.isEmpty())
             return null;
         return (CtStatement) returnMark1Comments.get(RandomUtils.nextInt(returnMark1Comments.size()));
@@ -231,75 +151,6 @@ public class SpoonQueries {
         return comment.getContent().equals("End of Traversed Fields");
     }
 
-    public static CtMethod<?> getTraversalOfNode(CtClass<?> ctClass, CtTypeReference<?> node) {
-        Set<CtMethod<?>> traversals = ctClass.getMethods();
-        for (CtMethod<?> m : traversals) {
-            if (m.getSimpleName().startsWith(LocalVarHelper.TRAVERSAL_PREFIX)) {
-                CtVariable<?> visitedSetParam = m.getParameters().get(m.getParameters().size() - 1);
-                if (visitedSetParam.getType().getActualTypeArguments().get(0).equals(node)) {
-                    return m;
-                }
-            }
-        }
-        return null;
-    }
-
-    public static CtMethod<?> getTraversalOfArray(CtClass<?> ctClass, CtTypeReference<?> array) {
-        Set<CtMethod<?>> traversals = ctClass.getMethods();
-        for (CtMethod<?> m : traversals) {
-            if (m.getSimpleName().startsWith(LocalVarHelper.ARRAY_TRAVERSAL_PREFIX)) {
-                CtVariable<?> arrayParam = m.getParameters().get(m.getParameters().size() - 1);
-                if (arrayParam.getType().getQualifiedName().equals(array.getQualifiedName())) {
-                    return m;
-                }
-            }
-        }
-        return null;
-    }
-
-    // public static List<List<CtVariable<?>>>
-    // getNonUsedInitialPathsToCyclicField(CtBlock<?> code) {
-    // List<List<CtVariable<?>>> nonUsedInitialPathsToCyclicField = new
-    // LinkedList<>();
-    //
-    // TypeGraph typeGraph = TypeGraph.getInstance();
-    // List<List<CtVariable<?>>> pathsToCyclicFields =
-    // typeGraph.getPathsToCyclicFields();
-    //
-    // List<CtLocalVariable<?>> currentVars = getLocalVariablesMathingPrefix(code,
-    // LocalVarHelper.CURRENT_VAR_NAME);
-    // for (List<CtVariable<?>> path : pathsToCyclicFields) {
-    // CtVariableRead<?> varRead = SpoonFactory.createFieldReadOfRootObject(path);
-    // if (currentVars.stream().noneMatch(var ->
-    // var.getAssignment().equals(varRead)))
-    // nonUsedInitialPathsToCyclicField.add(path);
-    // }
-    //
-    // return nonUsedInitialPathsToCyclicField;
-    // }
-
-    public static CtVariable<?> getTraversalSetParameter(CtMethod<?> traversal) {
-        return traversal.getParameters().get(traversal.getParameters().size() - 1);
-    }
-
-    public static CtVariable<?> getTraversedElementParameter(CtMethod<?> traversal) {
-        return traversal.getParameters().get(traversal.getParameters().size() - 2);
-    }
-
-    public static CtVariable<?> getTraversalWorklistVariable(CtMethod<?> traversal) {
-        return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var
-                && var.getSimpleName().startsWith(LocalVarHelper.WORKLIST_VAR_NAME)).get(0);
-    }
-
-    public static CtTypeReference<?> getTraversedType(CtMethod<?> traversal) {
-        return getTraversalSetParameter(traversal).getType().getActualTypeArguments().get(0);
-    }
-
-    public static CtVariable<?> getTraversalCurrentVariable(CtMethod<?> traversal) {
-        return (CtVariable<?>) traversal.getBody().getElements(e -> e instanceof CtLocalVariable<?> var
-                && var.getSimpleName().startsWith(LocalVarHelper.CURRENT_VAR_NAME)).get(0);
-    }
-
     public static List<CtIf> getTraversalIfsForTraversedFields(CtBlock<?> traversalBody) {
         List<CtIf> traversalIfs = new LinkedList<>();
         CtStatement currStatement = getNextStatement(getEndOfHandleCurrentComment(traversalBody));
@@ -309,17 +160,6 @@ public class SpoonQueries {
             currStatement = getNextStatement(currStatement);
         }
         return traversalIfs;
-    }
-
-    public static List<CtVariable<?>> getTraversedFields(List<CtIf> traversedFields) {
-        List<CtVariable<?>> fields = new LinkedList<>();
-        for (CtIf traversedField : traversedFields) {
-            CtBinaryOperator<?> nullComp = (CtBinaryOperator<?>) traversedField.getCondition();
-            CtFieldRead<?> fieldRead = (CtFieldRead<?>) nullComp.getLeftHandOperand();
-            CtVariable<?> field = (CtVariable<?>) fieldRead.getVariable();
-            fields.add(field);
-        }
-        return fields;
     }
 
     public static CtStatement getNextStatement(CtStatement statement) {
@@ -337,7 +177,7 @@ public class SpoonQueries {
         return null;
     }
 
-    public static List<CtLocalVariable<?>> getLocalVariablesMathingPrefix(CtBlock<?> code, String varPrefix) {
+    public static List<CtLocalVariable<?>> getLocalVariablesMatchingPrefix(CtBlock<?> code, String varPrefix) {
         return code.getElements(var -> var.getSimpleName().startsWith(varPrefix));
     }
 
@@ -353,18 +193,14 @@ public class SpoonQueries {
         return false;
     }
 
-    public static List<CtLocalVariable<?>> getLocalVariablesMathingPrefix(List<CtStatement> statements,
-                                                                          String varPrefix) {
+    public static List<CtLocalVariable<?>> getLocalVariablesMatchingPrefix(List<CtStatement> statements,
+                                                                           String varPrefix) {
         List<CtLocalVariable<?>> setVars = new ArrayList<>();
         for (CtStatement statement : statements) {
             if (statement instanceof CtLocalVariable<?> var && var.getSimpleName().startsWith(varPrefix))
                 setVars.add(var);
         }
         return setVars;
-    }
-
-    public static List<CtVariable<?>> getLocalVariablesFromElement(CtElement element) {
-        return element.getElements(e -> e instanceof CtLocalVariable);
     }
 
     public static boolean isTraversalLoop(CtElement element) {
@@ -384,16 +220,17 @@ public class SpoonQueries {
     }
 
     public static List<CtLocalVariable<?>> getVisitedSetLocalVars(CtBlock<?> block) {
-        return getLocalVariablesMathingPrefix(block, LocalVarHelper.SET_VAR_NAME);
+        return getLocalVariablesMatchingPrefix(block, LocalVarHelper.SET_VAR_NAME);
     }
 
     public static CtVariable<?> searchVisitedSetInBlock(CtBlock<?> block, CtTypeReference<?> setSubtype) {
-        List<CtLocalVariable<?>> visitedSetVars = getLocalVariablesMathingPrefix(block, LocalVarHelper.SET_VAR_NAME);
+        setSubtype = TypeUtils.getBoxedPrimitive(setSubtype);
+        List<CtLocalVariable<?>> visitedSetVars = getLocalVariablesMatchingPrefix(block, LocalVarHelper.SET_VAR_NAME);
         if (visitedSetVars.isEmpty())
             return null;
         for (CtLocalVariable<?> setVar : visitedSetVars) {
             CtTypeReference<?> subtype = setVar.getType().getActualTypeArguments().get(0);
-            if (subtype.getQualifiedName().equals(setSubtype.getQualifiedName())) {
+            if (setSubtype.isSubtypeOf(subtype)) {
                 return setVar;
             }
         }
@@ -407,32 +244,8 @@ public class SpoonQueries {
         }).toList();
     }
 
-    public static CtVariable<?> getVisitedSetParameter(CtMethod<?> method) {
-        return getVisitedSetParameter(method.getParameters());
-    }
-
-    public static CtVariable<?> getVisitedSetParameter(List<CtParameter<?>> params) {
-        for (CtParameter<?> parameter : params) {
-            if (parameter.getSimpleName().startsWith(LocalVarHelper.SET_VAR_NAME))
-                return parameter;
-        }
-        return null;
-    }
-
-    public static CtVariable<?> getTraversedElement(CtMethod<?> method) {
-        List<CtParameter<?>> parameters = method.getParameters();
-        return parameters.get(parameters.size() - 2);
-    }
-
-    public static CtVariable<?> getInitialSizeVariable(CtBlock<?> block) {
-        List<CtLocalVariable<?>> vars = getLocalVariablesMathingPrefix(block, LocalVarHelper.SIZE_VAR_NAME);
-        if (vars.isEmpty())
-            return null;
-        return vars.get(0);
-    }
-
     public static List<CtLocalVariable<?>> getVisitedSetLocalVarsOfType(CtBlock<?> block, CtTypeReference<?> type) {
-        return getLocalVariablesMathingPrefix(block, LocalVarHelper.SET_VAR_NAME).stream().filter(
+        return getLocalVariablesMatchingPrefix(block, LocalVarHelper.SET_VAR_NAME).stream().filter(
                 var -> var.getType().getActualTypeArguments().get(0).isSubtypeOf(type)).toList();
     }
 

@@ -1,12 +1,20 @@
 package express.spoon;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import express.classinvariant.predicate.PredicateManager;
 import express.compile.InMemoryCompiler;
 import express.compile.OutputManager;
 import express.config.Config;
 import express.instrumentation.Instrumentation;
+import express.type.TypeUtils;
 import express.type.typegraph.TypeData;
 import spoon.Launcher;
+import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtPackage;
@@ -14,12 +22,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.CompilationUnitFactory;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.reflect.declaration.CtCompilationUnitImpl;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 
 public class SpoonManager {
 
@@ -44,9 +46,10 @@ public class SpoonManager {
     public static void initialize(Config conf) {
         config = conf;
         initializeLauncher();
+        initializeFactories();
         initializeSubjectData();
         initializeOutputManager();
-        initializeFactories();
+        initializePredicateManager();
         performInstrumentation();
         initializeCompiler();
         compileModel();
@@ -60,12 +63,13 @@ public class SpoonManager {
         launcher.getEnvironment().setComplianceLevel(config.subjectSrcJavaVersion);
         launcher.getEnvironment().setShouldCompile(false);
         launcher.getEnvironment().setAutoImports(false);
+        launcher.getEnvironment().setPrettyPrintingMode(Environment.PRETTY_PRINTING_MODE.FULLYQUALIFIED);
         // launcher.getEnvironment().setPreserveLineNumbers(true);
         launcher.buildModel();
     }
 
     private static void initializeSubjectData() {
-        subjectTypeData = new TypeData(launcher.getFactory().Class().get(config.subjectClassName));
+        subjectTypeData = new TypeData(launcher.getModel(), launcher.getFactory().Class().get(config.subjectClassName));
         subjectTestClass = launcher.getFactory().Class().get(config.subjectTestSuiteClassName);
         subjectClass = subjectTypeData.getThisCtClass();
         subjectPackage = subjectClass.getPackage();
@@ -79,6 +83,9 @@ public class SpoonManager {
         cuFactory = launcher.getFactory().CompilationUnit();
         prettyPrinter = launcher.createPrettyPrinter();
         SpoonFactory.initialize(launcher);
+    }
+
+    private static void initializePredicateManager() {
         PredicateManager.initialize(config, subjectTypeData);
     }
 
@@ -98,10 +105,10 @@ public class SpoonManager {
 
     private static void compileModel() {
         if (!inMemoryCompiler.compile()) {
-            logger.severe("Compilation failed");
+            System.err.println("Compilation failed!");
             throw new RuntimeException("Compilation failed");
         } else {
-            logger.info("Compilation successful");
+            System.out.println("Compilation successful!");
         }
     }
 
@@ -109,7 +116,8 @@ public class SpoonManager {
         Map<String, String> sourceMap = new HashMap<>();
         List<CtType<?>> allTypes = launcher.getFactory().Type().getAll();
         for (CtType<?> type : allTypes) {
-            sourceMap.put(type.getQualifiedName(), getPrettyPrintedSourceCode(type));
+            if (TypeUtils.isUserDefinedType(type.getReference()))
+                sourceMap.put(type.getQualifiedName(), getPrettyPrintedSourceCode(type));
         }
         return sourceMap;
     }

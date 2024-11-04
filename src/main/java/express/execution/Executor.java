@@ -7,6 +7,8 @@ import express.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -60,6 +62,42 @@ public class Executor {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    public static List<Object> obtainSurvivors(CtClass<?> spoonClass, Collection<Object> negativeObjects) {
+        List<Object> survivors = new LinkedList<>();
+
+        SpoonManager.addClassToMainPackage(spoonClass);
+        String classQualifiedName = spoonClass.getQualifiedName();
+        String classSourceCode = SpoonManager.getPrettyPrintedSourceCode(spoonClass);
+        SpoonManager.removeClassFromMainPackage(spoonClass);
+
+        InMemoryCompiler compiler = SpoonManager.getInMemoryCompiler();
+        compiler.compileSingleClass(classQualifiedName, classSourceCode);
+
+        Class<?> predicateClass;
+        try {
+            predicateClass = compiler.loadClass(spoonClass.getQualifiedName());
+        } catch (ClassNotFoundException e) {
+            System.err.println("Error loading class: " + spoonClass.getQualifiedName());
+            throw new RuntimeException(e);
+        }
+
+        Method predicate = Reflection.loadMethod(predicateClass, SpoonManager.getConfig().predicateMethodName);
+
+        for (Object invalidInstance : negativeObjects) {
+            Object[] args = new Object[1];
+            args[0] = invalidInstance;
+
+            int result = Executor.runPredicate(predicate, args);
+            if (result == 1) {
+                survivors.add(invalidInstance);
+            } else if (result == -1) {
+                throw new RuntimeException("Error running predicate during survivor check");
+            }
+        }
+
+        return survivors;
     }
 
     public static void printSurvivors(CtClass<?> cls) {

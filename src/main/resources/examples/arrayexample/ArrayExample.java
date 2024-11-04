@@ -1,7 +1,5 @@
 package examples.arrayexample;
 
-import examples.arrayexample.ArrayExample.Node;
-
 public class ArrayExample {
 
     Node[] nodes;
@@ -11,9 +9,9 @@ public class ArrayExample {
     }
 
     public void addNode(int index, int data) {
-        Node newNode = Node(data);
+        Node newNode = new Node(data);
         if (nodes[index] == null) {
-            nodes[index] = new Node();
+            nodes[index] = newNode;
         } else {
             Node curr = nodes[index];
             while (curr.next != null) {

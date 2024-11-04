@@ -24,7 +24,7 @@ public class InMemoryCompilerTest {
 
     @BeforeAll
     public static void setUp() {
-        config = new Config("./src/main/resources/examples/schedule/schedule.properties");
+        config = new Config("./src/main/resources/casestudies/schedule/schedule.properties");
         SpoonManager.initialize(config);
         inMemoryCompiler = SpoonManager.getInMemoryCompiler();
     }

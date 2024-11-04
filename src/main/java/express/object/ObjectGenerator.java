@@ -2,6 +2,11 @@ package express.object;
 
 import collector.ObjectCollector;
 import express.execution.Executor;
+import express.object.helpers.Copy;
+import express.object.helpers.Hash;
+import express.object.mutate.ObjectInitializationMutator;
+import express.object.mutate.PrimitiveTypeMutator;
+import express.object.mutate.ReferenceTypeMutator;
 import express.spoon.SpoonManager;
 
 import java.util.*;
@@ -25,6 +30,7 @@ public class ObjectGenerator {
 
     public static final List<Object> positiveObjects = new ArrayList<>();
     public static final List<Object> allNegativeObjects = new ArrayList<>();
+    public static final List<Object> negativeInitializationObjects = new ArrayList<>();
     public static final List<Object> negativeHeapObjects = new ArrayList<>();
     public static final List<Object> negativePrimitiveObjects = new ArrayList<>();
 
@@ -35,41 +41,65 @@ public class ObjectGenerator {
         if (!SpoonManager.isInitialized())
             throw new IllegalStateException("SpoonManager must be initialized before generating objects");
         generatePositiveObjects();
+        generateNegativeInitializationObjects();
         generateNegativeHeapObjects();
+        generateNegativePrimitiveObjects();
         setAllNegativeObjects();
-        logger.info("Positive Objects Generated: " + positiveObjects.size());
-        logger.info("Negative Heap Objects Generated: " + negativeHeapObjects.size());
-        logger.info("Negative Primitive Objects Generated: " + negativePrimitiveObjects.size());
     }
 
     public static void generatePositiveObjects() {
         Executor.runTestSuite(SpoonManager.getSubjectTestClass().getQualifiedName(), SpoonManager.getClassLoader());
-        positiveObjects.addAll(ObjectCollector.positiveObjects);
+        for (Object object : ObjectCollector.positiveObjects) {
+            addObjectIfNotPresent(object, positiveObjects);
+        }
+    }
+
+    private static void generateNegativeInitializationObjects() {
+        for (Object positiveObject : positiveObjects) {
+            for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
+                Object copy = Copy.deepCopy(positiveObject);
+                boolean wasMutated = ObjectInitializationMutator.mutateForInitialization(copy);
+                if (wasMutated)
+                    addObjectIfNotPresent(copy, negativeInitializationObjects);
+            }
+        }
     }
 
     /**
      * Generate the negative objects by randomly mutating the positive objects.
      */
     private static void generateNegativeHeapObjects() {
-        for (Object positiveObject : ObjectCollector.positiveObjects) {
+        for (Object positiveObject : positiveObjects) {
             for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
-                Object copy = ObjectHelper.deepCopy(positiveObject);
-                boolean wasMutated = ObjectMutator.mutateHeap(copy);
+                Object copy = Copy.deepCopy(positiveObject);
+                boolean wasMutated = ReferenceTypeMutator.mutateHeap(copy);
                 if (wasMutated)
-                    addNegativeObjectIfNotExists(copy, negativeHeapObjects);
+                    addObjectIfNotPresent(copy, negativeHeapObjects);
             }
         }
     }
 
-    private static void addNegativeObjectIfNotExists(Object object, Collection<Object> negativeCollection) {
-        String hash = ObjectHelper.calculateHash(object);
+    private static void generateNegativePrimitiveObjects() {
+        for (Object positiveObject : positiveObjects) {
+            for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
+                Object copy = Copy.deepCopy(positiveObject);
+                boolean wasMutated = PrimitiveTypeMutator.mutatePrimitiveValues(copy);
+                if (wasMutated)
+                    negativePrimitiveObjects.add(copy);
+            }
+        }
+    }
+
+    private static void addObjectIfNotPresent(Object object, Collection<Object> collection) {
+        String hash = Hash.calculateHash(object);
         if (!hashcodeToObjects.containsKey(hash)) {
             hashcodeToObjects.put(hash, object);
-            negativeCollection.add(object);
+            collection.add(object);
         }
     }
 
     private static void setAllNegativeObjects() {
+        allNegativeObjects.addAll(negativeInitializationObjects);
         allNegativeObjects.addAll(negativeHeapObjects);
         allNegativeObjects.addAll(negativePrimitiveObjects);
     }
