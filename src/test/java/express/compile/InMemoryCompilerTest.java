@@ -1,21 +1,25 @@
 package express.compile;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.lang.reflect.Method;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import express.config.Config;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.lang.reflect.Method;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class InMemoryCompilerTest {
 
@@ -24,7 +28,7 @@ public class InMemoryCompilerTest {
 
     @BeforeAll
     public static void setUp() {
-        config = new Config("./src/main/resources/casestudies/schedule/schedule.properties");
+        config = new Config("./casestudies/pli/schedule/schedule.properties");
         SpoonManager.initialize(config);
         inMemoryCompiler = SpoonManager.getInMemoryCompiler();
     }
