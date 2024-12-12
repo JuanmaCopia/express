@@ -4,6 +4,8 @@ import express.search.simulatedannealing.problem.SimulatedAnnealingProblem;
 import express.search.simulatedannealing.schedule.SimulatedAnnealingSchedule;
 import express.search.simulatedannealing.state.SimulatedAnnealingState;
 
+import express.spoon.RandomUtils;
+
 public abstract class SimulatedAnnealing {
 
     SimulatedAnnealingProblem problem;
@@ -37,7 +39,7 @@ public abstract class SimulatedAnnealing {
             } else {
                 delta = delta + 1.0;
                 double probability = Math.exp(-delta / temperature);
-                if (Math.random() < probability) {
+                if (RandomUtils.nextDouble() < probability) {
                     currentState = nextState;
                 }
             }

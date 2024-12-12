@@ -8,10 +8,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.Collections;
 
 public class RandomUtils {
 
-    private static final Random r = new Random();
+    private static final Random r = new Random(SpoonManager.getConfig().randomSeed);
 
     public static int nextInt(int bound) {
         return r.nextInt(bound);
@@ -43,6 +44,10 @@ public class RandomUtils {
 
     public static double nextDouble(double min, double max) {
         return min + r.nextDouble() * (max - min);
+    }
+
+    public static double nextDouble() {
+        return r.nextDouble();
     }
 
     public static String generateRandomString(int length) {
@@ -81,7 +86,6 @@ public class RandomUtils {
             return list1.get(choice);
         return list2.get(choice - list1.size());
     }
-
 
     public static CtStatement getRandomStatementNonBlockNonExpression(CtBlock<?> block) {
         List<CtStatement> statements = block.getElements(e ->
@@ -141,7 +145,7 @@ public class RandomUtils {
         }
 
         // Generate a random number
-        double randomValue = Math.random();
+        double randomValue = r.nextDouble();
 
         // Use the random number to select a list based on the probabilities
         double cumulativeProbability = 0.0;
@@ -189,5 +193,19 @@ public class RandomUtils {
 
     public static BinaryOperatorKind getRandomBooleanBinaryOperator() {
         return getRandomElement(getBooleanComparisons());
+    }
+
+    public static List<Integer> generateRandomIntegers(int max, int n) {
+        if (n > max + 1) {
+            throw new IllegalArgumentException("Cannot generate more distinct integers than the range allows.");
+        }
+
+        List<Integer> numbers = new ArrayList<>();
+        for (int i = 0; i <= max; i++) {
+            numbers.add(i);
+        }
+
+        Collections.shuffle(numbers, r);
+        return numbers.subList(0, n);
     }
 }
