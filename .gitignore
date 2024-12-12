@@ -38,3 +38,6 @@ output
 # Ignore Spoon files
 spooned/
 spooned-classes/
+
+# Ignore bin folder
+bin/
