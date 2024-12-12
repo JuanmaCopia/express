@@ -27,6 +27,7 @@ replay_pid*
 
 # Ignore Gradle build output directory
 build
+output
 
 # Ignore Visual Studio Code files
 .vscode/
@@ -37,3 +38,6 @@ build
 # Ignore Spoon files
 spooned/
 spooned-classes/
+
+# Ignore bin folder
+bin/
