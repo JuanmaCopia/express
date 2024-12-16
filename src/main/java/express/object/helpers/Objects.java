@@ -1,8 +1,8 @@
 package express.object.helpers;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.IdentityHashMap;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Objects {
@@ -13,10 +13,13 @@ public class Objects {
      * @param objects the list of objects
      * @return the set of types of the objects
      */
-    public static Set<Class<?>> filterTypes(Collection<Object> objects) {
-        Set<Class<?>> types = Collections.newSetFromMap(new IdentityHashMap<>());
+    public static List<Class<?>> filterTypes(List<Object> objects) {
+        List<Class<?>> types = new ArrayList<>();
+        Set<Class<?>> visitedClasses = new HashSet<>();
         for (Object object : objects) {
-            types.add(object.getClass());
+            Class<?> type = object.getClass();
+            if (visitedClasses.add(type))
+                types.add(type);
         }
         return types;
     }
@@ -28,8 +31,8 @@ public class Objects {
      * @param type    the type to filter by
      * @return the set of objects of the given type
      */
-    public static Set<Object> filterObjectsByType(Collection<Object> objects, Class<?> type) {
-        Set<Object> filtered = Collections.newSetFromMap(new IdentityHashMap<>());
+    public static List<Object> filterObjectsByType(List<Object> objects, Class<?> type) {
+        List<Object> filtered = new ArrayList<>();
         for (Object object : objects) {
             if (type.isAssignableFrom(object.getClass())) {
                 filtered.add(object);

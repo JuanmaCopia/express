@@ -1,5 +1,8 @@
 package express.classinvariant.mutator.stage2;
 
+import java.util.List;
+import java.util.Set;
+
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.mutator.template.ArrayTraversalTemplate;
@@ -8,13 +11,10 @@ import express.spoon.RandomUtils;
 import express.spoon.SpoonManager;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
+import express.util.LinkedIdentityHashSet;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class DeclareArrayTraversalMutator implements ClassInvariantMutator {
 
@@ -23,7 +23,7 @@ public class DeclareArrayTraversalMutator implements ClassInvariantMutator {
     @Override
     public boolean isApplicable(ClassInvariantState state) {
         Set<CtTypeReference<?>> traversedArrayTypes = MutatorHelper.getTraversedArrayTypes(state.getCtClass());
-        Set<CtTypeReference<?>> nonTraversedArrayTypes = new HashSet<>(
+        LinkedIdentityHashSet<CtTypeReference<?>> nonTraversedArrayTypes = new LinkedIdentityHashSet<>(
                 SpoonManager.getSubjectTypeData().getArrayTypes());
         nonTraversedArrayTypes.removeAll(traversedArrayTypes);
         if (nonTraversedArrayTypes.isEmpty()) {

@@ -1,14 +1,15 @@
 package express.object.mutate;
 
-import express.object.helpers.*;
+import java.lang.reflect.Field;
+import java.util.List;
+
+import express.object.helpers.Collect;
+import express.object.helpers.NewInstanceCreationException;
+import express.object.helpers.Objects;
+import express.object.helpers.Reflection;
+import express.object.helpers.Types;
 import express.object.mutate.values.ValueProvider;
 import express.spoon.RandomUtils;
-
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class ReferenceTypeMutator {
 
@@ -18,7 +19,7 @@ public class ReferenceTypeMutator {
      * @param rootObject is the object to mutate
      */
     public static boolean mutateHeap(Object rootObject) {
-        Set<Object> reachableObjects = Collect.collectReachableObjects(rootObject);
+        List<Object> reachableObjects = Collect.collectReachableObjects(rootObject);
         List<Object> candidates = reachableObjects.stream().filter(ReferenceTypeMutator::isMutableHeapObject).toList();
 
         if (candidates.isEmpty())
@@ -28,35 +29,35 @@ public class ReferenceTypeMutator {
         return mutateHeapOfObject(toBeMutated, reachableObjects);
     }
 
-    static Object selectObjectForMutation(Collection<Object> allObjects) {
+    static Object selectObjectForMutation(List<Object> allObjects) {
         if (RandomUtils.nextInt(0, 100) < 10)
             return RandomUtils.getRandomElement(allObjects);
 
-        Set<Class<?>> candidateTypes = Objects.filterTypes(allObjects);
+        List<Class<?>> candidateTypes = Objects.filterTypes(allObjects);
 
         Class<?> chosenType = RandomUtils.getRandomElement(candidateTypes);
-        Set<Object> candidatesOfChosenType = Objects.filterObjectsByType(allObjects, chosenType);
+        List<Object> candidatesOfChosenType = Objects.filterObjectsByType(allObjects, chosenType);
 
         return RandomUtils.getRandomElement(candidatesOfChosenType);
     }
 
-    private static boolean mutateHeapOfObject(Object objectToBeMutated, Collection<Object> reachableObjects) {
+    private static boolean mutateHeapOfObject(Object objectToBeMutated, List<Object> reachableObjects) {
         if (objectToBeMutated == null)
             throw new IllegalArgumentException("Object to be mutated cannot be null");
 
         if (Types.isUserDefinedClass(objectToBeMutated.getClass()))
             return mutateHeapUserDefinedObject(objectToBeMutated, reachableObjects);
-        if (objectToBeMutated instanceof Collection<?> collection)
-            return CollectionMutatorUtils.mutateCollection(collection);
-        if (objectToBeMutated instanceof Map<?, ?> map)
-            return MapMutatorUtils.mutateMap(map);
+        // if (objectToBeMutated instanceof Collection<?> collection)
+        //     return CollectionMutatorUtils.mutateCollection(collection);
+        // if (objectToBeMutated instanceof Map<?, ?> map)
+        //     return MapMutatorUtils.mutateMap(map);
         if (objectToBeMutated.getClass().isArray())
             return ArrayMutatorUtils.mutateArray(objectToBeMutated, reachableObjects);
 
         return false;
     }
 
-    private static boolean mutateHeapUserDefinedObject(Object objectToBeMutated, Collection<Object> allObjects) {
+    private static boolean mutateHeapUserDefinedObject(Object objectToBeMutated, List<Object> allObjects) {
         Class<?> type = objectToBeMutated.getClass();
         if (!Types.isUserDefinedClass(type))
             throw new IllegalArgumentException("Object to be mutated must be a user-defined class");
@@ -89,12 +90,12 @@ public class ReferenceTypeMutator {
         return true;
     }
 
-    public static boolean mutateReferenceField(Object targetObject, Field field, Collection<Object> allObjects) {
+    public static boolean mutateReferenceField(Object targetObject, Field field, List<Object> allObjects) {
         Class<?> type = field.getType();
         if (type.isPrimitive())
             throw new IllegalArgumentException("This method is only for reference types");
 
-        Set<Object> candidates = calculateCandidateReferenceValues(targetObject, field, allObjects);
+        List<Object> candidates = calculateCandidateReferenceValues(targetObject, field, allObjects);
         if (candidates.isEmpty())
             return false;
         Object newValue = RandomUtils.getRandomElement(candidates);
@@ -102,13 +103,13 @@ public class ReferenceTypeMutator {
         return true;
     }
 
-    public static Set<Object> calculateCandidateReferenceValues(Object targetObject, Field field,
-                                                                Collection<Object> allObjects) {
+    public static List<Object> calculateCandidateReferenceValues(Object targetObject, Field field,
+                                                                List<Object> allObjects) {
         Class<?> type = field.getType();
         if (type.isPrimitive())
             throw new IllegalArgumentException("This method is only for reference types");
 
-        Set<Object> candidates = Objects.filterObjectsByType(allObjects, type);
+        List<Object> candidates = Objects.filterObjectsByType(allObjects, type);
 
         Object currentValue = Reflection.getFieldValue(targetObject, field);
         if (currentValue != null) {

@@ -1,5 +1,7 @@
 package express.classinvariant.mutator.stage2;
 
+import java.util.List;
+
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.mutator.template.SimpleTraversalTemplate;
@@ -13,17 +15,13 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 public class DeclareSimpleTraversalMutator implements ClassInvariantMutator {
 
     List<Path> paths;
 
     @Override
     public boolean isApplicable(ClassInvariantState state) {
-        Set<CtTypeReference<?>> candidateTypes = new HashSet<>(SpoonManager.getSubjectTypeData().getCyclicTypes());
+        List<CtTypeReference<?>> candidateTypes = SpoonManager.getSubjectTypeData().getCyclicTypes();
         CtTypeReference<?> chosenType = RandomUtils.getRandomElement(candidateTypes);
 
         paths = SpoonManager.getSubjectTypeData().getCyclicPaths().stream().filter(
