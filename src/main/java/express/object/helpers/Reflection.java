@@ -1,13 +1,27 @@
 package express.object.helpers;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import express.object.mutate.values.ValueProvider;
 import express.type.typegraph.Path;
-import org.apache.commons.lang3.tuple.Pair;
 import spoon.reflect.declaration.CtVariable;
 import sun.misc.Unsafe;
-
-import java.lang.reflect.*;
-import java.util.*;
 
 public class Reflection {
 
@@ -170,6 +184,8 @@ public class Reflection {
             subClass = current;
             current = current.getSuperclass();
         }
+        // Sort the list of fields by name
+        accessibleFields.sort((field1, field2) -> field1.getName().compareTo(field2.getName()));
         return accessibleFields;
     }
 
@@ -185,6 +201,8 @@ public class Reflection {
             }
             clazz = clazz.getSuperclass();
         }
+        // Sort the list of fields by name
+        allFields.sort((field1, field2) -> field1.getName().compareTo(field2.getName()));
         return allFields;
     }
 

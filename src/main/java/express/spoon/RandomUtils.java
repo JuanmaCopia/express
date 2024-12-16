@@ -1,14 +1,19 @@
 package express.spoon;
 
-import express.type.typegraph.Path;
-import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtVariable;
-
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.Collections;
+
+import express.type.typegraph.Path;
+import express.util.LinkedIdentityHashSet;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.declaration.CtVariable;
 
 public class RandomUtils {
 
@@ -124,7 +129,7 @@ public class RandomUtils {
         return list.get(r.nextInt(list.size()));
     }
 
-    public static Path getRandomPath(Collection<Path> paths) {
+    public static Path getRandomPath(List<Path> paths) {
         if (paths == null || paths.isEmpty()) {
             throw new IllegalArgumentException("The collection of lists must not be null or empty");
         }
@@ -158,25 +163,20 @@ public class RandomUtils {
             index++;
         }
 
-        // Convert collection to a list to access by index
-        List<Path> listOfPaths = new ArrayList<>(paths);
-        return listOfPaths.get(index);
+        return paths.get(index);
     }
 
-    public static <T> T getRandomElement(Collection<T> collection) {
-        if (collection == null || collection.isEmpty()) {
+    public static <T> T getRandomElement(List<T> list) {
+        if (list == null || list.isEmpty()) {
             throw new IllegalArgumentException("The collection must not be null or empty");
         }
 
-        // Convert the collection to a list
-        List<T> list = new ArrayList<>(collection);
-
-        // Generate a random index
-        Random random = new Random();
-        int randomIndex = random.nextInt(list.size());
-
-        // Return the element at the random index
+        int randomIndex = r.nextInt(list.size());
         return list.get(randomIndex);
+    }
+
+    public static <T> T getRandomElement(LinkedIdentityHashSet<T> set) {
+        return getRandomElement(new ArrayList<>(set));
     }
 
     public static List<BinaryOperatorKind> getNumericComparisons() {

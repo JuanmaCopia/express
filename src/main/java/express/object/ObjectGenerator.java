@@ -1,16 +1,19 @@
 package express.object;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import collector.ObjectCollector;
 import express.execution.Executor;
 import express.object.helpers.Copy;
 import express.object.helpers.Hash;
 import express.object.mutate.ObjectInitializationMutator;
 import express.object.mutate.PrimitiveTypeMutator;
-import express.object.mutate.ReferenceTypeMutator;
 import express.spoon.SpoonManager;
-
-import java.util.*;
-import java.util.logging.Logger;
 
 /**
  * This class allows to generate a set of positive and negative objects from a given test suite.
@@ -58,7 +61,7 @@ public class ObjectGenerator {
         for (Object positiveObject : positiveObjects) {
             for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
                 Object copy = Copy.deepCopy(positiveObject);
-                boolean wasMutated = ObjectInitializationMutator.mutateForInitialization(copy);
+                boolean wasMutated = ObjectInitializationMutator.mutateObject(copy, 4);
                 if (wasMutated)
                     addObjectIfNotPresent(copy, negativeInitializationObjects);
             }
@@ -72,7 +75,7 @@ public class ObjectGenerator {
         for (Object positiveObject : positiveObjects) {
             for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
                 Object copy = Copy.deepCopy(positiveObject);
-                boolean wasMutated = ReferenceTypeMutator.mutateHeap(copy);
+                boolean wasMutated = ObjectInitializationMutator.mutateObject(copy, 10);
                 if (wasMutated)
                     addObjectIfNotPresent(copy, negativeHeapObjects);
             }

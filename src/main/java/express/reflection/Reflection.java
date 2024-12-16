@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Reflection {
@@ -63,6 +64,7 @@ public class Reflection {
                 }
             }
         }
+        testMethods.sort(Comparator.comparing(Method::getName));
         return testMethods;
     }
 

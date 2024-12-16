@@ -1,18 +1,23 @@
 package express.type.typegraph;
 
 
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import express.type.TypeUtils;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.*;
-
 public class TypeGraph {
 
     private CtVariable<?> root;
-    private final Map<CtVariable<?>, List<CtVariable<?>>> adjacencyList = new HashMap<>();
+    private final Map<CtVariable<?>, List<CtVariable<?>>> adjacencyList = new LinkedHashMap<>();
 
     public TypeGraph(CtVariable<?> rootVariable) {
         root = rootVariable;
@@ -29,7 +34,7 @@ public class TypeGraph {
             if (declaration == null)
                 continue; // Type is not declared in the current project
 
-            Set<CtField<?>> fields = TypeUtils.getAccessibleFields(declaration);
+            List<CtField<?>> fields = TypeUtils.getAccessibleFields(declaration);
             for (CtVariable<?> field : fields) {
                 currentAdjacency.add(field);
                 if (!adjacencyList.containsKey(field))
@@ -38,8 +43,8 @@ public class TypeGraph {
         }
     }
 
-    public Set<Path> computeSimplePaths(CtVariable<?> source) {
-        Set<Path> allPaths = new HashSet<>();
+    public LinkedHashSet<Path> computeSimplePaths(CtVariable<?> source) {
+        LinkedHashSet<Path> allPaths = new LinkedHashSet<>();
         Path currentPath = new Path(source);
         computeSimplePaths(source, currentPath, allPaths);
         return allPaths;
@@ -51,12 +56,12 @@ public class TypeGraph {
         if (!adjacencyList.containsKey(source)) {
             initialVar = searchVariableOfType(source.getType());
             if (initialVar == null)
-                return new HashSet<>();
+                return new LinkedHashSet<>();
             shouldReplace = true;
         } else {
             initialVar = source;
         }
-        Set<Path> allPaths = new HashSet<>();
+        Set<Path> allPaths = new LinkedHashSet<>();
         Path currentPath = new Path(source);
         computeSimplePaths(initialVar, currentPath, allPaths);
         if (shouldReplace)
@@ -93,20 +98,20 @@ public class TypeGraph {
     }
 
 //    public Set<CtTypeReference<?>> computeTypes() {
-//        Set<CtTypeReference<?>> types = new HashSet<>();
+//        Set<CtTypeReference<?>> types = new LinkedHashSet<>();
 //        for (CtVariable<?> node : adjacencyList.keySet())
 //            types.add(node.getType());
-//        return new HashSet<>(types);
+//        return new LinkedHashSet<>(types);
 //    }
 
-    public Set<CtTypeReference<?>> computeTypes() {
-        Set<CtTypeReference<?>> types = new HashSet<>();
+    public LinkedHashSet<CtTypeReference<?>> computeTypes() {
+        Set<CtTypeReference<?>> types = new LinkedHashSet<>();
         for (CtVariable<?> node : adjacencyList.keySet()) {
             CtTypeReference<?> type = node.getType();
             if (!type.getActualTypeArguments().isEmpty() || !type.isGenerics())
                 types.add(type);
         }
-        return new HashSet<>(types);
+        return new LinkedHashSet<>(types);
     }
 
     /**
@@ -118,7 +123,7 @@ public class TypeGraph {
      * @return the list of all the possible paths of length minor or equal to k
      */
     public Set<Path> computeAllPathsOfLengthK(CtVariable<?> source, int k) {
-        Set<Path> allPaths = new HashSet<>();
+        Set<Path> allPaths = new LinkedHashSet<>();
         Path currentPath = new Path(source);
         computeAllPathsOfLengthK(source, currentPath, allPaths, k);
         return allPaths;
