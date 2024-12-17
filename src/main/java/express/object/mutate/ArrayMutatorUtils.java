@@ -1,18 +1,17 @@
 package express.object.mutate;
 
+import java.lang.reflect.Array;
+import java.util.List;
+
 import express.object.ObjectGenerator;
 import express.object.helpers.Objects;
 import express.object.helpers.Types;
 import express.object.mutate.values.ValueProvider;
 import express.spoon.RandomUtils;
 
-import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.Set;
-
 public class ArrayMutatorUtils {
 
-    public static boolean mutateArray(Object objectToBeMutated, Collection<Object> allObjects) {
+    public static boolean mutateArray(Object objectToBeMutated, List<Object> allObjects) {
         if (!objectToBeMutated.getClass().isArray())
             throw new IllegalArgumentException("Object to be mutated must be an array");
 
@@ -61,10 +60,10 @@ public class ArrayMutatorUtils {
         return true;
     }
 
-    public static boolean mutateRandomIndexOfReferenceArray(Object array, Collection<Object> allObjects) {
+    public static boolean mutateRandomIndexOfReferenceArray(Object array, List<Object> allObjects) {
         if (allObjects == null)
             throw new IllegalArgumentException("Collection of objects cannot be null");
-        
+
         int length = Array.getLength(array);
         if (length == 0)
             throw new IllegalArgumentException("Array must have at least one element");
@@ -72,15 +71,15 @@ public class ArrayMutatorUtils {
         int index = RandomUtils.nextInt(length);
         Class<?> componentType = array.getClass().getComponentType();
 
-        Set<Object> candidateValues = calculateCandidateValues(allObjects, componentType);
+        List<Object> candidateValues = calculateCandidateValues(allObjects, componentType);
 
         Array.set(array, index, RandomUtils.getRandomElement(candidateValues));
 
         return true;
     }
 
-    private static Set<Object> calculateCandidateValues(Collection<Object> allObjects, Class<?> componentType) {
-        Set<Object> candidateValues = Objects.filterObjectsByType(allObjects, componentType);
+    private static List<Object> calculateCandidateValues(List<Object> allObjects, Class<?> componentType) {
+        List<Object> candidateValues = Objects.filterObjectsByType(allObjects, componentType);
         candidateValues.add(ValueProvider.createNewInstance(componentType));
         candidateValues.add(null);
         return candidateValues;

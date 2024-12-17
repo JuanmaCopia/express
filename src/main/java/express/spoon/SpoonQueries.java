@@ -255,25 +255,11 @@ public class SpoonQueries {
 
     public static List<Path> chooseNPaths(List<Path> paths, int n) {
         List<Path> chosenPaths = new ArrayList<>();
-        List<Integer> indices = generateRandomIntegers(paths.size() - 1, n);
+        List<Integer> indices = RandomUtils.generateRandomIntegers(paths.size() - 1, n);
         for (int index : indices) {
             chosenPaths.add(paths.get(index));
         }
         return chosenPaths;
-    }
-
-    public static List<Integer> generateRandomIntegers(int max, int n) {
-        if (n > max + 1) {
-            throw new IllegalArgumentException("Cannot generate more distinct integers than the range allows.");
-        }
-
-        List<Integer> numbers = new ArrayList<>();
-        for (int i = 0; i <= max; i++) {
-            numbers.add(i);
-        }
-
-        Collections.shuffle(numbers);
-        return numbers.subList(0, n);
     }
 
     public static CtComment getEndOfInitialChecksComment(CtBlock<?> block) {

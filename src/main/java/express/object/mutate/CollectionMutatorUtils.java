@@ -1,14 +1,13 @@
 package express.object.mutate;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import express.object.ObjectGenerator;
 import express.object.helpers.NewInstanceCreationException;
 import express.object.helpers.Reflection;
 import express.spoon.RandomUtils;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
 
 public class CollectionMutatorUtils {
 
@@ -40,7 +39,7 @@ public class CollectionMutatorUtils {
         if (collection.isEmpty())
             return false;
         List<?> list = new ArrayList<>(collection);
-        int index = new Random().nextInt(list.size());
+        int index = RandomUtils.nextInt(list.size());
         collection.remove(list.get(index));
         return true;
     }

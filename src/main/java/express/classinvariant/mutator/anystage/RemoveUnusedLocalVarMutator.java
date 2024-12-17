@@ -1,5 +1,8 @@
 package express.classinvariant.mutator.anystage;
 
+import java.util.List;
+import java.util.Objects;
+
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.state.ClassInvariantState;
@@ -8,16 +11,12 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtMethod;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
 public class RemoveUnusedLocalVarMutator implements ClassInvariantMutator {
 
     List<CtLocalVariable<?>> unusedLocalVars;
 
     public boolean isApplicable(ClassInvariantState state) {
-        Set<CtMethod<?>> methods = MutatorHelper.getMutableMethods(state.getCtClass());
+        List<CtMethod<?>> methods = MutatorHelper.getMutableMethods(state.getCtClass());
         CtBlock<?> methodBody = RandomUtils.getRandomElement(methods).getBody();
 
         List<CtLocalVariable<?>> localVars = methodBody.getElements(Objects::nonNull);

@@ -1,19 +1,18 @@
 package express.object.mutate;
 
+import java.lang.reflect.Field;
+import java.util.List;
+
 import express.object.helpers.Collect;
 import express.object.helpers.Reflection;
 import express.object.helpers.Types;
 import express.object.mutate.values.ValueProvider;
 import express.spoon.RandomUtils;
 
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Set;
-
 public class PrimitiveTypeMutator {
 
     public static boolean mutatePrimitiveValues(Object rootObject) {
-        Set<Object> reachableObjects = Collect.collectReachableObjects(rootObject);
+        List<Object> reachableObjects = Collect.collectReachableObjects(rootObject);
         List<Object> candidates = reachableObjects.stream().filter(PrimitiveTypeMutator::isMutableHeapObjectForPrimitiveValues).toList();
 
         if (candidates.isEmpty())

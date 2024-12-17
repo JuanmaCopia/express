@@ -1,14 +1,39 @@
 package express;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import express.classinvariant.fitness.LengthFitness;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.anystage.RemoveIfMutator;
 import express.classinvariant.mutator.anystage.RemoveUnusedLocalVarMutator;
 import express.classinvariant.mutator.stage1.MultipleNullComparisonMutator;
 import express.classinvariant.mutator.stage1.SingleNullComparisonMutator;
-import express.classinvariant.mutator.stage2.*;
-import express.classinvariant.mutator.stage3.*;
-import express.classinvariant.mutator.stage4.*;
+import express.classinvariant.mutator.stage2.ChangeLoopFieldsMutator;
+import express.classinvariant.mutator.stage2.ChangeTraversalRootElement;
+import express.classinvariant.mutator.stage2.DeclareArrayTraversalMutator;
+import express.classinvariant.mutator.stage2.DeclareSimpleTraversalMutator;
+import express.classinvariant.mutator.stage2.DeclareWorklistTraversalMutator;
+import express.classinvariant.mutator.stage2.InvokeArrayTraversalMutator;
+import express.classinvariant.mutator.stage2.InvokeFieldTraversalMutator;
+import express.classinvariant.mutator.stage2.InvokeFieldTraversalOnArrayTraversalMutator;
+import express.classinvariant.mutator.stage2.RemoveUnusedTraversalsMutator;
+import express.classinvariant.mutator.stage2.UnifyTraversalInvocationsMutator;
+import express.classinvariant.mutator.stage3.AddRandomComparisonToCurrent;
+import express.classinvariant.mutator.stage3.CheckVisitedCurrentOnArrayTraversalMutator;
+import express.classinvariant.mutator.stage3.CheckVisitedFieldEndOfTraversalMutator;
+import express.classinvariant.mutator.stage3.CheckVisitedFieldMutator;
+import express.classinvariant.mutator.stage3.DeclareVisitedSetMutator;
+import express.classinvariant.mutator.stage3.MultipleNullComparisonFromInputMutator;
+import express.classinvariant.mutator.stage3.NullComparisonFromCurrentMutator;
+import express.classinvariant.mutator.stage3.NullComparisonFromInputMutator;
+import express.classinvariant.mutator.stage4.AddSizeCheckMutator;
+import express.classinvariant.mutator.stage4.BooleanComparisonFromThis;
+import express.classinvariant.mutator.stage4.BooleanComparisonToCurrentMutator;
+import express.classinvariant.mutator.stage4.CheckSizeEndOfTraversalMutator;
+import express.classinvariant.mutator.stage4.CheckVisitedPrimitiveFromCurrentMutator;
+import express.classinvariant.mutator.stage4.NumericComparisonFromThis;
+import express.classinvariant.mutator.stage4.NumericComparisonToCurrentMutator;
 import express.classinvariant.problem.ClassInvariantProblem;
 import express.classinvariant.search.ClassInvariantSearch;
 import express.classinvariant.state.ClassInvariantState;
@@ -17,10 +42,6 @@ import express.execution.Executor;
 import express.object.ObjectGenerator;
 import express.search.simulatedannealing.schedule.SimulatedAnnealingSchedule;
 import express.spoon.SpoonManager;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class Express {
 
@@ -68,7 +89,7 @@ public class Express {
 
     public ClassInvariantState initializationStageSearch() {
         printStartOfPhase("Initialization");
-        Set<ClassInvariantMutator> mutators = new HashSet<>();
+        List<ClassInvariantMutator> mutators = new ArrayList<>();
         // Initial Check Mutators
         mutators.add(new MultipleNullComparisonMutator());
         mutators.add(new SingleNullComparisonMutator());
@@ -91,7 +112,7 @@ public class Express {
         //System.err.println("Survivors: " + survivors.size() + " from " + ObjectGenerator.negativeHeapObjects.size());
         currentState.setFitnessAsOutdated();
 
-        Set<ClassInvariantMutator> mutators = new HashSet<>();
+        List<ClassInvariantMutator> mutators = new ArrayList<>();
         // Traversal Declaration Mutators
         mutators.add(new DeclareWorklistTraversalMutator());
         mutators.add(new DeclareSimpleTraversalMutator());
@@ -126,7 +147,7 @@ public class Express {
         //System.err.println("Survivors: " + survivors.size() + " from " + ObjectGenerator.negativeHeapObjects.size());
         currentState.setFitnessAsOutdated();
 
-        Set<ClassInvariantMutator> mutators = new HashSet<>();
+        List<ClassInvariantMutator> mutators = new ArrayList<>();
         // Structure Check Mutators
         mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
         mutators.add(new NullComparisonFromCurrentMutator());
@@ -157,7 +178,7 @@ public class Express {
         List<Object> survivors = Executor.obtainSurvivors(currentState.getCtClass(), ObjectGenerator.negativePrimitiveObjects);
         currentState.setFitnessAsOutdated();
 
-        Set<ClassInvariantMutator> mutators = new HashSet<>();
+        List<ClassInvariantMutator> mutators = new ArrayList<>();
         // For Primitive main method
         mutators.add(new BooleanComparisonFromThis());
         mutators.add(new NumericComparisonFromThis());

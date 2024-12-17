@@ -1,5 +1,7 @@
 package express.classinvariant.mutator.stage2;
 
+import java.util.List;
+
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.MutatorHelper;
 import express.classinvariant.mutator.template.WorklistTraversalTemplate;
@@ -11,9 +13,6 @@ import express.type.typegraph.Path;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtTypeReference;
-
-import java.util.List;
 
 public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
 
@@ -21,12 +20,13 @@ public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
 
     @Override
     public boolean isApplicable(ClassInvariantState state) {
-        List<CtTypeReference<?>> candidateTypes = SpoonManager.getSubjectTypeData().getCyclicTypes().stream().filter(TypeUtils::hasMultipleLoopFields).toList();
-        CtTypeReference<?> chosenType = RandomUtils.getRandomElement(candidateTypes);
-
         paths = SpoonManager.getSubjectTypeData().getCyclicPaths().stream().filter(
-                path -> path.getTypeReference().isSubtypeOf(chosenType) && TypeUtils.hasOnlyOneCyclicField(path)).toList();
-        return !paths.isEmpty();
+                path -> TypeUtils.hasOnlyOneCyclicField(path)).toList();
+        if (paths.isEmpty()) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
                 break;
         }
 
-        //System.err.println("DeclareWorklistTraversalMutator:\n" + traversal.toString());
+        //System.err.println("DeclareWorklistTraversalMutator:\n" + newTraversal.toString());
     }
 
     private CtMethod<?> instantiateTraversalMethod(CtClass<?> ctClass, Path chosenPath) {
