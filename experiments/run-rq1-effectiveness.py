@@ -85,6 +85,12 @@ def analyze_subject_with_seed(seed, target_subject, target_class, target_propert
     print("running command:", cmd)
     os.system(cmd)
 
+    # move the subject output to the output dir
+    subject_output = 'output/src/' + target_class
+    os.system(f'mv {subject_output} {output_dir}/output-{seed}')
+    print("results saved in folder:", f'{output_dir}/output-{seed}')
+    print()
+
     # Read the log file to get the results
     return process_log_file(seed, log_file)
 
@@ -106,7 +112,6 @@ def analyze_subject(target_subject, target_class, target_properties):
     for seed in ten_random_seeds:
         row_with_results = analyze_subject_with_seed(seed, target_subject, target_class, target_properties)
         subject_results_rows.append(row_with_results)
-        break # only one seed for now
     with open(subject_results_summary_csv, 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(subject_results_rows)
