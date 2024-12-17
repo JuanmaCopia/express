@@ -1,0 +1,11 @@
+name,class,properties_file
+pli_avltree,casestudies.pli.avltree.AvlTree,avltree.properties
+pli_binomialheap,casestudies.pli.binomialheap.BinomialHeap,binomialheap.properties
+pli_hashmap,casestudies.pli.hashmap.HashMap,hashmap.properties
+pli_linkedlist,casestudies.pli.linkedlist.LinkedList,linkedlist.properties
+pli_schedule,casestudies.pli.schedule.Schedule,schedule.properties
+pli_schedulearray,casestudies.pli.schedulearray.ScheduleArray,schedulearray.properties
+pli_treemap,casestudies.pli.treemap.TreeMap,treemap.properties
+javautil_linkedlist,casestudies.javautil.linkedlist.LinkedList,linkedlist.properties
+javautil_treemap,casestudies.javautil.treemap.TreeMap,treemap.properties
+apache_nodecachingll,casestudies.apache.nodecachinglinkedlist.NodeCachingLinkedList,nodecachinglinkedlist.properties
