@@ -51,6 +51,9 @@ dependencies {
     // Object Collector
     implementation group: 'collector', name: 'collector', version: '1.0', ext: 'jar'
 
+    // Structure Generator
+    implementation group: 'symsolve', name: 'symsolve', version: '1.0', ext: 'jar'
+
 }
 
 /*tasks.withType(JavaCompile) {
