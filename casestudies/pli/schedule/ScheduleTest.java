@@ -9698,4 +9698,49 @@ public class ScheduleTest {
         casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule(1, (int) ' ', (int) (short) -1);
         schedule3.finishAllProcesses();
     }
+
+    @Test
+    public void test627() throws Throwable {
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule();
+        schedule3.addProcess(1)
+        schedule3.blockProcess();
+        schedule3.addProcess(2)
+        schedule3.blockProcess();
+        schedule3.addProcess(3)
+        schedule3.blockProcess();
+        schedule3.addProcess(1)
+        schedule3.blockProcess();
+        schedule3.addProcess(2)
+        schedule3.blockProcess();
+        schedule3.addProcess(3)
+        schedule3.blockProcess();
+        schedule3.addProcess(1)
+        schedule3.blockProcess();
+        schedule3.addProcess(2)
+        schedule3.blockProcess();
+        schedule3.addProcess(3)
+        schedule3.blockProcess();
+    }
+
+    @Test
+    public void test628() throws Throwable {
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule();
+        schedule3.addProcess(3);
+        schedule3.addProcess(2);
+        schedule3.addProcess(1);
+        schedule3.addProcess(3);
+        schedule3.addProcess(2);
+        schedule3.addProcess(1);
+    }
+
+    @Test
+    public void test629() throws Throwable {
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule();
+        schedule3.addProcess(3);
+        schedule3.addProcess(3);
+        schedule3.addProcess(3);
+        schedule3.addProcess(1);
+        schedule3.addProcess(1);
+        schedule3.addProcess(1);
+    }
 }
