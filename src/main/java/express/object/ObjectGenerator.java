@@ -52,9 +52,7 @@ public class ObjectGenerator {
 
     public static void generatePositiveObjects() {
         Executor.runTestSuite(SpoonManager.getSubjectTestClass().getQualifiedName(), SpoonManager.getClassLoader());
-        for (Object object : ObjectCollector.positiveObjects) {
-            addObjectIfNotPresent(object, positiveObjects);
-        }
+        positiveObjects.addAll(ObjectCollector.positiveObjects);
     }
 
     private static void generateNegativeInitializationObjects() {
