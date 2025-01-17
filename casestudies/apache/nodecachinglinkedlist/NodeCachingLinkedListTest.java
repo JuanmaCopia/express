@@ -298,4 +298,61 @@ public class NodeCachingLinkedListTest {
         t.removeLast();
     }
 
+    @Test
+    public void test16() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.removeLast();
+        t.add(new Object());
+        t.setMaximumCacheSize(1);
+    }
+
+    @Test
+    public void test17() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.setMaximumCacheSize(1);
+        t.removeAllNodes();
+    }
+
+    @Test
+    public void test18() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.setMaximumCacheSize(1);
+    }
+
+    @Test
+    public void test19() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.add(new Object());
+        t.add(new Object());
+    }
+
 }
