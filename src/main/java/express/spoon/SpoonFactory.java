@@ -1,6 +1,7 @@
 package express.spoon;
 
 import express.classinvariant.mutator.LocalVarHelper;
+import express.classinvariant.mutator.MutatorHelper;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import org.apache.commons.lang3.ClassUtils;
@@ -14,6 +15,7 @@ import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtVariableReference;
 
 import java.util.*;
 
@@ -646,5 +648,20 @@ public class SpoonFactory {
     public static CtExecutableReference<?> createMethodReference(CtTypeReference<?> type, String methodName) {
         CtMethod<?> method = type.getTypeDeclaration().getMethodsByName(methodName).get(0);
         return factory.Executable().createReference(method);
+    }
+
+    public static CtField<?> createThisField(CtClass<?> thisCtClass) {
+        CtField<?> thisField = coreFactory.createField();
+        thisField.setSimpleName(LocalVarHelper.THIS_FIELD_NAME);
+        thisField.setType(thisCtClass.getReference());
+        thisField.addModifier(ModifierKind.PRIVATE);
+        thisField.addModifier(ModifierKind.STATIC);
+        return thisField;
+    }
+
+    public static CtAssignment createThisAssignment(CtClass<?> predicateClass, CtVariable<?> ctParameter) {
+        // Obtain static variable "this" from predicate class
+        CtField<?> thisField = MutatorHelper.getFieldByName(predicateClass, LocalVarHelper.THIS_FIELD_NAME);
+        return createAssignment(thisField, ctParameter);
     }
 }

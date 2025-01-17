@@ -381,4 +381,30 @@ public class NodeCachingLinkedListTest {
         t.removeAllNodes();
     }
 
+    @Test
+    public void test22() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.setMaximumCacheSize(60);
+        for (int i = 0; i <= 50; i++) {
+            t.add(new Object());
+        }
+        t.removeAllNodes();
+    }
+
+    @Test
+    public void test23() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.setMaximumCacheSize(60);
+        for (int i = 0; i <= 50; i++) {
+            t.addLast(new Object());
+        }
+        for (int i = 0; i <= 45; i++) {
+            t.removeLast();
+        }
+        t.setMaximumCacheSize(0);
+        t.removeAllNodes();
+        t.setMaximumCacheSize(0);
+        t.clear();
+    }
+
 }

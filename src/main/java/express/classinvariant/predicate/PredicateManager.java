@@ -31,6 +31,10 @@ public class PredicateManager {
         modifiers.add(ModifierKind.PUBLIC);
         predicateClass.setModifiers(modifiers);
 
+        // Add static variable called this
+        CtField<?> thisField = SpoonFactory.createThisField(subjectTypeData.getThisCtClass());
+        predicateClass.addField(thisField);
+
         CtClass<?> thisClass = subjectTypeData.getThisCtClass();
 
         CtPackage ctPackage = thisClass.getPackage();
@@ -73,6 +77,10 @@ public class PredicateManager {
         CtExpression<?>[] args = SpoonFactory.createArgumentsFromParameters(parameters);
 
         CtBlock<?> body = SpoonFactory.createBlock();
+
+        CtStatement thisAssignment = SpoonFactory.createThisAssignment(predicateClass, parameters.get(0));
+        body.addStatement(thisAssignment);
+
         body.addStatement(mapOfVisitedDeclaration);
 
         for (CtMethod<?> subPredicate : subPredicates) {
@@ -86,7 +94,6 @@ public class PredicateManager {
 
         predicateClass.addMethod(predicateMethod);
     }
-
 
     private static List<CtMethod<Boolean>> createSubPredicates(List<CtParameter<?>> parameters) {
         List<CtMethod<Boolean>> subPredicates = new ArrayList<>();

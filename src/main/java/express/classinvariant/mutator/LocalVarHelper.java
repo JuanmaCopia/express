@@ -34,8 +34,10 @@ public class LocalVarHelper {
     public static final String TRAVERSED_ELEMENT_VAR_NAME = "subject";
     public static final String ARRAY_PARAM_NAME = "array_";
     public static final String THIS_PARAM_NAME = "_this";
+    public static final String THIS_FIELD_NAME = "thisInstance";
     public static final String ARRAY_VAR_PREFIX = "arrayOf";
     public static final String MAP_OF_VISITED = "mapOfVisited";
+
 
 
     public static String getNextTraversalName(CtClass<?> ctClass, String traversalPrefix) {

@@ -11,7 +11,7 @@ import java.util.Collection;
 
 public class LengthFitness extends ClassInvariantFitness {
 
-    private static final int MAX_LENGTH = 5000;
+    private static final int MAX_LENGTH = 20000;
 
     Config config;
     ClassLoader classLoader;
