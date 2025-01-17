@@ -12,13 +12,6 @@ public class HashMapTest {
     @Test
     public void test1() {
         HashMap t = new HashMap();
-        t.put(0, new Object());
-    }
-
-    @Test
-    public void test11() {
-        HashMap t = new HashMap();
-        t.put(5, new Object());
     }
 
     @Test
@@ -716,5 +709,158 @@ public class HashMapTest {
         Object object0 = hashMap0.remove((-1348));
     }
 
+    @Test
+    public void test43() {
+        HashMap t = new HashMap();
+        t.put(15, new Object());
+    }
+
+    @Test
+    public void test44() {
+        HashMap t = new HashMap();
+        t.put(14, new Object());
+    }
+
+    @Test
+    public void test45() {
+        HashMap t = new HashMap();
+        t.put(13, new Object());
+    }
+
+    @Test
+    public void test46() {
+        HashMap t = new HashMap();
+        t.put(12, new Object());
+    }
+
+    @Test
+    public void test47() {
+        HashMap t = new HashMap();
+        t.put(11, new Object());
+    }
+
+    @Test
+    public void test48() {
+        HashMap t = new HashMap();
+        t.put(10, new Object());
+    }
+
+    @Test
+    public void test49() {
+        HashMap t = new HashMap();
+        t.put(9, new Object());
+    }
+
+    @Test
+    public void test50() {
+        HashMap t = new HashMap();
+        t.put(8, new Object());
+    }
+
+    @Test
+    public void test51() {
+        HashMap t = new HashMap();
+        t.put(7, new Object());
+    }
+
+    @Test
+    public void test52() {
+        HashMap t = new HashMap();
+        t.put(6, new Object());
+    }
+
+    @Test
+    public void test53() {
+        HashMap t = new HashMap();
+        t.put(5, new Object());
+    }
+
+    @Test
+    public void test54() {
+        HashMap t = new HashMap();
+        t.put(4, new Object());
+    }
+
+    @Test
+    public void test55() {
+        HashMap t = new HashMap();
+        t.put(3, new Object());
+    }
+
+    @Test
+    public void test56() {
+        HashMap t = new HashMap();
+        t.put(2, new Object());
+    }
+
+    @Test
+    public void test57() {
+        HashMap t = new HashMap();
+        t.put(1, new Object());
+    }
+
+    @Test
+    public void test58() {
+        HashMap t = new HashMap();
+        t.put(0, new Object());
+    }
+
+    @Test
+    public void test59() {
+        HashMap t = new HashMap();
+        t.put(0, new Object());
+        t.put(1, new Object());
+        t.put(2, new Object());
+        t.put(3, new Object());
+        t.put(4, new Object());
+        t.put(5, new Object());
+        t.put(6, new Object());
+        t.put(7, new Object());
+        t.put(8, new Object());
+        t.put(9, new Object());
+        t.put(10, new Object());
+        t.put(11, new Object());
+        t.put(12, new Object());
+        t.put(13, new Object());
+        t.put(14, new Object());
+        t.put(15, new Object());
+    }
+
+    @Test
+    public void test60() {
+        HashMap t = new HashMap();
+        t.put(0, new Object());
+        t.put(1, new Object());
+        t.put(2, new Object());
+        t.put(3, new Object());
+        t.put(4, new Object());
+        t.put(5, new Object());
+        t.put(6, new Object());
+        t.put(7, new Object());
+        t.put(8, new Object());
+        t.put(9, new Object());
+        t.put(10, new Object());
+        t.put(11, new Object());
+        t.put(12, new Object());
+        t.put(13, new Object());
+        t.put(14, new Object());
+        t.put(15, new Object());
+        t.put(16, new Object());
+        t.put(17, new Object());
+        t.put(18, new Object());
+        t.put(19, new Object());
+        t.put(20, new Object());
+        t.put(21, new Object());
+        t.put(22, new Object());
+        t.put(23, new Object());
+        t.put(24, new Object());
+        t.put(25, new Object());
+        t.put(26, new Object());
+        t.put(27, new Object());
+        t.put(28, new Object());
+        t.put(29, new Object());
+        t.put(30, new Object());
+        t.put(31, new Object());
+    }
 
 }

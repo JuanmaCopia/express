@@ -9743,4 +9743,89 @@ public class ScheduleTest {
         schedule3.addProcess(1);
         schedule3.addProcess(1);
     }
+
+    @Test
+    public void test630() throws Throwable {
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule();
+        schedule3.addProcess(3);
+        schedule3.addProcess(2);
+        schedule3.addProcess(1);
+        schedule3.blockProcess();
+        schedule3.addProcess(3);
+        schedule3.addProcess(2);
+        schedule3.addProcess(1);
+        schedule3.addProcess(3);
+        schedule3.blockProcess();
+        schedule3.blockProcess();
+        schedule3.addProcess(2);
+        schedule3.addProcess(1);
+        schedule3.addProcess(3);
+        schedule3.addProcess(2);
+        schedule3.addProcess(1);
+    }
+
+    @Test
+    public void test631() throws Throwable {
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule();
+        schedule3.addProcess(2);
+        schedule3.addProcess(2);
+        schedule3.addProcess(2);
+        schedule3.addProcess(1);
+        schedule3.addProcess(1);
+        schedule3.blockProcess();
+        schedule3.addProcess(1);
+        schedule3.addProcess(2);
+        schedule3.addProcess(2);
+        schedule3.blockProcess();
+        schedule3.addProcess(2);
+        schedule3.addProcess(1);
+        schedule3.addProcess(1);
+        schedule3.addProcess(1);
+        schedule3.blockProcess();
+        schedule3.blockProcess();
+    }
+
+    @Test
+    public void test632() throws Throwable {
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule();
+        schedule3.addProcess(2);
+        schedule3.addProcess(2);
+        schedule3.addProcess(2);
+        schedule3.addProcess(3);
+        schedule3.addProcess(3);
+        schedule3.addProcess(3);
+        schedule3.addProcess(2);
+        schedule3.addProcess(2);
+        schedule3.addProcess(2);
+        schedule3.addProcess(3);
+        schedule3.addProcess(3);
+        schedule3.addProcess(3);
+    }
+
+    @Test
+    public void test633() throws Throwable {
+        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule();
+        schedule3.addProcess(2);
+        schedule3.addProcess(2);
+        schedule3.addProcess(2);
+        schedule3.addProcess(3);
+        schedule3.addProcess(3);
+        schedule3.addProcess(3);
+        schedule3.addProcess(2);
+        schedule3.addProcess(2);
+        schedule3.addProcess(2);
+        schedule3.addProcess(3);
+        schedule3.addProcess(3);
+        schedule3.addProcess(3);
+        schedule3.blockProcess();
+        schedule3.blockProcess();
+        schedule3.blockProcess();
+        schedule3.blockProcess();
+        schedule3.blockProcess();
+        schedule3.blockProcess();
+        schedule3.blockProcess();
+        schedule3.blockProcess();
+        schedule3.blockProcess();
+        schedule3.blockProcess();
+    }
 }
