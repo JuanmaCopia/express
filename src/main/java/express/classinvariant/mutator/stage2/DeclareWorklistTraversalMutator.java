@@ -69,12 +69,7 @@ public class DeclareWorklistTraversalMutator implements ClassInvariantMutator {
         List<CtVariable<?>> loopFields = TypeUtils.getCyclicFieldsOfType(chosenPath.getTypeReference());
 
         loopFields = MutatorHelper.selectRandomVariablesFromList(loopFields);
-
-        int splitIndex = chosenPath.size();
-        if (chosenPath.size() > 2) {
-            splitIndex--;
-        }
-        return WorklistTraversalTemplate.instantiate(ctClass, chosenPath, loopFields, splitIndex);
+        return WorklistTraversalTemplate.instantiate(ctClass, chosenPath, loopFields);
     }
 
 }
