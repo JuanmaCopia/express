@@ -148,6 +148,14 @@ public class MutatorHelper {
         return body.getElements(ifStatement -> isMutableIf(ifStatement, label) && callsMethod(ifStatement, methodName));
     }
 
+    public static List<CtIf> getIfsInvokingTraversal(CtBlock<?> body, String label) {
+        return body.getElements(ifStatement -> isMutableIf(ifStatement, label) && invokesTraversal(ifStatement));
+    }
+
+    private static boolean invokesTraversal(CtIf ifStatement) {
+        return ifStatement.getCondition().toString().contains(LocalVarHelper.TRAVERSAL_PREFIX);
+    }
+
     public static boolean callsMethod(CtIf e, String methodName) {
         return e.toString().contains(methodName);
     }

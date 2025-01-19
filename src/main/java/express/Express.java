@@ -9,16 +9,7 @@ import express.classinvariant.mutator.anystage.RemoveIfMutator;
 import express.classinvariant.mutator.anystage.RemoveUnusedLocalVarMutator;
 import express.classinvariant.mutator.stage1.MultipleNullComparisonMutator;
 import express.classinvariant.mutator.stage1.SingleNullComparisonMutator;
-import express.classinvariant.mutator.stage2.ChangeLoopFieldsMutator;
-import express.classinvariant.mutator.stage2.ChangeTraversalRootElement;
-import express.classinvariant.mutator.stage2.DeclareArrayTraversalMutator;
-import express.classinvariant.mutator.stage2.DeclareSimpleTraversalMutator;
-import express.classinvariant.mutator.stage2.DeclareWorklistTraversalMutator;
-import express.classinvariant.mutator.stage2.InvokeArrayTraversalMutator;
-import express.classinvariant.mutator.stage2.InvokeFieldTraversalMutator;
-import express.classinvariant.mutator.stage2.InvokeFieldTraversalOnArrayTraversalMutator;
-import express.classinvariant.mutator.stage2.RemoveUnusedTraversalsMutator;
-import express.classinvariant.mutator.stage2.UnifyTraversalInvocationsMutator;
+import express.classinvariant.mutator.stage2.*;
 import express.classinvariant.mutator.stage3.AddRandomComparisonToCurrent;
 import express.classinvariant.mutator.stage3.CheckVisitedCurrentOnArrayTraversalMutator;
 import express.classinvariant.mutator.stage3.CheckVisitedFieldEndOfTraversalMutator;
@@ -114,19 +105,17 @@ public class Express {
 
         List<ClassInvariantMutator> mutators = new ArrayList<>();
         // Traversal Declaration Mutators
-        mutators.add(new DeclareWorklistTraversalMutator());
-        mutators.add(new DeclareSimpleTraversalMutator());
-        mutators.add(new DeclareArrayTraversalMutator());
+        mutators.add(new SimpleAddWorklistTraversalMutator());
+        mutators.add(new SimpleAddSimpleTraversalMutator());
         // Traversal Modification Mutators
         mutators.add(new ChangeLoopFieldsMutator());
         mutators.add(new ChangeTraversalRootElement());
         // Traversal Invocation Mutators
-        mutators.add(new InvokeArrayTraversalMutator());
-        mutators.add(new InvokeFieldTraversalMutator());
-        mutators.add(new InvokeFieldTraversalOnArrayTraversalMutator());
+        mutators.add(new SimpleInvokeFieldTraversalMutator());
+        mutators.add(new SimpleReplaceFieldTraversalMutator());
         // Removals
         mutators.add(new RemoveIfMutator(2));
-        mutators.add(new RemoveUnusedTraversalsMutator());
+        mutators.add(new SimpleRemoveTraversalMutator());
         mutators.add(new UnifyTraversalInvocationsMutator());
 
         ClassInvariantProblem problem = new ClassInvariantProblem(

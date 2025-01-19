@@ -34,7 +34,7 @@ public class AddSizeCheckMutator implements ClassInvariantMutator {
 
     @Override
     public boolean isApplicable(ClassInvariantState state) {
-        List<Path> integerFields = SpoonManager.getSubjectTypeData().getIntegerPaths();
+        List<Path> integerFields = SpoonManager.getSubjectTypeData().getIntegerPaths().stream().filter(p -> p.size() < 3).toList();
         if (integerFields.isEmpty())
             return false;
 

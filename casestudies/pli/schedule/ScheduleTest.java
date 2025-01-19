@@ -9699,32 +9699,336 @@ public class ScheduleTest {
         schedule3.finishAllProcesses();
     }
 
+     @Test()
+  public void test00()  throws Throwable  {
+      Schedule schedule0 = new Schedule(3, 3, 3);
+      schedule0.quantumExpire();
+      Schedule schedule1 = new Schedule(3, 3, 3);
+      schedule0.addProcess(3);
+      schedule1.finishProcess();
+      Schedule schedule2 = new Schedule(3, 4, 4);
+      schedule2.quantumExpire();
+      Schedule schedule3 = new Schedule();
+      schedule3.blockProcess();
+      schedule0.blockProcess();
+  }
+
+  @Test()
+  public void test01()  throws Throwable  {
+      Schedule schedule0 = new Schedule(3, 3, 3);
+      schedule0.quantumExpire();
+      schedule0.quantumExpire();
+      schedule0.addProcess(3);
+      schedule0.blockProcess();
+      schedule0.finishProcess();
+  }
+
+  @Test()
+  public void test02()  throws Throwable  {
+      Schedule schedule0 = new Schedule(3, 3, 3);
+      schedule0.quantumExpire();
+      schedule0.blockProcess();
+      schedule0.finishProcess();
+      schedule0.unblockProcess(0.0F);
+  }
+
+  @Test()
+  public void test03()  throws Throwable  {
+      Schedule schedule0 = new Schedule(3, 3, 3);
+      schedule0.quantumExpire();
+      schedule0.quantumExpire();
+      schedule0.blockProcess();
+      schedule0.finishProcess();
+      schedule0.addProcess(3);
+  }
+
+  @Test()
+  public void test04()  throws Throwable  {
+      Schedule schedule0 = new Schedule(3, 3, 3);
+      Schedule schedule1 = new Schedule(3, 7, 2);
+      schedule1.finishProcess();
+      schedule1.unblockProcess(0.0F);
+      schedule0.addProcess(3);
+  }
+
+  @Test()
+  public void test05()  throws Throwable  {
+      Schedule schedule0 = new Schedule();
+      schedule0.finishProcess();
+      schedule0.unblockProcess(0.0F);
+      schedule0.finishProcess();
+      schedule0.blockProcess();
+      schedule0.finishProcess();
+      schedule0.unblockProcess(0.0F);
+      schedule0.finishProcess();
+      schedule0.quantumExpire();
+      schedule0.blockProcess();
+      schedule0.upgradeProcessPrio(2, 0.0F);
+  }
+
+  @Test()
+  public void test06()  throws Throwable  {
+      Schedule schedule0 = new Schedule(2, 2, 3);
+      schedule0.finishProcess();
+      schedule0.addProcess(2);
+  }
+
+  @Test()
+  public void test07()  throws Throwable  {
+      Schedule schedule0 = new Schedule();
+      schedule0.quantumExpire();
+      schedule0.blockProcess();
+  }
+
+  @Test()
+  public void test08()  throws Throwable  {
+      Schedule schedule0 = new Schedule(2, 2, 2);
+      schedule0.blockProcess();
+  }
+
+  @Test()
+  public void test09()  throws Throwable  {
+      Schedule schedule0 = new Schedule(2, 9, 7);
+      schedule0.blockProcess();
+      schedule0.finishProcess();
+  }
+
+  @Test()
+  public void test10()  throws Throwable  {
+      Schedule schedule0 = new Schedule();
+      schedule0.finishProcess();
+      schedule0.quantumExpire();
+      schedule0.addProcess(2);
+      schedule0.finishProcess();
+  }
+
+  @Test()
+  public void test11()  throws Throwable  {
+      Schedule schedule0 = new Schedule();
+      schedule0.addProcess(2);
+      schedule0.blockProcess();
+      schedule0.finishProcess();
+  }
+
+  @Test()
+  public void test12()  throws Throwable  {
+      Schedule schedule0 = new Schedule(7, 5, 9);
+      schedule0.finishProcess();
+      schedule0.quantumExpire();
+      schedule0.addProcess(2);
+      schedule0.finishProcess();
+  }
+
+  @Test()
+  public void test13()  throws Throwable  {
+      Schedule schedule0 = new Schedule(3, 3, 3);
+      schedule0.finishProcess();
+  }
+
+  @Test()
+  public void test14()  throws Throwable  {
+      Schedule schedule0 = new Schedule(3, 3, 3);
+      schedule0.quantumExpire();
+      schedule0.quantumExpire();
+      schedule0.blockProcess();
+      schedule0.blockProcess();
+  }
+
+  @Test()
+  public void test15()  throws Throwable  {
+      Schedule schedule0 = new Schedule();
+      schedule0.quantumExpire();
+      schedule0.addProcess(1);
+  }
+
+  @Test()
+  public void test16()  throws Throwable  {
+      Schedule schedule0 = new Schedule(3, 3, 3);
+      schedule0.quantumExpire();
+  }
+
+  @Test()
+  public void test17()  throws Throwable  {
+      Schedule schedule0 = new Schedule(1, 1, 1);
+      schedule0.quantumExpire();
+      schedule0.quantumExpire();
+  }
+
+  @Test()
+  public void test18()  throws Throwable  {
+      Schedule schedule0 = new Schedule(4, 0, 0);
+  }
+
+  @Test()
+  public void test19()  throws Throwable  {
+      Schedule schedule0 = new Schedule(0, 4, 0);
+  }
+
+  @Test()
+  public void test20()  throws Throwable  {
+      Schedule schedule0 = new Schedule(0, 0, 4);
+  }
+
+  @Test()
+  public void test21()  throws Throwable  {
+      Schedule schedule0 = new Schedule();
+      schedule0.blockProcess();
+      schedule0.addProcess(1);
+      schedule0.unblockProcess(1.0F);
+      schedule0.quantumExpire();
+      schedule0.finishProcess();
+  }
+
+  @Test()
+  public void test22()  throws Throwable  {
+     Schedule schedule0 = new Schedule(3, 3, 3);
+     schedule0.finishAllProcesses();
+  }
+
+  @Test()
+  public void test23()  throws Throwable  {
+      Schedule schedule0 = new Schedule(0, 1, 1);
+  }
+
+  @Test()
+  public void test24()  throws Throwable  {
+      Schedule schedule0 = new Schedule(1, 0, 1);
+  }
+
+  @Test()
+  public void test25()  throws Throwable  {
+      Schedule schedule0 = new Schedule(1, 1, 0);
+  }
+
+  @Test()
+  public void test26()  throws Throwable  {
+      Schedule schedule0 = new Schedule(5, 5, 5);
+      schedule0.finishProcess();
+      schedule0.quantumExpire();
+      schedule0.finishProcess();
+      schedule0.finishProcess();
+      schedule0.quantumExpire();
+      schedule0.blockProcess();
+      schedule0.quantumExpire();
+      schedule0.quantumExpire();
+      schedule0.unblockProcess(1.0F);
+      schedule0.blockProcess();
+  }
+
+  @Test()
+  public void test27()  throws Throwable  {
+      Schedule schedule0 = new Schedule();
+      schedule0.quantumExpire();
+      schedule0.blockProcess();
+      schedule0.upgradeProcessPrio(2, 1.0F);
+      schedule0.finishProcess();
+  }
+
+  @Test()
+  public void test28()  throws Throwable  {
+      Schedule schedule0 = new Schedule(3, 3, 3);
+      schedule0.quantumExpire();
+      schedule0.quantumExpire();
+      schedule0.blockProcess();
+      schedule0.finishProcess();
+      schedule0.unblockProcess(0.0F);
+  }
+
+  @Test()
+  public void test29()  throws Throwable  {
+      Schedule schedule0 = new Schedule(3, 3, 3);
+      schedule0.quantumExpire();
+      schedule0.quantumExpire();
+      schedule0.quantumExpire();
+      schedule0.blockProcess();
+      schedule0.blockProcess();
+      schedule0.upgradeProcessPrio(3, 1.0F);
+      schedule0.finishProcess();
+      schedule0.blockProcess();
+  }
+
+  @Test()
+  public void test30()  throws Throwable  {
+      Schedule schedule0 = new Schedule();
+      schedule0.upgradeProcessPrio(3, 0.0F);
+      schedule0.finishProcess();
+  }
+
+  @Test()
+  public void test31()  throws Throwable  {
+      Schedule schedule0 = new Schedule();
+      schedule0.quantumExpire();
+      schedule0.addProcess(3);
+      schedule0.blockProcess();
+      schedule0.blockProcess();
+  }
+
+  @Test()
+  public void test32()  throws Throwable  {
+      Schedule schedule0 = new Schedule();
+      schedule0.quantumExpire();
+      schedule0.unblockProcess(1);
+  }
+
+  @Test()
+  public void test33()  throws Throwable  {
+      Schedule schedule0 = new Schedule();
+  }
+
+  @Test()
+  public void test34()  throws Throwable  {
+      Schedule schedule0 = new Schedule();
+      schedule0.blockProcess();
+      schedule0.finishProcess();
+  }
+
+  @Test()
+  public void test35()  throws Throwable  {
+      Schedule schedule0 = new Schedule();
+      schedule0.finishProcess();
+      schedule0.unblockProcess(0.0F);
+      schedule0.finishProcess();
+      schedule0.blockProcess();
+      schedule0.finishProcess();
+      schedule0.unblockProcess(0.0F);
+      schedule0.finishProcess();
+      schedule0.quantumExpire();
+      schedule0.blockProcess();
+      schedule0.upgradeProcessPrio(2, 1.0F);
+  }
+
     @Test
-    public void test627() throws Throwable {
-        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule();
-        schedule3.addProcess(1)
+    public void test1926() throws Throwable {
+        Schedule schedule3 = new Schedule(7, 10, 9);
+        schedule3.finishAllProcesses();
+    }
+
+    @Test
+    public void test1927() throws Throwable {
+        Schedule schedule3 = new Schedule();
+        schedule3.addProcess(1);
         schedule3.blockProcess();
-        schedule3.addProcess(2)
+        schedule3.addProcess(2);
         schedule3.blockProcess();
-        schedule3.addProcess(3)
+        schedule3.addProcess(3);
         schedule3.blockProcess();
-        schedule3.addProcess(1)
+        schedule3.addProcess(1);
         schedule3.blockProcess();
-        schedule3.addProcess(2)
+        schedule3.addProcess(2);
         schedule3.blockProcess();
-        schedule3.addProcess(3)
+        schedule3.addProcess(3);
         schedule3.blockProcess();
-        schedule3.addProcess(1)
+        schedule3.addProcess(1);
         schedule3.blockProcess();
-        schedule3.addProcess(2)
+        schedule3.addProcess(2);
         schedule3.blockProcess();
-        schedule3.addProcess(3)
+        schedule3.addProcess(3);
         schedule3.blockProcess();
     }
 
     @Test
-    public void test628() throws Throwable {
-        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule();
+    public void test1928() throws Throwable {
+        Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.addProcess(2);
         schedule3.addProcess(1);
@@ -9734,8 +10038,8 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test629() throws Throwable {
-        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule();
+    public void test1929() throws Throwable {
+        Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.addProcess(3);
         schedule3.addProcess(3);
@@ -9745,8 +10049,8 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test630() throws Throwable {
-        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule();
+    public void test1930() throws Throwable {
+        Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.addProcess(2);
         schedule3.addProcess(1);
@@ -9765,8 +10069,8 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test631() throws Throwable {
-        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule();
+    public void test1931() throws Throwable {
+        Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.addProcess(2);
         schedule3.addProcess(2);
@@ -9786,8 +10090,8 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test632() throws Throwable {
-        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule();
+    public void test1932() throws Throwable {
+        Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.addProcess(2);
         schedule3.addProcess(2);
@@ -9803,8 +10107,8 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test633() throws Throwable {
-        casestudies.pli.schedule.Schedule schedule3 = new casestudies.pli.schedule.Schedule();
+    public void test1933() throws Throwable {
+        Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.addProcess(2);
         schedule3.addProcess(2);
@@ -9830,67 +10134,67 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test634() throws Throwable {
+    public void test19134() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(1);
     }
 
     @Test
-    public void test635() throws Throwable {
+    public void test1135() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
     }
 
     @Test
-    public void test636() throws Throwable {
+    public void test1136() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
     }
 
     @Test
-    public void test637() throws Throwable {
+    public void test1137() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(1);
         schedule3.blockProcess();
     }
 
     @Test
-    public void test638() throws Throwable {
+    public void test1138() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.blockProcess();
     }
 
     @Test
-    public void test639() throws Throwable {
+    public void test1139() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.blockProcess();
     }
 
     @Test
-    public void test640() throws Throwable {
+    public void test1140() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(1);
         schedule3.quantumExpire();
     }
 
     @Test
-    public void test641() throws Throwable {
+    public void test1141() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.quantumExpire();
     }
 
     @Test
-    public void test642() throws Throwable {
+    public void test1142() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.quantumExpire();
     }
 
     @Test
-    public void test643() throws Throwable {
+    public void test1143() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(1);
         schedule3.addProcess(2);
@@ -9898,7 +10202,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test644() throws Throwable {
+    public void test1144() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.addProcess(1);
@@ -9906,7 +10210,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test645() throws Throwable {
+    public void test1145() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.addProcess(2);
@@ -9914,7 +10218,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test646() throws Throwable {
+    public void test1146() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.addProcess(3);
@@ -9922,7 +10226,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test647() throws Throwable {
+    public void test1147() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(1);
         schedule3.addProcess(3);
@@ -9930,7 +10234,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test648() throws Throwable {
+    public void test1148() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.addProcess(1);
@@ -9938,7 +10242,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test649() throws Throwable {
+    public void test1149() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(1);
         schedule3.addProcess(2);
@@ -9946,7 +10250,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test650() throws Throwable {
+    public void test1150() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.addProcess(1);
@@ -9954,7 +10258,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test651() throws Throwable {
+    public void test1151() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.addProcess(2);
@@ -9962,7 +10266,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test652() throws Throwable {
+    public void test1152() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.addProcess(3);
@@ -9970,7 +10274,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test653() throws Throwable {
+    public void test1153() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(1);
         schedule3.addProcess(3);
@@ -9978,7 +10282,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test654() throws Throwable {
+    public void test1154() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.addProcess(1);
@@ -9986,49 +10290,49 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test655() throws Throwable {
+    public void test1155() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(1);
         schedule3.addProcess(2);
     }
 
     @Test
-    public void test656() throws Throwable {
+    public void test1156() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.addProcess(1);
     }
 
     @Test
-    public void test657() throws Throwable {
+    public void test957() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.addProcess(2);
     }
 
     @Test
-    public void test658() throws Throwable {
+    public void test958() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.addProcess(3);
     }
 
     @Test
-    public void test659() throws Throwable {
+    public void test959() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(1);
         schedule3.addProcess(3);
     }
 
     @Test
-    public void test660() throws Throwable {
+    public void test960() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.addProcess(1);
     }
 
     @Test
-    public void test661() throws Throwable {
+    public void test961() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.addProcess(2);
@@ -10036,7 +10340,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test662() throws Throwable {
+    public void test962() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.addProcess(3);
@@ -10044,7 +10348,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test663() throws Throwable {
+    public void test963() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(1);
         schedule3.addProcess(2);
@@ -10052,25 +10356,25 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test664() throws Throwable {
+    public void test964() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.addProcess(2);
-        schedule3.addProcess(1);
-        schedule3.blockProcess();
-    }
-
-    @Test
-    public void test665() throws Throwable {
-        Schedule schedule3 = new Schedule();
-        schedule3.addProcess(2);
-        schedule3.addProcess(3);
         schedule3.addProcess(1);
         schedule3.blockProcess();
     }
 
     @Test
-    public void test666() throws Throwable {
+    public void test965() throws Throwable {
+        Schedule schedule3 = new Schedule();
+        schedule3.addProcess(2);
+        schedule3.addProcess(3);
+        schedule3.addProcess(1);
+        schedule3.blockProcess();
+    }
+
+    @Test
+    public void test966() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(1);
         schedule3.addProcess(2);
@@ -10079,7 +10383,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test667() throws Throwable {
+    public void test967() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.addProcess(2);
@@ -10088,7 +10392,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test668() throws Throwable {
+    public void test968() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.addProcess(3);
@@ -10097,7 +10401,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test669() throws Throwable {
+    public void test969() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(1);
         schedule3.addProcess(2);
@@ -10106,7 +10410,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test670() throws Throwable {
+    public void test970() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(1);
         schedule3.quantumExpire();
@@ -10117,7 +10421,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test671() throws Throwable {
+    public void test971() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.quantumExpire();
@@ -10128,7 +10432,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test672() throws Throwable {
+    public void test972() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.quantumExpire();
@@ -10139,7 +10443,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test673() throws Throwable {
+    public void test973() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(1);
         schedule3.blockProcess();
@@ -10149,7 +10453,7 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test674() throws Throwable {
+    public void test974() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(2);
         schedule3.blockProcess();
@@ -10159,12 +10463,89 @@ public class ScheduleTest {
     }
 
     @Test
-    public void test675() throws Throwable {
+    public void test975() throws Throwable {
         Schedule schedule3 = new Schedule();
         schedule3.addProcess(3);
         schedule3.blockProcess();
         schedule3.addProcess(3);
         schedule3.addProcess(2);
         schedule3.addProcess(1);
+    }
+
+    @Test
+    public void test976() throws Throwable {
+        Schedule schedule3 = new Schedule();
+        schedule3.addProcess(1);
+        schedule3.quantumExpire();
+    }
+
+    @Test
+    public void test977() throws Throwable {
+        Schedule schedule3 = new Schedule();
+        schedule3.addProcess(1);
+        schedule3.quantumExpire();
+        schedule3.quantumExpire();
+    }
+
+    @Test
+    public void test978() throws Throwable {
+        Schedule schedule3 = new Schedule();
+        schedule3.addProcess(1);
+        schedule3.addProcess(2);
+        schedule3.quantumExpire();
+        schedule3.quantumExpire();
+    }
+
+    @Test
+    public void test979() throws Throwable {
+        Schedule schedule3 = new Schedule();
+        schedule3.addProcess(1);
+        schedule3.addProcess(2);
+        schedule3.quantumExpire();
+        schedule3.quantumExpire();
+        schedule3.quantumExpire();
+    }
+
+    @Test
+    public void test980() throws Throwable {
+        Schedule schedule3 = new Schedule();
+        schedule3.addProcess(1);
+        schedule3.addProcess(2);
+        schedule3.addProcess(3);
+        schedule3.quantumExpire();
+        schedule3.quantumExpire();
+        schedule3.quantumExpire();
+    }
+
+    @Test
+    public void test981() throws Throwable {
+        Schedule schedule3 = new Schedule();
+        schedule3.addProcess(1);
+        schedule3.addProcess(2);
+        schedule3.addProcess(3);
+        schedule3.quantumExpire();
+        schedule3.quantumExpire();
+        schedule3.quantumExpire();
+        schedule3.quantumExpire();
+    }
+
+    @Test
+    public void test982() throws Throwable {
+        Schedule schedule3 = new Schedule();
+        schedule3.addProcess(1);
+        schedule3.addProcess(2);
+        schedule3.addProcess(3);
+        schedule3.quantumExpire();
+    }
+
+    @Test
+    public void test984() throws Throwable {
+        Schedule schedule3 = new Schedule();
+        schedule3.addProcess(1);
+        schedule3.addProcess(2);
+        schedule3.addProcess(3);
+        schedule3.quantumExpire();
+        schedule3.quantumExpire();
+
     }
 }
