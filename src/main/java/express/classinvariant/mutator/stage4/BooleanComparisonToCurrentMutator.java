@@ -36,7 +36,7 @@ public class BooleanComparisonToCurrentMutator implements ClassInvariantMutator 
 
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream()
-                .filter(p -> TypeUtils.isBooleanType(p.getTypeReference()) && !p.isEmpty())
+                .filter(p -> TypeUtils.isBooleanType(p.getTypeReference()) && !p.isEmpty()  && p.size() < 4)
                 .collect(Collectors.toList());
         if (candidates.size() < 2)
             return false;

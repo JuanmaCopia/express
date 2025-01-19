@@ -188,7 +188,7 @@ public class Express {
         mutators.add(new NumericComparisonToCurrentMutator());
         mutators.add(new BooleanComparisonToCurrentMutator());
         mutators.add(new CheckVisitedPrimitiveFromCurrentMutator());
-        mutators.add(new DeclareVisitedSetMutator());
+        //mutators.add(new DeclareVisitedSetMutator());
         // Removals
         mutators.add(new RemoveIfMutator(4));
         mutators.add(new RemoveUnusedLocalVarMutator());

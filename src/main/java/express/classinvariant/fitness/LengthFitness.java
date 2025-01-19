@@ -1,17 +1,17 @@
 package express.classinvariant.fitness;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+
 import express.config.Config;
 import express.execution.Executor;
 import express.reflection.Reflection;
 import express.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
 
-import java.lang.reflect.Method;
-import java.util.Collection;
-
 public class LengthFitness extends ClassInvariantFitness {
 
-    private static final int MAX_LENGTH = 20000;
+    private static final int MAX_LENGTH = 5000;
 
     Config config;
     ClassLoader classLoader;
