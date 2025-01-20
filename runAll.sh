@@ -17,18 +17,23 @@ mkdir -p output/out
 
 echo "Running all cases, the terminal output for each case will be stored in the folder output/out"
 
-echo "Running TREEMAP_PLI case..."
-./gradlew run --args="$TREEMAP_PLI"
 echo "Running SCHEDULE_PLI case..."
 ./gradlew run --args="$SCHEDULE_PLI"
-echo "Running LINKEDLIST_PLI case..."
-./gradlew run --args="$LINKEDLIST_PLI"
-echo "Running AVLTREE_PLI case..."
-./gradlew run --args="$AVLTREE_PLI"
-echo "Running BINOMIALHEAP_PLI case..."
-./gradlew run --args="$BINOMIALHEAP_PLI"
-echo "Running HASHMAP_PLI case..."
-./gradlew run --args="$HASHMAP_PLI"
 
 echo "Running NCLL_APACHE case..."
 ./gradlew run --args="$NCLL_APACHE"
+
+echo "Running TREEMAP_PLI case..."
+./gradlew run --args="$TREEMAP_PLI"
+
+echo "Running LINKEDLIST_PLI case..."
+./gradlew run --args="$LINKEDLIST_PLI"
+
+echo "Running AVLTREE_PLI case..."
+./gradlew run --args="$AVLTREE_PLI"
+
+echo "Running BINOMIALHEAP_PLI case..."
+./gradlew run --args="$BINOMIALHEAP_PLI"
+
+echo "Running HASHMAP_PLI case..."
+./gradlew run --args="$HASHMAP_PLI"
