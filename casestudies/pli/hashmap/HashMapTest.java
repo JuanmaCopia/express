@@ -22,7 +22,7 @@ public class HashMapTest {
     }
 
     @Test
-    public void test22() {
+    public void test2222() {
         HashMap t = new HashMap();
         t.put(5, new Object());
         t.put(13, new Object());
@@ -106,7 +106,7 @@ public class HashMapTest {
     }
 
     @Test
-    public void test10() {
+    public void test010() {
         HashMap t = new HashMap();
         t.put(0, new Object());
         t.put(1, new Object());
@@ -121,7 +121,7 @@ public class HashMapTest {
     }
 
     @Test
-    public void test12() {
+    public void test012() {
         HashMap t = new HashMap();
         t.put(0, new Object());
         t.put(1, new Object());
@@ -137,7 +137,7 @@ public class HashMapTest {
     }
 
     @Test
-    public void test13() {
+    public void test013() {
         HashMap t = new HashMap();
         t.put(0, new Object());
         t.put(16, new Object());
@@ -150,7 +150,7 @@ public class HashMapTest {
     }
 
     @Test
-    public void test14() {
+    public void test014() {
         HashMap t = new HashMap();
         t.put(0, new Object());
         t.put(16, new Object());
@@ -167,7 +167,7 @@ public class HashMapTest {
     }
 
     @Test
-    public void test15() {
+    public void test015() {
         HashMap t = new HashMap();
         t.put(9, new Object());
         t.put(10, new Object());
