@@ -3,6 +3,7 @@ package express.classinvariant.mutator.stage4;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
+import express.classinvariant.mutator.template.TemplateHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
@@ -48,10 +49,11 @@ public class CheckVisitedPrimitiveFromCurrentMutator implements ClassInvariantMu
         Path chosenPath = RandomUtils.getRandomPath(candidates);
         CtTypeReference<?> pathType = chosenPath.getTypeReference();
 
-        setVar = SpoonQueries.searchVisitedSetInBlock(traversalBody, pathType);
+        setVar = SpoonQueries.searchVisitedSetInBlockPrimitiveType(traversalBody, pathType);
         if (setVar == null) {
             mustDeclareSet = true;
-            setVar = SpoonFactory.createVisitedSetDeclaration(pathType);
+            CtVariable<?> mapOfVisited = TemplateHelper.getMapOfVisitedParameter(traversal);
+            setVar = TemplateHelper.createVisitedElementsSet(mapOfVisited, pathType);
         } else {
             mustDeclareSet = false;
         }

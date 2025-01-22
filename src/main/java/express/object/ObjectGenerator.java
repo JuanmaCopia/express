@@ -87,6 +87,11 @@ public class ObjectGenerator {
                 boolean wasMutated = PrimitiveTypeMutator.mutatePrimitiveValues(copy);
                 if (wasMutated)
                     negativePrimitiveObjects.add(copy);
+
+                Object copy2 = Copy.deepCopy(positiveObject);
+                wasMutated = PrimitiveTypeMutator.mutatePrimitiveValues2(copy2, 3);
+                if (wasMutated)
+                    negativePrimitiveObjects.add(copy2);
             }
         }
     }

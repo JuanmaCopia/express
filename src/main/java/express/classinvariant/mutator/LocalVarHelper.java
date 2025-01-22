@@ -28,6 +28,9 @@ public class LocalVarHelper {
     public static final String WORKLIST_VAR_NAME = "worklist_";
     public static final String CURRENT_VAR_NAME = "current_";
     public static final String TRAVERSAL_PREFIX = "traverse_";
+    public static final String WORKLIST_TRAVERSAL_PREFIX = TRAVERSAL_PREFIX + "worklist_";
+    public static final String SIMPLE_TRAVERSAL_PREFIX = TRAVERSAL_PREFIX + "simple_";
+    public static final String CIRCULAR_TRAVERSAL_PREFIX = TRAVERSAL_PREFIX + "circular_";
     public static final String ARRAY_TRAVERSAL_PREFIX = "traverseArray_";
     public static final String INITIAL_SIZE_VAR_NAME = "initialSize_";
     public static final String TRAVERSAL_ROOT_VAR_NAME = "rootElement";
@@ -52,6 +55,20 @@ public class LocalVarHelper {
             }
         }
         throw new RuntimeException("No traversal name available");
+    }
+
+    public static String getTraversalPrefix(String traversalName) {
+        if (traversalName.startsWith(LocalVarHelper.ARRAY_TRAVERSAL_PREFIX)) {
+            return LocalVarHelper.ARRAY_TRAVERSAL_PREFIX;
+        } else if (traversalName.startsWith(LocalVarHelper.SIMPLE_TRAVERSAL_PREFIX)) {
+            return LocalVarHelper.SIMPLE_TRAVERSAL_PREFIX;
+        } else if (traversalName.startsWith(LocalVarHelper.WORKLIST_TRAVERSAL_PREFIX)) {
+            return LocalVarHelper.WORKLIST_TRAVERSAL_PREFIX;
+        } else if (traversalName.startsWith(LocalVarHelper.CIRCULAR_TRAVERSAL_PREFIX)) {
+            return LocalVarHelper.CIRCULAR_TRAVERSAL_PREFIX;
+        } else {
+            return LocalVarHelper.TRAVERSAL_PREFIX;
+        }
     }
 
     public static String createTraversalName(String traversalPrefix, int id) {

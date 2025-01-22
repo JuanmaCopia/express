@@ -198,4 +198,8 @@ public class TypeData {
         return new ArrayList<>(referencePathsLengthK);
     }
 
+    public List<Path> getPathsOfMaxLengthK(int k) {
+        return new ArrayList<>(typeGraph.computeAllPathsOfLengthK(thisVariable, k));
+    }
+
 }
