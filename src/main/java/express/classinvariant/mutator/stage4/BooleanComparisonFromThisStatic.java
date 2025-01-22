@@ -19,8 +19,10 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.declaration.CtField;
 
-public class NumericComparisonFromThis implements ClassInvariantMutator {
+public class BooleanComparisonFromThisStatic implements ClassInvariantMutator {
 
     CtBlock<?> targetMethodBody;
     CtExpression<Boolean> condition;
@@ -28,16 +30,26 @@ public class NumericComparisonFromThis implements ClassInvariantMutator {
     @Override
     public boolean isApplicable(ClassInvariantState state) {
         List<Path> paths = SpoonManager.getSubjectTypeData().getSimplePaths().stream().filter(
-                p -> TypeUtils.isNumericType(p.getTypeReference()) && p.size() < 3
+                p -> TypeUtils.isBooleanType(p.getTypeReference()) && p.size() < 3
         ).collect(Collectors.toList());
-        if (paths.size() < 2)
+        if (paths.isEmpty())
             return false;
 
         Path path1 = RandomUtils.getRandomElement(paths);
-        paths.remove(path1);
-        Path path2 = RandomUtils.getRandomElement(paths);
 
-        condition = ComparisonTemplate.instantiateComparableTemplate(path1, path2, RandomUtils.nextBoolean());
+        // Get static fields from the class
+        List<CtField<?>> staticFields = state.getCtClass().getFields().stream().filter(
+                f -> f.isStatic() && TypeUtils.isBooleanType(f.getType())
+        ).collect(Collectors.toList());
+        if (staticFields.isEmpty())
+            return false;
+
+        CtField<?> staticField = RandomUtils.getRandomElement(staticFields);
+
+        // Obtain the variableRead of the static field
+        CtVariableRead<?> staticFieldRead = SpoonFactory.createStaticFieldRead(state.getCtClass(), staticField);
+
+        condition = ComparisonTemplate.instantiateBooleanTemplate(path1, staticFieldRead);
 
         targetMethodBody = TemplateHelper.getPrimitiveMethod(state).getBody();
         return !SpoonQueries.checkAlreadyExistSimple(condition, targetMethodBody);

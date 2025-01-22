@@ -236,6 +236,26 @@ public class MutatorHelper {
         return new LinkedList<>(traversals);
     }
 
+    public static List<CtMethod<?>> getEquivalentTraversals(CtClass<?> ctClass, CtMethod<?> traversal) {
+        List<CtTypeReference<?>> traversalParamTypes = traversal.getParameters().stream()
+                .map(CtParameter::getType)
+                .collect(Collectors.toList());
+
+        Set<CtMethod<?>> traversals = new LinkedHashSet<>(MutatorHelper.getMethodsByName(ctClass, LocalVarHelper.getTraversalPrefix(traversal.getSimpleName())));
+        traversals.remove(traversal);
+        for (CtMethod<?> t : new LinkedHashSet<>(traversals)) {
+            List<CtTypeReference<?>> methodParamTypes = t.getParameters().stream()
+                    .map(CtParameter::getType)
+                    .collect(Collectors.toList());
+
+            if (!traversalParamTypes.equals(methodParamTypes)) {
+                traversals.remove(t);
+            }
+        }
+        return new LinkedList<>(traversals);
+    }
+
+
     public static List<CtMethod<?>> findTraversalsWithDifferentParameters(CtClass<?> ctClass, CtMethod<?> traversal) {
         List<CtTypeReference<?>> traversalParamTypes = traversal.getParameters().stream()
                 .map(CtParameter::getType)

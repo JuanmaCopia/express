@@ -73,7 +73,7 @@ public class ObjectInitializationMutator {
         Object fieldValue = fieldTuple.getRight();
 
         CtTypeReference<?> pathType = chosenPath.getTypeReference();
-        if (fieldValue == null && !TypeUtils.isUserDefinedType(pathType))
+        if (!TypeUtils.isUserDefinedType(pathType))
             return false;
 
         List<Object> possibleNewValues = new ArrayList<>();

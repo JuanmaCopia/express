@@ -1,8 +1,5 @@
 package express;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import express.classinvariant.fitness.LengthFitness;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.anystage.RemoveIfMutator;
@@ -10,21 +7,8 @@ import express.classinvariant.mutator.anystage.RemoveUnusedLocalVarMutator;
 import express.classinvariant.mutator.stage1.MultipleNullComparisonMutator;
 import express.classinvariant.mutator.stage1.SingleNullComparisonMutator;
 import express.classinvariant.mutator.stage2.*;
-import express.classinvariant.mutator.stage3.AddRandomComparisonToCurrent;
-import express.classinvariant.mutator.stage3.CheckVisitedCurrentOnArrayTraversalMutator;
-import express.classinvariant.mutator.stage3.CheckVisitedFieldEndOfTraversalMutator;
-import express.classinvariant.mutator.stage3.CheckVisitedFieldMutator;
-import express.classinvariant.mutator.stage3.DeclareVisitedSetMutator;
-import express.classinvariant.mutator.stage3.MultipleNullComparisonFromInputMutator;
-import express.classinvariant.mutator.stage3.NullComparisonFromCurrentMutator;
-import express.classinvariant.mutator.stage3.NullComparisonFromInputMutator;
-import express.classinvariant.mutator.stage4.AddSizeCheckMutator;
-import express.classinvariant.mutator.stage4.BooleanComparisonFromThis;
-import express.classinvariant.mutator.stage4.BooleanComparisonToCurrentMutator;
-import express.classinvariant.mutator.stage4.CheckSizeEndOfTraversalMutator;
-import express.classinvariant.mutator.stage4.CheckVisitedPrimitiveFromCurrentMutator;
-import express.classinvariant.mutator.stage4.NumericComparisonFromThis;
-import express.classinvariant.mutator.stage4.NumericComparisonToCurrentMutator;
+import express.classinvariant.mutator.stage3.*;
+import express.classinvariant.mutator.stage4.*;
 import express.classinvariant.problem.ClassInvariantProblem;
 import express.classinvariant.search.ClassInvariantSearch;
 import express.classinvariant.state.ClassInvariantState;
@@ -33,6 +17,9 @@ import express.execution.Executor;
 import express.object.ObjectGenerator;
 import express.search.simulatedannealing.schedule.SimulatedAnnealingSchedule;
 import express.spoon.SpoonManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Express {
 
@@ -107,9 +94,10 @@ public class Express {
         // Traversal Declaration Mutators
         mutators.add(new SimpleAddWorklistTraversalMutator());
         mutators.add(new SimpleAddSimpleTraversalMutator());
+        mutators.add(new SimpleAddCircularTraversalMutator());
         // Traversal Modification Mutators
-        mutators.add(new ChangeLoopFieldsMutator());
-        mutators.add(new ChangeTraversalRootElement());
+        //mutators.add(new ChangeLoopFieldsMutator());
+        //mutators.add(new ChangeTraversalRootElement());
         // Traversal Invocation Mutators
         mutators.add(new SimpleInvokeFieldTraversalMutator());
         mutators.add(new SimpleReplaceFieldTraversalMutator());
@@ -146,6 +134,7 @@ public class Express {
         mutators.add(new NullComparisonFromInputMutator());
         mutators.add(new MultipleNullComparisonFromInputMutator());
         mutators.add(new CheckVisitedCurrentOnArrayTraversalMutator());
+        mutators.add(new DeclareVisitedSetMutator());
         // Removals
         mutators.add(new RemoveUnusedLocalVarMutator());
         mutators.add(new RemoveIfMutator(3));
@@ -170,14 +159,17 @@ public class Express {
         List<ClassInvariantMutator> mutators = new ArrayList<>();
         // For Primitive main method
         mutators.add(new BooleanComparisonFromThis());
+        mutators.add(new BooleanComparisonFromThisStatic());
         mutators.add(new NumericComparisonFromThis());
+        mutators.add(new NumericComparisonFromThisStatic());
+        mutators.add(new DeclarePrimitiveVisitedSetMutator());
+        mutators.add(new CheckVisitedPrimitiveFieldMutator());
         //
         mutators.add(new CheckSizeEndOfTraversalMutator());
         mutators.add(new AddSizeCheckMutator());
         mutators.add(new NumericComparisonToCurrentMutator());
         mutators.add(new BooleanComparisonToCurrentMutator());
         mutators.add(new CheckVisitedPrimitiveFromCurrentMutator());
-        //mutators.add(new DeclareVisitedSetMutator());
         // Removals
         mutators.add(new RemoveIfMutator(4));
         mutators.add(new RemoveUnusedLocalVarMutator());

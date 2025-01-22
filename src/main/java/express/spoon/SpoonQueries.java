@@ -223,7 +223,7 @@ public class SpoonQueries {
         return getLocalVariablesMatchingPrefix(block, LocalVarHelper.SET_VAR_NAME);
     }
 
-    public static CtVariable<?> searchVisitedSetInBlock(CtBlock<?> block, CtTypeReference<?> setSubtype) {
+/*    public static CtVariable<?> searchVisitedSetInBlock(CtBlock<?> block, CtTypeReference<?> setSubtype) {
         setSubtype = TypeUtils.getBoxedPrimitive(setSubtype);
         List<CtLocalVariable<?>> visitedSetVars = getLocalVariablesMatchingPrefix(block, LocalVarHelper.SET_VAR_NAME);
         if (visitedSetVars.isEmpty())
@@ -231,6 +231,20 @@ public class SpoonQueries {
         for (CtLocalVariable<?> setVar : visitedSetVars) {
             CtTypeReference<?> subtype = setVar.getType().getActualTypeArguments().get(0);
             if (setSubtype.isSubtypeOf(subtype)) {
+                return setVar;
+            }
+        }
+        return null;
+    }*/
+
+    public static CtVariable<?> searchVisitedSetInBlockPrimitiveType(CtBlock<?> block, CtTypeReference<?> setSubtype) {
+        setSubtype = TypeUtils.getBoxedPrimitive(setSubtype);
+        List<CtLocalVariable<?>> visitedSetVars = getLocalVariablesMatchingPrefix(block, LocalVarHelper.SET_VAR_NAME);
+        if (visitedSetVars.isEmpty())
+            return null;
+        for (CtLocalVariable<?> setVar : visitedSetVars) {
+            CtTypeReference<?> subtype = setVar.getType().getActualTypeArguments().get(0);
+            if (setSubtype.equals(subtype)) {
                 return setVar;
             }
         }
