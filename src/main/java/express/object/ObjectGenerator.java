@@ -1,19 +1,16 @@
 package express.object;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
 import collector.ObjectCollector;
 import express.execution.Executor;
 import express.object.helpers.Copy;
 import express.object.helpers.Hash;
 import express.object.mutate.ObjectInitializationMutator;
 import express.object.mutate.PrimitiveTypeMutator;
+import express.spoon.RandomUtils;
 import express.spoon.SpoonManager;
+
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * This class allows to generate a set of positive and negative objects from a given test suite.
@@ -84,14 +81,14 @@ public class ObjectGenerator {
         for (Object positiveObject : positiveObjects) {
             for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
                 Object copy = Copy.deepCopy(positiveObject);
-                boolean wasMutated = PrimitiveTypeMutator.mutatePrimitiveValues(copy);
+                boolean wasMutated;
+                if (RandomUtils.nextBoolean())
+                    wasMutated = PrimitiveTypeMutator.mutatePrimitiveValuesByObjects(copy);
+                else
+                    wasMutated = PrimitiveTypeMutator.mutatePrimitiveValuesByPath(copy, 3);
+
                 if (wasMutated)
                     negativePrimitiveObjects.add(copy);
-
-                Object copy2 = Copy.deepCopy(positiveObject);
-                wasMutated = PrimitiveTypeMutator.mutatePrimitiveValues2(copy2, 3);
-                if (wasMutated)
-                    negativePrimitiveObjects.add(copy2);
             }
         }
     }

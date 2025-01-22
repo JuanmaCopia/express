@@ -26,7 +26,7 @@ public class CheckVisitedPrimitiveFromCurrentMutator implements ClassInvariantMu
     CtExpression<Boolean> condition;
 
     CtVariable<?> setVar;
-    boolean mustDeclareSet = false;
+    boolean mustDeclareSet;
 
     @Override
     public boolean isApplicable(ClassInvariantState state) {
@@ -49,13 +49,15 @@ public class CheckVisitedPrimitiveFromCurrentMutator implements ClassInvariantMu
         Path chosenPath = RandomUtils.getRandomPath(candidates);
         CtTypeReference<?> pathType = chosenPath.getTypeReference();
 
-        setVar = SpoonQueries.searchVisitedSetInBlockPrimitiveType(traversalBody, pathType);
-        if (setVar == null) {
+        String visitedSetVarName = LocalVarHelper.getVisitedSetVarName(pathType);
+        List<CtLocalVariable<?>> visitedSetVars = SpoonQueries.getLocalVariablesMatchingPrefix(traversalBody, visitedSetVarName);
+        if (!visitedSetVars.isEmpty()) {
+            setVar = visitedSetVars.get(0);
+            mustDeclareSet = false;
+        } else {
             mustDeclareSet = true;
             CtVariable<?> mapOfVisited = TemplateHelper.getMapOfVisitedParameter(traversal);
             setVar = TemplateHelper.createVisitedElementsSet(mapOfVisited, pathType);
-        } else {
-            mustDeclareSet = false;
         }
 
         CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(setVar, chosenPath.getVariableRead());

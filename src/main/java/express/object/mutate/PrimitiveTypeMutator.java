@@ -1,11 +1,5 @@
 package express.object.mutate;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import express.object.helpers.Collect;
 import express.object.helpers.Reflection;
 import express.object.helpers.Types;
@@ -15,11 +9,15 @@ import express.spoon.SpoonManager;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import org.apache.commons.lang3.tuple.Pair;
-import spoon.reflect.reference.CtTypeReference;
+
+import java.lang.reflect.Field;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PrimitiveTypeMutator {
 
-    public static boolean mutatePrimitiveValues2(Object rootObject, int maxPathLength) {
+    public static boolean mutatePrimitiveValuesByPath(Object rootObject, int maxPathLength) {
         List<Path> paths = SpoonManager.getSubjectTypeData().getPathsOfMaxLengthK(maxPathLength);
         List<Path> candidatePaths = TypeUtils.filterPaths(paths, TypeUtils::isPrimitiveOrBoxedPrimitiveType).stream().filter(
                 path -> path.size() >= 2 && Reflection.canBeEvaluated(rootObject, path)
@@ -42,7 +40,7 @@ public class PrimitiveTypeMutator {
         return true;
     }
 
-    public static boolean mutatePrimitiveValues(Object rootObject) {
+    public static boolean mutatePrimitiveValuesByObjects(Object rootObject) {
         List<Object> reachableObjects = Collect.collectReachableObjects(rootObject);
         List<Object> candidates = reachableObjects.stream().filter(PrimitiveTypeMutator::isMutableHeapObjectForPrimitiveValues).toList();
 

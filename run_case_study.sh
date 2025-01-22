@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Build the project without running tests
-./gradlew build -x test
-
 CASE_STUDY=$1
 
 TREEMAP_PLI="casestudies/pli/treemap/treemap.properties"
@@ -19,16 +16,13 @@ NODECACHINGLINKEDLIST_APACHE="casestudies/apache/nodecachinglinkedlist/nodecachi
 LINKEDLIST_JAVAUTIL="casestudies/javautil/linkedlist/linkedlist.properties"
 TREEMAP_JAVAUTIL="casestudies/javautil/treemap/treemap.properties"
 
-
+echo "Running ${CASE_STUDY} case..."
 case $CASE_STUDY in
     "TREEMAP_PLI")
         ./gradlew run --args="$TREEMAP_PLI"
         ;;
     "SCHEDULE_PLI")
         ./gradlew run --args="$SCHEDULE_PLI"
-        ;;
-    "SCHEDULE_ARRAY_PLI")
-        ./gradlew run --args="$SCHEDULE_ARRAY_PLI"
         ;;
     "HASHMAP_PLI")
         ./gradlew run --args="$HASHMAP_PLI"
@@ -47,12 +41,6 @@ case $CASE_STUDY in
         ;;
     "NODECACHINGLINKEDLIST_APACHE")
         ./gradlew run --args="$NODECACHINGLINKEDLIST_APACHE"
-        ;;
-    "TREEMAP_JAVAUTIL")
-        ./gradlew run --args="$TREEMAP_JAVAUTIL"
-        ;;
-    "LINKEDLIST_JAVAUTIL")
-        ./gradlew run --args="$LINKEDLIST_JAVAUTIL"
         ;;
     *)
         echo ""
