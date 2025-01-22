@@ -41,7 +41,7 @@ public class CheckVisitedPrimitiveFromCurrentMutator implements ClassInvariantMu
 
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream()
-                .filter(p -> TypeUtils.isNumericType(p.getTypeReference()) && !p.isEmpty())
+                .filter(p -> TypeUtils.isNumericType(p.getTypeReference()) && p.size() < 3)
                 .collect(Collectors.toList());
         if (candidates.isEmpty())
             return false;

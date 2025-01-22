@@ -1,5 +1,6 @@
 package express.classinvariant.mutator;
 
+import express.type.TypeUtils;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
@@ -40,7 +41,6 @@ public class LocalVarHelper {
     public static final String THIS_FIELD_NAME = "thisInstance";
     public static final String ARRAY_VAR_PREFIX = "arrayOf";
     public static final String MAP_OF_VISITED = "mapOfVisited";
-
 
 
     public static String getNextTraversalName(CtClass<?> ctClass, String traversalPrefix) {
@@ -86,7 +86,11 @@ public class LocalVarHelper {
     }
 
     public static String getVisitedSetVarName(CtTypeReference<?> typeOfPath) {
-        return SET_VAR_NAME + typeOfPath.getSimpleName();
+        if (!typeOfPath.isPrimitive())
+            return SET_VAR_NAME + typeOfPath.getSimpleName();
+
+        CtTypeReference<?> boxedPrimitive = TypeUtils.getBoxedPrimitive(typeOfPath);
+        return SET_VAR_NAME + boxedPrimitive.getSimpleName();
     }
-    
+
 }

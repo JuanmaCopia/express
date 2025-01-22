@@ -102,6 +102,9 @@ public class TemplateHelper {
 
     // creates the following local variable: Set<Object> visitedElements = visitedMap.computeIfAbsent(rootElement.getClass(), k -> Collections.newSetFromMap(new IdentityHashMap<>()));
     public static CtLocalVariable<?> createVisitedElementsSet(CtVariable<?> visitedMap, CtTypeReference<?> subtypeOfSet) {
+        if (subtypeOfSet.isPrimitive())
+            subtypeOfSet = TypeUtils.getBoxedPrimitive(subtypeOfSet);
+        
         CoreFactory coreFactory = SpoonFactory.getCoreFactory();
         TypeFactory typeFactory = SpoonFactory.getTypeFactory();
 

@@ -162,6 +162,8 @@ public class Express {
         mutators.add(new BooleanComparisonFromThisStatic());
         mutators.add(new NumericComparisonFromThis());
         mutators.add(new NumericComparisonFromThisStatic());
+        mutators.add(new DeclarePrimitiveVisitedSetMutator());
+        mutators.add(new CheckVisitedPrimitiveFieldMutator());
         //
         mutators.add(new CheckSizeEndOfTraversalMutator());
         mutators.add(new AddSizeCheckMutator());

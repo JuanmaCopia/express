@@ -1,11 +1,5 @@
 package express.type.typegraph;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import express.classinvariant.mutator.LocalVarHelper;
 import express.type.TypeUtils;
 import spoon.reflect.CtModel;
@@ -13,8 +7,9 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
-public class TypeData {
+import java.util.*;
 
+public class TypeData {
 
 
     private CtClass<?> thisClass;
@@ -46,6 +41,7 @@ public class TypeData {
     private LinkedHashSet<Path> referencePaths;
     private LinkedHashSet<Path> arrayPaths;
     private LinkedHashSet<Path> iterablePaths;
+    private LinkedHashSet<Path> numericPaths;
 
     public TypeData(CtModel model, CtClass<?> subjectClass) {
         initializeSubjectData(subjectClass);
@@ -72,6 +68,7 @@ public class TypeData {
         referencePaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isReferenceType);
         arrayPaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isArrayType);
         iterablePaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isIterableType);
+        numericPaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isNumericType);
     }
 
     private void initializeTypes(CtModel model) {
@@ -134,6 +131,10 @@ public class TypeData {
 
     public List<Path> getNonGenericReferencePaths() {
         return simplePaths.stream().filter(p -> !p.getTypeReference().isGenerics()).toList();
+    }
+
+    public List<Path> getNumericPaths() {
+        return new LinkedList<>(numericPaths);
     }
 
     public List<Path> getArrayPaths() {
