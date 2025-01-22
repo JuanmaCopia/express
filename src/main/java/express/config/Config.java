@@ -114,6 +114,6 @@ public class Config {
     }
 
     public String createOuputSrcFolderString(String outputSrcFolder) {
-        return outputSrcFolder + "/" + subjectClassName;
+        return outputSrcFolder + "/";
     }
 }

@@ -18,11 +18,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -152,6 +148,14 @@ public class MutatorHelper {
         return body.getElements(ifStatement -> isMutableIf(ifStatement, label) && callsMethod(ifStatement, methodName));
     }
 
+    public static List<CtIf> getIfsInvokingTraversal(CtBlock<?> body, String label) {
+        return body.getElements(ifStatement -> isMutableIf(ifStatement, label) && invokesTraversal(ifStatement));
+    }
+
+    private static boolean invokesTraversal(CtIf ifStatement) {
+        return ifStatement.getCondition().toString().contains(LocalVarHelper.TRAVERSAL_PREFIX);
+    }
+
     public static boolean callsMethod(CtIf e, String methodName) {
         return e.toString().contains(methodName);
     }
@@ -274,6 +278,10 @@ public class MutatorHelper {
     public static boolean isUnusedTraversal(CtClass<?> ctClass, CtMethod<?> traversal) {
         List<CtIf> invocations = MutatorHelper.getIfsCallingMethod(ctClass, LocalVarHelper.STAGE_2_LABEL, traversal.getSimpleName());
         return invocations.isEmpty();
+    }
+
+    public static CtField<?> getFieldByName(CtClass<?> clazz, String fieldName) {
+        return clazz.getFields().stream().filter(f -> f.getSimpleName().equals(fieldName)).findFirst().orElse(null);
     }
 
 }

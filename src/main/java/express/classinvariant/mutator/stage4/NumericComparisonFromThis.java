@@ -28,7 +28,7 @@ public class NumericComparisonFromThis implements ClassInvariantMutator {
     @Override
     public boolean isApplicable(ClassInvariantState state) {
         List<Path> paths = SpoonManager.getSubjectTypeData().getSimplePaths().stream().filter(
-                p -> TypeUtils.isNumericType(p.getTypeReference())
+                p -> TypeUtils.isNumericType(p.getTypeReference()) && p.size() < 3
         ).collect(Collectors.toList());
         if (paths.size() < 2)
             return false;

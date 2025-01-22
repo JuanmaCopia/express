@@ -13,7 +13,11 @@ import spoon.reflect.reference.CtTypeReference;
 
 public class SimpleTraversalTemplate {
 
-    public static CtMethod<?> instantiate(CtClass<?> ctClass, Path initialField, CtVariable<?> loopField, int splitIndex, boolean checkCircular) {
+    public static CtMethod<?> instantiate(CtClass<?> ctClass, Path initialField, CtVariable<?> loopField, boolean checkCircular) {
+        int splitIndex = 2;
+        if (initialField.size() < 2) {
+            splitIndex = 1;
+        }
         Pair<Path, Path> splitPaths = initialField.split(splitIndex);
         Path leftPath = splitPaths.getLeft();
         Path rightPath = splitPaths.getRight();

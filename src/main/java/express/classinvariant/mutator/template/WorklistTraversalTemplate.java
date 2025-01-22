@@ -16,7 +16,11 @@ import java.util.List;
 
 public class WorklistTraversalTemplate {
 
-    public static CtMethod<?> instantiate(CtClass<?> ctClass, Path initialField, List<CtVariable<?>> loopFields, int splitIndex) {
+    public static CtMethod<?> instantiate(CtClass<?> ctClass, Path initialField, List<CtVariable<?>> loopFields) {
+        int splitIndex = 2;
+        if (initialField.size() < 2) {
+            splitIndex = 1;
+        }
         Pair<Path, Path> splitPaths = initialField.split(splitIndex);
         Path leftPath = splitPaths.getLeft();
         Path rightPath = splitPaths.getRight();
