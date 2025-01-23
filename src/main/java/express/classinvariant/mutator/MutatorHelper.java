@@ -1,28 +1,18 @@
 package express.classinvariant.mutator;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import express.classinvariant.mutator.template.TemplateHelper;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.spoon.SpoonQueries;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.filter.VariableAccessFilter;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MutatorHelper {
 
@@ -150,6 +140,17 @@ public class MutatorHelper {
 
     public static List<CtIf> getIfsInvokingTraversal(CtBlock<?> body, String label) {
         return body.getElements(ifStatement -> isMutableIf(ifStatement, label) && invokesTraversal(ifStatement));
+    }
+
+    public static List<CtIf> getMutableChecksOfTraversalLoop(CtMethod<?> traversal, String label) {
+        CtBlock<?> whileBody = traversal.getElements(new TypeFilter<>(CtBlock.class)).stream()
+                .filter(b -> b.getParent(CtWhile.class) != null)
+                .findFirst().orElse(null);
+
+        if (whileBody == null)
+            throw new IllegalArgumentException("Traversal method does not contain a while loop");
+
+        return getMutableIfs(whileBody, label);
     }
 
     private static boolean invokesTraversal(CtIf ifStatement) {

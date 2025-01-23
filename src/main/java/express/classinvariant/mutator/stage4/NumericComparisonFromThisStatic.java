@@ -1,8 +1,5 @@
 package express.classinvariant.mutator.stage4;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
@@ -15,12 +12,12 @@ import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.*;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class NumericComparisonFromThisStatic implements ClassInvariantMutator {
 
@@ -38,7 +35,8 @@ public class NumericComparisonFromThisStatic implements ClassInvariantMutator {
         Path path1 = RandomUtils.getRandomElement(paths);
 
         // Get static fields from the class
-        List<CtField<?>> staticFields = state.getCtClass().getFields().stream().filter(
+        CtClass<?> subjectClass = SpoonManager.getSubjectTypeData().getThisCtClass();
+        List<CtField<?>> staticFields = subjectClass.getFields().stream().filter(
                 f -> f.isStatic() && TypeUtils.isNumericType(f.getType())
         ).collect(Collectors.toList());
         if (staticFields.isEmpty())
@@ -47,7 +45,7 @@ public class NumericComparisonFromThisStatic implements ClassInvariantMutator {
         CtField<?> staticField = RandomUtils.getRandomElement(staticFields);
 
         // Obtain the variableRead of the static field
-        CtVariableRead<?> staticFieldRead = SpoonFactory.createStaticFieldRead(state.getCtClass(), staticField);
+        CtVariableRead<?> staticFieldRead = SpoonFactory.createStaticFieldRead(subjectClass, staticField);
 
         condition = ComparisonTemplate.instantiateComparableTemplate(path1, staticFieldRead, RandomUtils.nextBoolean());
 

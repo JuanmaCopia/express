@@ -3,7 +3,7 @@ package express.classinvariant.mutator.stage4;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
-import express.classinvariant.mutator.template.TemplateHelper;
+import express.classinvariant.mutator.template.ComparisonTemplate;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
@@ -12,21 +12,18 @@ import express.spoon.SpoonQueries;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
 import spoon.reflect.code.*;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CheckVisitedPrimitiveFromCurrentMutator implements ClassInvariantMutator {
+public class NumericComparisonFromCurrentStaticMutator implements ClassInvariantMutator {
 
     CtMethod<?> traversal;
     CtBlock<?> traversalBody;
     CtExpression<Boolean> condition;
-
-    CtVariable<?> setVar;
-    boolean mustDeclareSet;
 
     @Override
     public boolean isApplicable(ClassInvariantState state) {
@@ -41,54 +38,40 @@ public class CheckVisitedPrimitiveFromCurrentMutator implements ClassInvariantMu
 
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream()
-                .filter(p -> TypeUtils.isNumericType(p.getTypeReference()) && p.size() < 3)
+                .filter(p -> TypeUtils.isNumericType(p.getTypeReference()) && !p.isEmpty() && p.size() < 3)
                 .collect(Collectors.toList());
         if (candidates.isEmpty())
             return false;
 
-        Path chosenPath = RandomUtils.getRandomPath(candidates);
-        CtTypeReference<?> pathType = chosenPath.getTypeReference();
-
-        String visitedSetVarName = LocalVarHelper.getVisitedSetVarName(pathType);
-        List<CtLocalVariable<?>> visitedSetVars = SpoonQueries.getLocalVariablesMatchingPrefix(traversalBody, visitedSetVarName);
-        if (!visitedSetVars.isEmpty()) {
-            setVar = visitedSetVars.get(0);
-            mustDeclareSet = false;
-        } else {
-            mustDeclareSet = true;
-            CtVariable<?> mapOfVisited = TemplateHelper.getMapOfVisitedParameter(traversal);
-            setVar = TemplateHelper.createVisitedElementsSet(mapOfVisited, pathType);
+        // Get static fields from the class
+        CtClass<?> subjectClass = SpoonManager.getSubjectTypeData().getThisCtClass();
+        List<CtField<?>> staticFields = subjectClass.getFields().stream().filter(
+                f -> f.isStatic() && TypeUtils.isNumericType(f.getType())
+        ).collect(Collectors.toList());
+        if (staticFields.isEmpty()) {
+            return false;
         }
 
-        CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(setVar, chosenPath.getVariableRead());
-        if (RandomUtils.nextBoolean())
-            addToSetInvocation = SpoonFactory.negateExpresion(addToSetInvocation);
+        Path chosenPath = RandomUtils.getRandomElement(candidates);
+        CtField<?> staticField = RandomUtils.getRandomElement(staticFields);
+        CtVariableRead<?> staticFieldRead = SpoonFactory.createStaticFieldRead(subjectClass, staticField);
 
+        condition = ComparisonTemplate.instantiateComparableTemplate(chosenPath, staticFieldRead, RandomUtils.nextBoolean());
 
-        List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(chosenPath);
-        clauses.add(addToSetInvocation);
-
-        condition = SpoonFactory.conjunction(clauses);
-        if (SpoonQueries.checkAlreadyExistSimple(condition, traversalBody))
+        if (SpoonQueries.checkAlreadyExist(condition, traversalBody))
             return false;
-
         return true;
     }
 
     @Override
     public void mutate(ClassInvariantState state) {
-        if (mustDeclareSet) {
-            CtWhile whileStatement = SpoonQueries.getTraversalLoop(traversalBody);
-            whileStatement.insertBefore((CtStatement) setVar);
-        }
-
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_4_LABEL);
 
         List<CtIf> checks = MutatorHelper.getMutableChecksOfTraversalLoop(traversal, LocalVarHelper.STAGE_4_LABEL);
         CtComment insertBeforeLabel = SpoonQueries.getEndOfHandleCurrentComment(traversalBody);
         MutatorHelper.insertOrReplaceCheck(checks, ifStatement, insertBeforeLabel);
 
-        //System.err.println("\nCheckVisitedPrimitiveFromCurrentMutator:\n" + ifStatement);
+        //System.err.println("\nNumericComparisonFromCurrentStaticMutator:\n" + ifStatement);
     }
 
 

@@ -59,8 +59,10 @@ public class NumericComparisonToCurrentMutator implements ClassInvariantMutator 
     @Override
     public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_4_LABEL);
-        CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(traversalBody);
-        endOfHandleCurrentComment.insertBefore(ifStatement);
+
+        List<CtIf> checks = MutatorHelper.getMutableChecksOfTraversalLoop(traversal, LocalVarHelper.STAGE_4_LABEL);
+        CtComment insertBeforeLabel = SpoonQueries.getEndOfHandleCurrentComment(traversalBody);
+        MutatorHelper.insertOrReplaceCheck(checks, ifStatement, insertBeforeLabel);
 
         //System.err.println("\nPrimitiveComparisonToCurrentMutator:\n" + ifStatement);
     }

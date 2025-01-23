@@ -1,13 +1,12 @@
 package express.classinvariant.mutator.template;
 
-import java.util.List;
-
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
 import express.type.typegraph.Path;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtVariableRead;
+
+import java.util.List;
 
 public class ComparisonTemplate {
 
@@ -31,15 +30,15 @@ public class ComparisonTemplate {
         return SpoonFactory.conjunction(clauses);
     }
 
-    public static CtExpression<Boolean> instantiateComparableTemplate(Path path1, CtVariableRead<?> variableRead, boolean negate) {
+    public static CtExpression<Boolean> instantiateComparableTemplate(Path path1, CtExpression<?> variableRead, boolean negate) {
         return instantiateTemplate(path1, variableRead, RandomUtils.getRandomComparableBinaryOperator(), negate);
     }
 
-    public static CtExpression<Boolean> instantiateBooleanTemplate(Path path1, CtVariableRead<?> variableRead) {
+    public static CtExpression<Boolean> instantiateBooleanTemplate(Path path1, CtExpression<?> variableRead) {
         return instantiateTemplate(path1, variableRead, RandomUtils.getRandomBooleanBinaryOperator(), false);
     }
 
-    public static CtExpression<Boolean> instantiateTemplate(Path path1, CtVariableRead<?> variableRead, BinaryOperatorKind operator, boolean negate) {
+    public static CtExpression<Boolean> instantiateTemplate(Path path1, CtExpression<?> variableRead, BinaryOperatorKind operator, boolean negate) {
         List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(List.of(path1));
 
         CtExpression<Boolean> expr = SpoonFactory.createBinaryExpression(path1.getVariableRead(), variableRead, operator);

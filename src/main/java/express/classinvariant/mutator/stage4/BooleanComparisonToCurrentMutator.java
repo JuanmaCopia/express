@@ -36,7 +36,7 @@ public class BooleanComparisonToCurrentMutator implements ClassInvariantMutator 
 
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream()
-                .filter(p -> TypeUtils.isBooleanType(p.getTypeReference()) && !p.isEmpty()  && p.size() < 4)
+                .filter(p -> TypeUtils.isBooleanType(p.getTypeReference()) && !p.isEmpty() && p.size() < 4)
                 .collect(Collectors.toList());
         if (candidates.size() < 2)
             return false;
@@ -59,8 +59,10 @@ public class BooleanComparisonToCurrentMutator implements ClassInvariantMutator 
     @Override
     public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_4_LABEL);
-        CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(traversalBody);
-        endOfHandleCurrentComment.insertBefore(ifStatement);
+
+        List<CtIf> checks = MutatorHelper.getMutableChecksOfTraversalLoop(traversal, LocalVarHelper.STAGE_4_LABEL);
+        CtComment insertBeforeLabel = SpoonQueries.getEndOfHandleCurrentComment(traversalBody);
+        MutatorHelper.insertOrReplaceCheck(checks, ifStatement, insertBeforeLabel);
 
         //System.err.println("\nPrimitiveComparisonToCurrentMutator:\n" + ifStatement);
     }

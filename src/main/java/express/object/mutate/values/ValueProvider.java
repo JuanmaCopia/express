@@ -9,19 +9,22 @@ import java.lang.reflect.Array;
 
 public class ValueProvider {
 
-    public static final byte MIN_BYTE = -100;
-    public static final short MIN_SHORT = -100;
-    public static final int MIN_INT = -100;
-    public static final long MIN_LONG = -100;
-    public static final double MIN_DOUBLE = -100.0;
-    public static final float MIN_FLOAT = -100.0f;
+    public static final byte MIN_BYTE = -10;
+    public static final short MIN_SHORT = -10;
+    public static final int MIN_INT = -10;
+    public static final long MIN_LONG = -10;
+    public static final double MIN_DOUBLE = -10.0;
+    public static final float MIN_FLOAT = -10.0f;
 
-    public static final byte MAX_BYTE = 100;
-    public static final short MAX_SHORT = 100;
-    public static final int MAX_INT = 100;
-    public static final long MAX_LONG = 100;
-    public static final double MAX_DOUBLE = 100.0;
-    public static final float MAX_FLOAT = 100.0f;
+    public static final byte MAX_BYTE = 10;
+    public static final short MAX_SHORT = 10;
+    public static final int MAX_INT = 10;
+    public static final long MAX_LONG = 10;
+    public static final double MAX_DOUBLE = 10.0;
+    public static final float MAX_FLOAT = 10.0f;
+
+    public static final int[] INTEGER_CONSTANT_POOL = {-1, 0, 1};
+    public static final double[] DOUBLE_CONSTANT_POOL = {-1.0, -0.5, 0.0, 0.5, 1.0};
 
     public static final int MAX_STRING_LENGTH = 10;
 
@@ -98,6 +101,14 @@ public class ValueProvider {
             return RandomUtils.nextDouble(MIN_DOUBLE, MAX_DOUBLE);
 
         throw new IllegalArgumentException("Class must be a primitive type.");
+    }
+
+    public static int getRandomIntegerConstant() {
+        return INTEGER_CONSTANT_POOL[RandomUtils.nextInt(INTEGER_CONSTANT_POOL.length)];
+    }
+
+    public static double getRandomDoubleConstant() {
+        return DOUBLE_CONSTANT_POOL[RandomUtils.nextInt(DOUBLE_CONSTANT_POOL.length)];
     }
 
 }

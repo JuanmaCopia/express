@@ -162,17 +162,17 @@ public class Express {
         mutators.add(new BooleanComparisonFromThisStatic());
         mutators.add(new NumericComparisonFromThis());
         mutators.add(new NumericComparisonFromThisStatic());
-        mutators.add(new DeclarePrimitiveVisitedSetMutator());
-        mutators.add(new CheckVisitedPrimitiveFieldMutator());
         //
         mutators.add(new CheckSizeEndOfTraversalMutator());
         mutators.add(new AddSizeCheckMutator());
         mutators.add(new NumericComparisonToCurrentMutator());
         mutators.add(new BooleanComparisonToCurrentMutator());
         mutators.add(new CheckVisitedPrimitiveFromCurrentMutator());
+        mutators.add(new NumericComparisonFromCurrentStaticMutator());
+        mutators.add(new NumericComparisonFromCurrentConstantMutator());
         // Removals
         mutators.add(new RemoveIfMutator(4));
-        mutators.add(new RemoveUnusedLocalVarMutator());
+        //mutators.add(new RemoveUnusedLocalVarMutator());
 
         ClassInvariantProblem problem = new ClassInvariantProblem(
                 mutators,
