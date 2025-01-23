@@ -1,0 +1,17 @@
+===========================================================================
+casestudies.pli.binomialheap.BinomialHeap:::OBJECT
+this.Nodes == this.Nodes.child.parent
+this.Nodes.sibling.sibling == this.Nodes.child.sibling
+this.Nodes.sibling.sibling == this.Nodes.child.child
+this.Nodes.degree >= 0
+this.Nodes.parent == null
+this.Nodes.sibling.degree >= 0
+this.Nodes.sibling.parent == null
+this.Nodes.child.degree == 0 || this.Nodes.child.degree == 1 || this.Nodes.child.degree == 2
+this.Nodes.child.parent != null
+this.size >= 0
+this.Nodes.degree <= this.Nodes.sibling.degree
+this.Nodes.degree > this.Nodes.child.degree
+this.Nodes.sibling.key <= this.Nodes.child.key
+this.Nodes.child.degree % this.Nodes.sibling.degree == 0
+this.Nodes.sibling.degree > this.Nodes.child.degree
