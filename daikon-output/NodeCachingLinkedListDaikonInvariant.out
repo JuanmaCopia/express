@@ -1,0 +1,18 @@
+===========================================================================
+casestudies.apache.nodecachinglinkedlist.NodeCachingLinkedList:::OBJECT
+this.header.previous.value.getClass().getName() == this.header.next.value.getClass().getName()
+this.firstCachedNode.previous == null
+this.firstCachedNode.next.previous == null
+this.firstCachedNode.next.value == null
+this.firstCachedNode.value == null
+this.cacheSize >= 0
+this.maximumCacheSize >= 0
+this.header != null
+this.header.previous != null
+this.header.previous.next != null
+this.header.previous.value.getClass().getName() == java.lang.Object.class.getName()
+this.header.next != null
+this.header.next.value.getClass().getName() == java.lang.Object.class.getName()
+this.header.value == null
+this.size >= 0
+this.modCount >= 0

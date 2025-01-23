@@ -1,0 +1,50 @@
+===========================================================================
+casestudies.pli.schedule.Schedule:::OBJECT
+this.curProc.next.prev == this.curProc.prev.next
+this.curProc.next.priority == this.curProc.prev.priority
+this.curProc.next.priority == this.curProc.priority
+this.allocProcNum >= 0
+this.numProcesses >= 0
+this.curProc.next.val >= 0
+this.curProc.next.priority == 1 || this.curProc.next.priority == 2 || this.curProc.next.priority == 3
+this.curProc.prev.next != null
+this.curProc.prev.val >= 0
+this.curProc.prev.priority == 1 || this.curProc.prev.priority == 2 || this.curProc.prev.priority == 3
+this.curProc.val >= 0
+this.curProc.priority == 1 || this.curProc.priority == 2 || this.curProc.priority == 3
+this.prio_0 == null
+this.prio_1.mem_count >= 0
+this.prio_1.first.prev == null
+this.prio_1.first.val >= 0
+this.prio_1.first.priority == 1
+this.prio_1.last.next == null
+this.prio_1.last.val >= 0
+this.prio_1.last.priority == 1
+this.prio_2.mem_count >= 0
+this.prio_2.first.prev == null
+this.prio_2.first.val >= 0
+this.prio_2.first.priority == 2
+this.prio_2.last.next == null
+this.prio_2.last.val >= 0
+this.prio_2.last.priority == 2
+this.prio_3.mem_count >= 0
+this.prio_3.first.prev == null
+this.prio_3.first.val >= 0
+this.prio_3.first.priority == 3
+this.prio_3.last.next == null
+this.prio_3.last.val >= 0
+this.prio_3.last.priority == 3
+this.blockQueue.mem_count >= 0
+this.blockQueue.first.prev == null
+this.blockQueue.first.val >= 0
+this.blockQueue.first.priority == 1 || this.blockQueue.first.priority == 2 || this.blockQueue.first.priority == 3
+this.blockQueue.last.next == null
+this.blockQueue.last.val >= 0
+this.blockQueue.last.priority == 1 || this.blockQueue.last.priority == 2 || this.blockQueue.last.priority == 3
+this.allocProcNum > this.curProc.next.val
+this.curProc.next.val > this.curProc.prev.val
+this.curProc.next.val != this.curProc.val
+this.curProc.next.priority >= this.prio_1.first.priority
+this.curProc.next.priority >= this.prio_1.last.priority
+this.curProc.next.priority >= this.prio_2.first.priority
+this.curProc.next.priority >= this.prio_2.last.priority
