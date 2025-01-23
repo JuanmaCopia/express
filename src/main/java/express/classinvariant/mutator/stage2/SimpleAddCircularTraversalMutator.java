@@ -2,7 +2,8 @@ package express.classinvariant.mutator.stage2;
 
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.MutatorHelper;
-import express.classinvariant.mutator.template.WorklistTraversalTemplate;
+import express.classinvariant.mutator.template.CircularTraversalTemplate;
+import express.classinvariant.mutator.template.SimpleTraversalTemplate;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonManager;
@@ -11,17 +12,21 @@ import express.type.typegraph.Path;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 
-public class SimpleAddWorklistTraversalMutator implements ClassInvariantMutator {
+public class SimpleAddCircularTraversalMutator implements ClassInvariantMutator {
 
     CtMethod<?> newTraversal;
 
     @Override
     public boolean isApplicable(ClassInvariantState state) {
+        List<CtTypeReference<?>> candidateTypes = SpoonManager.getSubjectTypeData().getCyclicTypes();
+        CtTypeReference<?> chosenType = RandomUtils.getRandomElement(candidateTypes);
+
         List<Path> paths = SpoonManager.getSubjectTypeData().getCyclicPaths().stream().filter(
-                path -> TypeUtils.hasOnlyOneCyclicField(path)).toList();
+                path -> path.getTypeReference().isSubtypeOf(chosenType) && TypeUtils.hasOnlyOneCyclicField(path)).toList();
         if (paths.isEmpty()) {
             return false;
         }
@@ -38,13 +43,13 @@ public class SimpleAddWorklistTraversalMutator implements ClassInvariantMutator 
     @Override
     public void mutate(ClassInvariantState state) {
         state.getCtClass().addMethod(newTraversal);
+        //System.err.println("SimpleAddSimpleTraversalMutator:\n" + traversal.toString());
     }
 
     private CtMethod<?> instantiateTraversalMethod(CtClass<?> ctClass, Path chosenPath) {
         List<CtVariable<?>> loopFields = TypeUtils.getCyclicFieldsOfType(chosenPath.getTypeReference());
-
-        loopFields = MutatorHelper.selectRandomVariablesFromList(loopFields);
-        return WorklistTraversalTemplate.instantiate(ctClass, chosenPath, loopFields);
+        CtVariable<?> chosenLoopField = RandomUtils.getRandomElement(loopFields);
+        return CircularTraversalTemplate.instantiate(ctClass, chosenPath, chosenLoopField);
     }
 
 }

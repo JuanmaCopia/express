@@ -60,7 +60,8 @@ public class SimpleInvokeFieldTraversalMutator implements ClassInvariantMutator 
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_2_LABEL);
 
         CtStatement insertBeforeLabel = SpoonQueries.getReturnTrueLabel(targetMethodBody);
-        insertBeforeLabel.insertBefore(ifStatement);
+        List<CtIf> traversalIfs = MutatorHelper.getIfsInvokingTraversal(targetMethodBody, LocalVarHelper.STAGE_2_LABEL);
+        MutatorHelper.insertOrReplaceCheck(traversalIfs, ifStatement, insertBeforeLabel);
 
         //System.out.println("\nInvokeFieldTraversalMutator Invocation: \n" + ifStatement.toString());
         //System.out.println("\nInvokeFieldTraversalMutator AFTER: \n" + targetMethodBody.toString());

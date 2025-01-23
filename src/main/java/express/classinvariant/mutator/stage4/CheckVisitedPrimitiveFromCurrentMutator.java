@@ -3,6 +3,7 @@ package express.classinvariant.mutator.stage4;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
+import express.classinvariant.mutator.template.TemplateHelper;
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 import express.spoon.SpoonFactory;
@@ -25,7 +26,7 @@ public class CheckVisitedPrimitiveFromCurrentMutator implements ClassInvariantMu
     CtExpression<Boolean> condition;
 
     CtVariable<?> setVar;
-    boolean mustDeclareSet = false;
+    boolean mustDeclareSet;
 
     @Override
     public boolean isApplicable(ClassInvariantState state) {
@@ -40,7 +41,7 @@ public class CheckVisitedPrimitiveFromCurrentMutator implements ClassInvariantMu
 
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream()
-                .filter(p -> TypeUtils.isNumericType(p.getTypeReference()) && !p.isEmpty())
+                .filter(p -> TypeUtils.isNumericType(p.getTypeReference()) && p.size() < 3)
                 .collect(Collectors.toList());
         if (candidates.isEmpty())
             return false;
@@ -48,12 +49,15 @@ public class CheckVisitedPrimitiveFromCurrentMutator implements ClassInvariantMu
         Path chosenPath = RandomUtils.getRandomPath(candidates);
         CtTypeReference<?> pathType = chosenPath.getTypeReference();
 
-        setVar = SpoonQueries.searchVisitedSetInBlock(traversalBody, pathType);
-        if (setVar == null) {
-            mustDeclareSet = true;
-            setVar = SpoonFactory.createVisitedSetDeclaration(pathType);
-        } else {
+        String visitedSetVarName = LocalVarHelper.getVisitedSetVarName(pathType);
+        List<CtLocalVariable<?>> visitedSetVars = SpoonQueries.getLocalVariablesMatchingPrefix(traversalBody, visitedSetVarName);
+        if (!visitedSetVars.isEmpty()) {
+            setVar = visitedSetVars.get(0);
             mustDeclareSet = false;
+        } else {
+            mustDeclareSet = true;
+            CtVariable<?> mapOfVisited = TemplateHelper.getMapOfVisitedParameter(traversal);
+            setVar = TemplateHelper.createVisitedElementsSet(mapOfVisited, pathType);
         }
 
         CtExpression<Boolean> addToSetInvocation = SpoonFactory.createAddToSetInvocation(setVar, chosenPath.getVariableRead());

@@ -11,7 +11,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
-public class SimpleTraversalTemplate {
+public class CircularTraversalTemplate {
 
     public static CtMethod<?> instantiate(CtClass<?> ctClass, Path initialField, CtVariable<?> loopField) {
         int splitIndex = 2;
@@ -19,9 +19,11 @@ public class SimpleTraversalTemplate {
         Path leftPath = splitPaths.getLeft();
         Path rightPath = splitPaths.getRight();
 
-        CtMethod<?> traversal = TemplateHelper.createTraversalMethod(ctClass, leftPath, LocalVarHelper.SIMPLE_TRAVERSAL_PREFIX);
+        CtMethod<?> traversal = TemplateHelper.createTraversalMethod(ctClass, leftPath, LocalVarHelper.CIRCULAR_TRAVERSAL_PREFIX);
 
-        TemplateHelper.createSimpleTraversalBody(rightPath, traversal, loopField, false);
+        TemplateHelper.createSimpleTraversalBody(rightPath, traversal, loopField, true);
         return traversal;
     }
+
+
 }
