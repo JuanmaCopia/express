@@ -71,6 +71,7 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
             return false;
 
         Path chosenPath = RandomUtils.getRandomPath(candidatePaths);
+        List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(chosenPath);
 
         visitedSetVar = TemplateHelper.getTraversalVisitedElementsVariable(traversal);
         CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(visitedSetVar, "size");
@@ -82,7 +83,10 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
             sizeMinus = SpoonFactory.createBinaryExpression(sizeInvocation, minus, BinaryOperatorKind.MINUS);
 
         CtExpression<?> leftExpr = SpoonFactory.createBinaryExpression(sizeMinus, initialSizeVar, BinaryOperatorKind.MINUS);
-        condition = SpoonFactory.createBinaryExpression(leftExpr, chosenPath.getVariableRead(), BinaryOperatorKind.NE);
+        CtExpression<Boolean> comparison = SpoonFactory.createBinaryExpression(leftExpr, chosenPath.getVariableRead(), BinaryOperatorKind.NE);
+
+        clauses.add(comparison);
+        condition = SpoonFactory.conjunction(clauses);
 
         return !SpoonQueries.checkAlreadyExist(condition, traversalBody);
     }

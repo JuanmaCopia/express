@@ -115,6 +115,19 @@ public class MutatorHelper {
         return methodBody.getElements(ifStatement -> isMutableIf(ifStatement, labelComment));
     }
 
+    public static List<CtIf> getAllStagesMutableIfs(CtClass<?> ctClass) {
+        return ctClass.getElements(ifStatement -> isMutableIf(ifStatement));
+    }
+
+    public static boolean isMutableIf(CtIf ifStatement) {
+        CtBlock<?> thenBlock = ifStatement.getThenStatement();
+        if (thenBlock == null)
+            return false;
+        if (!(thenBlock.getStatement(0) instanceof CtComment comment))
+            return false;
+        return comment.getContent().startsWith(LocalVarHelper.STAGE_LABEL_PREFIX);
+    }
+
     public static boolean isMutableIf(CtIf ifStatement, String labelComment) {
         CtBlock<?> thenBlock = ifStatement.getThenStatement();
         if (thenBlock == null)

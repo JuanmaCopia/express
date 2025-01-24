@@ -49,7 +49,7 @@ public class NumericComparisonToCurrentMutator implements ClassInvariantMutator 
         candidates.remove(path1);
         Path path2 = RandomUtils.getRandomElement(candidates);
 
-        condition = ComparisonTemplate.instantiateComparableTemplate(path1, path2, RandomUtils.nextBoolean());
+        condition = ComparisonTemplate.instantiateComparableTemplate(path1, path2);
         if (SpoonQueries.checkAlreadyExist(condition, traversalBody))
             return false;
 

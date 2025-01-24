@@ -1,13 +1,14 @@
 package express.classinvariant.fitness;
 
-import java.lang.reflect.Method;
-import java.util.Collection;
-
 import express.config.Config;
 import express.execution.Executor;
 import express.reflection.Reflection;
 import express.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
+
+import java.lang.reflect.Method;
+import java.util.Collection;
+
 
 public class LengthFitness extends ClassInvariantFitness {
 
@@ -36,7 +37,7 @@ public class LengthFitness extends ClassInvariantFitness {
             System.err.println("Error loading class: " + ctClass.getQualifiedName());
             throw new RuntimeException(e);
         }
-        //Class<?> predicateClass = Reflection.loadClass(classLoader, ctClass.getQualifiedName());
+
         Method predicate = Reflection.loadMethod(predicateClass, config.predicateMethodName);
 
         for (Object validInstance : positiveObjects) {
@@ -53,7 +54,7 @@ public class LengthFitness extends ClassInvariantFitness {
             }
         }
 
-        double fitness = negativeObjects.size() * -1;
+        double falsePositives = 0;
 
         for (Object invalidInstance : negativeObjects) {
             Object[] args = new Object[1];
@@ -63,13 +64,12 @@ public class LengthFitness extends ClassInvariantFitness {
                 System.err.println("Error running predicate");
                 System.err.println("Class: " + ctClass.toString());
                 return WORST_FITNESS_VALUE;
-            } else if (result == 0) {
-                fitness = fitness + 1;
+            } else if (result == 1) {
+                falsePositives++;
             }
         }
 
-        fitness -= (double) ctClass.toString().length() / MAX_LENGTH;
-        return fitness;
+        return falsePositives + ((double) ctClass.toString().length() / MAX_LENGTH);
     }
 
 }

@@ -407,4 +407,350 @@ public class NodeCachingLinkedListTest {
         t.clear();
     }
 
+    @Test
+    public void test24() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.removeAllNodes();
+    }
+
+    @Test
+    public void test25() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.removeAllNodes();
+    }
+
+    @Test
+    public void test26() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.removeAllNodes();
+    }
+
+    @Test
+    public void test27() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.setMaximumCacheSize(60);
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.removeAllNodes();
+    }
+
+    @Test
+    public void test28() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.setMaximumCacheSize(60);
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(null);
+        t.add(new Object());
+        t.add(new Object());
+        t.removeAllNodes();
+    }
+
+    @Test
+    public void test29() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.add(new Object());
+        t.add(null);
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        while (t.size() > 0) {
+            t.removeLast();
+
+        }
+    }
+
+    @Test
+    public void test30() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.setMaximumCacheSize(60);
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(null);
+        t.add(new Object());
+        t.add(new Object());
+        while (t.size() > 0) {
+            t.removeLast();
+
+        }
+    }
+
+    @Test
+    public void test31() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.setMaximumCacheSize(7);
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(null);
+        t.add(new Object());
+        t.add(new Object());
+        while (t.size() > 0) {
+            t.removeLast();
+
+        }
+    }
+
+    @Test
+    public void test32() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        while (t.size() > 0) {
+            t.removeLast();
+
+        }
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.getNodeFromCache();
+    }
+
+    @Test
+    public void test33() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        while (t.size() > 0) {
+            t.removeLast();
+
+        }
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.getNodeFromCache();
+        t.getNodeFromCache();
+        t.getNodeFromCache();
+        t.getNodeFromCache();
+    }
+
+    @Test
+    public void test34() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        while (t.size() > 0) {
+            t.removeLast();
+
+        }
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.add(new Object());
+        t.getNodeFromCache();
+        t.getNodeFromCache();
+        t.getNodeFromCache();
+        t.getNodeFromCache();
+    }
+
+    @Test
+    public void test35() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        AbstractLinkedList.Node<Object> node0 = t.createNode(new Object());
+        AbstractLinkedList.Node<Object> node1 = t.createNode(new Object());
+        AbstractLinkedList.Node<Object> node2 = t.createNode(new Object());
+        t.addNodeToCache(node0);
+        t.addNodeToCache(node1);
+        t.addNodeToCache(node2);
+    }
+
+    @Test
+    public void test36() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        AbstractLinkedList.Node<Object> node0 = t.createNode(new Object());
+        AbstractLinkedList.Node<Object> node1 = t.createNode(new Object());
+        AbstractLinkedList.Node<Object> node2 = t.createNode(new Object());
+        t.addNodeToCache(node0);
+        t.addNodeToCache(node1);
+        t.addNodeToCache(node2);
+        t.getNodeFromCache();
+    }
+
+    @Test
+    public void test37() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        AbstractLinkedList.Node<Object> node0 = t.createNode(new Object());
+        AbstractLinkedList.Node<Object> node1 = t.createNode(new Object());
+        AbstractLinkedList.Node<Object> node2 = t.createNode(new Object());
+        t.addNodeToCache(node0);
+        t.addNodeToCache(node1);
+        t.addNodeToCache(node2);
+        t.getNodeFromCache();
+        t.getNodeFromCache();
+    }
+
+    @Test
+    public void test38() {
+        NodeCachingLinkedList<Object> t = new NodeCachingLinkedList<>();
+        AbstractLinkedList.Node<Object> node0 = t.createNode(new Object());
+        AbstractLinkedList.Node<Object> node1 = t.createNode(new Object());
+        AbstractLinkedList.Node<Object> node2 = t.createNode(new Object());
+        t.addNodeToCache(node0);
+        t.addNodeToCache(node1);
+        t.addNodeToCache(node2);
+        t.getNodeFromCache();
+        t.getNodeFromCache();
+        t.getNodeFromCache();
+    }
+
 }

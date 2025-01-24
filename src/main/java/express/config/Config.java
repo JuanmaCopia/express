@@ -73,7 +73,7 @@ public class Config {
             // Simulated Annealing Settings
             initialTemperature = Double.parseDouble(properties.getProperty("express.search.sa.initial_temperature"));
             coolingRate = Double.parseDouble(properties.getProperty("express.search.sa.cooling_rate"));
-            restartRounds = Integer.parseInt(properties.getProperty("express.search.sa.restart_rounds"));
+            restartRounds = Integer.parseInt(properties.getProperty("express.search.sa.restart_rounds", "0"));
 
             // Object Settings
             maxMutationsPerInstance = Integer

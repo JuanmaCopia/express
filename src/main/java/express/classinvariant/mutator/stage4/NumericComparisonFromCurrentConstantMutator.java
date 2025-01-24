@@ -48,7 +48,7 @@ public class NumericComparisonFromCurrentConstantMutator implements ClassInvaria
         // Convert value to CtExpression
         CtExpression<?> valueExpr = SpoonFactory.createLiteral(value);
 
-        condition = ComparisonTemplate.instantiateComparableTemplate(chosenPath, valueExpr, RandomUtils.nextBoolean());
+        condition = ComparisonTemplate.instantiateComparableTemplate(chosenPath, valueExpr);
 
         if (SpoonQueries.checkAlreadyExist(condition, traversalBody))
             return false;

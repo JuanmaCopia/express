@@ -1,8 +1,5 @@
 package express.classinvariant.mutator.stage4;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
@@ -19,6 +16,9 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class NumericComparisonFromThis implements ClassInvariantMutator {
 
@@ -37,7 +37,7 @@ public class NumericComparisonFromThis implements ClassInvariantMutator {
         paths.remove(path1);
         Path path2 = RandomUtils.getRandomElement(paths);
 
-        condition = ComparisonTemplate.instantiateComparableTemplate(path1, path2, RandomUtils.nextBoolean());
+        condition = ComparisonTemplate.instantiateComparableTemplate(path1, path2);
 
         targetMethodBody = TemplateHelper.getPrimitiveMethod(state).getBody();
         return !SpoonQueries.checkAlreadyExistSimple(condition, targetMethodBody);

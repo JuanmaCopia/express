@@ -3,7 +3,6 @@ package express.search.simulatedannealing;
 import express.search.simulatedannealing.problem.SimulatedAnnealingProblem;
 import express.search.simulatedannealing.schedule.SimulatedAnnealingSchedule;
 import express.search.simulatedannealing.state.SimulatedAnnealingState;
-
 import express.spoon.RandomUtils;
 
 public abstract class SimulatedAnnealing {
@@ -19,13 +18,13 @@ public abstract class SimulatedAnnealing {
     public SimulatedAnnealingState startSearch() {
         SimulatedAnnealingState currentState = problem.initialState();
         problem.evaluate(currentState);
-        SimulatedAnnealingState fittest = currentState.clone();
+        SimulatedAnnealingState bestState = currentState.clone();
         int i = 0;
         while (!problem.isTerminationConditionMet(currentState)) {
 
             double temperature = schedule.schedule(i);
-            if (temperature <= 0.1) {
-                return fittest;
+            if (temperature <= 0.01) {
+                return bestState;
             }
             problem.printCurrentState(i, temperature, currentState);
             i++;
@@ -33,24 +32,28 @@ public abstract class SimulatedAnnealing {
             if (nextState == null)
                 continue;
 
-            double delta = currentState.getFitness() - problem.evaluate(nextState);
-            if (delta < 0) {
+            double currentEnergy = currentState.getFitness();
+            double nextEnergy = problem.evaluate(nextState);
+
+            // Decide whether to accept the new solution
+            if (acceptanceProbability(currentEnergy, nextEnergy, temperature) > RandomUtils.nextDouble()) {
                 currentState = nextState;
-            } else {
-                delta = delta + 1.0;
-                double probability = Math.exp(-delta / temperature);
-                if (RandomUtils.nextDouble() < probability) {
-                    currentState = nextState;
-                }
             }
 
-            if (problem.shouldRestart(currentState, fittest)) {
-                currentState = fittest.clone();
-            } else if (currentState.getFitness() > fittest.getFitness()) {
-                fittest = currentState.clone();
+            if (problem.shouldRestart(currentState, bestState)) {
+                currentState = bestState.clone();
+            } else if (currentState.getFitness() < bestState.getFitness()) {
+                bestState = currentState.clone();
             }
 
         }
-        return fittest;
+        return bestState;
+    }
+
+    private double acceptanceProbability(double currentEnergy, double nextEnergy, double temperature) {
+        if (nextEnergy < currentEnergy) {
+            return 1.0; // Always accept better solutions
+        }
+        return Math.exp((currentEnergy - nextEnergy) / temperature); // Accept worse solutions with a probability
     }
 }

@@ -1,14 +1,14 @@
 package express.classinvariant.problem;
 
-import java.text.DecimalFormat;
-import java.util.List;
-
 import express.classinvariant.fitness.ClassInvariantFitness;
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.ClassInvariantMutatorManager;
 import express.classinvariant.state.ClassInvariantState;
 import express.search.simulatedannealing.problem.SimulatedAnnealingProblem;
 import express.search.simulatedannealing.state.SimulatedAnnealingState;
+
+import java.text.DecimalFormat;
+import java.util.List;
 
 public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
@@ -72,7 +72,10 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
     @Override
     public boolean shouldRestart(SimulatedAnnealingState currentState, SimulatedAnnealingState fittest) {
-        if (fittest.getFitness() >= currentState.getFitness()) {
+        if (restartRounds <= 0)
+            return false;
+
+        if (fittest.getFitness() <= currentState.getFitness()) {
             roundsWithoutImprovement++;
         } else {
             roundsWithoutImprovement = 0;

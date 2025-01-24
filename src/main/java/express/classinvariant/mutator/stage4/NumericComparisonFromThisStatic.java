@@ -47,7 +47,7 @@ public class NumericComparisonFromThisStatic implements ClassInvariantMutator {
         // Obtain the variableRead of the static field
         CtVariableRead<?> staticFieldRead = SpoonFactory.createStaticFieldRead(subjectClass, staticField);
 
-        condition = ComparisonTemplate.instantiateComparableTemplate(path1, staticFieldRead, RandomUtils.nextBoolean());
+        condition = ComparisonTemplate.instantiateComparableTemplate(path1, staticFieldRead);
 
         targetMethodBody = TemplateHelper.getPrimitiveMethod(state).getBody();
         return !SpoonQueries.checkAlreadyExistSimple(condition, targetMethodBody);

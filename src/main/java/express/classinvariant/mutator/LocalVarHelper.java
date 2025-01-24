@@ -20,6 +20,7 @@ public class LocalVarHelper {
     public static final String SEPARATOR_LABEL = "SEPARATOR_LABEL";
     public static final String RETURN_TRUE_LABEL = "RETURN_TRUE_LABEL";
 
+    public static final String STAGE_LABEL_PREFIX = "STAGE_";
     public static final String STAGE_1_LABEL = "STAGE_1_LABEL";
     public static final String STAGE_2_LABEL = "STAGE_2_LABEL";
     public static final String STAGE_3_LABEL = "STAGE_3_LABEL";
