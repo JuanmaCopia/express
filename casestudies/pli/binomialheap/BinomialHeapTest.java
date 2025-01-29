@@ -81,12 +81,10 @@ public class BinomialHeapTest {
         BinomialHeap binomialHeap0 = new BinomialHeap();
         binomialHeap0.insert(2186);
         binomialHeap0.insert(2186);
-        binomialHeap0.decreaseKeyValue(2186, 2968);
         binomialHeap0.insert(2895);
         binomialHeap0.insert((-1939));
         binomialHeap0.insert((-1939));
         binomialHeap0.insert((-1939));
-        binomialHeap0.decreaseKeyValue(0, (-49));
         binomialHeap0.insert((-1));
         binomialHeap0.delete((-1));
     }
@@ -96,7 +94,6 @@ public class BinomialHeapTest {
         BinomialHeap binomialHeap0 = new BinomialHeap();
         binomialHeap0.insert((-3946));
         binomialHeap0.insert((-3946));
-        binomialHeap0.decreaseKeyValue((-3946), 935);
         binomialHeap0.insert((-3946));
         binomialHeap0.insert((-3946));
         binomialHeap0.delete((-3946));
@@ -145,9 +142,7 @@ public class BinomialHeapTest {
         binomialHeap0.insert((-353));
         binomialHeap0.delete(0);
         binomialHeap0.insert(0);
-        binomialHeap0.decreaseKeyValue(0, 0);
         binomialHeap0.delete((-1817));
-        binomialHeap0.decreaseKeyValue(0, (-353));
         binomialHeap0.insert(0);
         binomialHeap0.delete(0);
         binomialHeap0.delete((-1797));
@@ -161,7 +156,6 @@ public class BinomialHeapTest {
         BinomialHeap binomialHeap0 = new BinomialHeap();
         binomialHeap0.insert((-3946));
         binomialHeap0.insert((-3946));
-        binomialHeap0.decreaseKeyValue((-3946), 935);
         binomialHeap0.insert((-3946));
         binomialHeap0.delete((-3946));
     }
@@ -180,9 +174,6 @@ public class BinomialHeapTest {
         binomialHeap0.delete(0);
         binomialHeap0.delete(0);
         binomialHeap0.insert(0);
-        binomialHeap0.decreaseKeyValue(0, 3040);
-        binomialHeap0.decreaseKeyValue(0, 0);
-        binomialHeap0.decreaseKeyValue(0, 725);
         binomialHeap0.insert(0);
     }
 
@@ -198,7 +189,6 @@ public class BinomialHeapTest {
         binomialHeap0.insert(949);
         binomialHeap0.insert((-49));
         binomialHeap0.insert(0);
-        binomialHeap0.decreaseKeyValue(949, 1);
         binomialHeap0.insert(949);
         binomialHeap0.delete(1);
     }
@@ -208,14 +198,11 @@ public class BinomialHeapTest {
         BinomialHeap binomialHeap0 = new BinomialHeap();
         binomialHeap0.insert(2186);
         binomialHeap0.insert(2186);
-        binomialHeap0.decreaseKeyValue((-1963), 1588);
         binomialHeap0.insert((-1963));
         binomialHeap0.insert((-1963));
         binomialHeap0.delete(2186);
-        binomialHeap0.decreaseKeyValue(1588, (-1963));
         binomialHeap0.insert((-1963));
         binomialHeap0.insert((-49));
-        binomialHeap0.decreaseKeyValue(0, (-49));
         binomialHeap0.insert(0);
         binomialHeap0.delete(2186);
     }
@@ -225,20 +212,15 @@ public class BinomialHeapTest {
         BinomialHeap binomialHeap0 = new BinomialHeap();
         binomialHeap0.delete(0);
         binomialHeap0.insert(0);
-        binomialHeap0.decreaseKeyValue(0, 0);
         binomialHeap0.insert(0);
-        binomialHeap0.decreaseKeyValue(282, 1084);
         binomialHeap0.insert(0);
         binomialHeap0.insert(0);
         binomialHeap0.delete(2);
-        binomialHeap0.decreaseKeyValue(0, 0);
         binomialHeap0.delete(282);
         binomialHeap0.insert((-101));
-        binomialHeap0.decreaseKeyValue(0, (-205));
         binomialHeap0.insert(2);
         binomialHeap0.insert(0);
         binomialHeap0.insert(2);
-        binomialHeap0.decreaseKeyValue((-101), (-101));
         binomialHeap0.delete(0);
     }
 
@@ -246,7 +228,6 @@ public class BinomialHeapTest {
     public void test11() throws Throwable {
         BinomialHeap binomialHeap0 = new BinomialHeap();
         binomialHeap0.insert(2);
-        binomialHeap0.decreaseKeyValue(0, 0);
     }
 
     @Test()
@@ -280,7 +261,6 @@ public class BinomialHeapTest {
         BinomialHeap binomialHeap0 = new BinomialHeap();
         binomialHeap0.insert(2186);
         binomialHeap0.insert(0);
-        binomialHeap0.decreaseKeyValue(2186, 2186);
     }
 
     @Test()
@@ -319,7 +299,6 @@ public class BinomialHeapTest {
         binomialHeap0.insert(1);
         binomialHeap0.delete(0);
         binomialHeap0.insert(949);
-        binomialHeap0.decreaseKeyValue(949, 0);
     }
 
     @Test()
@@ -330,7 +309,6 @@ public class BinomialHeapTest {
         binomialHeap0.insert((-1963));
         binomialHeap0.insert((-1963));
         binomialHeap0.insert((-1963));
-        binomialHeap0.decreaseKeyValue(0, (-49));
         binomialHeap0.insert(0);
         binomialHeap0.delete(2186);
     }
@@ -341,7 +319,6 @@ public class BinomialHeapTest {
         binomialHeap0.insert(949);
         binomialHeap0.insert(949);
         binomialHeap0.delete(3923);
-        binomialHeap0.decreaseKeyValue(949, 1762);
         binomialHeap0.delete(2148);
         binomialHeap0.insert(2294);
         binomialHeap0.delete(1725);
@@ -383,7 +360,6 @@ public class BinomialHeapTest {
         BinomialHeap binomialHeap0 = new BinomialHeap();
         // Undeclared exception!
         try {
-            binomialHeap0.decreaseKeyValue(0, 0);
         } catch (NullPointerException e) {
             //
             // no message in exception (getMessage() returned null)
@@ -397,7 +373,6 @@ public class BinomialHeapTest {
         binomialHeap0.insert((-353));
         binomialHeap0.delete(0);
         binomialHeap0.insert(0);
-        binomialHeap0.decreaseKeyValue(0, 0);
         binomialHeap0.delete((-1817));
         binomialHeap0.insert(0);
         binomialHeap0.delete(0);
