@@ -98,8 +98,6 @@ public class SpoonManager {
     private static void initializeCompiler() {
         inMemoryCompiler = new InMemoryCompiler();
         List<String> classpath = new ArrayList<>();
-        classpath.add("lib/junit-4.13.2.jar");
-        classpath.add("lib/collector-1.0.jar");
         inMemoryCompiler.setClasspath(classpath);
         inMemoryCompiler.addSource(getSourceMap());
     }
