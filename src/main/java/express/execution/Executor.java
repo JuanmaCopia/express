@@ -1,16 +1,21 @@
 package express.execution;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import express.compile.InMemoryCompiler;
 import express.object.ObjectGenerator;
 import express.reflection.Reflection;
 import express.spoon.SpoonManager;
 import spoon.reflect.declaration.CtClass;
-
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.*;
 
 public class Executor {
 
@@ -42,6 +47,16 @@ public class Executor {
         if (result)
             return 1;
         return 0;
+    }
+
+    public static boolean runPredicateBoolean(Method predicate, Object[] args) {
+        switch (runPredicate(predicate, args)) {
+            case 0:
+                return true;
+            case 1:
+                return false;
+        }
+        throw new RuntimeException("Error while running predicate");
     }
 
     public static void runTestSuite(String testSuiteFullyQualifiedName, ClassLoader classLoader) {

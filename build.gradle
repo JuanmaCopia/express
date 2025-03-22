@@ -9,7 +9,6 @@
 plugins {
     id 'java'
     id 'application'
-    id 'jacoco'
 }
 
 application {
@@ -28,14 +27,14 @@ dependencies {
     // https://mvnrepository.com/artifact/fr.inria.gforge.spoon/spoon-core
     implementation 'fr.inria.gforge.spoon:spoon-core:11.0.0'
 
-    //implementation group: 'fr.inria.gforge.spoon', name: 'spoon-core', version: '10.4.2'
     implementation 'org.apache.commons:commons-text:1.11.0'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
-    implementation 'com.google.code.gson:gson:2.10.1'
 
+    // Junit 4
     implementation group: 'junit', name: 'junit', version: '4.13.2'
-    //runtimeOnly group: 'junit', name: 'junit', version: '4.13.2'
+    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
+    testRuntimeOnly group: 'junit', name: 'junit', version: '4.13.2'
 
     // Logger
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.7'
@@ -44,13 +43,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
-    // Junit 4
-    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
-    testRuntimeOnly group: 'junit', name: 'junit', version: '4.13.2'
-
     // Object Collector
     implementation group: 'collector', name: 'collector', version: '1.0', ext: 'jar'
-
 }
 
 /*tasks.withType(JavaCompile) {
@@ -63,7 +57,6 @@ run {
 }
 
 test {
-    finalizedBy jacocoTestReport
     useJUnitPlatform {
         testLogging {
             events "passed", "skipped", "failed"
@@ -71,15 +64,32 @@ test {
     }
 }
 
-jacoco {
-    toolVersion = "0.8.11"
-}
+jar {
+    archiveBaseName = 'express'
+    archiveVersion = '1.0'
 
-jacocoTestReport {
-    dependsOn test // tests are required to run before generating the report
-    reports {
-        xml.required = false
-        csv.required = false
-        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    // Add runtime classpath dependencies to the JAR (fat JAR)
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+
+    // Include compiled class files and resources
+    from {
+        // Access compiled Java classes and processed resources without using `get()`
+        tasks.compileJava.destinationDirectory
+        tasks.processResources.destinationDir
+    }
+
+    // Exclude source code files and signature files from the JAR
+    exclude '**/*.java'
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+
+    manifest {
+        attributes(
+            'Main-Class': 'express.Express'
+        )
+    }
+
+    // Handle duplicate entries by selecting a strategy
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

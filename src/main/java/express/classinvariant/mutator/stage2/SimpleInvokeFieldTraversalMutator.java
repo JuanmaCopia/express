@@ -17,7 +17,7 @@ import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
 
-public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
+public class SimpleInvokeFieldTraversalMutator implements ClassInvariantMutator {
 
     CtMethod<?> traversal;
     CtBlock<?> targetMethodBody;
@@ -29,13 +29,9 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
             return false;
         }
 
-        return isApplicable(state, RandomUtils.getRandomElement(traversals));
-    }
+        traversal = RandomUtils.getRandomElement(traversals);
 
-    boolean isApplicable(ClassInvariantState state, CtMethod<?> trav) {
-        traversal = trav;
         CtVariable<?> initialElement = TemplateHelper.getTraversedElementParameter(traversal);
-
         List<Path> pathCandidates = TypeUtils.filterPathsByType(
                 SpoonManager.getSubjectTypeData().getSimplePaths(),
                 initialElement.getType()
@@ -63,15 +59,9 @@ public class InvokeFieldTraversalMutator implements ClassInvariantMutator {
     public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_2_LABEL);
 
-        List<CtIf> invocations = null;
-        List<CtMethod<?>> otherTraversals = MutatorHelper.findTraversalsWithDifferentParameters(state.getCtClass(), traversal);
-        if (!otherTraversals.isEmpty()) {
-            CtMethod<?> chosenTraversal = RandomUtils.getRandomElement(otherTraversals);
-            invocations = MutatorHelper.getIfsCallingMethod(targetMethodBody, LocalVarHelper.STAGE_2_LABEL, chosenTraversal.getSimpleName());
-        }
-
         CtStatement insertBeforeLabel = SpoonQueries.getReturnTrueLabel(targetMethodBody);
-        MutatorHelper.insertOrReplaceCheck(invocations, ifStatement, insertBeforeLabel);
+        List<CtIf> traversalIfs = MutatorHelper.getIfsInvokingTraversal(targetMethodBody, LocalVarHelper.STAGE_2_LABEL);
+        MutatorHelper.insertOrReplaceCheck(traversalIfs, ifStatement, insertBeforeLabel);
 
         //System.out.println("\nInvokeFieldTraversalMutator Invocation: \n" + ifStatement.toString());
         //System.out.println("\nInvokeFieldTraversalMutator AFTER: \n" + targetMethodBody.toString());

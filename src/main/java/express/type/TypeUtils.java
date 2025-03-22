@@ -1,5 +1,12 @@
 package express.type;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import express.type.typegraph.Path;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
@@ -10,10 +17,6 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
-
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class TypeUtils {
 
@@ -29,9 +32,9 @@ public class TypeUtils {
         return !type.getTypeDeclaration().isShadow();
     }
 
-    public static Set<CtTypeReference<?>> filterTypes(Collection<CtTypeReference<?>> typeRefs,
+    public static LinkedHashSet<CtTypeReference<?>> filterTypes(List<CtTypeReference<?>> typeRefs,
                                                       Predicate<CtTypeReference<?>> predicate) {
-        Set<CtTypeReference<?>> resultTypes = new HashSet<>();
+        LinkedHashSet<CtTypeReference<?>> resultTypes = new LinkedHashSet<>();
         for (CtTypeReference<?> typeRef : typeRefs) {
             if (predicate.test(typeRef)) {
                 resultTypes.add(typeRef);
@@ -40,9 +43,9 @@ public class TypeUtils {
         return resultTypes;
     }
 
-    public static Set<CtVariable<?>> filterFields(Collection<CtVariable<?>> fields,
+    public static LinkedHashSet<CtVariable<?>> filterFields(List<CtVariable<?>> fields,
                                                   Predicate<CtTypeReference<?>> predicate) {
-        Set<CtVariable<?>> resultFields = new HashSet<>();
+        LinkedHashSet<CtVariable<?>> resultFields = new LinkedHashSet<>();
         for (CtVariable<?> field : fields) {
             if (predicate.test(field.getType())) {
                 resultFields.add(field);
@@ -51,8 +54,8 @@ public class TypeUtils {
         return resultFields;
     }
 
-    public static Set<Path> filterPaths(Collection<Path> paths, Predicate<CtTypeReference<?>> predicate) {
-        Set<Path> resultPaths = new HashSet<>();
+    public static LinkedHashSet<Path> filterPaths(List<Path> paths, Predicate<CtTypeReference<?>> predicate) {
+        LinkedHashSet<Path> resultPaths = new LinkedHashSet<>();
         for (Path path : paths) {
             CtTypeReference<?> type = path.getTypeReference();
             if (predicate.test(type)) {
@@ -62,8 +65,8 @@ public class TypeUtils {
         return resultPaths;
     }
 
-    public static Set<Path> filterPathsByType(Collection<Path> paths, CtTypeReference<?> type) {
-        Set<Path> resultPaths = new HashSet<>();
+    public static LinkedHashSet<Path> filterPathsByType(List<Path> paths, CtTypeReference<?> type) {
+        LinkedHashSet<Path> resultPaths = new LinkedHashSet<>();
         for (Path path : paths) {
             CtTypeReference<?> pathType = path.getTypeReference();
             if (pathType.isSubtypeOf(type)) {
@@ -71,6 +74,24 @@ public class TypeUtils {
             }
         }
         return resultPaths;
+    }
+
+    public static LinkedHashSet<CtTypeReference<?>> filterTypes(LinkedHashSet<CtTypeReference<?>> typeRefs,
+                                                      Predicate<CtTypeReference<?>> predicate) {
+        return filterTypes(new ArrayList<>(typeRefs), predicate);
+    }
+
+    public static LinkedHashSet<CtVariable<?>> filterFields(LinkedHashSet<CtVariable<?>> fields,
+                                                  Predicate<CtTypeReference<?>> predicate) {
+        return filterFields(new ArrayList<>(fields), predicate);
+    }
+
+    public static LinkedHashSet<Path> filterPaths(LinkedHashSet<Path> paths, Predicate<CtTypeReference<?>> predicate) {
+        return filterPaths(new ArrayList<>(paths), predicate);
+    }
+
+    public static LinkedHashSet<Path> filterPathsByType(LinkedHashSet<Path> paths, CtTypeReference<?> type) {
+        return filterPathsByType(new ArrayList<>(paths), type);
     }
 
     public static boolean isReferenceType(CtTypeReference<?> typeRef) {
@@ -254,14 +275,14 @@ public class TypeUtils {
         return wildcardTypeRef;
     }
 
-    public static Set<CtField<?>> getAccessibleFields(CtTypeReference<?> type) {
+    public static List<CtField<?>> getAccessibleFields(CtTypeReference<?> type) {
         if (type == null || !isUserDefinedType(type))
             throw new IllegalArgumentException("Type is null or not user-defined");
         return getAccessibleFields(type.getTypeDeclaration());
     }
 
-    public static Set<CtField<?>> getAccessibleFields(CtType<?> type) {
-        Set<CtField<?>> accessibleFields = type.getFields().stream().filter(f -> !f.isStatic()).collect(Collectors.toSet());
+    public static List<CtField<?>> getAccessibleFields(CtType<?> type) {
+        List<CtField<?>> accessibleFields = type.getFields().stream().filter(f -> !f.isStatic()).collect(Collectors.toList());
         CtTypeReference<?> subClass = type.getReference();
         CtTypeReference<?> current = type.getSuperclass();
         while (current != null && isUserDefinedType(current)) {
@@ -277,6 +298,7 @@ public class TypeUtils {
             subClass = current;
             current = current.getSuperclass();
         }
+        accessibleFields.sort(Comparator.comparing(CtField::getSimpleName));
         return accessibleFields;
     }
 
@@ -298,15 +320,17 @@ public class TypeUtils {
         return loopFields.size() > 1;
     }
 
-    public static Set<CtClass<?>> getAllUserDefinedClassesInModel(CtModel model) {
+    public static LinkedHashSet<CtClass<?>> getAllUserDefinedClassesInModel(CtModel model) {
         List<CtClass<?>> classes = model.getRootPackage().getElements(new TypeFilter<>(CtClass.class));
-        Set<CtClass<?>> userDefClasses = new HashSet<>();
+        List<CtClass<?>> userDefClasses = new ArrayList<>();
         for (CtClass<?> clazz : classes) {
             if (TypeUtils.isUserDefinedType(clazz.getReference())) {
                 userDefClasses.add(clazz);
             }
         }
-        return userDefClasses;
+        // Sort user-defined classes by name
+        userDefClasses.sort(Comparator.comparing(CtClass::getSimpleName));
+        return new LinkedHashSet<>(userDefClasses);
     }
 
 }

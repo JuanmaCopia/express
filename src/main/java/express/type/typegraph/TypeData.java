@@ -7,13 +7,9 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TypeData {
-
 
 
     private CtClass<?> thisClass;
@@ -21,29 +17,31 @@ public class TypeData {
     private CtTypeReference<?> thisTypeRef;
     private TypeGraph typeGraph;
 
-    private Set<CtClass<?>> userDefinedClasses;
-    private Set<CtTypeReference<?>> types;
+    private LinkedHashSet<CtClass<?>> userDefinedClasses;
+    private LinkedHashSet<CtTypeReference<?>> types;
 
-    private Set<CtTypeReference<?>> userDefinedTypes;
-    private Set<CtTypeReference<?>> cyclicTypes;
-    private Set<CtTypeReference<?>> integerTypes;
-    private Set<CtTypeReference<?>> booleanTypes;
-    private Set<CtTypeReference<?>> charTypes;
-    private Set<CtTypeReference<?>> floatingPointTypes;
-    private Set<CtTypeReference<?>> referencesTypes;
-    private Set<CtTypeReference<?>> arrayTypes;
-    private Set<CtTypeReference<?>> iterableTypes;
+    private LinkedHashSet<CtTypeReference<?>> userDefinedTypes;
+    private LinkedHashSet<CtTypeReference<?>> cyclicTypes;
+    private LinkedHashSet<CtTypeReference<?>> integerTypes;
+    private LinkedHashSet<CtTypeReference<?>> booleanTypes;
+    private LinkedHashSet<CtTypeReference<?>> charTypes;
+    private LinkedHashSet<CtTypeReference<?>> floatingPointTypes;
+    private LinkedHashSet<CtTypeReference<?>> referencesTypes;
+    private LinkedHashSet<CtTypeReference<?>> arrayTypes;
+    private LinkedHashSet<CtTypeReference<?>> iterableTypes;
 
-    private Set<Path> simplePaths;
 
-    private Set<Path> cyclicPaths;
-    private Set<Path> integerPaths;
-    private Set<Path> booleanPaths;
-    private Set<Path> charPaths;
-    private Set<Path> floatingPointPaths;
-    private Set<Path> referencePaths;
-    private Set<Path> arrayPaths;
-    private Set<Path> iterablePaths;
+    private LinkedHashSet<Path> simplePaths;
+
+    private LinkedHashSet<Path> cyclicPaths;
+    private LinkedHashSet<Path> integerPaths;
+    private LinkedHashSet<Path> booleanPaths;
+    private LinkedHashSet<Path> charPaths;
+    private LinkedHashSet<Path> floatingPointPaths;
+    private LinkedHashSet<Path> referencePaths;
+    private LinkedHashSet<Path> arrayPaths;
+    private LinkedHashSet<Path> iterablePaths;
+    private LinkedHashSet<Path> numericPaths;
 
     public TypeData(CtModel model, CtClass<?> subjectClass) {
         initializeSubjectData(subjectClass);
@@ -70,6 +68,7 @@ public class TypeData {
         referencePaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isReferenceType);
         arrayPaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isArrayType);
         iterablePaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isIterableType);
+        numericPaths = TypeUtils.filterPaths(simplePaths, TypeUtils::isNumericType);
     }
 
     private void initializeTypes(CtModel model) {
@@ -134,6 +133,10 @@ public class TypeData {
         return simplePaths.stream().filter(p -> !p.getTypeReference().isGenerics()).toList();
     }
 
+    public List<Path> getNumericPaths() {
+        return new LinkedList<>(numericPaths);
+    }
+
     public List<Path> getArrayPaths() {
         return new LinkedList<>(arrayPaths);
     }
@@ -183,11 +186,21 @@ public class TypeData {
     }
 
     public Set<CtClass<?>> getUserDefinedClasses() {
-        return new HashSet<>(userDefinedClasses);
+        return new LinkedHashSet<>(userDefinedClasses);
     }
 
     public List<Path> getAssignableSimplePaths(CtTypeReference<?> type) {
         return simplePaths.stream().filter(p -> p.getTypeReference().isSubtypeOf(type)).toList();
+    }
+
+    public List<Path> getReferencePathsOfMaxLengthK(int k) {
+        List<Path> pathOfLengthK = new ArrayList<>(typeGraph.computeAllPathsOfLengthK(thisVariable, k));
+        Set<Path> referencePathsLengthK = TypeUtils.filterPaths(pathOfLengthK, TypeUtils::isReferenceType);
+        return new ArrayList<>(referencePathsLengthK);
+    }
+
+    public List<Path> getPathsOfMaxLengthK(int k) {
+        return new ArrayList<>(typeGraph.computeAllPathsOfLengthK(thisVariable, k));
     }
 
 }

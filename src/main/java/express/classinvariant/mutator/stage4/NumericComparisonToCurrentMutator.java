@@ -36,7 +36,7 @@ public class NumericComparisonToCurrentMutator implements ClassInvariantMutator 
 
         List<Path> candidates = SpoonManager.getSubjectTypeData().getThisTypeGraph()
                 .computeSimplePathsForAlternativeVar(currentDeclaration).stream()
-                .filter(p -> TypeUtils.isNumericType(p.getTypeReference()) && !p.isEmpty())
+                .filter(p -> TypeUtils.isNumericType(p.getTypeReference()) && !p.isEmpty() && p.size() < 4)
                 .collect(Collectors.toList());
         if (candidates.size() < 2)
             return false;
@@ -49,7 +49,7 @@ public class NumericComparisonToCurrentMutator implements ClassInvariantMutator 
         candidates.remove(path1);
         Path path2 = RandomUtils.getRandomElement(candidates);
 
-        condition = ComparisonTemplate.instantiateComparableTemplate(path1, path2, RandomUtils.nextBoolean());
+        condition = ComparisonTemplate.instantiateComparableTemplate(path1, path2);
         if (SpoonQueries.checkAlreadyExist(condition, traversalBody))
             return false;
 
@@ -59,8 +59,10 @@ public class NumericComparisonToCurrentMutator implements ClassInvariantMutator 
     @Override
     public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_4_LABEL);
-        CtComment endOfHandleCurrentComment = SpoonQueries.getEndOfHandleCurrentComment(traversalBody);
-        endOfHandleCurrentComment.insertBefore(ifStatement);
+
+        List<CtIf> checks = MutatorHelper.getMutableChecksOfTraversalLoop(traversal, LocalVarHelper.STAGE_4_LABEL);
+        CtComment insertBeforeLabel = SpoonQueries.getEndOfHandleCurrentComment(traversalBody);
+        MutatorHelper.insertOrReplaceCheck(checks, ifStatement, insertBeforeLabel);
 
         //System.err.println("\nPrimitiveComparisonToCurrentMutator:\n" + ifStatement);
     }

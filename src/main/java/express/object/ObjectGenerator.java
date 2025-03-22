@@ -6,7 +6,7 @@ import express.object.helpers.Copy;
 import express.object.helpers.Hash;
 import express.object.mutate.ObjectInitializationMutator;
 import express.object.mutate.PrimitiveTypeMutator;
-import express.object.mutate.ReferenceTypeMutator;
+import express.spoon.RandomUtils;
 import express.spoon.SpoonManager;
 
 import java.util.*;
@@ -49,16 +49,14 @@ public class ObjectGenerator {
 
     public static void generatePositiveObjects() {
         Executor.runTestSuite(SpoonManager.getSubjectTestClass().getQualifiedName(), SpoonManager.getClassLoader());
-        for (Object object : ObjectCollector.positiveObjects) {
-            addObjectIfNotPresent(object, positiveObjects);
-        }
+        positiveObjects.addAll(ObjectCollector.positiveObjects);
     }
 
     private static void generateNegativeInitializationObjects() {
         for (Object positiveObject : positiveObjects) {
             for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
                 Object copy = Copy.deepCopy(positiveObject);
-                boolean wasMutated = ObjectInitializationMutator.mutateForInitialization(copy);
+                boolean wasMutated = ObjectInitializationMutator.mutateObject(copy, 4);
                 if (wasMutated)
                     addObjectIfNotPresent(copy, negativeInitializationObjects);
             }
@@ -72,7 +70,7 @@ public class ObjectGenerator {
         for (Object positiveObject : positiveObjects) {
             for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
                 Object copy = Copy.deepCopy(positiveObject);
-                boolean wasMutated = ReferenceTypeMutator.mutateHeap(copy);
+                boolean wasMutated = ObjectInitializationMutator.mutateObject(copy, 10);
                 if (wasMutated)
                     addObjectIfNotPresent(copy, negativeHeapObjects);
             }
@@ -83,7 +81,12 @@ public class ObjectGenerator {
         for (Object positiveObject : positiveObjects) {
             for (int i = 0; i < SpoonManager.getConfig().maxMutationsPerInstance; i++) {
                 Object copy = Copy.deepCopy(positiveObject);
-                boolean wasMutated = PrimitiveTypeMutator.mutatePrimitiveValues(copy);
+                boolean wasMutated;
+                if (RandomUtils.nextBoolean())
+                    wasMutated = PrimitiveTypeMutator.mutatePrimitiveValuesByObjects(copy);
+                else
+                    wasMutated = PrimitiveTypeMutator.mutatePrimitiveValuesByPath(copy, 3);
+
                 if (wasMutated)
                     negativePrimitiveObjects.add(copy);
             }

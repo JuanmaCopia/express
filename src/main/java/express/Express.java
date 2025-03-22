@@ -18,9 +18,8 @@ import express.object.ObjectGenerator;
 import express.search.simulatedannealing.schedule.SimulatedAnnealingSchedule;
 import express.spoon.SpoonManager;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class Express {
 
@@ -68,7 +67,7 @@ public class Express {
 
     public ClassInvariantState initializationStageSearch() {
         printStartOfPhase("Initialization");
-        Set<ClassInvariantMutator> mutators = new HashSet<>();
+        List<ClassInvariantMutator> mutators = new ArrayList<>();
         // Initial Check Mutators
         mutators.add(new MultipleNullComparisonMutator());
         mutators.add(new SingleNullComparisonMutator());
@@ -91,21 +90,20 @@ public class Express {
         //System.err.println("Survivors: " + survivors.size() + " from " + ObjectGenerator.negativeHeapObjects.size());
         currentState.setFitnessAsOutdated();
 
-        Set<ClassInvariantMutator> mutators = new HashSet<>();
+        List<ClassInvariantMutator> mutators = new ArrayList<>();
         // Traversal Declaration Mutators
-        mutators.add(new DeclareWorklistTraversalMutator());
-        mutators.add(new DeclareSimpleTraversalMutator());
-        mutators.add(new DeclareArrayTraversalMutator());
+        mutators.add(new SimpleAddWorklistTraversalMutator());
+        mutators.add(new SimpleAddSimpleTraversalMutator());
+        mutators.add(new SimpleAddCircularTraversalMutator());
         // Traversal Modification Mutators
-        mutators.add(new ChangeLoopFieldsMutator());
-        mutators.add(new ChangeTraversalRootElement());
+        //mutators.add(new ChangeLoopFieldsMutator());
+        //mutators.add(new ChangeTraversalRootElement());
         // Traversal Invocation Mutators
-        mutators.add(new InvokeArrayTraversalMutator());
-        mutators.add(new InvokeFieldTraversalMutator());
-        mutators.add(new InvokeFieldTraversalOnArrayTraversalMutator());
+        mutators.add(new SimpleInvokeFieldTraversalMutator());
+        mutators.add(new SimpleReplaceFieldTraversalMutator());
         // Removals
         mutators.add(new RemoveIfMutator(2));
-        mutators.add(new RemoveUnusedTraversalsMutator());
+        mutators.add(new SimpleRemoveTraversalMutator());
         mutators.add(new UnifyTraversalInvocationsMutator());
 
         ClassInvariantProblem problem = new ClassInvariantProblem(
@@ -126,7 +124,7 @@ public class Express {
         //System.err.println("Survivors: " + survivors.size() + " from " + ObjectGenerator.negativeHeapObjects.size());
         currentState.setFitnessAsOutdated();
 
-        Set<ClassInvariantMutator> mutators = new HashSet<>();
+        List<ClassInvariantMutator> mutators = new ArrayList<>();
         // Structure Check Mutators
         mutators.add(new CheckVisitedFieldEndOfTraversalMutator());
         mutators.add(new NullComparisonFromCurrentMutator());
@@ -136,6 +134,7 @@ public class Express {
         mutators.add(new NullComparisonFromInputMutator());
         mutators.add(new MultipleNullComparisonFromInputMutator());
         mutators.add(new CheckVisitedCurrentOnArrayTraversalMutator());
+        mutators.add(new DeclareVisitedSetMutator());
         // Removals
         mutators.add(new RemoveUnusedLocalVarMutator());
         mutators.add(new RemoveIfMutator(3));
@@ -157,19 +156,23 @@ public class Express {
         List<Object> survivors = Executor.obtainSurvivors(currentState.getCtClass(), ObjectGenerator.negativePrimitiveObjects);
         currentState.setFitnessAsOutdated();
 
-        Set<ClassInvariantMutator> mutators = new HashSet<>();
+        List<ClassInvariantMutator> mutators = new ArrayList<>();
         // For Primitive main method
         mutators.add(new BooleanComparisonFromThis());
+        mutators.add(new BooleanComparisonFromThisStatic());
         mutators.add(new NumericComparisonFromThis());
+        mutators.add(new NumericComparisonFromThisStatic());
         //
         mutators.add(new CheckSizeEndOfTraversalMutator());
         mutators.add(new AddSizeCheckMutator());
         mutators.add(new NumericComparisonToCurrentMutator());
         mutators.add(new BooleanComparisonToCurrentMutator());
         mutators.add(new CheckVisitedPrimitiveFromCurrentMutator());
+        mutators.add(new NumericComparisonFromCurrentStaticMutator());
+        mutators.add(new NumericComparisonFromCurrentConstantMutator());
         // Removals
         mutators.add(new RemoveIfMutator(4));
-        mutators.add(new RemoveUnusedLocalVarMutator());
+        //mutators.add(new RemoveUnusedLocalVarMutator());
 
         ClassInvariantProblem problem = new ClassInvariantProblem(
                 mutators,

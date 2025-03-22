@@ -1,0 +1,10 @@
+===========================================================================
+casestudies.pli.avltree.AvlTree:::OBJECT
+this.root.left.height == 0 || this.root.left.height == 1 || this.root.left.height == 2
+this.root.right.height == 0 || this.root.right.height == 1 || this.root.right.height == 2
+this.root.height >= 0
+this.root.element > this.root.left.element
+this.root.element <= this.root.right.element
+this.root.left.element < this.root.right.element
+this.root.left.height <= this.root.height
+this.root.right.height <= this.root.height

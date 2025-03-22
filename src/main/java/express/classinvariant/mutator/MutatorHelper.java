@@ -91,8 +91,8 @@ public class MutatorHelper {
         return setVar;
     }
 
-    public static Set<CtMethod<?>> getMutableMethods(CtClass<?> clazz) {
-        return clazz.getMethods().stream().filter(MutatorHelper::isMutableMethod).collect(Collectors.toSet());
+    public static List<CtMethod<?>> getMutableMethods(CtClass<?> clazz) {
+        return clazz.getMethods().stream().filter(MutatorHelper::isMutableMethod).collect(Collectors.toList());
     }
 
     public static boolean isMutableMethod(CtMethod<?> method) {
@@ -113,6 +113,19 @@ public class MutatorHelper {
 
     public static List<CtIf> getMutableIfs(CtBlock<?> methodBody, String labelComment) {
         return methodBody.getElements(ifStatement -> isMutableIf(ifStatement, labelComment));
+    }
+
+    public static List<CtIf> getAllStagesMutableIfs(CtClass<?> ctClass) {
+        return ctClass.getElements(ifStatement -> isMutableIf(ifStatement));
+    }
+
+    public static boolean isMutableIf(CtIf ifStatement) {
+        CtBlock<?> thenBlock = ifStatement.getThenStatement();
+        if (thenBlock == null)
+            return false;
+        if (!(thenBlock.getStatement(0) instanceof CtComment comment))
+            return false;
+        return comment.getContent().startsWith(LocalVarHelper.STAGE_LABEL_PREFIX);
     }
 
     public static boolean isMutableIf(CtIf ifStatement, String labelComment) {
@@ -138,6 +151,25 @@ public class MutatorHelper {
         return body.getElements(ifStatement -> isMutableIf(ifStatement, label) && callsMethod(ifStatement, methodName));
     }
 
+    public static List<CtIf> getIfsInvokingTraversal(CtBlock<?> body, String label) {
+        return body.getElements(ifStatement -> isMutableIf(ifStatement, label) && invokesTraversal(ifStatement));
+    }
+
+    public static List<CtIf> getMutableChecksOfTraversalLoop(CtMethod<?> traversal, String label) {
+        CtBlock<?> whileBody = traversal.getElements(new TypeFilter<>(CtBlock.class)).stream()
+                .filter(b -> b.getParent(CtWhile.class) != null)
+                .findFirst().orElse(null);
+
+        if (whileBody == null)
+            throw new IllegalArgumentException("Traversal method does not contain a while loop");
+
+        return getMutableIfs(whileBody, label);
+    }
+
+    private static boolean invokesTraversal(CtIf ifStatement) {
+        return ifStatement.getCondition().toString().contains(LocalVarHelper.TRAVERSAL_PREFIX);
+    }
+
     public static boolean callsMethod(CtIf e, String methodName) {
         return e.toString().contains(methodName);
     }
@@ -147,7 +179,7 @@ public class MutatorHelper {
     }
 
     public static Set<CtTypeReference<?>> getTraversedArrayTypes(CtClass<?> cls) {
-        Set<CtTypeReference<?>> traversedTypes = new HashSet<>();
+        Set<CtTypeReference<?>> traversedTypes = new LinkedHashSet<>();
         for (CtMethod<?> method : cls.getMethods()) {
             if (method.getSimpleName().startsWith(LocalVarHelper.ARRAY_TRAVERSAL_PREFIX)) {
                 traversedTypes.add(TemplateHelper.getTraversedElementParameter(method).getType());
@@ -204,9 +236,9 @@ public class MutatorHelper {
                 .map(CtParameter::getType)
                 .collect(Collectors.toList());
 
-        Set<CtMethod<?>> traversals = new HashSet<>(MutatorHelper.getMethodsByName(ctClass, LocalVarHelper.TRAVERSAL_PREFIX));
+        Set<CtMethod<?>> traversals = new LinkedHashSet<>(MutatorHelper.getMethodsByName(ctClass, LocalVarHelper.TRAVERSAL_PREFIX));
         traversals.remove(traversal);
-        for (CtMethod<?> t : new HashSet<>(traversals)) {
+        for (CtMethod<?> t : new LinkedHashSet<>(traversals)) {
             List<CtTypeReference<?>> methodParamTypes = t.getParameters().stream()
                     .map(CtParameter::getType)
                     .collect(Collectors.toList());
@@ -218,14 +250,34 @@ public class MutatorHelper {
         return new LinkedList<>(traversals);
     }
 
+    public static List<CtMethod<?>> getEquivalentTraversals(CtClass<?> ctClass, CtMethod<?> traversal) {
+        List<CtTypeReference<?>> traversalParamTypes = traversal.getParameters().stream()
+                .map(CtParameter::getType)
+                .collect(Collectors.toList());
+
+        Set<CtMethod<?>> traversals = new LinkedHashSet<>(MutatorHelper.getMethodsByName(ctClass, LocalVarHelper.getTraversalPrefix(traversal.getSimpleName())));
+        traversals.remove(traversal);
+        for (CtMethod<?> t : new LinkedHashSet<>(traversals)) {
+            List<CtTypeReference<?>> methodParamTypes = t.getParameters().stream()
+                    .map(CtParameter::getType)
+                    .collect(Collectors.toList());
+
+            if (!traversalParamTypes.equals(methodParamTypes)) {
+                traversals.remove(t);
+            }
+        }
+        return new LinkedList<>(traversals);
+    }
+
+
     public static List<CtMethod<?>> findTraversalsWithDifferentParameters(CtClass<?> ctClass, CtMethod<?> traversal) {
         List<CtTypeReference<?>> traversalParamTypes = traversal.getParameters().stream()
                 .map(CtParameter::getType)
                 .collect(Collectors.toList());
 
-        Set<CtMethod<?>> traversals = new HashSet<>(MutatorHelper.getMethodsByName(ctClass, LocalVarHelper.TRAVERSAL_PREFIX));
+        Set<CtMethod<?>> traversals = new LinkedHashSet<>(MutatorHelper.getMethodsByName(ctClass, LocalVarHelper.TRAVERSAL_PREFIX));
         traversals.remove(traversal);
-        for (CtMethod<?> t : new HashSet<>(traversals)) {
+        for (CtMethod<?> t : new LinkedHashSet<>(traversals)) {
             List<CtTypeReference<?>> methodParamTypes = t.getParameters().stream()
                     .map(CtParameter::getType)
                     .collect(Collectors.toList());
@@ -260,6 +312,10 @@ public class MutatorHelper {
     public static boolean isUnusedTraversal(CtClass<?> ctClass, CtMethod<?> traversal) {
         List<CtIf> invocations = MutatorHelper.getIfsCallingMethod(ctClass, LocalVarHelper.STAGE_2_LABEL, traversal.getSimpleName());
         return invocations.isEmpty();
+    }
+
+    public static CtField<?> getFieldByName(CtClass<?> clazz, String fieldName) {
+        return clazz.getFields().stream().filter(f -> f.getSimpleName().equals(fieldName)).findFirst().orElse(null);
     }
 
 }

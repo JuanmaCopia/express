@@ -1,5 +1,8 @@
 package express.classinvariant.mutator.stage4;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
@@ -17,9 +20,6 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class BooleanComparisonFromThis implements ClassInvariantMutator {
 
     CtBlock<?> targetMethodBody;
@@ -28,7 +28,7 @@ public class BooleanComparisonFromThis implements ClassInvariantMutator {
     @Override
     public boolean isApplicable(ClassInvariantState state) {
         List<Path> paths = SpoonManager.getSubjectTypeData().getSimplePaths().stream().filter(
-                p -> TypeUtils.isBooleanType(p.getTypeReference())
+                p -> TypeUtils.isBooleanType(p.getTypeReference()) && p.size() < 3
         ).collect(Collectors.toList());
         if (paths.size() < 2)
             return false;
@@ -47,7 +47,7 @@ public class BooleanComparisonFromThis implements ClassInvariantMutator {
     public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_4_LABEL);
         CtStatement insertBeforeLabel = SpoonQueries.getSeparatorLabelComment(targetMethodBody);
-        MutatorHelper.selectMutationOption(ifStatement, targetMethodBody, insertBeforeLabel, LocalVarHelper.STAGE_1_LABEL);
+        MutatorHelper.selectMutationOption(ifStatement, targetMethodBody, insertBeforeLabel, LocalVarHelper.STAGE_4_LABEL);
 
         //System.err.println("\nPrimitiveComparisonToCurrentMutator:\n" + ifStatement);
     }

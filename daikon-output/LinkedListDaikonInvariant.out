@@ -1,0 +1,11 @@
+===========================================================================
+casestudies.pli.linkedlist.LinkedList:::OBJECT
+this.header == this.header.next.previous
+this.header == this.header.previous.next
+this.header != null
+this.header.element == 0
+this.header.next != null
+this.header.next.next != null
+this.header.previous != null
+this.header.previous.previous != null
+this.size >= 0

@@ -1,5 +1,8 @@
 package express.classinvariant.mutator.stage4;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
@@ -11,11 +14,16 @@ import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
-import spoon.reflect.code.*;
+import express.type.typegraph.TypeGraph;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
-
-import java.util.List;
 
 public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
 
@@ -23,37 +31,62 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
     CtExpression<Boolean> condition;
     CtBlock<?> traversalBody;
     CtLocalVariable<?> visitedSetVar;
+    boolean sizeDeclared = false;
+    CtMethod<?> traversal;
 
     public boolean isApplicable(ClassInvariantState state) {
         List<CtMethod<?>> traversals = MutatorHelper.getMethodsByName(state.getCtClass(), LocalVarHelper.TRAVERSAL_PREFIX);
         if (traversals.isEmpty())
             return false;
 
-        CtMethod<?> traversal = RandomUtils.getRandomElement(traversals);
+        traversal = RandomUtils.getRandomElement(traversals);
+
         traversalBody = traversal.getBody();
 
         List<CtLocalVariable<?>> localVars = SpoonQueries.getLocalVariablesMatchingPrefix(traversalBody, LocalVarHelper.INITIAL_SIZE_VAR_NAME);
         if (!localVars.isEmpty()) {
-            // Size already checked
-            return false;
+            sizeDeclared = true;
+        } else {
+            sizeDeclared = false;
         }
 
         CtVariable<?> traversedElement = TemplateHelper.getTraversedElementParameter(traversal);
-        List<Path> candidatePaths = SpoonManager.getSubjectTypeData().getThisTypeGraph()
+
+        TypeGraph typeGraph = SpoonManager.getSubjectTypeData().getThisTypeGraph();
+
+        List<Path> candidatePaths = typeGraph
                 .computeSimplePathsForAlternativeVar(traversedElement).stream()
                 .filter(p -> TypeUtils.isIntegerType(p.getTypeReference()) && p.size() < 3)
+                .collect(Collectors.toList());
+
+        CtVariable<?> thisInstance = MutatorHelper.getFieldByName(state.getCtClass(), LocalVarHelper.THIS_FIELD_NAME);
+        List<Path> candidatePaths2 = typeGraph
+                .computeSimplePathsForAlternativeVar(thisInstance).stream()
+                .filter(p -> TypeUtils.isIntegerType(p.getTypeReference()) && p.size() < 3)
                 .toList();
+
+        candidatePaths.addAll(candidatePaths2);
+
         if (candidatePaths.isEmpty())
             return false;
 
         Path chosenPath = RandomUtils.getRandomPath(candidatePaths);
+        List<CtExpression<Boolean>> clauses = SpoonFactory.generateParentPathNullComparisonClauses(chosenPath);
 
         visitedSetVar = TemplateHelper.getTraversalVisitedElementsVariable(traversal);
         CtInvocation<?> sizeInvocation = SpoonFactory.createInvocation(visitedSetVar, "size");
         initialSizeVar = SpoonFactory.createLocalVariable(LocalVarHelper.INITIAL_SIZE_VAR_NAME, SpoonFactory.getTypeFactory().integerPrimitiveType(), sizeInvocation);
 
-        CtExpression<?> leftExpr = SpoonFactory.createBinaryExpression(sizeInvocation, initialSizeVar, BinaryOperatorKind.MINUS);
-        condition = SpoonFactory.createBinaryExpression(leftExpr, chosenPath.getVariableRead(), BinaryOperatorKind.NE);
+        CtExpression<?> sizeMinus = sizeInvocation;
+        int minus = RandomUtils.nextInt(0, 3);
+        if (minus > 0)
+            sizeMinus = SpoonFactory.createBinaryExpression(sizeInvocation, minus, BinaryOperatorKind.MINUS);
+
+        CtExpression<?> leftExpr = SpoonFactory.createBinaryExpression(sizeMinus, initialSizeVar, BinaryOperatorKind.MINUS);
+        CtExpression<Boolean> comparison = SpoonFactory.createBinaryExpression(leftExpr, chosenPath.getVariableRead(), BinaryOperatorKind.NE);
+
+        clauses.add(comparison);
+        condition = SpoonFactory.conjunction(clauses);
 
         return !SpoonQueries.checkAlreadyExist(condition, traversalBody);
     }
@@ -61,13 +94,16 @@ public class CheckSizeEndOfTraversalMutator implements ClassInvariantMutator {
     @Override
     public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_4_LABEL);
-        
-        visitedSetVar.insertAfter(initialSizeVar);
+
+        if (!sizeDeclared) {
+            visitedSetVar.insertAfter(initialSizeVar);
+        }
         CtStatement endOfTraversalComment = SpoonQueries.getEndOfTraversalComment(traversalBody);
         endOfTraversalComment.insertAfter(ifStatement);
 
-        //System.err.println("CheckSizeEndOfTraversalMutator:\n" + ifStatement);
-        //System.err.println("Final Block:\n" + traversalBody);
+        // System.err.println("CheckSizeEndOfTraversalMutator:\n" + ifStatement);
+        // System.err.println("On traversal:" + traversal.getSimpleName());
+        // System.err.println("Final Block:\n" + traversalBody);
     }
 
 }

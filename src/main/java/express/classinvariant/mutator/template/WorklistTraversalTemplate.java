@@ -16,12 +16,13 @@ import java.util.List;
 
 public class WorklistTraversalTemplate {
 
-    public static CtMethod<?> instantiate(CtClass<?> ctClass, Path initialField, List<CtVariable<?>> loopFields, int splitIndex) {
+    public static CtMethod<?> instantiate(CtClass<?> ctClass, Path initialField, List<CtVariable<?>> loopFields) {
+        int splitIndex = 2;
         Pair<Path, Path> splitPaths = initialField.split(splitIndex);
         Path leftPath = splitPaths.getLeft();
         Path rightPath = splitPaths.getRight();
 
-        CtMethod<?> traversal = TemplateHelper.createTraversalMethod(ctClass, leftPath, LocalVarHelper.TRAVERSAL_PREFIX);
+        CtMethod<?> traversal = TemplateHelper.createTraversalMethod(ctClass, leftPath, LocalVarHelper.WORKLIST_TRAVERSAL_PREFIX);
 
         createTraversalBody(rightPath, traversal, loopFields);
         return traversal;

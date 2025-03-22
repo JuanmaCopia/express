@@ -1,16 +1,15 @@
 package express.classinvariant.mutator;
 
+import java.util.List;
+
 import express.classinvariant.state.ClassInvariantState;
 import express.spoon.RandomUtils;
 
-import java.util.List;
-import java.util.Set;
-
 public class ClassInvariantMutatorManager {
 
-    private final Set<ClassInvariantMutator> mutators;
+    private final List<ClassInvariantMutator> mutators;
 
-    public ClassInvariantMutatorManager(Set<ClassInvariantMutator> mutators) {
+    public ClassInvariantMutatorManager(List<ClassInvariantMutator> mutators) {
         this.mutators = mutators;
     }
 

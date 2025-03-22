@@ -1,17 +1,23 @@
 package express.spoon;
 
-import express.type.typegraph.Path;
-import spoon.reflect.code.*;
-import spoon.reflect.declaration.CtVariable;
-
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import express.type.typegraph.Path;
+import express.util.LinkedIdentityHashSet;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.declaration.CtVariable;
+
 public class RandomUtils {
 
-    private static final Random r = new Random();
+    private static final Random r = new Random(SpoonManager.getConfig().randomSeed);
 
     public static int nextInt(int bound) {
         return r.nextInt(bound);
@@ -43,6 +49,10 @@ public class RandomUtils {
 
     public static double nextDouble(double min, double max) {
         return min + r.nextDouble() * (max - min);
+    }
+
+    public static double nextDouble() {
+        return r.nextDouble();
     }
 
     public static String generateRandomString(int length) {
@@ -82,7 +92,6 @@ public class RandomUtils {
         return list2.get(choice - list1.size());
     }
 
-
     public static CtStatement getRandomStatementNonBlockNonExpression(CtBlock<?> block) {
         List<CtStatement> statements = block.getElements(e ->
                 e instanceof CtStatement
@@ -120,7 +129,7 @@ public class RandomUtils {
         return list.get(r.nextInt(list.size()));
     }
 
-    public static Path getRandomPath(Collection<Path> paths) {
+    public static Path getRandomPath(List<Path> paths) {
         if (paths == null || paths.isEmpty()) {
             throw new IllegalArgumentException("The collection of lists must not be null or empty");
         }
@@ -141,7 +150,7 @@ public class RandomUtils {
         }
 
         // Generate a random number
-        double randomValue = Math.random();
+        double randomValue = r.nextDouble();
 
         // Use the random number to select a list based on the probabilities
         double cumulativeProbability = 0.0;
@@ -154,25 +163,20 @@ public class RandomUtils {
             index++;
         }
 
-        // Convert collection to a list to access by index
-        List<Path> listOfPaths = new ArrayList<>(paths);
-        return listOfPaths.get(index);
+        return paths.get(index);
     }
 
-    public static <T> T getRandomElement(Collection<T> collection) {
-        if (collection == null || collection.isEmpty()) {
+    public static <T> T getRandomElement(List<T> list) {
+        if (list == null || list.isEmpty()) {
             throw new IllegalArgumentException("The collection must not be null or empty");
         }
 
-        // Convert the collection to a list
-        List<T> list = new ArrayList<>(collection);
-
-        // Generate a random index
-        Random random = new Random();
-        int randomIndex = random.nextInt(list.size());
-
-        // Return the element at the random index
+        int randomIndex = r.nextInt(list.size());
         return list.get(randomIndex);
+    }
+
+    public static <T> T getRandomElement(LinkedIdentityHashSet<T> set) {
+        return getRandomElement(new ArrayList<>(set));
     }
 
     public static List<BinaryOperatorKind> getNumericComparisons() {
@@ -189,5 +193,19 @@ public class RandomUtils {
 
     public static BinaryOperatorKind getRandomBooleanBinaryOperator() {
         return getRandomElement(getBooleanComparisons());
+    }
+
+    public static List<Integer> generateRandomIntegers(int max, int n) {
+        if (n > max + 1) {
+            throw new IllegalArgumentException("Cannot generate more distinct integers than the range allows.");
+        }
+
+        List<Integer> numbers = new ArrayList<>();
+        for (int i = 0; i <= max; i++) {
+            numbers.add(i);
+        }
+
+        Collections.shuffle(numbers, r);
+        return numbers.subList(0, n);
     }
 }

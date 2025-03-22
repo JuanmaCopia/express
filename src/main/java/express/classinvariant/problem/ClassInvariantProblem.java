@@ -8,7 +8,7 @@ import express.search.simulatedannealing.problem.SimulatedAnnealingProblem;
 import express.search.simulatedannealing.state.SimulatedAnnealingState;
 
 import java.text.DecimalFormat;
-import java.util.Set;
+import java.util.List;
 
 public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
@@ -19,14 +19,14 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
     int restartRounds;
     int roundsWithoutImprovement = 0;
 
-    public ClassInvariantProblem(Set<ClassInvariantMutator> mutators, ClassInvariantFitness fitnessFunction, ClassInvariantState initialState, int restartRounds) {
+    public ClassInvariantProblem(List<ClassInvariantMutator> mutators, ClassInvariantFitness fitnessFunction, ClassInvariantState initialState, int restartRounds) {
         mutatorManager = new ClassInvariantMutatorManager(mutators);
         this.fitnessFunction = fitnessFunction;
         this.initialState = initialState;
         this.restartRounds = restartRounds;
     }
 
-    public ClassInvariantProblem(Set<ClassInvariantMutator> mutators, ClassInvariantFitness fitnessFunction, int restartRounds) {
+    public ClassInvariantProblem(List<ClassInvariantMutator> mutators, ClassInvariantFitness fitnessFunction, int restartRounds) {
         mutatorManager = new ClassInvariantMutatorManager(mutators);
         this.fitnessFunction = fitnessFunction;
         this.restartRounds = restartRounds;
@@ -72,7 +72,10 @@ public class ClassInvariantProblem implements SimulatedAnnealingProblem {
 
     @Override
     public boolean shouldRestart(SimulatedAnnealingState currentState, SimulatedAnnealingState fittest) {
-        if (fittest.getFitness() >= currentState.getFitness()) {
+        if (restartRounds <= 0)
+            return false;
+
+        if (fittest.getFitness() <= currentState.getFitness()) {
             roundsWithoutImprovement++;
         } else {
             roundsWithoutImprovement = 0;

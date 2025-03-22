@@ -1,5 +1,7 @@
 package express.classinvariant.mutator.stage3;
 
+import java.util.List;
+
 import express.classinvariant.mutator.ClassInvariantMutator;
 import express.classinvariant.mutator.LocalVarHelper;
 import express.classinvariant.mutator.MutatorHelper;
@@ -9,10 +11,12 @@ import express.spoon.SpoonFactory;
 import express.spoon.SpoonManager;
 import express.spoon.SpoonQueries;
 import express.type.typegraph.Path;
-import spoon.reflect.code.*;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.util.List;
 
 public class CheckVisitedFieldMutator implements ClassInvariantMutator {
 
@@ -21,7 +25,7 @@ public class CheckVisitedFieldMutator implements ClassInvariantMutator {
 
     public boolean isApplicable(ClassInvariantState state) {
         List<Path> paths = SpoonManager.getSubjectTypeData().getReferencePaths().stream().filter(
-                p -> p.size() > 1
+                p -> p.size() > 1 && p.size() < 3
         ).toList();
         if (paths.isEmpty())
             return false;

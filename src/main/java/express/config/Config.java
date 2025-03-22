@@ -28,6 +28,9 @@ public class Config {
     public String predicateClassName;
     public String predicateMethodName;
 
+    // Search Settings
+    public int randomSeed;
+
     // Simulated Annealing Settings
     public double initialTemperature;
     public double coolingRate;
@@ -65,9 +68,12 @@ public class Config {
             predicateMethodName = properties.getProperty("express.output.predicate_method_name");
 
             // Search Settings
+            randomSeed = Integer.parseInt(properties.getProperty("express.search.random_seed", "1"));
+
+            // Simulated Annealing Settings
             initialTemperature = Double.parseDouble(properties.getProperty("express.search.sa.initial_temperature"));
             coolingRate = Double.parseDouble(properties.getProperty("express.search.sa.cooling_rate"));
-            restartRounds = Integer.parseInt(properties.getProperty("express.search.sa.restart_rounds"));
+            restartRounds = Integer.parseInt(properties.getProperty("express.search.sa.restart_rounds", "0"));
 
             // Object Settings
             maxMutationsPerInstance = Integer
@@ -96,6 +102,8 @@ public class Config {
                 "\n\texpress.output.predicate_class_name = " + predicateClassName +
                 "\n\texpress.output.predicate_method_name = " + predicateMethodName +
                 "\n\nSearch Settings:" +
+                "\n\texpress.search.random_seed = " + randomSeed +
+                "\n\nSimulated Annealing Settings:" +
                 "\n\texpress.search.sa.initial_temperature = " + initialTemperature +
                 "\n\texpress.search.sa.cooling_rate = " + coolingRate +
                 "\n\texpress.search.sa.restart_rounds = " + restartRounds +
@@ -106,6 +114,6 @@ public class Config {
     }
 
     public String createOuputSrcFolderString(String outputSrcFolder) {
-        return outputSrcFolder + "/" + subjectClassName;
+        return outputSrcFolder + "/";
     }
 }

@@ -1,7 +1,8 @@
 package express.spoon;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -97,8 +98,6 @@ public class SpoonManager {
     private static void initializeCompiler() {
         inMemoryCompiler = new InMemoryCompiler();
         List<String> classpath = new ArrayList<>();
-        classpath.add("lib/junit-4.13.2.jar");
-        classpath.add("lib/collector-1.0.jar");
         inMemoryCompiler.setClasspath(classpath);
         inMemoryCompiler.addSource(getSourceMap());
     }
@@ -113,8 +112,9 @@ public class SpoonManager {
     }
 
     public static Map<String, String> getSourceMap() {
-        Map<String, String> sourceMap = new HashMap<>();
+        Map<String, String> sourceMap = new LinkedHashMap<>();
         List<CtType<?>> allTypes = launcher.getFactory().Type().getAll();
+        allTypes.sort(Comparator.comparing(CtType::getSimpleName));
         for (CtType<?> type : allTypes) {
             if (TypeUtils.isUserDefinedType(type.getReference()))
                 sourceMap.put(type.getQualifiedName(), getPrettyPrintedSourceCode(type));

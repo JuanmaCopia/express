@@ -1,0 +1,12 @@
+===========================================================================
+casestudies.pli.treemap.TreeMap:::OBJECT
+this.root == this.root.left.parent
+this.root == this.root.right.parent
+this.root.left.parent == this.root.right.parent
+this.root.left.parent != null
+this.root.right.parent != null
+this.root.parent == null
+this.size >= 0
+this.root.key > this.root.left.key
+this.root.key <= this.root.right.key
+this.root.left.key < this.root.right.key

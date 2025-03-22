@@ -1,5 +1,6 @@
 package express.classinvariant.mutator;
 
+import express.type.TypeUtils;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
@@ -19,6 +20,7 @@ public class LocalVarHelper {
     public static final String SEPARATOR_LABEL = "SEPARATOR_LABEL";
     public static final String RETURN_TRUE_LABEL = "RETURN_TRUE_LABEL";
 
+    public static final String STAGE_LABEL_PREFIX = "STAGE_";
     public static final String STAGE_1_LABEL = "STAGE_1_LABEL";
     public static final String STAGE_2_LABEL = "STAGE_2_LABEL";
     public static final String STAGE_3_LABEL = "STAGE_3_LABEL";
@@ -28,12 +30,16 @@ public class LocalVarHelper {
     public static final String WORKLIST_VAR_NAME = "worklist_";
     public static final String CURRENT_VAR_NAME = "current_";
     public static final String TRAVERSAL_PREFIX = "traverse_";
+    public static final String WORKLIST_TRAVERSAL_PREFIX = TRAVERSAL_PREFIX + "worklist_";
+    public static final String SIMPLE_TRAVERSAL_PREFIX = TRAVERSAL_PREFIX + "simple_";
+    public static final String CIRCULAR_TRAVERSAL_PREFIX = TRAVERSAL_PREFIX + "circular_";
     public static final String ARRAY_TRAVERSAL_PREFIX = "traverseArray_";
     public static final String INITIAL_SIZE_VAR_NAME = "initialSize_";
     public static final String TRAVERSAL_ROOT_VAR_NAME = "rootElement";
     public static final String TRAVERSED_ELEMENT_VAR_NAME = "subject";
     public static final String ARRAY_PARAM_NAME = "array_";
     public static final String THIS_PARAM_NAME = "_this";
+    public static final String THIS_FIELD_NAME = "thisInstance";
     public static final String ARRAY_VAR_PREFIX = "arrayOf";
     public static final String MAP_OF_VISITED = "mapOfVisited";
 
@@ -52,6 +58,20 @@ public class LocalVarHelper {
         throw new RuntimeException("No traversal name available");
     }
 
+    public static String getTraversalPrefix(String traversalName) {
+        if (traversalName.startsWith(LocalVarHelper.ARRAY_TRAVERSAL_PREFIX)) {
+            return LocalVarHelper.ARRAY_TRAVERSAL_PREFIX;
+        } else if (traversalName.startsWith(LocalVarHelper.SIMPLE_TRAVERSAL_PREFIX)) {
+            return LocalVarHelper.SIMPLE_TRAVERSAL_PREFIX;
+        } else if (traversalName.startsWith(LocalVarHelper.WORKLIST_TRAVERSAL_PREFIX)) {
+            return LocalVarHelper.WORKLIST_TRAVERSAL_PREFIX;
+        } else if (traversalName.startsWith(LocalVarHelper.CIRCULAR_TRAVERSAL_PREFIX)) {
+            return LocalVarHelper.CIRCULAR_TRAVERSAL_PREFIX;
+        } else {
+            return LocalVarHelper.TRAVERSAL_PREFIX;
+        }
+    }
+
     public static String createTraversalName(String traversalPrefix, int id) {
         return traversalPrefix + id + MUTABLE_METHOD_SUFFIX;
     }
@@ -67,7 +87,11 @@ public class LocalVarHelper {
     }
 
     public static String getVisitedSetVarName(CtTypeReference<?> typeOfPath) {
-        return SET_VAR_NAME + typeOfPath.getSimpleName();
+        if (!typeOfPath.isPrimitive())
+            return SET_VAR_NAME + typeOfPath.getSimpleName();
+
+        CtTypeReference<?> boxedPrimitive = TypeUtils.getBoxedPrimitive(typeOfPath);
+        return SET_VAR_NAME + boxedPrimitive.getSimpleName();
     }
-    
+
 }

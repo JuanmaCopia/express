@@ -5,15 +5,43 @@ import express.object.helpers.Reflection;
 import express.object.helpers.Types;
 import express.object.mutate.values.ValueProvider;
 import express.spoon.RandomUtils;
+import express.spoon.SpoonManager;
+import express.type.TypeUtils;
+import express.type.typegraph.Path;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.reflect.Field;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PrimitiveTypeMutator {
 
-    public static boolean mutatePrimitiveValues(Object rootObject) {
-        Set<Object> reachableObjects = Collect.collectReachableObjects(rootObject);
+    public static boolean mutatePrimitiveValuesByPath(Object rootObject, int maxPathLength) {
+        List<Path> paths = SpoonManager.getSubjectTypeData().getPathsOfMaxLengthK(maxPathLength);
+        List<Path> candidatePaths = TypeUtils.filterPaths(paths, TypeUtils::isPrimitiveOrBoxedPrimitiveType).stream().filter(
+                path -> path.size() >= 2 && Reflection.canBeEvaluated(rootObject, path)
+        ).collect(Collectors.toList());
+        candidatePaths.sort(Comparator.comparing(Path::toString));
+        if (candidatePaths.isEmpty()) {
+            return false;
+        }
+
+        Path chosenPath = RandomUtils.getRandomElement(candidatePaths);
+        candidatePaths.remove(chosenPath);
+
+        Pair<Field, Object> fieldTuple = Reflection.evaluatePath(rootObject, chosenPath);
+        Field field = fieldTuple.getLeft();
+
+        Class<?> fieldType = field.getType();
+        Object newValue = ValueProvider.createNewInstance(fieldType);
+
+        Reflection.setPathValue(rootObject, chosenPath, newValue);
+        return true;
+    }
+
+    public static boolean mutatePrimitiveValuesByObjects(Object rootObject) {
+        List<Object> reachableObjects = Collect.collectReachableObjects(rootObject);
         List<Object> candidates = reachableObjects.stream().filter(PrimitiveTypeMutator::isMutableHeapObjectForPrimitiveValues).toList();
 
         if (candidates.isEmpty())

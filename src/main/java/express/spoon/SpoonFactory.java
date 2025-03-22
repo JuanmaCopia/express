@@ -1,21 +1,58 @@
 package express.spoon;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang3.ClassUtils;
+
 import express.classinvariant.mutator.LocalVarHelper;
+import express.classinvariant.mutator.MutatorHelper;
 import express.type.TypeUtils;
 import express.type.typegraph.Path;
-import org.apache.commons.lang3.ClassUtils;
 import spoon.Launcher;
-import spoon.reflect.code.*;
-import spoon.reflect.declaration.*;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtAssignment;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBreak;
+import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtContinue;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.CtVariableWrite;
+import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.util.*;
 
 public class SpoonFactory {
 
@@ -646,5 +683,37 @@ public class SpoonFactory {
     public static CtExecutableReference<?> createMethodReference(CtTypeReference<?> type, String methodName) {
         CtMethod<?> method = type.getTypeDeclaration().getMethodsByName(methodName).get(0);
         return factory.Executable().createReference(method);
+    }
+
+    public static CtField<?> createThisField(CtClass<?> thisCtClass) {
+        CtField<?> thisField = coreFactory.createField();
+        thisField.setSimpleName(LocalVarHelper.THIS_FIELD_NAME);
+        thisField.setType(thisCtClass.getReference());
+        thisField.addModifier(ModifierKind.PRIVATE);
+        thisField.addModifier(ModifierKind.STATIC);
+        return thisField;
+    }
+
+    public static CtAssignment createThisAssignment(CtClass<?> predicateClass, CtVariable<?> ctParameter) {
+        // Obtain static variable "this" from predicate class
+        CtField<?> thisField = MutatorHelper.getFieldByName(predicateClass, LocalVarHelper.THIS_FIELD_NAME);
+        return createAssignment(thisField, ctParameter);
+    }
+
+    public static CtVariableRead<?> createStaticFieldRead(CtClass<?> ctClass, CtField<?> staticField) {
+        // Create a type reference for the class
+        CtTypeReference<?> classRef = ctClass.getReference();
+
+        // Create a type access for the class
+        CtTypeAccess<?> typeAccess = codeFactory.createTypeAccess(classRef);
+
+        // Create a field reference for the static field
+        CtFieldReference<?> fieldRef = staticField.getReference();
+
+        CtFieldRead fieldRead = coreFactory.createFieldRead();
+        fieldRead.setTarget(typeAccess);
+        fieldRead.setVariable(fieldRef);
+
+        return fieldRead;
     }
 }

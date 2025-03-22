@@ -28,7 +28,7 @@ public class NumericComparisonFromThis implements ClassInvariantMutator {
     @Override
     public boolean isApplicable(ClassInvariantState state) {
         List<Path> paths = SpoonManager.getSubjectTypeData().getSimplePaths().stream().filter(
-                p -> TypeUtils.isNumericType(p.getTypeReference())
+                p -> TypeUtils.isNumericType(p.getTypeReference()) && p.size() < 3
         ).collect(Collectors.toList());
         if (paths.size() < 2)
             return false;
@@ -37,7 +37,7 @@ public class NumericComparisonFromThis implements ClassInvariantMutator {
         paths.remove(path1);
         Path path2 = RandomUtils.getRandomElement(paths);
 
-        condition = ComparisonTemplate.instantiateComparableTemplate(path1, path2, RandomUtils.nextBoolean());
+        condition = ComparisonTemplate.instantiateComparableTemplate(path1, path2);
 
         targetMethodBody = TemplateHelper.getPrimitiveMethod(state).getBody();
         return !SpoonQueries.checkAlreadyExistSimple(condition, targetMethodBody);
@@ -47,7 +47,7 @@ public class NumericComparisonFromThis implements ClassInvariantMutator {
     public void mutate(ClassInvariantState state) {
         CtIf ifStatement = SpoonFactory.createIfReturnFalse(condition, LocalVarHelper.STAGE_4_LABEL);
         CtStatement insertBeforeLabel = SpoonQueries.getSeparatorLabelComment(targetMethodBody);
-        MutatorHelper.selectMutationOption(ifStatement, targetMethodBody, insertBeforeLabel, LocalVarHelper.STAGE_1_LABEL);
+        MutatorHelper.selectMutationOption(ifStatement, targetMethodBody, insertBeforeLabel, LocalVarHelper.STAGE_4_LABEL);
 
         //System.err.println("\nPrimitiveComparisonToCurrentMutator:\n" + ifStatement);
     }
